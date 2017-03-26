@@ -1,0 +1,29 @@
+# -*- mode: snippet -*-
+# name: article en català
+# key: article_cat
+# --
+\documentclass[a4paper,10pt,catalan]{book}
+
+\usepackage[catalan]{babel}
+\usepackage{brust}
+\usepackage{todonotes}
+
+\title{$1}
+\author{$2:Pau Brustenga Moncusí}
+
+
+\begin{document}
+\setlength{\abovedisplayskip}{5pt} \setlength{\belowdisplayskip}{5pt}
+\setlength{\abovedisplayshortskip}{5pt}
+\setlength{\belowdisplayshortskip}{5pt}
+
+$0
+
+% \bibliographystyle{amsalpha}
+\bibliographystyle{apalike} \bibliography{bibl}
+
+\end{document}
+
+%%% Local Variables:
+%%% ispell-local-dictionary: "catalan"
+%%% End:

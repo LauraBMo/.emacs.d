@@ -1,0 +1,171 @@
+;;
+;;;; Mode line setup
+;;(setq-default
+;; mode-line-format
+;; '(; Position, including warning for 80 columns
+;;   (:propertize "%4l:" face mode-line-position-face)
+;;   (:eval (propertize "%3c" 'face
+;;                      (if (>= (current-column) 80)
+;;                          'mode-line-80col-face
+;;                        'mode-line-position-face)))
+;;                                                          ; emacsclient [default -- keep?]                        
+;;   mode-line-client
+;;   "  "
+;;                                                          ; read-only or modified status
+;;   (:eval
+;;    (cond (buffer-read-only
+;;           (propertize " RO " 'face 'mode-line-read-only-face))
+;;          ((buffer-modified-p)
+;;           (propertize " ** " 'face 'mode-line-modified-face))
+;;          (t "      ")))
+;;   "    "
+;;                                                          ; directory and buffer/file name
+;;   (:propertize (:eval (shorten-directory default-directory 30))
+;;                face mode-line-folder-face)
+;;   (:propertize "%b"
+;;                face mode-line-filename-face)
+;;  ;; mode-line-position
+;;  ;; narrow [default -- keep?]
+;;   " %n "
+;;                                                          ; mode indicators: vc, recursive edit, major mode, minor modes, process, global
+;;  ;;   (vc-mode vc-mode)
+;;   "  %["
+;;   (:propertize mode-name
+;;                face mode-line-mode-face)
+;;   "%] "
+;;   (:eval (propertize (format-mode-line minor-mode-alist)
+;;                      'face 'mode-line-minor-mode-face))
+;;   (:propertize mode-line-process
+;;                face mode-line-process-face)
+;;  ;; nyan-mode uses nyan cat as an alternative to %p
+;;   (:eval (when nyan-mode (list (nyan-create))))
+;;
+;;   (global-mode-string global-mode-string)
+;;   "    "
+;;   ))
+;;
+;;
+;;;; Helper function
+;;(defun shorten-directory (dir max-length)
+;;  "Show up to `max-length' characters of a directory name `dir'."
+;;  (let ((path (reverse (split-string (abbreviate-file-name dir) "/")))
+;;        (output ""))
+;;    (when (and path (equal "" (car path)))
+;;      (setq path (cdr path)))
+;;    (while (and path (< (length output) (- max-length 4)))
+;;      (setq output (concat (car path) "/" output))
+;;      (setq path (cdr path)))
+;;    (when path
+;;      (setq output (concat ".../" output)))
+;;    output))
+;;
+
+;;(set-face-attribute 'mode-line nil
+;;                            :foreground "gray60" :background "gray20"
+;;                            :inverse-video nil
+;;                            :box '(:line-width 6 :color "gray20" :style nil))
+;;(set-face-attribute 'mode-line-inactive nil
+;;                            :foreground "gray80" :background "gray40"
+;;                            :inverse-video nil
+;;                            :box '(:line-width 6 :color "gray40" :style nil))
+
+
+
+
+
+
+
+;;(setq-default mode-line-position
+;;                   (
+;;                      ;;(;; sml/buffer-identification-filling
+;;                       ;; sml/buffer-identification-filling
+;;                      ;; (:eval (setq sml/buffer-identification-filling
+;;                      ;;                   (sml/fill-for-buffer-identification))))
+;;                                                                                        
+;;                      (sml/position-percentage-format 
+;;                       (-3
+;;                         (:propertize
+;;                          (:eval sml/position-percentage-format)
+;;                          local-map
+;;                          (keymap
+;;                            (mode-line keymap
+;;                                            (down-mouse-1 keymap (column-number-mode
+;;                                                                             menu-item "Display Column Numbers"
+;;                                                                             column-number-mode :help "Toggle displaying column numbers in the mode-line"
+;;                                                                             :button (:toggle . column-number-mode))
+;;                                                                 (line-number-mode
+;;                                                                   menu-item "Display Line Numbers"
+;;                                                                   line-number-mode :help "Toggle displaying line numbers in the mode-line"
+;;                                                                   :button  (:toggle . line-number-mode))
+;;                                           "Toggle Line and Column Number Display")))
+;;                          mouse-face
+;;                          mode-line-highlight
+;;                          face
+;;                         ;; "["
+;;                          sml/position-percentage
+;;                         ;; "]"
+;;                          help-echo "Buffer Relative Position\nmouse-1: Display Line and Column Mode Menu")))))
+;;
+;;(setq mode-line-format
+;;       (list
+;;         ))
+;;; use setq-default to set it for /all/ modes
+;;(setq mode-line-format
+;;  (list
+;;  "---- "
+;;  ;; the buffer name; the file name as a tool tip
+;;  '(:eval (propertize "%b " 'face 'font-lock-keyword-face
+;;                                'help-echo (buffer-file-name)))
+;;
+;;  ;; line and column
+;;  " -- (" ;; '%02' to set to 2 chars at least; prevents flickering
+;;  (propertize "%02l" 'face 'font-lock-type-face) ","
+;;  (propertize "%02c" 'face 'font-lock-type-face) 
+;;  ") -- "
+;;
+;;  ;; relative position, size of file
+;;  "["
+;;    (propertize "%p" 'face 'font-lock-constant-face) ;; % above top
+;;    "/"
+;;    (propertize "%I" 'face 'font-lock-constant-face) ;; size
+;;    "] -- "
+;;
+;;    ;; the current major mode for the buffer.
+;;    "["
+;;
+;;    '(:eval (propertize "%m" 'face 'font-lock-string-face
+;;                                  'help-echo buffer-file-coding-system))
+;;    minor-mode-alist  ;; list of minor modes
+;;    "] -- "
+;;
+;;
+;;    "[" ;; insert vs overwrite mode, input-method in a tooltip
+;;    '(:eval (propertize (if overwrite-mode "Ovr" "Ins")
+;;              'face 'font-lock-preprocessor-face
+;;              'help-echo (concat "Buffer is in "
+;;                           (if overwrite-mode "overwrite" "insert") " mode")))
+;;
+;;    ;; was this buffer modified since the last save?
+;;    '(:eval (when (buffer-modified-p)
+;;              (concat ","  (propertize "Mod"
+;;                             'face 'font-lock-warning-face
+;;                             'help-echo "Buffer has been modified"))))
+;;
+;;    ;; is this buffer read-only?
+;;    '(:eval (when buffer-read-only
+;;              (concat ","  (propertize "RO"
+;;                             'face 'font-lock-type-face
+;;                             'help-echo "Buffer is read-only"))))  
+;;    "]-- "
+;;
+;;    ;; add the time, with the date and the emacs uptime in the tooltip
+;;    '(:eval (propertize (format-time-string "%H:%M")
+;;              'help-echo
+;;              (concat (format-time-string "%c; ")
+;;                      (emacs-uptime "Uptime:%hh"))))
+;;    " --"
+;;    ;; i don't want to see minor-modes; but if you want, uncomment this:
+;;    "%-" ;; fill with '-'
+;;    ))
+;;
+;;

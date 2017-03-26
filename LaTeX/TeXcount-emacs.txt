@@ -1,0 +1,30 @@
+### Options to use with TeXcount
+# Counting options
+-sum=1,1,1
+#-sub=section
+-inc
+-total
+
+
+# Macro rules
+# %macro \url 1
+# %envir sourcecode 0 0
+# %macroword \TeXcount 1
+# %envir tikzcd 5 5
+%macroword \ncd [5]
+
+# Output template
+# w      - wiord
+# im     - inline math
+# dm     - display math
+# cd     - commutative diagrams
+# h      - headers
+# file   - files
+-template=
+\new{sum}w{6}im{7}dm{5}cd{4}h{file}file\n
+
+
+# \Words: {sum}\n
+# \Formulae: {4} + {6} + {7}\n
+# \{5?Number of floats: {5}\n?5}
+# \{SUB? - {sum} words in {title}\n?SUB}

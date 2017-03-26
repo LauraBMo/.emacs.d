@@ -1,0 +1,149 @@
+
+
+%\usepackage{hyperref} % with nice colors and boxes.
+\usepackage[hyperref,x11names]{xcolor}
+\usepackage[colorlinks=true,urlcolor=SteelBlue3,linkcolor=Firebrick3,citecolor=OliveDrab4%DarkOliveGreen4 %Aquamarine4
+]{hyperref}
+
+
+
+%%%%%%%%%%%%%%%%% Fonts %%%%%%%%%%%%%%%%
+%Per possar accents:
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc} %Codificació de entrada
+\usepackage[T1]{fontenc} %Codificació de font
+% Fonts boniques amb més resolució:
+\usepackage{lmodern}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+%%%%%%%%%%%%%%%%% Math %%%%%%%%%%%%%%%%
+\usepackage{amsmath}%,amscd}
+%\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{enumerate}
+%\usepackage{graphicx}
+
+%\usepackage{color}
+%\usepackage{multirow}
+%\usepackage{mathabx}
+
+
+%\usepackage{geometry}
+%\geometry{a4paper, textwidth=6.5in, textheight=10in,
+%            marginparsep=7pt, marginparwidth=.6in}
+
+%%%%%%%%%%%%%%%%% The stealth arrows: %%%%%%%%%%%%%%%%
+% Setup the matha font (from mathabx.sty)
+\DeclareFontFamily{U}{matha}{\hyphenchar\font45}
+\DeclareFontShape{U}{matha}{m}{n}{
+      <5> <6> <7> <8> <9> <10> gen * matha
+      <10.95> matha10 <12> <14.4> <17.28> <20.74> <24.88> matha12
+      }{}
+\DeclareSymbolFont{matha}{U}{matha}{m}{n}
+
+% Define a subset character from that font (from mathabx.dcl)
+% to completely replace the \subset character, you can replace
+% \varsubset with \subset
+\DeclareMathSymbol{\varleftarrow}{3}{matha}{"D0}
+\DeclareMathSymbol{\varrightarrow}{3}{matha}{"D1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%% TiKz - Cd %%%%%%%%%%%%%%%%
+\usepackage{tikz-cd}
+
+\tikzcdset
+{
+arrow style=tikz,
+diagrams={>=stealth},
+%diagrams={>={Straight Barb[scale=0.8]}},
+row sep/normal=2.2em,
+column sep/normal=2.7em
+%inner sep=0pt,
+%outer sep=0pt
+}
+\let\oldtikzcd=\tikzcd
+\let\endoldtikzcd=\endtikzcd
+\renewenvironment{tikzcd}{\begin{oldtikzcd}}{\end{oldtikzcd}\vspace{-.5cm}}
+
+
+\newcommand{\ulcorn}[1]{{\ar[#1, phantom, very near start, "\ulcorner"]}}
+\newcommand{\urcorn}[1]{{\ar[#1, phantom, very near start, "\urcorner"]}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%% Theorems style  %%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}{Remark}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newenvironment{notation}[1][Notation]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%
+\newcommand{\pnterra}{{\hspace{-0.15cm}}.{\hspace{0.05cm}}}
+\newcommand{\pnterramesun}{{\hspace{-0.5cm}}.{\hspace{0.4cm}}}
+\newcommand{\pntprima}{{\hspace{-0.1cm}}.{\hspace{0.03cm}}}
+\newcommand{\pntc}{{\hspace{-0.25cm}}.{\hspace{0.15cm}}}
+
+
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PP}{\mathbb{P}}
+
+\newcommand{\apl}[2]{#1\varrightarrow #2}
+\newcommand{\aplllarga}[3]{\begin{oldtikzcd}[column sep=2.5em, ampersand replacement=\&] 
+                           #1 : #2 \rar \& #3 \end{oldtikzcd}}
+
+
+
+% \newcommand{\defundersection}[5]{\!\!\begin{oldtikzcd}[column sep=2.3em, ampersand replacement=\&]
+%                      #1 \rar[hook,]{#2} \& \!#3 \rar{#4} \& \! #5 \end{oldtikzcd}\!\!}
+% \newcommand{\apl}[3]{\!\!\begin{oldtikzcd}[column sep=1.3em, ampersand replacement=\&]
+%                      #1\hspace{-.1em}:\hspace{-.1em}#2\! \rar \& \!#3 \end{oldtikzcd}\!\!}
+% \newcommand{\aplnull}[2]{\!\!\begin{oldtikzcd}[column sep=1.3em, ampersand replacement=\&] #1\! \rar \&\! #2 \end{oldtikzcd}\!\!}
+% \newcommand{\inclusion}[2]{\!\!\begin{oldtikzcd}[column sep=1.3em, ampersand replacement=\&] #1\! \rar[hook] \&\! #2 \end{oldtikzcd}\!\!}
+% \newcommand{\aplllarga}[3]{\begin{oldtikzcd}[column sep=2.5em, ampersand replacement=\&] 
+%                            #1 : #2 \rar \& #3 \end{oldtikzcd}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                       
+
+
+%%%%%%%%%%%%%%%% Operators %%%%%%%%%%%%%%%%
+\DeclareMathOperator{\bl}{bl}
+\DeclareMathOperator{\Bl}{Bl}
+\DeclareMathOperator{\Cl}{Cl}
+
+
+
+\DeclareMathOperator{\s}{Spec}
+\DeclareMathOperator{\Pic}{Pic}
+\DeclareMathOperator{\proj}{Proj}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Hilb}{Hilb}
+
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\im}{im}
+
+\DeclareMathOperator{\Sch}{Sch}
+\DeclareMathOperator{\Set}{Set}
+
+\DeclareMathOperator{\adm}{adm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

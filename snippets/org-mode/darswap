@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: down arrow swap
+# key: dar'
+# --
+\dar[swap]{$1} $0

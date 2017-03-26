@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: right arrow swap
+# key: rar'
+# --
+\rar[swap]{$1} $0

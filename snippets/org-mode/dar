@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: down arrow
+# key: dar
+# --
+\dar{$1} $0

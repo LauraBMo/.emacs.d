@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: section
+# key: sssec
+# --
+\subsubsection{${1:name}}
+\label{sssec:${1:$(replace-regexp-in-string "[ ]" "-" (downcase yas-text))}}
+
+$0

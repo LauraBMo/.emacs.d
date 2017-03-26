@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: right arrow
+# key: rar
+# --
+\rar{$1} $0

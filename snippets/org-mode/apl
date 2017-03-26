@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: apl
+# key: apl
+# --
+\\(\apl{$1 }{$2 }\\) $0

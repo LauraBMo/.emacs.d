@@ -1,0 +1,1711 @@
+
+* TODO LaTeX-init
+** COMMENT To use accents as char itself.
+   I do not need these any more, now I use the char =ñ=!!
+#+BEGIN_SRC elisp
+  (require 'iso-transl)  
+
+#+END_SRC
+
+** TODO Add hooks
+#+BEGIN_SRC elisp
+  (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex)
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
+  (add-hook 'LaTeX-mode-hook #'flyspell-mode)
+  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
+  (add-hook 'LaTeX-mode-hook #'flyspell-ignore-tex)
+
+ ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
+
+  ;; (add-hook 'LaTeX-mode-hook '(LaTeX-add-environments 
+                              ;;;;;;;;;;;;;;;; Add it via cdlatex ;;;;;;;;;;;;;;;;
+  ;;                              '("axiom"       LaTeX-env-label)
+  ;;                              '("theorem"     LaTeX-env-label)
+  ;;                              '("definition"  LaTeX-env-label)
+  ;;                              '("remark"      LaTeX-env-label)
+  ;;                              '("proposition" LaTeX-env-label)
+  ;;                              '("lemma"       LaTeX-env-label)
+  ;;                              '("notation"    LaTeX-env-label)
+  ;;                              '("corollary"   LaTeX-env-label)
+  ;;                              '("tikzcd"      LaTeX-env-label)
+  ;;                              '("tikzpicture" LaTeX-env-label)
+  ;;                              '("frame"       LaTeX-env-label)
+  ;;                              '("block"       LaTeX-env-label)) t)
+  ;;(add-hook 'LaTeX-mode-hook 'paren-toggle-matching-quoted-paren 1 t)
+  ;;(add-hook 'LaTeX-mode-hook 'paren-toggle-matching-paired-delimiter 1 t)
+  ;;(add-hook 'LaTeX-mode-hook 'imenu-add-menubar-index)
+
+  ;;(add-hook 'LaTeX-mode-hook 'TeX-fold-mode  ;Ocultar seccions, mostrar simbols "fold the LaTeX macros")
+  ;; This needs (setq TeX-fold-auto t)
+
+#+END_SRC
+
+** Default command
+#+BEGIN_SRC elisp
+(setq-default TeX-command-default "LaTeX")
+
+#+END_SRC
+
+** Never open a file in TeX-mode, use LaTeX-mode
+#+BEGIN_SRC elisp
+(setq-default TeX-default-mode 'LaTeX-mode)
+
+#+END_SRC
+
+** Rename default =auto= directory to =~/.auctex-auto=
+   If you don't want to see an =./auto= directory in every single
+   source file directory, use this.
+ 
+#+BEGIN_SRC elisp
+  (setq-default TeX-auto-local "~/.auctex-auto")
+
+#+END_SRC
+
+
+
+
+* LaTeX-config
+** Save options
+#+BEGIN_SRC elisp
+     (setq TeX-save-query    nil ;; Don't query on TeX-save-document "C-c C-d" save all files of the document.
+           TeX-auto-untabify t   ;; remove all tabs before saving
+           TeX-auto-save     t  ;; Enable parse on save.
+           TeX-clean-confirm nil
+           ;; Provide forward and inverse search with SyncTeX
+           TeX-source-correlate-mode t
+           TeX-electric-math '("\\(" "\\)"))
+#+END_SRC
+** Master file
+#+BEGIN_SRC elisp
+(setq TeX-master 'dwin)
+
+#+END_SRC
+** COMMENT Electric
+*** COMMENT If non-nil, insert braces after typing _ and ^ in math mode
+#+BEGIN_SRC elisp
+(setq TeX-electric-sub-and-superscript nil)
+
+#+END_SRC
+*** COMMENT Autocomplet braces/parents 
+#+BEGIN_SRC elisp
+(setq LaTeX-electric-left-right-brace nil)
+
+#+END_SRC
+
+** Automatic Parsing of TeX Files
+#+BEGIN_SRC elisp
+  (setq TeX-parse-self t)
+
+#+END_SRC
+
+** Set seccions face
+*** Scale
+#+BEGIN_SRC elisp
+(setq font-latex-fontify-sectioning 1.15)
+
+#+END_SRC
+
+** New line function
+#+BEGIN_SRC elisp
+(setq TeX-newline-function 'newline-and-indent)
+
+#+END_SRC
+** COMMENT Commands list
+#+BEGIN_SRC elisp
+;; (add-to-list 'TeX-command-list)
+
+#+END_SRC
+
+** No/Yes insert braces after a TeX-macro
+#+BEGIN_SRC elisp
+(setq TeX-insert-braces nil)
+
+#+END_SRC
+
+** To get commented lines idented as LaTeX want
+#+BEGIN_SRC elisp
+(setq LaTeX-syntactic-comments t)
+
+#+END_SRC
+
+** RefTeX
+*** Settings
+#+BEGIN_SRC elisp
+  (setq reftex-plug-into-AUCTeX t ;; To integrate RefTeX with AUCTeX
+        reftex-allow-automatic-rescan t
+        reftex-enable-partial-scans t
+        reftex-save-parse-info t
+        reftex-use-multiple-selection-buffers nil
+        ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
+        ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
+        reftex-default-bibliography '("~/Dropbox/bibliografy/my.bib"
+                                      "~/Dropbox/bibliografy/zotero-bibl.bib")    
+        reftex-cite-prompt-optional-args nil
+        reftex-cite-cleanup-optional-args t
+        ;; So that RefTeX also recognizes \addbibresource. Note that you
+        ;; can't use $HOME in path for \addbibresource but that "~"
+        ;; works.
+        reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
+        ;; reftex-refstyle "\\Cref" ;; set the defult refstyle...
+        ;; reftex-ref-style-default-list (append (quote ("Cleveref")) reftex-ref-style-default-list)
+        )
+#+END_SRC
+
+*** Label list 
+#+BEGIN_SRC elisp
+  (setq reftex-label-alist
+        '(("axiom"         ?a "axm:"   "~\\cref{%s}" nil ("axiom"   "axm.")    -2)
+          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -3)
+          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
+          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       )
+          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") )
+          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")           )
+          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")        )
+          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")      )))
+
+#+END_SRC
+
+** To get a full featured `LaTeX-section' command
+#+BEGIN_SRC elisp
+  (setq LaTeX-section-hook '(LaTeX-section-heading  
+                             LaTeX-section-title
+                             LaTeX-section-toc
+                             LaTeX-section-section
+                             LaTeX-section-label))
+
+
+#+END_SRC
+** Ispell TeX skip regexp list 
+#+BEGIN_SRC elisp
+  (setq ispell-tex-skip-alists 
+        (list 
+         (append  
+          (car ispell-tex-skip-alists) ;tell ispell to ignore content of this:
+          '(("\\\\citep?"            ispell-tex-arg-end)
+            ("\\\\nocite"            ispell-tex-arg-end)
+            ("\\\\includegraphics"   ispell-tex-arg-end)
+            ("\\\\bibliography"      ispell-tex-arg-end)
+            ("[^\\]\\$" . "[^\\]\\$") ;; For math envirments ¿¿??
+            ("\\\\[a-zA-Z]?ref"      ispell-tex-arg-end)
+            ("\\\\author"            ispell-tex-arg-end)
+            ("\\\\label"             ispell-tex-arg-end)))
+         (cadr ispell-tex-skip-alists)))
+
+;; Flyspell ignore tex commands
+(defun flyspell-ignore-tex ()
+  (interactive)
+  (set (make-variable-buffer-local 'ispell-parser) 'tex))
+#+END_SRC
+
+** TeX outline extra envirments
+#+BEGIN_SRC elisp
+  (setq TeX-outline-extra
+        '(("\\\\begin\{definition\}" 3)
+          ("\\\\begin\{theorem\}" 3)
+          ("\\\\begin\{remark\}" 3)
+          ("\\\\begin\{proposition\}" 3)
+          ("\\\\begin\{lemma\}" 3)
+          ("\\\\begin\{notation\}" 3)
+          ("\\\\begin\{corollary\}" 3)
+          ("\\\\begin\{proof\}" 3)
+          ("\\\\begin\{frame\}" 3)
+          ;; ("\\\\\\[\\\\begin\{tikzcd\}" 4)
+          ("\\\\item" 4)
+          ;; ("\\\\begin\{tikzpicture\}" 5)
+          ;; ("\\\\begin\{equation\}" 5)
+          ;; ("\\\\begin\{proof\}" 4)
+          ))
+
+#+END_SRC
+
+** COMMENT TODO eBIB
+     Learm =helm-bib=
+#+BEGIN_SRC elisp
+  (use-package ebib
+    :init
+    (defun load-ebib ()
+      "Look for the bibliography comand and load into ebib the
+  .bib fiels."
+      (interactive)
+      (if ebib--initialized (message "The bibliography is already load :)")
+        (save-current-buffer
+          (save-selected-window
+            (save-excursion
+              (unless (eq TeX-master t) (find-file (concat (file-truename TeX-master) ".tex")))
+              (goto-char 1)
+              (if (search-forward "\\bibliography{" nil t)
+                  (let ((nn (match-end 0)) (dir (file-name-directory (buffer-file-name))) lst)
+                    (search-forward "}" nil t)
+                    (setq lst (split-string (buffer-substring-no-properties nn (match-beginning 0)) "," t))
+                    (ebib--init)
+                    (cl-loop for item in lst
+                             do (ebib-load-bibtex-file (concat dir item ".bib")))
+                    ;;(ebib-lower nil)
+                    (message "Bibliography succesly load!!")
+                    (switch-to-prev-buffer))
+                (message "Bibliography not founded :(")))))))
+
+
+    (add-hook 'LaTeX-mode-hook 'load-ebib t)
+
+    :config
+    (setq ebib-citation-commands (quote
+                                  ((any
+                                    (("psimple see natbib.pdf" "\\citep{%K}")
+                                     ("pcomplet pre and post notes." "\\citep%<[%A]%>[%A]{%K}")
+                                     ("tsimple" "\\citet{%K}")
+                                     ("tcomplet pre and post notes" "\\citet%<[%A]%>[%A]{%K}")))
+                                   (org-mode
+                                    (("ebib" "[[ebib:%K][%D]]")))
+                                   (markdown-mode
+                                    (("text" "@%K%< [%A]%>")
+                                     ("paren" "[%(%<%A %>@%K%<, %A%>%; )]")
+                                     ("year" "[-@%K%< %A%>]")))))))
+
+#+END_SRC
+** Unimportant math LaTeX face (by Endless)
+*** Deface
+#+BEGIN_SRC elisp
+(defface endless/unimportant-latex-face
+  '((t :height 0.7
+       :inherit font-lock-comment-face))
+  "Face used on less relevant math commands.")
+
+#+END_SRC
+
+*** Add font lock to the keywords
+#+BEGIN_SRC elisp
+
+(font-lock-add-keywords
+ 'latex-mode
+ `((,(rx (or (and "\\" (or (any ",.!;")
+                           (and (or "left" "right"
+                                    "big" "Big")
+                                symbol-end)))
+             (any "_^")))
+    0 'endless/unimportant-latex-face prepend))
+ 'end)
+
+#+END_SRC
+** LaTeX Brust defuns
+*** TODO Replace
+****** Var
+       To delete.
+#+BEGIN_SRC elisp
+(defvar files-terminations-history '("tex" "el") "terminations history")
+
+#+END_SRC
+****** TODO Whole document
+#+BEGIN_SRC elisp
+  (defun brust/query-replace-document-TeX (&optional from to)
+    "From reftex.el; Do `query-replace-regexp' of FROM with TO over the entire document.
+  Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
+  If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
+  with the command \\[tags-loop-continue].
+  No active TAGS table is required."
+    (interactive)
+    (let ((default (reftex-this-word)))
+      (setq from (or from (read-string (format "Replace regexp in document [%s]: "
+                                               default))))
+      (if (string= from "") (setq from (regexp-quote default))))
+    (setq to (or to (read-string (format "Replace regexp %s with: " from))))
+    (reftex-access-scan-info current-prefix-arg)
+    (tags-query-replace from to (or delimited current-prefix-arg)
+                        (list 'reftex-all-document-files)))
+
+
+  (defun foo ()
+    (interactive)
+    (if (reftex-all-document-files) (insert "hello") (insert "bye bye")))
+
+
+#+END_SRC
+
+****** TODO Whole directory
+#+BEGIN_SRC elisp
+  (defun brust/replace-regex-dir (from to ext)
+    "(defun ... (from to ext)) ;; ext -> extencion"
+    (interactive
+     (list
+      (read-regexp "Find regex: " )
+      (read-string (format "Replace string: ") nil 'query-replace-history)
+      (read-string (format "Extension: ") nil 'files-terminations-history)))
+    (let ((str-buffer (buffer-file-name)) (xdir (file-name-directory (buffer-file-name))) (pt (point)))
+      ;;(dired-jump)
+      ;;(goto-char (point-min))
+      ;;(while (re-search-forward (concat " [-a-zA-Z]*\." ext "$") nil t)
+      (mapc (lambda (xbuffer)
+               (if (get-buffer xbuffer)
+                   (progn 
+                     (brust/replace-regex-whole-buffer from to)
+                     (save-buffer))
+                 (progn 
+                   ;; (dired-find-alternate-file)
+                   (find-file (concat xdir xbuffer))
+                   (brust/replace-regex-whole-buffer from to)
+                   (save-buffer)
+                   (kill-buffer))))
+            (directory-files xdir nil (concat "^[^.#~]+\\." ext "$")))
+      ;; (dired-mark nil)
+      ;; (dired-do-find-regexp-and-replace from to)
+      (find-file str-buffer)
+      (goto-char pt)))
+
+
+#+END_SRC
+
+****** TODO Whole buffer
+#+BEGIN_SRC elisp
+  (defun brust/replace-regex-whole-buffer (from to)
+    (interactive)
+    (save-excursion 
+      (goto-char (point-min))
+      (while (re-search-forward from nil t)
+        (replace-match to))))
+
+#+END_SRC
+*** Compile only
+#+BEGIN_SRC elisp
+
+  (defun brust-get-path-to-a-file-from-TeX-master (file)
+    (save-excursion 
+      (goto-char (point-min))
+      (re-search-forward (concat "include{\\(.*" file "\\)}") nil t)
+      (concat (match-string-no-properties 1) (or (file-name-extension (match-string 1)) ".tex"))))
+
+  (defun brust-restore-buffer-to (-string)
+    (delete-region (point-min) (point-max))
+    (insert -string))
+
+  (defun brust/compile-only (arg)
+    "Can Compile the master file with an \includeonly{buffer-from-called}.
+       +If it is called from the master file (or 3 times C-u) all include's are compiled.
+       +The reference to the master file can be an absolute path or ../master.
+      TODO: +Make a save copy of the complet compiled .pdf if the current file have no save copy
+        and dalete the save copy if it exist and a whole compilation is made."
+    (interactive "P")
+    (if (or (eq TeX-master t) (= (car arg) 64)) (latex/compile-commands-until-done arg)
+      (if (= (car arg) 16) (latex/compile-commands-until-done nil)
+        (let ((init (buffer-name))
+              (pt (point)))
+          (find-file (TeX-master-file t nil t))
+          (save-excursion
+            (let ((latex/view-after-compile nil)
+                  (path-to-file (brust-get-path-to-a-file-from-TeX-master init))
+                  (text-buffer (buffer-string)))
+              (goto-char (point-min))
+              (re-search-forward "^\\\\documentclass.*{.*}.*")
+              (insert
+               "\n\\includeonly{"
+               path-to-file
+               "}")
+              (latex/compile-commands-until-done arg)
+              (brust-restore-buffer-to text-buffer)))
+          (set-buffer init)
+          (set-window-buffer nil init)
+          (goto-char pt)
+          (pdf-sync-forward-search)))))
+
+#+END_SRC
+*** Iniciar un document LaTeX
+****** Variabls
+#+BEGIN_SRC elisp
+  (defvar brust/LaTeX/init-dir "Directory of the tamplets")
+
+  (setq brust/LaTeX/init-dir "~/.emacs.d/LaTeX")
+#+END_SRC
+
+****** The function.
+#+BEGIN_SRC elisp
+        (defun brust/LaTeX/init (name lang doc math bib)
+          (interactive (list (ido-read-file-name "What file (all path)?  " nil "master.tex")
+                             (ido-completing-read "Idiome?  " (list "Eng" "Cat" "Spain"))
+                             (ido-completing-read "Doc type?  " (list "article" "book" "bemmar"))
+                             (y-or-n-p-with-timeout "It's math? Say 'n' or wait.  " 3 t)
+                             (y-or-n-p-with-timeout "Do you want the default bib? Say 'n' or wait.  " 3 t)))
+          (let ((dir (file-name-directory name)))
+      ;;; Standard packages.
+           (when (brust/LaTeX/copy "package.tex") 
+            (find-file (concat dir "/package.tex"))
+            (brust/LaTeX/look-for "::idiom::")
+            (if (string= lang "Eng") (insert "english")
+              (if (string= lang "Cat") (insert "catalan")
+                (insert "spanish"))
+              (goto-char (line-end-position))
+              (insert "\n\frenchspacing")))
+            (save-buffer) (kill-buffer)
+      ;;; Create the file
+            (ignore-errors (copy-file (concat brust/LaTeX/init-dir "/tamplate.tex") name))
+            (find-file name)
+      ;;; Doc type
+            (brust/LaTeX/look-for "::docType::")
+            (insert doc)
+          ;;; Math part
+            (brust/LaTeX/look-for "%%::math::")
+            (when math
+              (brust/LaTeX/copy "package-math.tex")
+              (brust/LaTeX/copy "style&command.tex")
+              (insert "\\input{package-math}\n\\input{style&command}"))
+      ;;; Bibliography
+            (brust/LaTeX/look-for "%%::bib::")
+            (when bib
+              (copy-directory (concat brust/LaTeX/init-dir "/bib")  nil t t)
+              (insert "\input{bibliography}\n\bibliography{bib/bib2,bib/ega,bib/sga,bib/semBourbaki}"))
+            (brust/LaTeX/look-for "%%::bib2::")
+            (when bib
+              (insert "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%
+  \printbibliography                             %%%\n%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"))
+            ;;; Title and author
+            (brust/LaTeX/look-for "::author::")
+            (if (y-or-n-p-with-timeout "Standard author (say 'n' of wait)? " 0.5 t)
+                (insert "Pau Brustenga Moncusí"))
+            (brust/LaTeX/look-for "::title::")
+            (save-buffer)))
+
+#+END_SRC
+******* Support functions
+******** Look for
+#+BEGIN_SRC elisp
+    (defun brust/LaTeX/look-for (str-search)
+      (goto-char (point-min))
+      (search-forward str-search nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
+
+#+END_SRC
+******** Copy
+#+BEGIN_SRC elisp
+  (defun brust/LaTeX/copy (str-copy)
+    (ignore-errors (copy-file (concat brust/LaTeX/init-dir "/" str-copy) dir)
+                   t))
+#+END_SRC
+*** Brust-env
+****** Function
+#+BEGIN_SRC elisp
+(defun LaTeX-env-brust (&optional args)
+  "Execute LaTex-environment or with argument:
+
+1. Check if current environment has end
+--- If it has end ----
+2. Change the environment with LaTeX-environment
+3. Change the label tag (e.g. lem -> prop) (if there is one)
+--- If is has no end ---
+2. Print message error"
+  (interactive "P")
+  (save-excursion
+    (let ((pt (point)) (beg 0) (end 0) env-old env-new name prefix-old prefix-new)
+      (if (not args) (LaTeX-environment nil)
+        (LaTeX-find-matching-begin)
+        (setq beg (point))
+        (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
+        (setq env-old (match-string 1))
+        (if (search-forward (concat "begin{" env-old "}") (point-max) t)
+            (setq pass (point)) (setq pass (point-max)))
+        (goto-char beg) 
+        (if (search-forward (concat "end{" env-old "}") pass t)
+            (setq end (point)) (setq end pass))
+        (if (= pass end)
+            (message "This enviroment has no end!!!")
+          (goto-char pt)
+          (LaTeX-environment t)
+          (goto-char beg)
+          (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
+          (setq env-new (match-string 1)) 
+          (goto-char beg)
+          (when (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)\}" end t)
+            (goto-char pt)
+            (setq prefix-old (match-string 1) name (match-string 2)
+                  ;; (insert prefix-old ":" name "::::" env)
+                  prefix-new (cdr (assoc env-new environment-prefix-list)))
+            ;; (insert prefix-new)
+;;;;;;;;;;;;;;;; To chage one file ;;;;;;;;;;;;;;;;                     
+            ;; (goto-char (point-min))
+            ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
+            ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
+            ;; (xah-find-replace-text)
+            ;; (brust/replace-regex-dir
+            (reftex-query-replace-document 
+             (concat "{" prefix-old ":" name "}$") ;;str1
+             (concat "{" prefix-new ":" name "}"))
+            ))))))
+
+
+#+END_SRC
+****** Names envoirments
+#+BEGIN_SRC elisp
+(defconst environment-prefix-list '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
+                                    ("proposition" . "prop") ("remark" . "rmk")
+                                    ("definition" . "def") ("theorem" . "thr")
+                                    ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
+
+#+END_SRC
+*** Word count
+#+BEGIN_SRC elisp
+  (defun brust-wc-get-word-count-list-of-current-project nil
+    (let ((project-master (expand-file-name (TeX-master-file t nil t))))
+      (with-temp-buffer
+        (call-process-shell-command
+         (concat "texcount -opt="
+                 (expand-file-name "~/.emacs.d/LaTeX/TeXcount-emacs.txt")
+                 " -dir="
+                 (file-name-directory project-master)
+                 " "
+                 project-master)
+         nil t)
+        (re-search-backward
+         "new\\([0-9]+\\)w\\([0-9]+\\)im\\([0-9]+\\)dm\\([0-9]+\\)cd\\([0-9]+\\)h\\([0-9]+\\)file" nil t)
+        (cl-loop for xx from 1 to 6
+                 if (= xx 3) collect (number-to-string (- (string-to-number (match-string-no-properties 3))
+                                                          (string-to-number (match-string-no-properties 4))))
+                 else
+                 collect (match-string-no-properties xx)))))
+
+  (defun brust-wc-save-words nil
+    (interactive)
+    (let ((wc-sat (brust-wc-get-word-count-list-of-current-project)))
+      (find-file (concat
+                  (file-name-directory (expand-file-name (TeX-master-file t nil t)))
+                  "wc-statistics.txt"))
+      (goto-char (point-max))
+      (insert "\n" (format-time-string "%x, %X, ")
+              (cl-loop for xx in wc-sat 
+                       concat (concat xx ", ")))
+      (save-buffer)
+      (kill-buffer)))
+
+  (defun brust-wc-save-words-my-thesis nil
+    (interactive)
+    (find-file "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
+    (brust-wc-save-words))
+
+
+#+END_SRC
+
+** Pdf interaction
+*** To activate pdf/tex inverse/forward search
+#+BEGIN_SRC elisp
+    (setq TeX-source-correlate-method 'synctex
+          TeX-source-correlate-mode t
+          TeX-source-correlate-start-server t)
+
+#+END_SRC
+
+*** COMMENT Use Okular to view AUCTeX-generated PDFs
+      Now, I use PDF-Tools
+****** COMMENT Intoduction
+   Okular setup: 
+   1.) Open Okular and go to...
+   2.) Settings -> Configure Okular -> Editor
+   3.) Set Editor to "Emacs client"
+   4.) Command should automatically set to: 
+   emacsclient -a emacs --no-wait +%l %f
+   Then just SHIFT + mouse open emacs at the correct line
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+****** COMMENT Setting
+#+BEGIN_SRC elisp
+  (when (require 'latex nil t)
+   (push '("%(masterdir)" (lambda nil (file-truename (TeX-master-directory))))
+            TeX-expand-list)
+   (push '("Okular" "okular --unique %o#src:%n%(masterdir)./%b")
+            TeX-view-program-list)
+   (push '(output-pdf "Okular") TeX-view-program-selection))
+  
+#+END_SRC
+
+*** Use PDF-tools to open PDF files
+#+BEGIN_SRC elisp
+    (when (require 'latex nil t)
+      (push '(output-pdf "PDF Tools") TeX-view-program-selection))
+
+#+END_SRC
+
+*** Update PDF buffers after successful LaTeX runs
+#+BEGIN_SRC elisp
+    (add-hook 'TeX-after-compilation-finished-functions
+              'TeX-revert-document-buffer)
+    ;; Obsolete hook::
+    ;;(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+    ;;             #'TeX-revert-document-buffer)
+
+#+END_SRC
+
+*** COMMENT Split horizontally when the screen lets
+    It's useless, better use 'switch split windows' in the hook!
+#+BEGIN_SRC elisp
+  (defvar pdf-minimal-width 72
+    "Minimal width of a window displaying a pdf.
+  If an integer, number of columns.  If a float, fraction of the
+  original window.")
+
+  (defvar pdf-split-width-threshold 120
+    "Minimum width a window should have to split it horizontally
+  for displaying a pdf in the right.")
+
+  (defun pdf-split-window-sensibly (&optional window)
+    "A version of `split-window-sensibly' for pdfs.
+  It prefers splitting horizontally, and takes `pdf-minimal-width'
+  into account."
+    (let ((window (or window (selected-window)))
+          (width (- (if (integerp pdf-minimal-width)
+                        pdf-minimal-width
+                      (round (* pdf-minimal-width (window-width window)))))))
+      (or (and (window-splittable-p window t)
+               ;; Split window horizontally.
+               (with-selected-window window
+                 (split-window-right width)))
+          (and (window-splittable-p window)
+               ;; Split window vertically.
+               (with-selected-window window
+                 (split-window-below)
+                 (delete-other-windows)))
+          (and (eq window (frame-root-window (window-frame window)))
+               (not (window-minibuffer-p window))
+               ;; If WINDOW is the only window on its frame and is not the
+               ;; minibuffer window, try to split it vertically disregarding
+               ;; the value of `split-height-threshold'.
+               (let ((split-height-threshold 0))
+                 (when (window-splittable-p window)
+                   (with-selected-window window
+                     (split-window-below)
+                     (delete-other-windows))))))))
+
+  (defun display-buffer-pop-up-window-pdf-split-horizontally (buffer alist)
+    "Call `display-buffer-pop-up-window', using `pdf-split-window-sensibly'
+  when needed."
+    (let ((split-height-threshold nil)
+     (split-width-threshold pdf-split-width-threshold)
+     (split-window-preferred-function #'pdf-split-window-sensibly))
+      (display-buffer-pop-up-window buffer alist)))
+
+  (add-to-list 'display-buffer-alist '("\\.pdf\\(<[^>]+>\\)?$" . (display-buffer-pop-up-window-pdf-split-horizontally)))
+
+#+END_SRC
+
+
+* cdLaTeX
+
+** Initial config
+
+#+BEGIN_SRC elisp
+  (setq cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
+  ;;(setq cdlatex-math-modify-prefix [f7])
+
+#+END_SRC
+
+** Envirments alist definition
+
+#+BEGIN_SRC elisp
+  (mapc (lambda (xx) (cl-pushnew xx cdlatex-env-alist))
+
+        '(("axiom"        "\\begin{axiom}\\label{axm:?}\n\n\\end{axiom}\n"            nil)
+          ("theorem"      "\\begin{theorem}\\label{thr:?}\n\n\\end{theorem}\n"        nil)
+          ("proof"        "\\begin{proof}\n?\n\\end{proof}"                           nil)
+          ("lemma"        "\\begin{lemma}\\label{lem:?}\n\n\\end{lemma}"              nil)
+          ("proposition"  "\\begin{proposition}\\label{prop:?}\n\n\\end{proposition}" nil)
+          ("remark"       "\\begin{remark}\\label{rmk:?}\n\n\\end{remark}"            nil)
+          ("notation"     "\\begin{notation}\\label{not:}\n?\n\\end{notation}"        nil)
+          ("definition"   "\\begin{definition}\\label{def:?}\n\n\\end{definition}"    nil)
+          ("frame"        "\\begin{frame}\n\\frametitle{?}\n\n\\end{frame}"           nil)
+          ("block"        "\\begin{block}{?}\n\n\\end{block}"                         nil)
+          ("corollary"    "\\begin{corollary}\\label{coro:?}\n\n\\end{corollary}"     nil)))
+
+#+END_SRC
+
+** Snippets =TAB=
+   List of lists each with: (see cdlatex-command-alist)
+   (key description text-to-insert function-called arguments txt-p math-p)
+   
+   A full list of defined abbreviations is available with the command
+   `C-c ?' (`cdlatex-command-help').
+*** Math mode
+#+BEGIN_SRC elisp
+  (cl-loop
+   for xx in
+   '(
+     ("id"    "Insert Id_{}"          "\\Id_{?}"        cdlatex-position-cursor   nil nil t)
+     ("bl"    "Insert bl_{}"          "\\bl_{?}"        cdlatex-position-cursor   nil nil t)
+     ("Bl"    "Insert Bl_{}()"        "\\Bl_{?}()"      cdlatex-position-cursor   nil nil t)
+     ("hom"   "Insert Hom_{}()"       "\\Hom_{?}()"     cdlatex-position-cursor   nil nil t)
+     ("im"    "Insert im_{}"          "\\im_{?}"        cdlatex-position-cursor   nil nil t)
+     ("sch"   "Insert Sch"            "\\Sch"           cdlatex-position-cursor   nil nil t)
+     ("set"   "Insert Set"            "\\Set"           cdlatex-position-cursor   nil nil t)
+     ("dar"   "Insert dar{} in tikz"  "\\dar{?}"        cdlatex-position-cursor   nil nil t)
+     ("uar"   "Insert uar{} in tikz"  "\\uar{?}"        cdlatex-position-cursor   nil nil t)
+     ("rar"   "Insert rar{} in tikz"  "\\rar{?}"        cdlatex-position-cursor   nil nil t)
+     ("lar"   "Insert lar{} in tikz"  "\\lar{?}"        cdlatex-position-cursor   nil nil t)
+     ("dars"  "Insert dar[swap]{}"    "\\dar[swap]{?}"  cdlatex-position-cursor   nil nil t)
+     ("uars"  "Insert uar[swap]{}"    "\\uar[swap]{?}"  cdlatex-position-cursor   nil nil t)
+     ("rars"  "Insert rar[swap]{}"    "\\rar[swap]{?}"  cdlatex-position-cursor   nil nil t)
+     ("lars"  "Insert lar[swap]{}"    "\\lar[swap]{?}"  cdlatex-position-cursor   nil nil t)
+     )
+   do (cl-pushnew xx cdlatex-command-alist))
+
+#+END_SRC
+*** Text mode
+#+BEGIN_SRC elisp
+  (cl-loop for xx in
+           '(("ci" "Insert citation" "" org-ref-helm-insert-cite-link nil t nil))
+           do (cl-pushnew xx cdlatex-command-alist))
+
+#+END_SRC
+
+*** Envirments
+#+BEGIN_SRC elisp
+  (cl-loop 
+   for xx in 
+   '(
+     ("axm"   "Insert axiom env"       ""   cdlatex-environment ("axiom")         t nil)
+     ("thr"   "Insert theorem env"     ""   cdlatex-environment ("theorem")       t nil)
+     ("prf"   "Insert proof env"       ""   cdlatex-environment ("proof")         t nil)
+     ("lem"   "Insert lemma env"       ""   cdlatex-environment ("lemma")         t nil)
+     ("prop"  "Insert proposition env" ""   cdlatex-environment ("proposition")   t nil)
+     ("rmk"   "Insert remark env"      ""   cdlatex-environment ("remark")        t nil)
+     ("not"   "Insert notation env"    ""   cdlatex-environment ("notation")      t nil)
+     ("def"   "Insert definition env"  ""   cdlatex-environment ("definition")    t nil)
+     ("coro"  "Insert corollary env"   ""   cdlatex-environment ("corollary")     t nil)
+     )
+   do (cl-pushnew xx cdlatex-command-alist))
+
+#+END_SRC
+
+*** From text mode to math mode
+#+BEGIN_SRC elisp
+  (cl-loop
+   for xx in
+   '(
+     ("apl"   "Insert \\(\\apl...\\)" "\\(\\apl{?}{}\\)"                cdlatex-position-cursor   nil t   nil)
+     ("oapl"   "Insert \\(\\overapl...\\)" "\\(\\overapl{?}{}{}\\)"     cdlatex-position-cursor   nil t   nil)
+     ("uapl"   "Insert \\(\\underapl...\\)" "\\(\\underapl{?}{}{}\\)"   cdlatex-position-cursor   nil t   nil)
+     ("4"     "Insert \\(...\\)"      "\\(?\\)"                         cdlatex-position-cursor   nil t   nil)
+     ;;("$"     "Insert \\(...\\)"      "\\(?\\)"                       cdlatex-position-cursor   nil t   nil)
+     ("44"    "Insert \\[...\\]"      "\\[\n  ?\n\\]"                   cdlatex-position-cursor   nil t   nil)
+     ("tik"   "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
+      cdlatex-position-cursor   nil t   nil)
+     ("caseeq"    "Insert a `f(x) = {...' construct"
+      "\\left\\{\n\\begin{array}{l@{\\quad:\\quad}l}\n? & \\\\\n & \n\\end{array}\\right."
+      cdlatex-position-cursor nil nil t)
+     )
+   do (cl-pushnew xx cdlatex-command-alist))
+
+#+END_SRC
+    
+*** COMMENT Default ones
+#+BEGIN_SRC elisp
+    (mapc (lambda (xx) (cl-pushnew xx cdlatex-command-alist))
+          '(("pref"  "Make page reference"                      "" reftex-reference     nil    t  t)
+            ("ref"   "Make reference"                           "" reftex-reference     nil    t  t)
+            ("lbl"   "Insert  label"                            "" reftex-label         nil    t  t)
+            ("it"    "New item in current environment"          "" cdlatex-item         nil    t  t)
+            
+            ("beg"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
+            ("env"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
+            ("ite"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
+            ("itm"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
+            ("enu"   "Insert an ENUMERATE environment template" "" cdlatex-environment ("enumerate")  t   nil)
+            ("eq"    "Insert an EQUATION environment template"  "" cdlatex-environment ("equation")   t   nil)
+            ("eqn"   "Insert an EQUATION environment template"  "" cdlatex-environment ("eqnarray")   t   nil)
+            ("ali"   "Insert an ALIGN environment template"     "" cdlatex-environment ("align")          t  nil)
+            ("ali*"  "Insert an ALIGN* environment template"    "" cdlatex-environment ("align*")      t  nil)
+            ("alit"  "Insert an ALIGNAT environment template"   "" cdlatex-environment ("alignat")     t  nil)
+            ("alit*" "Insert an ALIGNAT* environment template"  "" cdlatex-environment ("alignat*")    t  nil)
+            ("xal"   "Insert a XALIGNAT environment template"   "" cdlatex-environment ("xalignat")    t  nil)
+            ("xal*"  "Insert a XALIGNAT* environment template"  "" cdlatex-environment ("xalignat*")   t  nil)
+            ("xxa"   "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+            ("xxa*"  "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+            ("mul"   "Insert a MULTINE environment template"    "" cdlatex-environment ("multline")    t  nil)
+            ("mul*"  "Insert a MULTINE* environment template"   "" cdlatex-environment ("multline*")   t  nil)
+            ("gat"   "Insert a GATHER environment template"     "" cdlatex-environment ("gather")      t  nil)
+            ("gat*"  "Insert a GATHER* environment template"    "" cdlatex-environment ("gather*")     t  nil)
+            ("fla"   "Insert a FLALIGN environment template"    "" cdlatex-environment ("flalign")     t  nil)
+            ("fla*"  "Insert a FLALIGN* environment template"   "" cdlatex-environment ("flalign*")    t  nil)
+            ("fg"    "Insert a FIGURE environment template"     "" cdlatex-environment ("figure")      t  nil)
+
+            ("chap"  "Insert a \\chapter{} statement"           "" LaTeX-section 1  t   nil)
+            ("sn"    "Insert a \\section{} statement"           "" LaTeX-section 2  t   nil)
+            ("sec"   "Insert a \\section{} statement"           "" LaTeX-section 2  t   nil)
+            ("ss"    "Insert a \\subsection{} statement"        "" LaTeX-section 3  t   nil)
+            ("ssec"  "Insert a \\subsection{} statement"        "" LaTeX-section 3  t   nil)
+            ("sss"   "Insert a \\subsubsection{} statement"     "" LaTeX-section 4  t   nil)
+            ("sssec" "Insert a \\subsubsection{} statement"     "" LaTeX-section 4  t   nil)
+            ("pf"    "Insert a \\paragraph{} statement"         "" LaTeX-section 5  t   nil)
+            ("sp"    "Insert a \\subparagraph{} statement"      "" LaTeX-section 6  t   nil)
+
+            ("fn"         "Make a footnote"                "\\footnote{?}"         cdlatex-position-cursor nil t   nil)
+            ("cl"         "Insert \\centerline"            "\\centerline{?}"       cdlatex-position-cursor nil t   nil)
+
+            ("nonum"      "Insert \\nonumber\\\\"          "\\nonumber\\\\\n"      nil nil nil t)
+            ("qq"         "Insert \\quad"                  "\\quad"                nil nil t t)
+            ("qqq"        "Insert \\qquad"                 "\\qquad"               nil nil t t)
+
+            ("inc" "Insert \\includegraphics with file name"
+             "\\includegraphics[]{?}" (lambda ()
+                                        (cdlatex-position-cursor)
+                                        (call-interactively 'cdlatex-insert-filename)
+                                        (forward-char 1))
+             nil nil)
+            ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
+            ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
+            ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
+            ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
+            ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
+            
+            ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
+            ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
+            ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+            ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+  ))
+   
+
+#+END_SRC
+
+** Modify keys ='=
+
+#+BEGIN_SRC elisp
+(setq cdlatex-math-modify-alist
+
+      '(
+        ;; 0. key:      The character that is the key for a the accent.
+        ;; 1. mathcmd:  The LaTeX command associated with the accent in math mode
+        ;; 2. textcmd:  The LaTeX command associated with the accent in text mode
+        ;; 3. type:     t   if command with argument (e.g. \\tilde{a}).
+        ;;              nil if style (e.g. {\\cal a}).
+        ;; 4. rmdot:    t   if the dot on i and j has to be removed.
+        ;; 5. it        t   if italic correction is required."
+        ( ?r    "\\mathscr"           nil        t   nil nil )
+        ( ?o    "\\op"                nil        t   nil nil )
+        ( ?s    "\\s"                 nil        t   nil nil )
+        ( ?\.   "\\dot"               nil        t   t   nil )
+        ( ?\:   "\\ddot"              nil        t   t   nil )
+        ( ?\~   "\\tilde"             nil        t   t   nil )
+        ( ?N    "\\widetilde"         nil        t   t   nil )
+        ( ?^    "\\hat"               nil        t   t   nil )
+        ( ?H    "\\widehat"           nil        t   t   nil )
+        ( ?\-   "\\bar"               nil        t   t   nil )
+        ( ?T    "\\overline"          nil        t   nil nil )
+        ( ?\_   "\\underline"         nil        t   nil nil )
+        ( ?\{   "\\overbrace"         nil        t   nil nil )
+        ( ?\}   "\\underbrace"        nil        t   nil nil )
+        ( ?\>   "\\vec"               nil        t   t   nil )
+        ( ?/    "\\grave"             nil        t   t   nil )
+        ( ?\\   "\\acute"             nil        t   t   nil )
+        ( ?v    "\\check"             nil        t   t   nil )
+        ( ?u    "\\breve"             nil        t   t   nil )
+        ( ?m    "\\mbox"              nil        t   nil nil )
+        ( ?c    "\\mathcal"           nil        t   nil nil )
+        ;; ( ?r    "\\mathrm"            "\\textrm" t   nil nil )
+        ( ?i    "\\mathit"            "\\textit" t   nil nil )
+        ( ?l    nil                   "\\textsl" t   nil nil )
+        ( ?b    "\\mathbb"            "\\textbf" t   nil nil )
+        ( ?E    "\\mathem"            "\\emph"   t   nil nil )
+        ( ?e    "\\mathem"            "\\emph"   t   nil nil )
+        ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
+        ( ?f    "\\mathfrak"          "\\textsf" t   nil nil )
+        ( ?0    "\\textstyle"         nil        nil nil nil )
+        ( ?1    "\\displaystyle"      nil        nil nil nil )
+        ( ?2    "\\scriptstyle"       nil        nil nil nil )
+        ( ?3    "\\scriptscriptstyle" nil        nil nil nil )))
+
+#+END_SRC
+
+** Math symbol list =ñ=
+
+#+BEGIN_SRC elisp
+  (setq cdlatex-math-symbol-alist
+        
+        '(;(?< ("\\leftarrow" "\\Leftarrow" "\\longleftarrow" "\\Longleftarrow"))
+          ( ?c  ("\\circ"         "\\cdot"       "\\cos"))
+          ( ?,  ("\\!:\\!"        "\\dots"       "\\bullet"))
+          ( ?.  ("\\dots"         "\\bullet"     "\\cdot"))
+          ( ?a  ("\\alpha"        "\\forall"         ))
+          ( ?A  ("\\Alpha"        "\\aleph"))
+          ( ?b  ("\\beta"           ))
+          ( ?B  ("\\Beta"            ))
+          ( ?C  (""                 ""                "\\arccos"))
+          ( ?d  ("\\delta"          "\\partial"))
+          ( ?D  ("\\Delta"          "\\nabla"))
+          ( ?e  ("\\varepsilon"     "\\epsilon"    "\\exp"))
+          ( ?E  ("\\exists"         ""                "\\ln"))
+          ( ?f  ("\\phi"            "\\varphi"))
+          ( ?F  (""                 ))
+          ( ?g  ("\\gamma"          ""                "\\lg"))
+          ( ?G  ("\\Gamma"          ""                "10^{?}"))
+          ( ?h  ("\\eta"            "\\hbar"))
+          ( ?H  (""                 ))
+          ( ?i  ("\\in"           "i=1,\\dots,n"))
+          ( ?I  ("\\im"             "\\Im"))
+          ;; ( ?j  ("\\s"                 "\\jmath"))
+          ( ?J  (""                 ))
+          ( ?k  ("\\kappa"          ))
+          ( ?K  (""                 ))
+          ( ?l  ("\\lambda"         "\\ell"           "\\ln"))
+          ( ?L  ("\\Lambda"         ))
+          ( ?m  ("\\mu"             ))
+          ( ?M  (""                 ))
+          ( ?n  ("\\nu"             "\\not"           "\\ln"))
+          ( ?N  ("\\nabla"          ""                "\\exp"))
+          ( ?o  ("\\omega"          ))
+          ( ?O  ("\\Omega"          "\\mho"))
+          ( ?p  ("\\pi"             "\\varpi"))
+          ( ?P  ("\\Pi"             ))
+          ( ?q  ("\\theta"          "\\vartheta"))
+          ( ?Q  ("\\Theta"          ))
+          ( ?r  ("\\rho"            "\\varrho"))
+          ( ?R  (""                 "\\Re"))
+          ( ?s  ("\\sigma"          "\\varsigma"      "\\sin"))
+          ( ?S  ("\\Sigma"          ""                "\\arcsin"))
+          ( ?t  ("\\tau"            ""                "\\tan"))
+          ( ?T  (""                 ""                "\\arctan"))
+          ( ?u  ("\\upsilon"        ))
+          ( ?U  ("\\Upsilon"        ))
+          ( ?v  ("\\vee"            ))
+          ( ?V  ("\\Phi"            ))
+          ( ?w  ("\\xi"             ))
+          ( ?W  ("\\Xi"             ))
+          ( ?x  ("\\chi"   "x_1,\\dots,x_n" "x_0,\\dots,x_n"          ))
+          ( ?X  (""                 ))
+          ( ?y  ("\\psi"   "y_1,\\dots,y_m" "y_0,\\dots,y_m"          ))
+          ( ?Y  ("\\Psi"            ))
+          ( ?z  ("\\zeta"  "z_1,\\dots,z_k" "z_0,\\dots,z_k"        ))
+          ( ?Z  (""                 ))
+          ( ?   (""                 ))
+          ( ?0  ("\\emptyset"       ))
+          ( ?1  ("^{-1}"            "^{*}"))
+          ( ?2  ("^{*}"             ))
+          ( ?3  ("\\bigcup"         "\\bigcap"))
+          ;;  ( ?4  (""                 ))
+          ( ?5  (""                 ))
+          ( ?6  (""                 ))
+          ( ?7  (""                 ))
+          ( ?8  ("\\infty"          ))
+          ( ?9  (""                 ))
+          ( ?!  ("\\neg"            ))
+          ( ?@  (""                 ))
+          ( ?#  (""                 ))
+          ( ?$  (""                 ))
+          ( ?%  (""                 ))
+          ( ?^  ("\\uparrow"        ))
+          ( ?&  ("\\wedge"          ))
+          ( ?\? (""                 ))
+          ( ?~  ("\\approx"         "\\simeq"))
+          ( ?_  ("\\downarrow"      ))
+          ( ?*  ("\\cup" "\\cap" ))
+          ( ?-  ("\\varrightarrow" "\\varleftarrow" ))
+          ( ?+  ("\\times" "\\otimes"          ))
+          ( ?/  ("\\not"            ))
+          ( ?|  ("\\mapsto"         "\\longmapsto"))
+          ( ?\\ ("\\setminus"       ))
+          ( ?\" (""                 ))
+          ( ?=  ("\\cong" "\\Longleftrightarrow"))
+          ( ?\( ("\\langle"         ))
+          ( ?\) ("\\rangle"         ))
+          ( ?\[ ("\\Leftarrow"      "\\Longleftarrow"))
+          ( ?\] ("\\Rightarrow"     "\\Longrightarrow"))
+          ( ?{  ("\\subseteq"       "\\subset"))
+          ( ?}  ("\\supseteq"       "\\supset"))
+          ( ?<  ("\\le"     "\\min"))
+          ( ?>  ("\\ge"    "\\max"))
+          ( ?`  (""                 ))
+          ( ?'  ("\\prime"          ))))
+
+#+END_SRC
+
+** Improvements
+#+BEGIN_SRC elisp
+  (defadvice cdlatex-sub-superscript (around not-add-dollar activate)
+    (if (texmathp) ad-do-it
+      (insert (event-basic-type last-command-event))))
+
+  (defun brust/cdlatex-free-keys nil
+    (define-key cdlatex-mode-map (kbd "'") nil)
+    (define-key cdlatex-mode-map (kbd "`") nil))
+
+  (add-hook 'LaTeX-mode-hook 'brust/cdlatex-free-keys t)
+
+  (defadvice cdlatex-math-symbol (around out-math activate)
+    (if (texmathp) ad-do-it
+      ad-do-it
+      (save-excursion
+        (search-backward "$")
+        (replace-match "\\(" nil t))
+      (save-excursion (close-quoted-open-paren 1 0))))
+
+
+  ;;
+  ;;   (defadvice cdlatex-dollar (around new-math activate)
+  ;;     ad-do-it
+  ;;     (save-excursion 
+  ;;       (when (texmathp)
+  ;;         (let ((env (car texmathp-why)))
+  ;;           (cond
+  ;;            ((string= env "$")
+  ;;             ((search-backward "$") ;; "\\$\\([^\\$]+\\)\\$")
+  ;;              (replace-match "\(" nil t) ;; \\1\\\\)"))
+  ;;              ((string= env "$$")
+  ;;               (search-backward "$$") ;; \\$\\$\\([^$]+\\)\\$\\$")
+  ;;               (replace-match "\[\\n  ") ;; \\1\\n\\\\)")))))))
+  ;;               ))))))))
+
+
+  ;; (ad-unadvise 'cdlatex-dollar)
+  ;;     (if (texmathp)
+  ;; (cond
+  ;;  ((string= (car texmathp-why) "$")
+
+  ;;        
+  ;;        )
+  ;;      (goto-char (cdr texmathp-why))
+  ;;    (re-search-forward (format "%s\([.]+\)%s" (car texmathp-why) (car texmathp-why)) nil t)
+  ;;    (replace-match 
+
+
+  ;;    (save-excursion
+  ;;      (if (search-backward "$$" (- (point) 100) t)
+  ;;          (replace-match "\[")
+  ;;        (when (search-backward "$" (- (point) 100) t)
+  ;;          (replace-match "\\(")))
+  ;;      (if (search-forward "$$" (- (point) 100) t)
+  ;;          (replace-match "\]")
+  ;;        (when (search-forward "$" (+ (point) 100) t)
+  ;;          (replace-match "\\)")))))
+
+
+  ;;(defadvice cdlatex-math-symbol (around use-out-math activate)
+  ;;  (if (texmathp) ad-do-it
+  ;;    (cdlatex-math-modify)))
+  ;;
+  ;;(defadvice cdlatex-math-modify (around use-only-in-math activate)
+  ;;  (if (texmathp) ad-do-it
+  ;;    (insert "'")))
+
+  ;;    (ad-unadvise 'cdlatex-math-symbol)
+#+END_SRC
+
+
+
+
+* LaTeX-extra
+** Introductoin
+   "Defines extra commands and keys for LaTeX-mode.
+ To activate just call
+     (add-hook 'LaTeX-mode-hook #'latex-extra-mode)
+ The additions of this package fall into the following three
+ categories:
+ 1-Key Compilation
+ =================
+ Tired of hitting C-c C-c 4 times (latex, bibtex, latex, view) for
+ the document to compile? This defines a much needed command that does
+ *everything* at once, and even handles compilation errors!
+   C-c C-a `latex/compile-commands-until-done'
+ Navigation
+ ==========
+ Five new keybindings are defined for navigating between
+ sections/chapters. These are meant to be intuitive to people familiar
+ with `org-mode'.
+   C-c C-n `latex/next-section'
+     Goes forward to the next section-like command in the buffer (\part,
+     \chapter, \(sub)section, or \(sub)paragraph, whichever comes first).
+   C-c C-u `latex/up-section'
+     Goes backward to the previous section-like command containing this
+     one. For instance, if you're inside a subsection it goes up to the
+     section that contains it.
+   C-c C-f `latex/next-section-same-level'
+     Like next-section, except it skips anything that's \"lower-level\" then
+     the current one. For instance, if you're inside a subsection it finds
+     the next subsection (or higher), skipping any subsubsections or
+     paragraphs.
+   C-M-f `latex/forward-environment'
+     Skip over the next environment, or exit the current one, whichever
+     comes first.
+   C-M-e `latex/end-of-environment'
+     Exit the current environment, and skip over some whitespace
+     afterwards. (Like `LaTeX-find-matching-end', but a little more useful.)
+   C-M-b `latex/backward-environment'
+   C-M-a `latex/beginning-of-environment'
+   C-c C-p `latex/previous-section'
+   C-c C-b `latex/previous-section-same-level'
+     Same as above, but go backward.
+ Whitespace Handling
+ ===================
+ `latex-extra.el' improves `auto-fill-mode' so that it only applies to
+ text, not equations. To use this improvement, just activate
+ `auto-fill-mode' as usual.
+ It also defines a new command:
+   C-c C-q `latex/clean-fill-indent-environment'
+     Completely cleans up the entire current environment. This involves:
+     1. Removing extraneous spaces and blank lines.
+     2. Filling text (and only text, not equations).
+     3. Indenting everything."
+** Packages
+#+BEGIN_SRC elisp
+
+(require 'tex)
+(require 'latex)
+(require 'tex-buf)
+(require 'texmathp)
+(require 'cl-lib)
+(require 'outline)
+(require 'preview)
+
+#+END_SRC
+
+** Auxiliar functions
+#+BEGIN_SRC elisp
+(defun latex//replace-regexp-everywhere (reg rep &optional start end)
+  "Version of `replace-regexp' usable in lisp code."
+  (goto-char (or start (point-min)))
+  (while (re-search-forward reg end t)
+    (replace-match rep nil nil)))
+
+
+(defun latex/beginning-of-line ()
+  "Do `LaTeX-back-to-indentation' or `beginning-of-line'."
+  (interactive)
+  (let ((o (point)))
+    (if visual-line-mode
+        (beginning-of-visual-line)
+      (beginning-of-line))
+    (let ((beg (point)))
+      (skip-chars-forward "[:blank:]")
+      (when (= (point) o)
+        (goto-char beg)))))
+
+
+(defun latex//bounds-of-current-thing ()
+  "Return (begin . end) of current section or environment.
+Move point to begin."
+  (interactive)
+  (let ((begin (save-excursion (and (ignore-errors (LaTeX-find-matching-begin)) (point))))
+        (header (save-excursion (ignore-errors (latex//impl-previous-section)))))
+    (if (or begin header)
+        (progn
+          (goto-char
+           (max (or begin (point-min))
+                (or header (point-min))))
+          (cons (point)
+                (if (looking-at-p (rx "\\begin" word-end))
+                    (save-excursion
+                      (latex/forward-environment 1)
+                      (skip-chars-backward "\n\r[:blank:]")
+                      (point))
+                  (save-excursion
+                    (let ((l (point)))
+                      (latex/next-section-same-level 1)
+                      (if (= l (point)) (point-max) l))))))
+      (cons (point-min) (point-max)))))
+
+
+
+#+END_SRC
+** Navigation
+*** Environment navigation
+
+#+BEGIN_SRC elisp
+(defun latex//found-undesired-string (dir)
+  "Decide whether the last search found the desired string."
+  (if (> dir 0)
+      (looking-back "begin" (point-min))
+    (looking-at "\\\\end")))
+
+(defun latex//forward-arguments ()
+  "Skip forward over the arguments."
+  (when (looking-at "\\[") (forward-sexp 1))
+  (when (looking-at "{") (forward-sexp 1)))
+
+(defun latex//maybe-push-mark (&optional do-push)
+  "push-mark, unless it is active."
+  (unless (region-active-p)
+    (when do-push (push-mark))))
+
+(defun latex/end-of-environment (&optional N do-push-mark)
+  "Move just past the end of the current latex environment.
+Leaves point outside the environment.
+Similar to `LaTeX-find-matching-end', but it accepts
+numeric (prefix) argument N and skips some whitespace after the
+closing \"\\end\".
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (latex//maybe-push-mark do-push-mark)
+  (let ((start (point))
+        (count (abs N))
+        (direction 1)
+        (movement-function 'LaTeX-find-matching-end))
+    (when (< N 0)
+      (setq direction -1)
+      (setq movement-function 'LaTeX-find-matching-begin))
+    (while (and (> count 0) (funcall movement-function))
+      (cl-decf count))
+    (when (> direction 0)
+      (latex//forward-arguments)
+      (skip-chars-forward "[:blank:]")
+      (when (looking-at "\n")
+        (forward-char 1)
+        (skip-chars-forward "[:blank:]")))
+    ;; Return t or nil
+    (cl-case count
+      (0 t)
+      (1 (message "Reached the end.") nil)
+      (t (if (> direction 0)
+             (error "Unclosed \\begin?")
+           (error "Unopened \\end?"))))))
+
+(defun latex/forward-environment (&optional N do-push-mark)
+  "Move to the \\end of the next \\begin, or to the \\end of the current environment (whichever comes first) N times.
+Never goes into deeper environments.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p")
+  (latex//maybe-push-mark do-push-mark)
+  (let ((start (point))
+        (count (abs N))
+        (direction (if (< N 0) -1 1)))
+    (while (and (> count 0)
+                (re-search-forward "\\\\\\(begin\\|end\\)\\b"
+                                   nil t direction))
+      (cl-decf count)
+      (if (latex//found-undesired-string direction)
+          (unless (latex/end-of-environment direction)
+            (error "Unmatched \\begin?"))
+        (latex//forward-arguments)))))
+
+(defun latex/beginning-of-environment (&optional N do-push-mark)
+  "Move to the beginning of the current latex environment.
+Leaves point outside the environment.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (latex/end-of-environment (- N) do-push-mark))
+
+(defun latex/backward-environment (&optional N do-push-mark)
+  "Move to the \\begin of the next \\end, or to the \\begin of the current environment (whichever comes first) N times.
+Never goes into deeper environments.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p")
+  (latex/forward-environment (- N) do-push-mark))
+
+#+END_SRC
+
+
+*** Section navigation
+#+BEGIN_SRC elisp
+(defcustom latex/section-hierarchy
+  '("\\\\headerbox\\_>"
+    "\\\\subparagraph\\_>"
+    "\\\\paragraph\\_>"
+    "\\\\subsubsection\\_>"
+    "\\\\subsection\\_>"
+    "\\\\section\\_>"
+    "\\\\chapter\\_>"
+    "\\\\part\\_>"
+    ;; "\\\\maketitle\\_>"
+    "\\\\appendix\\_>\\|\\\\\\(begin\\|end\\){document}"
+    "\\\\documentclass\\_>"
+    )
+  "List of regexps which define what a section can be.
+Ordered from deepest to highest level."
+  :type '(repeat string)
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.8"))
+
+(defun latex/next-section (n &optional do-push-mark)
+  "Move N (or 1) headers forward.
+Header stands for any string listed in `latex/section-hierarchy'.
+Negative N goes backward.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (goto-char (latex//find-nth-section-with-predicate n (lambda (&rest _) t) do-push-mark)))
+
+(defun latex/previous-section (n &optional do-push-mark)
+  "Move N (or 1) headers backward.
+Header stands for any string listed in `latex/section-hierarchy'.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (goto-char (line-beginning-position))
+  (when (latex//header-at-point)
+    (forward-char -1))
+  (latex/next-section (- (- n 1)) do-push-mark))
+
+(defun latex/up-section (n &optional do-push-mark)
+  "Move backward to the header that contains the current one.
+Header stands for any string listed in `latex/section-hierarchy'.
+With prefix argument N, goes that many headers up the hierarchy.
+Negative N goes forward, but still goes \"up\" the hierarchy.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (goto-char (latex//find-nth-section-with-predicate (- n) 'latex/section< do-push-mark)))
+
+(defun latex/next-section-same-level (n &optional do-push-mark)
+  "Move N (or 1) headers forward.
+Header stands for any string listed in `latex/section-hierarchy'.
+Negative N goes backward.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active.
+The default binding for this key (C-c C-f) overrides a binding in
+`LaTeX-mode-map' used for inserting fonts (which is moved to
+C-c f). See the variable `latex/override-font-map' for more
+information (and how to disable this)."
+  (interactive "p\nd")
+  (goto-char (latex//find-nth-section-with-predicate n 'latex/section<= do-push-mark)))
+
+(defun latex/previous-section-same-level (n &optional do-push-mark)
+  "Move N (or 1) headers backward.
+Header stands for any string listed in `latex/section-hierarchy'.
+DO-PUSH-MARK defaults to t when interactive, but mark is only
+pushed if region isn't active."
+  (interactive "p\nd")
+  (latex/next-section-same-level (- n) do-push-mark))
+
+(defun latex//impl-previous-section ()
+  "Find the previous header, avoiding dependencies and chaining.
+Used for implementation."
+  (let ((dest
+         (save-match-data
+           (save-excursion
+             (when (looking-at "\\\\") (forward-char 1))
+             (when (search-forward-regexp (latex/section-regexp) nil :noerror -1)
+               (match-beginning 0))))))
+    (if dest (goto-char dest) nil)))
+
+(defun latex//find-nth-section-with-predicate (n pred do-push-mark)
+  "Find Nth header satisfying predicate PRED, return the start of last match.
+If this function fails, it returns original point position (so
+you can just call it directly inside `goto-char').
+PRED is the symbol to a function taking two strings.
+Point will be moved up until the first header found. That is
+taken as the \"previous-header\". Then, the following steps will
+be repeated until PRED returns non-nil (abs N) times:
+1. Point will move to the next header (in the direction
+determined by the positivity of N.
+2. PRED will be used to compare each this header with
+\"previous-header\". It is run as:
+  (PRED PREVIOUS-HEADER CURRENT-HEADER)
+3. If PRED returned true, the current header is now taken as
+\"previous-header\", otherwise it is ignored."
+  (let* ((direction (if (> n 0) 1 -1))
+         (amount (* n direction))
+         (hap (latex//header-at-point))                       ;header at point
+         (is-on-header-p hap)
+         (result
+          (save-match-data
+            (save-excursion
+              (if (or is-on-header-p (latex//impl-previous-section))
+                  (progn
+                    (setq hap (latex//header-at-point))
+                    (when (looking-at "\\\\")
+                      (unless (or (eobp) (= amount 0))
+                        (forward-char 1)))
+                    (while (and (> amount 0)
+                                (search-forward-regexp
+                                 (latex/section-regexp)
+                                 nil :noerror direction))
+                      (save-match-data
+                        (when (eval (list pred hap (latex//header-at-point)))
+                          (setq hap (latex//header-at-point))
+                          (cl-decf amount))))
+                    (if (= amount 0)
+                        ;; Finished moving
+                        (match-beginning 0)
+                      ;; Didn't finish moving
+                      (if (= amount n)
+                          (message "No sections %s! (satisfying %S)"
+                                   (if (> direction 0) "below" "above") pred)
+                        (message "Reached the %s."
+                                 (if (> direction 0) "bottom" "top")))))
+                (if (< direction 0)
+                    (goto-char (point-min))
+                  (when (search-forward-regexp
+                         (latex/section-regexp) nil :noerror direction)
+                    (match-beginning 0))))))))
+    (if (null (number-or-marker-p result))
+        (point)
+      (latex//maybe-push-mark do-push-mark)
+      result)))
+
+(defun latex//header-at-point ()
+  "Return header under point or nil, as per `latex/section-hierarchy'."
+  (save-match-data
+    (save-excursion
+      (goto-char (line-beginning-position))
+      (when (looking-at (latex/section-regexp))
+        (match-string-no-properties 0)))))
+
+(defun latex/section<= (x y)
+  "Non-nil if Y comes after (or is equal to) X in `latex/section-hierarchy'."
+  (cl-member-if
+   (lambda (it) (string-match it y))
+   (cl-member-if (lambda (it) (string-match it x))
+                 latex/section-hierarchy)))
+
+(defun latex/section< (x y)
+  "Non-nil if Y comes after X in `latex/section-hierarchy'."
+  (cl-member-if
+   (lambda (it) (string-match it y))
+   (cdr-safe (cl-member-if (lambda (it) (string-match it x))
+                           latex/section-hierarchy))))
+
+(defun latex/section-regexp ()
+  "Return a regexp matching anything in `latex/section-hierarchy'."
+  (format "^\\(%s\\)" (mapconcat 'identity latex/section-hierarchy "\\|")))
+
+#+END_SRC
+
+** Autofilling
+#+BEGIN_SRC elisp
+(defun latex/auto-fill-function ()
+  "Perform auto-fill unless point is inside an unsuitable environment.
+This function checks whether point is currently inside one of the
+LaTeX environments listed in `latex/no-autofill-environments'. If
+so, it inhibits automatic filling of the current paragraph."
+  (when (latex/do-auto-fill-p)
+    (do-auto-fill)))
+
+(defcustom latex/should-auto-fill-$ t
+  "If non-nil, inline math ($x=1$) will get auto-filled like text."
+  :type 'boolean
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.3.2"))
+
+(defun latex/dont-auto-fill-p ()
+  "Decide whether to auto-fill in current environment."
+  (not (latex/do-auto-fill-p)))
+
+(defcustom latex/no-fill-environments (list "tabular")
+  "List of environments inside which we don't fill paragraphs."
+  :type '(repeat string)
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.3"))
+
+
+(defun latex/do-auto-fill-p ()
+  "Decide whether to auto-fill in current environment."
+  (and (if (texmathp)
+           (if (and (stringp (car-safe texmathp-why))
+                    (or (string= (car texmathp-why) "$")
+                        (string= (car texmathp-why) "\\(")))
+               latex/should-auto-fill-$
+             nil)
+         t)
+       (not (member (LaTeX-current-environment) latex/no-fill-environments))))
+
+;;;###autoload
+(defun latex/setup-auto-fill ()
+  "Set the function used to fill a paragraph to `latex/auto-fill-function'."
+  (interactive)
+  (setq auto-fill-function 'latex/auto-fill-function))
+
+#+END_SRC
+
+** Whitespace cleaning
+#+BEGIN_SRC elisp
+(defcustom latex/clean-up-whitespace t
+  "Type of whitespace to be erased by `latex/clean-fill-indent-environment'.
+Only excessive whitespace will be erased. That is, when there are
+two or more consecutive blank lines they are turned into one, and
+single blank lines are left untouched.
+This variable has 4 possible values:
+t:       Erases blank lines and spaces.
+'lines:  Erases blank lines only.
+'spaces: Erases spaces only.
+nil:     Doesn't erase any whitespace."
+  :type '(choice (const :tag "Erases blank lines and spaces." t)
+                 (const :tag "Erases blank lines only." lines)
+                 (const :tag "Erases spaces only." spaces)
+                 (const :tag "Doesn't erase any whitespace." nil))
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.0"))
+
+(defcustom latex/cleanup-do-fill t
+  "If nil, `latex/clean-fill-indent-environment' won't perform text-filling."
+  :type 'boolean
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.3"))
+
+(defun latex/clean-fill-indent-environment (&optional start end indent)
+  "Severely reorganise whitespace in current environment.
+ (If you want the usual binding back for \"C-c C-q\", see `latex/override-fill-map')
+Performs the following actions (on current region, environment,
+or section):
+ 1. Turn multiple new-lines and spaces into single new-lines and
+    spaces, according to `latex/clean-up-whitespace'.
+ 2. Fill text, unless `latex/cleanup-do-fill' is nil.
+ 3. Indent everything.
+It decides where to act in the following way:
+ 1. If region is active, act on it.
+ 2. If inside an environment (other than \"document\") act on it.
+ 3. If inside a section (or chapter, subsection, etc) act on it.
+ 4. If inside a document environment, act on it.
+ 5. If neither of that happened, act on entire buffer."
+  (interactive)
+  (let (bounds)
+    (save-match-data
+      (save-excursion
+        (save-restriction
+               (setq bounds
+                        (cond
+                         ((and start end) (cons start end))
+                         ((use-region-p) (cons (region-beginning) (region-end)))
+                         (t (latex//bounds-of-current-thing))))
+          (setq indent (or indent (- (point) (line-beginning-position))))
+          (narrow-to-region (car bounds) (cdr bounds))
+          ;; Whitespace
+          (goto-char (point-min))
+          (when latex/clean-up-whitespace
+            (message "Cleaning up...")
+            (unless (eq latex/clean-up-whitespace 'lines)  (latex//replace-regexp-everywhere "  +$" ""))
+            (unless (eq latex/clean-up-whitespace 'lines)  (latex//replace-regexp-everywhere "  +\\([^% ]\\)" " \\1"))
+            (unless (eq latex/clean-up-whitespace 'spaces) (latex//replace-regexp-everywhere "\n\n\n+" "\n\n")))
+          ;; Autofill
+          (goto-char (point-min))
+          (when latex/cleanup-do-fill
+            (let* ((size (number-to-string (length (number-to-string (line-number-at-pos (point-max))))))
+                   (message-string (concat "Filling line %" size "s / %" size "s.")))
+              (goto-char (point-min))
+              (forward-line 1)
+              (while (not (eobp))
+                (if (latex/do-auto-fill-p)
+                    (progn (LaTeX-fill-paragraph)
+                           (forward-line 1))
+                  (if (and (stringp (car-safe texmathp-why))
+                           (string= (car texmathp-why) "\\["))
+                      (progn (search-forward "\\]")
+                             (forward-line 1))
+                    (latex/end-of-environment 1)))
+                (message message-string (line-number-at-pos (point)) (line-number-at-pos (point-max))))))
+          ;; Indentation
+          (message "Indenting...")
+          (goto-char (point-min))
+          (insert (make-string indent ?\ ))
+          (setq indent (point))
+          (forward-line 1)
+          (indent-region (point) (point-max))
+          (delete-region (point-min) indent)))))
+  (message "Done."))
+
+#+END_SRC
+
+** Compilation
+#+BEGIN_SRC elisp
+(defcustom latex/view-after-compile t
+  "Start view-command at end of `latex/compile-commands-until-done'?"
+  :type 'boolean
+  :group 'latex-extra)
+
+(defcustom latex/max-runs 10
+  "Max number of times `TeX-command-master' can run.
+If it goes beyond this, we decide something's wrong.
+Used by `latex/compile-commands-until-done'."
+  :type 'integer
+  :group 'latex-extra)
+
+(defcustom latex/view-skip-confirmation t
+  "If non-nil `latex/compile-commands-until-done' will NOT ask for confirmation on the \"VIEW\" command."
+  :type 'boolean
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.0"))
+(defvar latex/count-same-command 0)
+
+(defcustom latex/next-error-skip-confirmation t
+  "If non-nil `latex/compile-commands-until-done' calls `TeX-next-error' without confirmation (if there is an error, of course)."
+  :type 'boolean
+  :group 'latex-extra
+  :package-version '(latex-extra . "1.0"))
+
+(defun latex/compile-commands-until-done (clean-first)
+  "Fully compile the current document, then view it.
+If there are errors, call `TeX-next-error' instead of viewing.
+With prefix argument CLEAN-FIRST, removes the output and
+auxiliary files before starting (by running (TeX-clean t)). This
+essentially runs the compilation on a clean slate.
+This command repeatedly runs `TeX-command-master' until: (1) we
+reach the VIEW command, (2) an error is found, or (3) the limit
+defined in `latex/max-runs' is reached (which indicates something
+is wrong).
+`latex/next-error-skip-confirmation' and
+`latex/view-skip-confirmation' can customize this command."
+  (interactive "P")
+  (when clean-first (TeX-clean t))
+  (message "Compilation started.")
+  (let* ((initial-buffer (buffer-name))
+         (TeX-process-asynchronous nil)
+         (master-file (TeX-master-file))
+         (next-command (TeX-command-default master-file))
+         (counter 0))
+    (while (and
+            (> counter -1)
+            (not (equal next-command TeX-command-Show)))
+      (when (> counter latex/max-runs)
+        (error "Number of commands run exceeded %d (%S). Something is probably wrong"
+               latex/max-runs 'latex/max-runs))
+      (message "%d Doing: %s" (cl-incf counter) next-command)
+      (set-buffer initial-buffer)
+      (TeX-command next-command 'TeX-master-file)
+      ;; `TeX-command' occasionally changes current buffer.
+      (set-buffer initial-buffer)
+      (if (null (plist-get TeX-error-report-switches (intern master-file)))
+          (if (string= next-command "BibTeX")
+              (setq next-command "LaTeX")
+            (setq next-command (TeX-command-default master-file)))
+        (setq counter -1)
+        (when (or latex/next-error-skip-confirmation
+                  (y-or-n-p "Error found. Visit it? "))
+          ;; `TeX-next-error' number of arguments changed at some
+          ;; point.
+          (call-interactively #'TeX-next-error))))
+    (when (>= counter 0) ;;
+      (set-buffer initial-buffer)
+      (when latex/view-after-compile
+        (if latex/view-skip-confirmation
+                  (pdf-sync-forward-search)
+               (if (y-or-n-p "View document? ")
+                     (pdf-sync-forward-search)))))))
+           ;; (TeX-view)
+          ;; (TeX-command TeX-command-Show 'TeX-master-file))))))
+
+
+#+END_SRC
+
+** TeX-error-buffer font lock
+#+BEGIN_SRC elisp
+(defvar latex/error-buffer-font-lock
+  '(("--- .* ---" 0 font-lock-keyword-face)
+    ("^l\\.[0-9]+" 0 'underline)
+    ("^\\([[:alpha:]]+\\):\\(.*\\)$"
+     (1 'compilation-warning) (2 font-lock-constant-face))
+    ("^\\(<recently read>\\) \\(.*\\)$"
+     (1 'compilation-warning) (2 font-lock-constant-face)))
+  "Font lock rules used in \"*TeX help*\" buffers.")
+
+(defadvice TeX-help-error (around latex/around-TeX-help-error-advice () activate)
+  "Activate `special-mode' and add font-locking in \"*TeX Help*\" buffers."
+  (let ((latex-extra-mode t))
+    (if (null latex-extra-mode)
+        ad-do-it
+      (when (buffer-live-p (get-buffer "*TeX Help*"))
+        (kill-buffer (get-buffer "*TeX Help*")))
+      ad-do-it
+      (when (buffer-live-p (get-buffer "*TeX Help*"))
+        (with-current-buffer (get-buffer "*TeX Help*")
+          (special-mode)
+          (let ((inhibit-read-only t))
+            (font-lock-add-keywords nil latex/error-buffer-font-lock)
+            (if (fboundp 'font-lock-ensure)
+                (font-lock-ensure)
+              (with-no-warnings
+                (font-lock-fontify-buffer)))))))))
+
+(ad-activate 'TeX-help-error)
+
+#+END_SRC
+
+
+** Configure LaTeX-extra
+*** Don't autofill
+    The function =latex/clean-fill-indent-environment= doesn't fill 
+#+BEGIN_SRC elisp
+(setq latex/cleanup-do-fill nil)
+
+#+END_SRC

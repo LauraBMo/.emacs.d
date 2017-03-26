@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: tikzcd diagrama quadrat
+# key: tik
+# --
+\[
+\begin{tikzcd}
+ $1    \\\
+ $2    \\\
+\end{tikzcd}
+\] $0

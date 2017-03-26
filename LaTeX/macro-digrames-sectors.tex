@@ -1,0 +1,59 @@
+% Pie chart with colors
+% Author: Henri Menke
+% Modified by: Laura Brustenga
+% - add title, plot degrees and some help comments.
+
+\documentclass[tikz,border=10pt]{standalone}
+
+%%%%%%%%%%%%%%%%% Fonts %%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc} %Codificació de entrada
+\usepackage[T1]{fontenc} %Codificació de font
+\usepackage{lmodern}%
+
+\begin{document}
+% Particular values
+\def\listofsectors{ %format: percent/name
+  60/Moderada,
+  30/Alta,
+  10/Baixa
+  }
+\def\pietitle{Distrivució dels terrenys segons\\ la concentració de mineral B}
+% Body
+\def\angle{0}
+\def\radius{3}
+\def\cyclelist{{"orange","blue","red","green"}}
+\newcount\cyclecount \cyclecount=-1
+\newcount\ind \ind=-1
+\begin{tikzpicture}[nodes = {font=\sffamily}]
+  \foreach \percent/\name in \listofsectors
+     {
+      \ifx\percent\empty\else               % If \percent is empty, do nothing
+        \global\advance\cyclecount by 1     % Advance cyclecount
+        \global\advance\ind by 1            % Advance list index
+        \ifnum3<\cyclecount                 % If cyclecount is larger than list
+          \global\cyclecount=0              %   reset cyclecount and
+          \global\ind=0                     %   reset list index
+        \fi
+        \pgfmathparse{\cyclelist[\the\ind]} % Get color from cycle list
+        \edef\color{\pgfmathresult}         %   and store as \color
+        % Draw angle and set labels
+        \draw[fill={\color!50},draw={\color}] (0,0) -- (\angle:\radius)
+          arc (\angle:\angle+\percent*3.6:\radius) -- cycle;
+          \draw (\angle:0.1*\radius) arc
+          (\angle:\angle+\percent*3.6:0.1*\radius);
+          \node at (\angle+0.5*\percent*3.6:0.7*\radius) {\percent\,\%};
+          \pgfmathparse{int(\percent*3.6)}
+          \xdef\angelsec{\pgfmathresult}
+        \node[scale=.5] at (\angle+0.5*\percent*3.6:0.15*\radius) {\angelsec º};
+        \node[pin=\angle+0.5*\percent*3.6:\name]
+          at (\angle+0.5*\percent*3.6:\radius) {};
+        \pgfmathparse{\angle+\percent*3.6}  % Advance angle
+        \xdef\angle{\pgfmathresult}         %   and store in \angle
+      \fi
+    };
+    % title
+    \node[align=center,font=\bfseries, yshift=2em] (title)
+    at (current bounding box.north)
+    {\pietitle};
+\end{tikzpicture}
+\end{document}
