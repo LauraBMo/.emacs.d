@@ -2777,8 +2777,13 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+BEGIN_SRC elisp
   (use-package magit
     :bind ("<f10>" . magit-status)
+    :init
+    (setq magit-completing-read-function 'ivy-completing-read
+	  magit-turn-on-auto-revert-mode nil
+	  magit-set-upstream-on-push 'dontask)
     :config
-    (setq magit-completing-read-function 'ivy-completing-read)
+    (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
+    (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
     ;; (add-hook 'kill-emacs-query-functions
     ;;       (lambda ()
     ;;         (if (y-or-n-p "Do you want to run function vc-dir before exit?")
@@ -2788,6 +2793,9 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ;;           t)))
     )
 #+END_SRC
+
+#+RESULTS:
+
 *** TODO Hydra
     It has to be the last because the warning avoid.
 **** Init hydra
