@@ -2366,7 +2366,8 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (use-package visual-fill-column
     :init
     ;; (setq line-move-visual nil)
-    (add-hook 'LaTeX-mode-hook #'visual-fill-column-mode)
+    (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+    (add-hook 'LaTeX-mode-hook #'visual-line-mode)
     ;; (add-hook 'org-mode-hook #'visual-fill-column-mode)
     (setq visual-line-fringe-indicators '(nil right-curly-arrow))
     (setq-default fill-column 80)
@@ -2375,9 +2376,9 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
       :init
       (add-hook 'visual-line-mode-hook #'adaptive-wrap-prefix-mode)
       (add-hook 'visual-fill-column-mode-hook #'adaptive-wrap-prefix-mode)
-    ;;(global-visual-line-mode 1)
-    ;;(global-visual-fill-column-mode)
-    ))
+      ;;(global-visual-line-mode 1)
+      ;;(global-visual-fill-column-mode)
+      ))
 #+END_SRC
 
 #+RESULTS:
