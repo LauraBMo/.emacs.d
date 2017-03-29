@@ -1397,6 +1397,21 @@ abort completely with `C-g'."
           ;; try-expand-by-dict
           ))
 #+END_SRC
+*** Info mode
+#+BEGIN_SRC elisp
+(defun add-browser-backspace-key-to-Info-mode ()
+  "Add some browser styled nav keys for `Info-mode'.
+  The following keys are added:
+ 【Backspace】 for `Info-history-back'
+ 【Shift+Backspace】 for `Info-history-forward'."
+ (local-set-key (kbd "<backspace>") 'Info-history-back)
+ (local-set-key (kbd "<S-backspace>") 'Info-history-forward))
+
+(add-hook 'Info-mode-hook 'add-browser-backspace-key-to-Info-mode)
+#+END_SRC
+
+#+RESULTS:
+| add-browser-backspace-key-to-Info-mode | turn-on-font-lock |
 
 *** iSearch
 **** Setting
