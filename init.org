@@ -6,7 +6,7 @@
       user-mail-address "laurea987@gmail.com")
 #+END_SRC
 
-*** Inhibits on startup
+*** Inhibits on start-up
 #+BEGIN_SRC elisp
   (setq inhibit-splash-screen t
         inhibit-startup-echo-area-message t
@@ -38,7 +38,7 @@
 (menu-bar-mode -1)
 #+END_SRC
 *** Clipboard
-     Save whatever's in the current (system) clipboard before replacing it with the Emacs' text.
+     Save whatever in the current (system) clipboard before replacing it with the Emacs' text.
 #+BEGIN_SRC elisp
   (setq save-interprogram-paste-before-kill t
         kill-ring-max 100)
@@ -53,7 +53,7 @@
   (setq list-command-history-max 10000)
   (global-set-key (kbd "C-h c") 'list-command-history)
 #+END_SRC
-*** Killing emacs
+*** Killing Emacs
 #+BEGIN_SRC elisp
 (setq confirm-kill-emacs nil)
 #+END_SRC
@@ -177,8 +177,8 @@
 
 #+END_SRC
 
-*** Not edit minibuffer prompt
-    Stop Cursor Going into Minibuffer Prompt, from http://ergoemacs.org/emacs/emacs_stop_cursor_enter_prompt.html
+*** Not edit the mini-buffer prompt
+    Stop Cursor Going into mini-buffer prompt, from http://ergoemacs.org/emacs/emacs_stop_cursor_enter_prompt.html
 #+BEGIN_SRC elisp
 ;; (customize-set-variable
  (setq minibuffer-prompt-properties
@@ -208,7 +208,7 @@
 #+BEGIN_SRC elisp
 (setq confirm-nonexistent-file-or-buffer nil)
 #+END_SRC
-*** Answear any question with y or n
+*** Answer any question with y or n
 #+BEGIN_SRC elisp
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
@@ -225,7 +225,7 @@
 #+END_SRC
 *** Initialize
    Emacs run =(package-initialize)= after load the init file and before the =after-init-hook=
-   this aboid it
+   this avoid it
 #+BEGIN_SRC elisp
     (setq package-enable-at-startup nil)
 #+END_SRC
@@ -237,7 +237,7 @@
       (package-refresh-contents))
 #+END_SRC
 *** Refresh before installing
-    If the installation of some packages is required, then run =(package-refresh-contents)= before insatalling the first.
+    If the installation of some packages is required, then run =(package-refresh-contents)= before installing the first.
 #+BEGIN_SRC elisp
   (defun my-package-install-refresh-contents (&rest args)
     (package-refresh-contents)
@@ -392,7 +392,7 @@
     map))
 
 #+END_SRC
-**** Smartmodeline
+**** Smart-mode-line
 #+BEGIN_SRC elisp
   (use-package smart-mode-line
     :init
@@ -418,7 +418,7 @@
     (sml/setup))
 #+END_SRC
 
-**** My custamitazion
+**** My customization
 #+BEGIN_SRC elisp
   (setq-default
    mode-line-format
@@ -511,7 +511,7 @@
      "A syntax table giving all parenthesis parenthesis syntax.")
 #+END_SRC
 
-**** Generic funtion
+**** Generic function
 #+BEGIN_SRC elisp
   (defun close-quoted-open-paren (args dir)
       "dir=0 -> right, dir=1 -> left"
@@ -691,7 +691,8 @@ Single Capitals as you type."
 (global-set-key [C-mouse-5] 'up-a-lot)
 
 #+END_SRC
-*** Open fast regualr fiels (by Xah Lee)
+*** Open fast usual files (by Xah Lee)
+    This is an adaptation to my needs of [[http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html][Emacs: Hotkey to Open File Fast]] by Xah Lee.
 **** Lists
 #+BEGIN_SRC elisp
   (defvar brust-file-list-list nil "List of association list of file/dir paths. Used by `xah-open-file-fast'. Key is a short abbrev string, Value is file path string.")
