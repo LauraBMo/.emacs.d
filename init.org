@@ -1134,38 +1134,44 @@ should be. After calling this function, call 'meeting-done' to reset the environ
    ("M-<" . brust-toggle-begin&end-of-buffer))
 
   (bind-keys
-   ("M-u" . backward-word)
-   ("M-i" . previous-line)
-   ("M-o" . forward-word)
-   ("M-p" . recenter-top-bottom)
-   ;;("M-h" . )
-   ("M-j" . backward-char)
-   ("M-k" . next-line)
-   ("M-l" . forward-char)
+   ("s-u" . backward-word)
+   ("s-i" . previous-line)
+   ("s-o" . forward-word)
+   ("s-p" . recenter-top-bottom)
+   ;;("s-h" . )
+   ("s-j" . backward-char)
+   ("s-k" . next-line)
+   ("s-l" . forward-char)
 
-   ("M-U" . backward-paragraph)
-   ("M-I" . backward-page)
-   ("M-O" . forward-paragraph)
-   ;;("M-P" . )
-   ;;("M-H" . )
-   ("M-J" . sp-backward-sexp)
-   ("M-K" . forward-page)
-   ("M-L" . sp-forward-sexp))
+   ("s-U" . backward-paragraph)
+   ("s-I" . backward-page)
+   ("s-O" . forward-paragraph)
+   ;;("s-P" . )
+   ;;("s-H" . )
+   ("s-J" . sp-backward-sexp)
+   ("s-K" . forward-page)
+   ("s-L" . sp-forward-sexp))
 #+END_SRC
+
+#+RESULTS:
+: sp-forward-sexp
 
 *** Outline
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("C-M-j" . outline-hide-more)
-   ("C-M-l" . outline-show-more)
-   ("C-M-h" . outline-up-heading)                ; Up
-   ("C-M-k" . outline-next-visible-heading)      ; Next
-   ("C-M-i" . outline-previous-visible-heading)  ; Previous
-   ("C-M-S-K" . outline-forward-same-level)        ; Forward - same level
-   ("C-M-S-I" . outline-backward-same-level))      ; Backward - same level
+   ("M-s-j" . outline-hide-more)
+   ("M-s-l" . outline-show-more)
+   ("M-s-h" . outline-up-heading)                ; Up
+   ("M-s-k" . outline-next-visible-heading)      ; Next
+   ("M-s-i" . outline-previous-visible-heading)  ; Previous
+   ("M-s-S-K" . outline-forward-same-level)        ; Forward - same level
+   ("M-s-S-I" . outline-backward-same-level))      ; Backward - same level
 
 
 #+END_SRC
+
+#+RESULTS:
+: outline-backward-same-level
 
 ** The built-in modes
 *** Abbrev's
@@ -1514,8 +1520,8 @@ abort completely with `C-g'."
 
     :bind (:map org-mode-map
 		("s-b" . org-text-bold)
-		("s-i" . org-text-italics)
-		("s-=" . org-text-code)
+		("s-v" . org-text-italics)
+		("s-c" . org-text-code)
 		("<"   . brust-org<)) ;; Look at hydra's definition
     :config
     ;; Org babel
