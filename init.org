@@ -1273,22 +1273,24 @@ abort completely with `C-g'."
         desktop-path '("~/.emacs.d/backups/") 
         desktop-base-file-name "emacs-desktop"
         desktop-save t
+        ;; When desktop is not load from a file, always overwrite the file.
+        desktop-file-modtime (nth 5 (file-attributes (concat desktop-dirname desktop-base-file-name)))
         ;; desktop-files-not-to-save   "^$" ;reload tramp paths
         ;; desktop-auto-save-timeout (* 10 60)
         desktop-load-locked-desktop t)
 
-  (add-hook 'after-init-hook #'desktop-read)
-  (add-hook 'kill-emacs-hook #'desktop-save-in-desktop-dir)
-  ;; (desktop-save-mode 1)
-  (run-with-timer 0 (* 30 60) #'desktop-save-in-desktop-dir)
+  ;; (add-hook 'after-init-hook #'desktop-read)
+  ;; (add-hook 'kill-emacs-hook #'desktop-save-in-desktop-dir)
+  (desktop-save-mode 1)
+  ;; (run-with-timer 0 (* 30 60) #'desktop-save-in-desktop-dir)
 
-;;  (defun desktop-save-in-desktop-dir (&optional release)
-;;    "Save the desktop in directory `desktop-dirname'."
-;;    (interactive)
-;;    (if desktop-dirname
-;;        (desktop-save desktop-dirname release)
-;;      (call-interactively 'desktop-save))
-;;    (message "Desktop saved in %s" (abbreviate-file-name desktop-dirname)))
+  ;;  (defun desktop-save-in-desktop-dir (&optional release)
+  ;;    "Save the desktop in directory `desktop-dirname'."
+  ;;    (interactive)
+  ;;    (if desktop-dirname
+  ;;        (desktop-save desktop-dirname release)
+  ;;      (call-interactively 'desktop-save))
+  ;;    (message "Desktop saved in %s" (abbreviate-file-name desktop-dirname)))
 
   (cl-loop for mm in
            '(dired-mode Info-mode info-lookup-mode fundamental-mode)
