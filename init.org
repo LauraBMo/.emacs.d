@@ -190,19 +190,17 @@
 #+BEGIN_SRC elisp
 ;;; Enable disabled commands
 
-(put 'erase-buffer                  'disabled nil)
-(put 'eval-expression               'disabled nil)   ; Let ESC-ESC work
-(put 'narrow-to-page                'disabled nil)   ; Let narrowing work
-(put 'narrow-to-region              'disabled nil)   ; Let narrowing work
-(put 'set-goal-column               'disabled nil)
-(put 'upcase-region                 'disabled nil)   ; Let upcasing work
-(put 'company-coq-fold              'disabled nil)
-(put 'TeX-narrow-to-group           'disabled nil)
-(put 'LaTeX-narrow-to-environment   'disabled nil)
-(put 'narrow-to-region              'disabled nil)
-(put 'narrow-to-page                'disabled nil)
-(put 'upcase-region                 'disabled nil)
-(put 'downcase-region               'disabled nil)
+(put 'erase-buffer                'disabled nil)
+(put 'eval-expression             'disabled nil)   ; Let ESC-ESC work
+(put 'set-goal-column             'disabled nil)
+(put 'company-coq-fold            'disabled nil)
+(put 'TeX-narrow-to-group         'disabled nil)
+(put 'LaTeX-narrow-to-environment 'disabled nil)
+(put 'narrow-to-region            'disabled nil)
+(put 'narrow-to-defun             'disabled nil)
+(put 'narrow-to-page              'disabled nil)
+(put 'upcase-region               'disabled nil)
+(put 'downcase-region             'disabled nil)
 #+END_SRC
 *** Auto create non-existent files
 #+BEGIN_SRC elisp
