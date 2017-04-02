@@ -1258,19 +1258,29 @@ Single Capitals as you type."
   (setq
    brust-file-list-list
    '((xah-filelist . (
-                      ("My-Org"       . "~/Dropbox/Org/my.org")
-                      ("Th-master"    . "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
-                      ("My-theory"    . "~/Dropbox/Doctorat11/Apunts/basic-algebraic-geometry.tex")
-                      ("Com-in-Alg"   . "~/Dropbox/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
+                      ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
+                      ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
+                      ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
+                      ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
 		      ))
      (config-files . (
                       ("Org-init"     . "~/.emacs.d/init.org")
                       ("el-init"      . "~/.emacs.d/init.el")
                       ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
-		      ))))
-
-
+		      ))
+     (org-files    . (
+                      ("My-Org"   . "~/Dropbox/Org/my.org")
+                      ("Recetari" . "~/Dropbox/Org/recetari.org")
+                      ("Travels"  . "~/Dropbox/Org/travels.org")
+                      ("Media"    . "~/Dropbox/Org/MyMedia.org")
+                      ("Doctorat" . "~/Dropbox/Org/Doc.org")
+                      ))))
 #+END_SRC
+
+#+RESULTS:
+| xah-filelist | (Doc-Org . ~/Dropbox/Org/Doc.org) | (Th-master . ~/Dropbox/Doctorat_Laura/Thesis/master.tex) | (My-theory . ~/Dropbox/Doctorat11/Apunts/basic-algebraic-geometry.tex) | (Com-in-Alg . ~/Dropbox/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex) |                                    |
+| config-files | (Org-init . ~/.emacs.d/init.org)  | (el-init . ~/.emacs.d/init.el)                           | (LaTeX-config . ~/.emacs.d/lisp/brusts-latex-config.org)               |                                                                           |                                    |
+| org-files    | (My-Org . ~/Dropbox/Org/my.org)   | (Recetari . ~/Dropbox/Org/recetari.org)                  | (Travels . ~/Dropbox/Org/travels.org)                                  | (Media . ~/Dropbox/Org/MyMedia.org)                                       | (Doctorat . ~/Dropbox/Org/Doc.org) |
 
 **** Function to open it fast.
 #+BEGIN_SRC elisp
@@ -2679,7 +2689,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :diminish 'outline-minor-mode
     :diminish 'flyspell-mode
     :init
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-init" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
 
     (defun brust-yas-expand-ignore-errors nil
       (interactive)
@@ -2750,7 +2760,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     (defun brust-LaTeX-insert-math2 nil
       (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
     :config
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-config" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
     :bind 
     (:map LaTeX-mode-map
