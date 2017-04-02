@@ -464,608 +464,6 @@
      mode-line-end-spaces))
 
 #+END_SRC
-** New generic functions
-*** Beginning<->end of a buffer
-#+BEGIN_SRC elisp
-  (defun brust-toggle-begin&end-of-buffer nil
-    "Go to beginning of buffer or toggle between
-  the beginning and end of current buffer is you are already there."
-    (interactive)
-    (if (bobp) (end-of-buffer)
-      (beginning-of-buffer)))
-#+END_SRC
-*** Bounded min/maximum
-#+BEGIN_SRC elisp
-  (defun list-util-bounded-max (nums bound)
-     "Return the maximum of the list 'nums' that is under 'bound'"
-     (cl-loop for n in nums
-           when (< n bound) maximizing n into maximum
-           finally return maximum))
-#+END_SRC
-
-#+BEGIN_SRC elisp
-  (defun list-util-bounded-min (nums bound)
-    "Return the minimum of the list 'nums' greater than 'bound'"
-    (cl-loop for n in nums
-          when (< bound n) minimizing n into minimum
-          finally return minimum))
-#+END_SRC
-
-*** Close<->open parents
-**** Parenthesis syntax.
-#+BEGIN_SRC elisp
-  (defconst all-paren-syntax-table
-     (let ((table (make-syntax-table)))
-       (modify-syntax-entry ?{  "(}" table)
-       (modify-syntax-entry ?}  "){" table)
-       (modify-syntax-entry ?\( "()" table)
-       (modify-syntax-entry ?\) ")(" table)
-       (modify-syntax-entry ?\[ "(]" table)
-       (modify-syntax-entry ?\] ")[" table)
-       (modify-syntax-entry ?\\ "'"  table)
-       (modify-syntax-entry ?\< "(>" table)
-       (modify-syntax-entry ?\> ")<" table)
-       table)
-     "A syntax table giving all parenthesis parenthesis syntax.")
-#+END_SRC
-
-**** Generic function
-#+BEGIN_SRC elisp
-  (defun close-quoted-open-paren (args dir)
-      "dir=0 -> right, dir=1 -> left"
-      (with-syntax-table all-paren-syntax-table
-        (cl-loop repeat args do
-                 (let* ((i dir)
-                        (pos (save-excursion (up-list (1- (* 2 dir))) (point)))
-                        (closing (matching-paren (char-after (- pos dir)))))
-                   (while (eq (char-before (- pos i)) ?\\)
-                     (setq i (1+ i)))
-                   (cl-loop repeat (- i dir) do (insert "\\"))
-                   (insert closing)
-                   (backward-char (* dir i)))))
-      t)
-
-#+END_SRC
-
-**** By right
-#+BEGIN_SRC elisp
-  (defun close-quoted-open-paren-right (args)
-    (interactive "P")
-    (or args (setq args 1))
-    (close-quoted-open-paren args 0))
-
-  (defun close-all-open-paren-right ()
-    (interactive)
-    (while  (ignore-errors (close-quoted-open-paren-right 1))))
-
-#+END_SRC
-**** By left
-#+BEGIN_SRC elisp
-  (defun close-quoted-open-paren-left (args)
-    (interactive "P")
-    (or args (setq args 1))
-    (close-quoted-open-paren args 1))
-
-  (defun close-all-open-paren-left ()
-    (interactive)
-    (while  (ignore-errors (close-quoted-open-paren-left 1))))
-#+END_SRC
-*** Copy file path to kill ring (by Xah Lee)
-**** Copy file path
-#+BEGIN_SRC elisp
-(defun xah-copy-file-path (&optional φdir-path-only-p)
-  "Copy the current buffer's file path or dired path to `kill-ring'.
-Result is full path.
-If `universal-argument' is called first, copy only the dir path.
-URL `http://ergoemacs.org/emacs/emacs_copy_file_path.html'
-Version 2015-12-02"
-  (interactive "P")
-  (let ((ξfpath
-         (if (equal major-mode 'dired-mode)
-             (expand-file-name default-directory)
-           (if (null (buffer-file-name))
-               (user-error "Current buffer is not associated with a file.")
-             (buffer-file-name)))))
-    (kill-new
-     (if (null φdir-path-only-p)
-         (progn
-           (message "File path copied: 「%s」" ξfpath)
-           ξfpath
-           )
-       (progn
-         (message "Directory path copied: 「%s」" (file-name-directory ξfpath))
-         (file-name-directory ξfpath))))))
-#+END_SRC
-
-**** Copy directory path
-#+BEGIN_SRC elisp
-  (defun brust-copy-directory-only ()
-    (interactive)
-    (xah-copy-file-path t))
-#+END_SRC
-*** Customize face at point
-    A handy function for customization
-#+BEGIN_SRC elisp
-  (defun customize-face-at-point ()
-    "Customize face which point is at."
-    (interactive)
-    (let ((face (get-text-property (point) 'face)))
-      (if face
-          (customize-face face)
-        (message "No face defined at point"))))
-
-#+END_SRC
-
-*** Double Capitals
-    Convert words in DOuble CApitals to Single Capitals.
-**** The function
-#+BEGIN_SRC elisp
-(defun dcaps-to-scaps ()
-  "Convert word in DOuble CApitals to Single Capitals."
-  (interactive)
-  (and (= ?w (char-syntax (char-before)))
-       (save-excursion
-         (and (if (called-interactively-p)
-                  (skip-syntax-backward "w")
-                (= -3 (skip-syntax-backward "w")))
-              (let (case-fold-search)
-                (looking-at "\\b[[:upper:]]\\{2\\}[[:lower:]]"))
-              (capitalize-word 1)))))
-
-#+END_SRC
-**** New minor mode
-#+BEGIN_SRC elisp
-(define-minor-mode dubcaps-mode
-  "Toggle `dubcaps-mode'.  Converts words in DOuble CApitals to
-Single Capitals as you type."
-  :init-value nil
-  :lighter ("") ;; String to show in mode-line
-  (if dubcaps-mode
-      (add-hook 'post-self-insert-hook #'dcaps-to-scaps nil 'local)
-    (remove-hook 'post-self-insert-hook #'dcaps-to-scaps 'local)))
-
-
-#+END_SRC
-**** Activation
-#+BEGIN_SRC elisp
-(add-hook 'text-mode-hook #'dubcaps-mode)
-
-#+END_SRC
-*** Kill buffer
-#+BEGIN_SRC elisp
-  (defun brust-kill-buffer (del-win)
-    (if del-win
-        (if (kill-buffer) (delete-window))
-      (kill-buffer)))
-
-  (global-set-key (kbd "<C-delete>")
-                  (lambda (args) (interactive "P")
-                    (if (not args) (brust-kill-buffer nil)
-                      (save-buffer) (brust-kill-buffer nil))))
-  (global-set-key (kbd "<delete>")
-                  (lambda (args) (interactive "P")
-                    (if (not args) (brust-kill-buffer t)
-                      (save-buffer) (brust-kill-buffer t))))
-#+END_SRC
-
-*** Macro query
-#+BEGIN_SRC elisp
-(defun macro-query-my (arg)
-  "Prompt for input using minibuffer during kbd macro execution.
-   With prefix argument, allows you to select what prompt string to use.
-   If the input is non-empty, it is inserted at point."
-  (interactive "P")
-  (let* ((prompt (if arg (read-from-minibuffer "PROMPT: ") "Input: "))
-         (input (minibuffer-with-setup-hook (lambda () (kbd-macro-query t))
-                  (read-from-minibuffer prompt))))
-    (unless (string= "" input) (insert input))))
-
-
-#+END_SRC
-
-*** Mouse wheel
-    Mouse wheel: try it with S and C
-**** Functions
-#+BEGIN_SRC elisp
-(defun up-slightly () (interactive) (scroll-up 5))
-(defun down-slightly () (interactive) (scroll-down 5))
-
-(defun up-one () (interactive) (scroll-up 1))
-(defun down-one () (interactive) (scroll-down 1))
-
-(defun up-a-lot () (interactive) (scroll-up))
-(defun down-a-lot () (interactive) (scroll-down))
-
-#+END_SRC
-**** Keybindings
-#+BEGIN_SRC elisp
-(global-set-key [mouse-4] 'down-slightly)
-(global-set-key [mouse-5] 'up-slightly)
-
-(global-set-key [S-mouse-4] 'down-one)
-(global-set-key [S-mouse-5] 'up-one)
-
-(global-set-key [C-mouse-4] 'down-a-lot)
-(global-set-key [C-mouse-5] 'up-a-lot)
-
-#+END_SRC
-*** Open fast usual files (by Xah Lee)
-    This is an adaptation to my needs of [[http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html][Emacs: Hotkey to Open File Fast]] by Xah Lee.
-**** Lists
-#+BEGIN_SRC elisp
-  (defvar brust-file-list-list nil "List of association list of file/dir paths. Used by `xah-open-file-fast'. Key is a short abbrev string, Value is file path string.")
-
-  (setq
-   brust-file-list-list
-   '((xah-filelist . (("Th-master"       . "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
-                      ("My-notes"        . "~/Dropbox/Doctorat11/Apunts/basic-algebraic-geometry.tex")
-                      ("Com-in-Alg"      . "~/Dropbox/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-                      ("Org-personal"    . "~/Dropbox/Org/my.org")
-                      ("Recetari"        . "~/Dropbox/Org/recetari.org")
-                      ("Eng-writing"     . "~/Dropbox/English/Writings.tex")
-                      ("Eng-read"        . "~/Dropbox/English/Readings.tex")))
-     (config-files . (("Org-init"        . "~/.emacs.d/init.org")
-                      ("el-init"         . "~/.emacs.d/init.el")
-                      ("LaTeX-config"    . "~/.emacs.d/lisp/brusts-latex-config.org")))))
-
-
-#+END_SRC
-
-**** Function to open it fast.
-#+BEGIN_SRC elisp
-  (defun xah-open-file-fast ()
-    "Prompt to open a file from `xah-filelist'.
-      URL `http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html'
-      Version 2015-04-23"
-    (interactive)
-    (let ((ξabbrevCode
-           (ivy-read "Open (%d) :"
-                     (mapcar 'car (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
-                                           append xx)))))
-      (find-file (cdr (assoc ξabbrevCode (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
-                                                  append xx))))))
-
-#+END_SRC
-
-**** Direct functions
-#+BEGIN_SRC elisp
-  (let ((i 0))
-    (cl-loop
-     for xx in (mapcar 'cdr brust-file-list-list) do
-     (let ((j 1)
-           (file (car xx))
-           (prfx (if (< i 1) "<f2>"
-                   (if (< i 2) (format "<f2> <f%d>" i)
-                     (format "<f2> <f%d>" (1+ i))))))
-       (setq i (1+ i))
-       (while file
-         (let ((name (intern (format "Open:%s" (car file)))))
-           (fset name
-                 `(lambda nil
-                    (interactive) (find-file ,(cdr file))))
-           (setq file (nth j xx))
-           (or (< j 10) (setq file nil j 0))
-           (global-set-key (kbd (format "%s %d" prfx j)) name)
-           (setq j (1+ j)))))))
-
-(global-set-key (kbd "<f2> <f2>") 'xah-open-file-fast)
-
-#+END_SRC
-*** Open file in external app
-
-
-    #+BEGIN_SRC elisp
-  (defun xah-open-in-external-app (&optional ξfile)
-    "Open the current file or dired marked files in external app.
-  The app is chosen from your OS's preference.
-
-  URL `http://ergoemacs.org/emacs/emacs_dired_open_file_in_ext_apps.html'
-  Version 2015-01-26"
-    (interactive)
-    (let* ((ξfile-list
-            (if ξfile (list ξfile)
-              (if (string-equal major-mode "dired-mode")
-                  (dired-get-marked-files)
-                (list (buffer-file-name)))))
-           (ξdo-it-p (if (<= (length ξfile-list) 5)
-                         t
-                       (y-or-n-p "Open more than 5 files? "))))
-
-      (when ξdo-it-p
-        (cond
-         ((string-equal system-type "windows-nt")
-          (mapc
-           (lambda (fPath)
-             (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" fPath t t))) ξfile-list))
-         ((string-equal system-type "darwin")
-          (mapc
-           (lambda (fPath) (shell-command (format "open \"%s\"" fPath)))  ξfile-list))
-         ((string-equal system-type "gnu/linux")
-          (mapc
-           (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" fPath))) ξfile-list))))))
-
-#+END_SRC
-
-*** Orgmode functions
-**** COMMENT Meet notes
-#+BEGIN_SRC elisp
-(defun meeting-notes ()
-  "Call this after creating an org-mode heading for where the notes for the meeting
-should be. After calling this function, call 'meeting-done' to reset the environment."
-  (interactive)
-  (outline-mark-subtree)                              ;; Select org-mode section
-  (narrow-to-region (region-beginning) (region-end))  ;; Only show that region
-  (deactivate-mark)
-  (delete-other-windows)                              ;; Get rid of other windows
-  (text-scale-set 2)                                  ;; Text is now readable by others
-  (fringe-mode 0)
-  (message "When finished taking your notes, run meeting-done."))
-
-(defun meeting-done ()
-  "Attempt to 'undo' the effects of taking meeting notes."
-  (interactive)
-  (widen)                                       ;; Opposite of narrow-to-region
-  (text-scale-set 0)                            ;; Reset the font size increase
-  (fringe-mode 1)
-  (winner-undo))                                ;; Put the windows back in place
-
-#+END_SRC
-**** Org surround text
-***** Generic surround text
-    Usually used in Org-mode
-
-#+BEGIN_SRC elisp
-  (defun brust-char-at-point ()
-    (buffer-substring-no-properties (point) (1+ (point))))
-
-  (defun brust-move-untill (pass re-ex test)
-    (while (not (string-match-p re-ex (funcall test)))
-      (forward-char pass)))
-
-  (defun brust-string-at-point ()
-    "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)"
-    (save-excursion
-      (brust-move-untill 1 "[ \t\n\r]+\\'" 'brust-char-at-point)
-      (let ((end (point)))
-        (backward-char 1)
-        (brust-move-untill -1 "[ \t\n\r]+\\'" 'brust-char-at-point)
-        (cons (1+ (point)) end))))
-
-  (defun brust-insert-poss (nn str)
-    (goto-char nn) (insert str))
-
-  (defun surround-text (str)
-    "Surround selection or brust-string-at-point with str"
-    (interactive)
-    (save-excursion
-      (let ((poss
-             (if (use-region-p)
-                 `(,(region-beginning) . ,(region-end))
-               (brust-string-at-point))))
-        (brust-insert-poss (cdr poss) str) ;; First, the larger postion.
-        (brust-insert-poss (car poss) str))))
-#+END_SRC
-***** Org surround
-#+BEGIN_SRC elisp
-        (defun org-text-bold () "Wraps the region with asterisks."
-               (interactive)
-               (surround-text "*"))
-        (defun org-text-italics () "Wraps the region with slashes."
-               (interactive)
-               (surround-text "/"))
-        (defun org-text-code () "Wraps the region with equal signs."
-               (interactive)
-               (surround-text "="))
-#+END_SRC
-**** Eval elisp blocks under current header
-#+BEGIN_SRC elisp
-(defun brust-endless/org-eval-current-header nil
-  (interactive)
-  (brust-endless/org-eval-eblocks
-   (and (org-copy-subtree)
-	(pop kill-ring))))
-#+END_SRC
-
-*** Save and load my keyboard macros
-    From https://www.emacswiki.org/emacs/KeyboardMacrosTricks
-
-#+BEGIN_SRC elisp
-  (defvar brust-my-macro-file "~/.emacs.d/lisp/brusts-macros.el"
-    "File with all my keyboard macros")
-
-  (defun save-macro (name)
-    "Save last defined macro. Take a name as argument
-        and save the last defined macro under
-        this name at the end of your file of macros"
-    (interactive "SName of the macro :")  ; ask for the name of the macro
-    (kmacro-name-last-macro name)         ; use this name for the macro
-    (find-file brust-my-macro-file)       ; open ~/.emacs or other user init file
-    (goto-char (point-max))               ; go to the end of the .emacs
-    (newline)                             ; insert a newline
-    (insert-kbd-macro name)               ; copy the macro
-    (newline)                             ; insert a newline
-    (switch-to-buffer nil))               ; return to the initial buffera
-
-
-  (load-file brust-my-macro-file)
-
-#+END_SRC
-*** Smarter navigation into a line
-    "Move point back to indentation of beginning of line.
-
-    Move point to the first non-whitespace character on this line.
-    If point is already there, move to the beginning of the line.
-    Effectively toggle between the first non-whitespace character and
-    the beginning of the line.
-
-    If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-    point reaches the beginning or end of the buffer, stop there."
-
-    Inspired from Sacha Chua's http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/ and
-    =move-beginning-of-line= of ergoemacs-mode.
-**** to beginnings
-#+BEGIN_SRC elisp
-  (defun brust-smart-move-beginning-of-line (arg)
-    "Cicle through beginnings of the current line:
-    beginning of line, first non space char and first non sapce
-    char after comment chars"
-    (interactive "^p")
-    ;; Move lines first
-    (when (and arg (or (< 1 arg) (< arg 0)))
-      (let ((line-move-visual nil))
-        (forward-line (1- arg))))
-    ;; Use org functions in org headers
-    (if (and (string= major-mode 'org-mode)
-             (let* ((element (save-excursion (beginning-of-line)
-                                             (org-element-at-point)))
-                    (type (org-element-type element)))
-               (memq type '(headline inlinetask))))
-        (org-beginning-of-line)
-      (let ((pt (point))
-            (pnts `(,(point-at-bol)))
-            to-go)
-        ;; List of interesting points
-        (save-excursion
-          (move-beginning-of-line 1)
-          (skip-chars-forward " \t" (point-at-eol))
-          (cl-pushnew (point) pnts)
-          (when (re-search-forward
-                 (concat "\\([%;]\\|"
-                         (format "%s" comment-start-skip)
-                         "\\)")
-                 (point-at-eol) t)
-            (skip-chars-forward ";% \t" (point-at-eol))))
-        (when (bound-and-true-p visual-line-mode)
-          (save-excursion
-            (beginning-of-visual-line)
-            (unless (or (< (point) pt) (cdr pnts))
-              (backward-char 1)
-              (beginning-of-visual-line))
-            (push (point) pnts)))
-        ;; Where to go
-        (setq to-go (list-util-bounded-max pnts pt))
-        (if to-go (goto-char to-go)
-          (unless (= pt (point-at-eol))
-            (goto-char (list-util-bounded-max pnts (point-at-eol))))))))
-#+END_SRC
-
-#+RESULTS:
-: list-util-bounded-max
-
-**** to ends
-#+BEGIN_SRC elisp
-  (defun brust-smart-move-end-of-line (arg)
-    "Goes to the following end of the current line: last non sapce char before
-      comments chars, last non space char of the line and the end of line.
-      If you know that you are at the end of the current line, then you go to the following line."
-    (interactive "^p")
-    ;; Move lines first
-    (when (and arg (or (< 1 arg) (< arg 0)))
-      (let ((line-move-visual nil))
-        (forward-line (1- arg))))
-    ;; Use org functions in org headers
-    (if (and (string= major-mode 'org-mode)
-             (let* ((element (save-excursion (beginning-of-line)
-                                             (org-element-at-point)))
-                    (type (org-element-type element)))
-               (memq type '(headline inlinetask))))
-        (org-end-of-line)
-      (let ((pt (point)) ;; Where I start.
-            (pnts `(,(point-at-eol))) ;; all posible end of the line.
-            to-go) ;; The point where we will go.
-        ;; Create the list of interesting points
-        (save-excursion ;; The end of the current visual line.
-          (when (bound-and-true-p visual-line-mode)
-            (end-of-visual-line)
-            (unless (< pt (point)) (forward-char 1) (end-of-visual-line))
-            (cl-pushnew (point) pnts)))
-        (save-excursion ;; The last non-space char before coments
-          (when (re-search-forward
-                 (concat "\\([%;]\\|"
-                         (format "%s" comment-start-skip)
-                         "\\)")
-                 (point-at-eol) t)
-            (goto-char (match-beginning 0))
-            (skip-syntax-backward "\t " (point-at-bol)) (cl-pushnew (point) pnts))
-          (goto-char (point-at-eol)) ;; The last non-space char.
-          (skip-syntax-backward "\t " (point-at-bol)) (cl-pushnew (point) pnts))
-        (setq to-go (list-util-bounded-min pnts pt)) ;; Which point to go, if it is.
-        (if to-go (goto-char to-go)
-          (when (string= last-command 'brust-smart-move-end-of-line)
-            (when (< 0 (forward-line 1)) (insert "\n")) ;; Insert new line at the end of the buffer.
-            (back-to-indentation))))))
-#+END_SRC
-
-**** COMMENT Keybinding
-     Remap =C-a= to `brust-smart-move-beginning-of-line'
-     Remap =C-e= to `brust-smart-move-end-of-line'
-     Remap =M-<= to `brust-toggle-begin&end-of-buffer'
-#+BEGIN_SRC elisp
-  (global-set-key [remap move-beginning-of-line]
-                  'brust-smart-move-beginning-of-line)
-  (global-set-key [remap move-end-of-line]
-                  'brust-smart-move-end-of-line)
-  (global-set-key [remap beginning-of-buffer]
-                  'brust-toggle-begin&end-of-buffer)
-#+END_SRC
-*** String start-p
-#+BEGIN_SRC elisp
-  (defun string-starts-with-p (string prefix)
-    "Return t if STRING starts with prefix."
-    (and (string-match (rx-to-string `(: bos ,prefix) t) string) t))
-#+END_SRC
-
-*** Toggle bars
-#+BEGIN_SRC elisp
-  (defun brust-toggle-menu-tool-bars ()
-    "Toggle Emacs menu and tool bar"
-    (interactive)
-    (let ((active-p
-           (if (or menu-bar-mode tool-bar-mode) -1 1)))
-      (menu-bar-mode active-p) (tool-bar-mode active-p)))
-#+END_SRC
-
-*** Word count
-#+BEGIN_SRC elisp
-  (defun brust-wc-get-word-count-list-of-current-project nil
-    (let ((project-master (expand-file-name (TeX-master-file t nil t))))
-      (with-temp-buffer
-        (call-process-shell-command
-         (concat "texcount -opt="
-                 (expand-file-name "~/.emacs.d/LaTeX/TeXcount-emacs.txt")
-                 " -dir="
-                 (file-name-directory project-master)
-                 " "
-                 project-master)
-         nil t)
-        (re-search-backward
-         "new\\([0-9]+\\)w\\([0-9]+\\)im\\([0-9]+\\)dm\\([0-9]+\\)cd\\([0-9]+\\)h\\([0-9]+\\)file" nil t)
-        (cl-loop for xx from 1 to 6
-                 if (= xx 3) collect (number-to-string (- (string-to-number (match-string-no-properties 3))
-                                                          (string-to-number (match-string-no-properties 4))))
-                 else
-                 collect (match-string-no-properties xx)))))
-
-  (defun brust-wc-save-words nil
-    (interactive)
-    (let ((wc-sat (brust-wc-get-word-count-list-of-current-project)))
-      (find-file (concat
-                  (file-name-directory (expand-file-name (TeX-master-file t nil t)))
-                  "wc-statistics.txt"))
-      (goto-char (point-max))
-      (insert "\n" (format-time-string "%x, %X, ")
-              (cl-loop for xx in wc-sat
-                       concat (concat xx ", ")))
-      (save-buffer)
-      (kill-buffer)))
-
-  (defun brust-wc-save-words-my-thesis nil
-    (interactive)
-    (find-file "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
-    (brust-wc-save-words))
-
-
-#+END_SRC
 ** My key binding
 *** Global and genric
 #+BEGIN_SRC elisp
@@ -1076,7 +474,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
    ("C-+"         . universal-argument)
    ("C-ç"         . negative-argument)
    ("C--"         . undo)
-   ("C-x C-F"     . xah-open-in-external-app)
+   ("C-x C-S-F"   . xah-open-in-external-app)
    ("C-x C-k s"   . save-macro)
    ("M-ç"         . hippie-expand)
    ("C-9"         . close-quoted-open-paren-right)
@@ -1135,7 +533,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
    ("s-u" . backward-word)
    ("s-i" . previous-line)
    ("s-o" . forward-word)
-   ("s-p" . recenter-top-bottom)
+   ("s-h" . recenter-top-bottom)
    ;;("s-h" . )
    ("s-j" . backward-char)
    ("s-k" . next-line)
@@ -1162,15 +560,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
    ("M-s-h" . outline-up-heading)                ; Up
    ("M-s-k" . outline-next-visible-heading)      ; Next
    ("M-s-i" . outline-previous-visible-heading)  ; Previous
-   ("M-s-S-K" . outline-forward-same-level)        ; Forward - same level
-   ("M-s-S-I" . outline-backward-same-level))      ; Backward - same level
+   ("M-s-o" . outline-forward-same-level)        ; Forward - same level
+   ("M-s-u" . outline-backward-same-level))      ; Backward - same level
 
 
 #+END_SRC
 
 #+RESULTS:
 : outline-backward-same-level
-
 ** The built-in modes
 *** Abbrev's
 **** Setting
@@ -1610,7 +1007,7 @@ abort completely with `C-g'."
     Save kill ring, regexp-search-ring
 #+BEGIN_SRC elisp
   (savehist-mode 1)
-  (setq history-length t
+  (setq history-length 500
         desktop-load-locked-desktop t
         history-delete-duplicates t
         savehist-save-minibuffer-history 1
@@ -1626,6 +1023,609 @@ abort completely with `C-g'."
     When non-nil, shifted motion keys activate the mark momentarily.
 #+BEGIN_SRC elisp
 (setq shift-select-mode t)
+#+END_SRC
+** New generic functions
+*** Beginning<->end of a buffer
+#+BEGIN_SRC elisp
+  (defun brust-toggle-begin&end-of-buffer nil
+    "Go to beginning of buffer or toggle between
+  the beginning and end of current buffer is you are already there."
+    (interactive)
+    (if (bobp) (end-of-buffer)
+      (beginning-of-buffer)))
+#+END_SRC
+*** Bounded min/maximum
+#+BEGIN_SRC elisp
+  (defun list-util-bounded-max (nums bound)
+     "Return the maximum of the list 'nums' that is under 'bound'"
+     (cl-loop for n in nums
+           when (< n bound) maximizing n into maximum
+           finally return maximum))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (defun list-util-bounded-min (nums bound)
+    "Return the minimum of the list 'nums' greater than 'bound'"
+    (cl-loop for n in nums
+          when (< bound n) minimizing n into minimum
+          finally return minimum))
+#+END_SRC
+
+*** Close<->open parents
+**** Parenthesis syntax.
+#+BEGIN_SRC elisp
+  (defconst all-paren-syntax-table
+     (let ((table (make-syntax-table)))
+       (modify-syntax-entry ?{  "(}" table)
+       (modify-syntax-entry ?}  "){" table)
+       (modify-syntax-entry ?\( "()" table)
+       (modify-syntax-entry ?\) ")(" table)
+       (modify-syntax-entry ?\[ "(]" table)
+       (modify-syntax-entry ?\] ")[" table)
+       (modify-syntax-entry ?\\ "'"  table)
+       (modify-syntax-entry ?\< "(>" table)
+       (modify-syntax-entry ?\> ")<" table)
+       table)
+     "A syntax table giving all parenthesis parenthesis syntax.")
+#+END_SRC
+
+**** Generic function
+#+BEGIN_SRC elisp
+  (defun close-quoted-open-paren (args dir)
+      "dir=0 -> right, dir=1 -> left"
+      (with-syntax-table all-paren-syntax-table
+        (cl-loop repeat args do
+                 (let* ((i dir)
+                        (pos (save-excursion (up-list (1- (* 2 dir))) (point)))
+                        (closing (matching-paren (char-after (- pos dir)))))
+                   (while (eq (char-before (- pos i)) ?\\)
+                     (setq i (1+ i)))
+                   (cl-loop repeat (- i dir) do (insert "\\"))
+                   (insert closing)
+                   (backward-char (* dir i)))))
+      t)
+
+#+END_SRC
+
+**** By right
+#+BEGIN_SRC elisp
+  (defun close-quoted-open-paren-right (args)
+    (interactive "P")
+    (or args (setq args 1))
+    (close-quoted-open-paren args 0))
+
+  (defun close-all-open-paren-right ()
+    (interactive)
+    (while  (ignore-errors (close-quoted-open-paren-right 1))))
+
+#+END_SRC
+**** By left
+#+BEGIN_SRC elisp
+  (defun close-quoted-open-paren-left (args)
+    (interactive "P")
+    (or args (setq args 1))
+    (close-quoted-open-paren args 1))
+
+  (defun close-all-open-paren-left ()
+    (interactive)
+    (while  (ignore-errors (close-quoted-open-paren-left 1))))
+#+END_SRC
+*** Copy file path to kill ring (by Xah Lee)
+**** Copy file path
+#+BEGIN_SRC elisp
+(defun xah-copy-file-path (&optional φdir-path-only-p)
+  "Copy the current buffer's file path or dired path to `kill-ring'.
+Result is full path.
+If `universal-argument' is called first, copy only the dir path.
+URL `http://ergoemacs.org/emacs/emacs_copy_file_path.html'
+Version 2015-12-02"
+  (interactive "P")
+  (let ((ξfpath
+         (if (equal major-mode 'dired-mode)
+             (expand-file-name default-directory)
+           (if (null (buffer-file-name))
+               (user-error "Current buffer is not associated with a file.")
+             (buffer-file-name)))))
+    (kill-new
+     (if (null φdir-path-only-p)
+         (progn
+           (message "File path copied: 「%s」" ξfpath)
+           ξfpath
+           )
+       (progn
+         (message "Directory path copied: 「%s」" (file-name-directory ξfpath))
+         (file-name-directory ξfpath))))))
+#+END_SRC
+
+**** Copy directory path
+#+BEGIN_SRC elisp
+  (defun brust-copy-directory-only ()
+    (interactive)
+    (xah-copy-file-path t))
+#+END_SRC
+*** Customize face at point
+    A handy function for customization
+#+BEGIN_SRC elisp
+  (defun customize-face-at-point ()
+    "Customize face which point is at."
+    (interactive)
+    (let ((face (get-text-property (point) 'face)))
+      (if face
+          (customize-face face)
+        (message "No face defined at point"))))
+
+#+END_SRC
+
+*** Double Capitals
+    Convert words in DOuble CApitals to Single Capitals.
+**** The function
+#+BEGIN_SRC elisp
+(defun dcaps-to-scaps ()
+  "Convert word in DOuble CApitals to Single Capitals."
+  (interactive)
+  (and (= ?w (char-syntax (char-before)))
+       (save-excursion
+         (and (if (called-interactively-p)
+                  (skip-syntax-backward "w")
+                (= -3 (skip-syntax-backward "w")))
+              (let (case-fold-search)
+                (looking-at "\\b[[:upper:]]\\{2\\}[[:lower:]]"))
+              (capitalize-word 1)))))
+
+#+END_SRC
+**** New minor mode
+#+BEGIN_SRC elisp
+(define-minor-mode dubcaps-mode
+  "Toggle `dubcaps-mode'.  Converts words in DOuble CApitals to
+Single Capitals as you type."
+  :init-value nil
+  :lighter ("") ;; String to show in mode-line
+  (if dubcaps-mode
+      (add-hook 'post-self-insert-hook #'dcaps-to-scaps nil 'local)
+    (remove-hook 'post-self-insert-hook #'dcaps-to-scaps 'local)))
+
+
+#+END_SRC
+**** Activation
+#+BEGIN_SRC elisp
+(add-hook 'text-mode-hook #'dubcaps-mode)
+
+#+END_SRC
+*** Kill buffer
+#+BEGIN_SRC elisp
+  (defun brust-kill-buffer (del-win)
+    (if del-win
+        (if (kill-buffer) (delete-window))
+      (kill-buffer)))
+
+  (global-set-key (kbd "<C-delete>")
+                  (lambda (args) (interactive "P")
+                    (if (not args) (brust-kill-buffer nil)
+                      (save-buffer) (brust-kill-buffer nil))))
+  (global-set-key (kbd "<delete>")
+                  (lambda (args) (interactive "P")
+                    (if (not args) (brust-kill-buffer t)
+                      (save-buffer) (brust-kill-buffer t))))
+#+END_SRC
+
+*** Macro query
+#+BEGIN_SRC elisp
+(defun macro-query-my (arg)
+  "Prompt for input using minibuffer during kbd macro execution.
+   With prefix argument, allows you to select what prompt string to use.
+   If the input is non-empty, it is inserted at point."
+  (interactive "P")
+  (let* ((prompt (if arg (read-from-minibuffer "PROMPT: ") "Input: "))
+         (input (minibuffer-with-setup-hook (lambda () (kbd-macro-query t))
+                  (read-from-minibuffer prompt))))
+    (unless (string= "" input) (insert input))))
+
+
+#+END_SRC
+
+*** Mouse wheel
+    Mouse wheel: try it with S and C
+**** Functions
+#+BEGIN_SRC elisp
+(defun up-slightly () (interactive) (scroll-up 5))
+(defun down-slightly () (interactive) (scroll-down 5))
+
+(defun up-one () (interactive) (scroll-up 1))
+(defun down-one () (interactive) (scroll-down 1))
+
+(defun up-a-lot () (interactive) (scroll-up))
+(defun down-a-lot () (interactive) (scroll-down))
+
+#+END_SRC
+**** Keybindings
+#+BEGIN_SRC elisp
+(global-set-key [mouse-4] 'down-slightly)
+(global-set-key [mouse-5] 'up-slightly)
+
+(global-set-key [S-mouse-4] 'down-one)
+(global-set-key [S-mouse-5] 'up-one)
+
+(global-set-key [C-mouse-4] 'down-a-lot)
+(global-set-key [C-mouse-5] 'up-a-lot)
+
+#+END_SRC
+*** Open fast usual files (by Xah Lee)
+    This is an adaptation to my needs of [[http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html][Emacs: Hotkey to Open File Fast]] by Xah Lee.
+**** Lists
+#+BEGIN_SRC elisp
+  (defvar brust-file-list-list nil "List of association list of file/dir paths. Used by `xah-open-file-fast'. Key is a short abbrev string, Value is file path string.")
+
+  (setq
+   brust-file-list-list
+   '((xah-filelist . (
+                      ("My-Org"       . "~/Dropbox/Org/my.org")
+                      ("Th-master"    . "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
+                      ("My-theory"    . "~/Dropbox/Doctorat11/Apunts/basic-algebraic-geometry.tex")
+                      ("Com-in-Alg"   . "~/Dropbox/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
+		      ))
+     (config-files . (
+                      ("Org-init"     . "~/.emacs.d/init.org")
+                      ("el-init"      . "~/.emacs.d/init.el")
+                      ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
+		      ))))
+
+
+#+END_SRC
+
+**** Function to open it fast.
+#+BEGIN_SRC elisp
+  (defun xah-open-file-fast ()
+    "Prompt to open a file from `xah-filelist'.
+      URL `http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html'
+      Version 2015-04-23"
+    (interactive)
+    (let ((ξabbrevCode
+           (ivy-read "Open (%d) :"
+                     (mapcar 'car (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
+                                           append xx)))))
+      (find-file (cdr (assoc ξabbrevCode (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
+                                                  append xx))))))
+
+#+END_SRC
+
+**** Direct functions
+#+BEGIN_SRC elisp
+  (let ((i 0))
+    (cl-loop
+     for xx in (mapcar 'cdr brust-file-list-list) do
+     (let ((j 1)
+           (file (car xx))
+           (prfx (if (< i 1) "<f2>"
+                   (if (< i 2) (format "<f2> <f%d>" i)
+                     (format "<f2> <f%d>" (1+ i))))))
+       (setq i (1+ i))
+       (while file
+         (let ((name (intern (format "Open:%s" (car file)))))
+           (fset name
+                 `(lambda nil
+                    (interactive) (find-file ,(cdr file))))
+           (setq file (nth j xx))
+           (or (< j 10) (setq file nil j 0))
+           (global-set-key (kbd (format "%s %d" prfx j)) name)
+           (setq j (1+ j)))))))
+
+(global-set-key (kbd "<f2> <f2>") 'xah-open-file-fast)
+
+#+END_SRC
+*** Open file in external app
+
+
+    #+BEGIN_SRC elisp
+  (defun xah-open-in-external-app (&optional ξfile)
+    "Open the current file or dired marked files in external app.
+  The app is chosen from your OS's preference.
+
+  URL `http://ergoemacs.org/emacs/emacs_dired_open_file_in_ext_apps.html'
+  Version 2015-01-26"
+    (interactive)
+    (let* ((ξfile-list
+            (if ξfile (list ξfile)
+              (if (string-equal major-mode "dired-mode")
+                  (dired-get-marked-files)
+                (list (buffer-file-name)))))
+           (ξdo-it-p (if (<= (length ξfile-list) 5)
+                         t
+                       (y-or-n-p "Open more than 5 files? "))))
+
+      (when ξdo-it-p
+        (cond
+         ((string-equal system-type "windows-nt")
+          (mapc
+           (lambda (fPath)
+             (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" fPath t t))) ξfile-list))
+         ((string-equal system-type "darwin")
+          (mapc
+           (lambda (fPath) (shell-command (format "open \"%s\"" fPath)))  ξfile-list))
+         ((string-equal system-type "gnu/linux")
+          (mapc
+           (lambda (fPath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" fPath))) ξfile-list))))))
+
+#+END_SRC
+
+*** Orgmode functions
+**** COMMENT Meet notes
+#+BEGIN_SRC elisp
+(defun meeting-notes ()
+  "Call this after creating an org-mode heading for where the notes for the meeting
+should be. After calling this function, call 'meeting-done' to reset the environment."
+  (interactive)
+  (outline-mark-subtree)                              ;; Select org-mode section
+  (narrow-to-region (region-beginning) (region-end))  ;; Only show that region
+  (deactivate-mark)
+  (delete-other-windows)                              ;; Get rid of other windows
+  (text-scale-set 2)                                  ;; Text is now readable by others
+  (fringe-mode 0)
+  (message "When finished taking your notes, run meeting-done."))
+
+(defun meeting-done ()
+  "Attempt to 'undo' the effects of taking meeting notes."
+  (interactive)
+  (widen)                                       ;; Opposite of narrow-to-region
+  (text-scale-set 0)                            ;; Reset the font size increase
+  (fringe-mode 1)
+  (winner-undo))                                ;; Put the windows back in place
+
+#+END_SRC
+**** Org surround text
+***** Generic surround text
+    Usually used in Org-mode
+
+#+BEGIN_SRC elisp
+  (defun brust-char-at-point ()
+    (buffer-substring-no-properties (point) (1+ (point))))
+
+  (defun brust-move-untill (pass re-ex test)
+    (while (not (string-match-p re-ex (funcall test)))
+      (forward-char pass)))
+
+  (defun brust-string-at-point ()
+    "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)"
+    (save-excursion
+      (brust-move-untill 1 "[ \t\n\r]+\\'" 'brust-char-at-point)
+      (let ((end (point)))
+        (backward-char 1)
+        (brust-move-untill -1 "[ \t\n\r]+\\'" 'brust-char-at-point)
+        (cons (1+ (point)) end))))
+
+  (defun brust-insert-poss (nn str)
+    (goto-char nn) (insert str))
+
+  (defun surround-text (str)
+    "Surround selection or brust-string-at-point with str"
+    (interactive)
+    (save-excursion
+      (let ((poss
+             (if (use-region-p)
+                 `(,(region-beginning) . ,(region-end))
+               (brust-string-at-point))))
+        (brust-insert-poss (cdr poss) str) ;; First, the larger postion.
+        (brust-insert-poss (car poss) str))))
+#+END_SRC
+***** Org surround
+#+BEGIN_SRC elisp
+        (defun org-text-bold () "Wraps the region with asterisks."
+               (interactive)
+               (surround-text "*"))
+        (defun org-text-italics () "Wraps the region with slashes."
+               (interactive)
+               (surround-text "/"))
+        (defun org-text-code () "Wraps the region with equal signs."
+               (interactive)
+               (surround-text "="))
+#+END_SRC
+**** Eval elisp blocks under current header
+#+BEGIN_SRC elisp
+(defun brust-endless/org-eval-current-header nil
+  (interactive)
+  (brust-endless/org-eval-eblocks
+   (and (org-copy-subtree)
+	(pop kill-ring))))
+#+END_SRC
+
+*** Save and load my keyboard macros
+    From https://www.emacswiki.org/emacs/KeyboardMacrosTricks
+
+#+BEGIN_SRC elisp
+  (defvar brust-my-macro-file "~/.emacs.d/lisp/brusts-macros.el"
+    "File with all my keyboard macros")
+
+  (defun save-macro (name)
+    "Save last defined macro. Take a name as argument
+        and save the last defined macro under
+        this name at the end of your file of macros"
+    (interactive "SName of the macro :")  ; ask for the name of the macro
+    (kmacro-name-last-macro name)         ; use this name for the macro
+    (find-file brust-my-macro-file)       ; open ~/.emacs or other user init file
+    (goto-char (point-max))               ; go to the end of the .emacs
+    (newline)                             ; insert a newline
+    (insert-kbd-macro name)               ; copy the macro
+    (newline)                             ; insert a newline
+    (switch-to-buffer nil))               ; return to the initial buffera
+
+
+  (load-file brust-my-macro-file)
+
+#+END_SRC
+*** Smarter navigation into a line
+    "Move point back to indentation of beginning of line.
+
+    Move point to the first non-whitespace character on this line.
+    If point is already there, move to the beginning of the line.
+    Effectively toggle between the first non-whitespace character and
+    the beginning of the line.
+
+    If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+    point reaches the beginning or end of the buffer, stop there."
+
+    Inspired from Sacha Chua's http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/ and
+    =move-beginning-of-line= of ergoemacs-mode.
+**** to beginnings
+#+BEGIN_SRC elisp
+  (defun brust-smart-move-beginning-of-line (arg)
+    "Cicle through beginnings of the current line:
+    beginning of line, first non space char and first non sapce
+    char after comment chars"
+    (interactive "^p")
+    ;; Move lines first
+    (when (and arg (or (< 1 arg) (< arg 0)))
+      (let ((line-move-visual nil))
+        (forward-line (1- arg))))
+    ;; Use org functions in org headers
+    (if (and (string= major-mode 'org-mode)
+             (let* ((element (save-excursion (beginning-of-line)
+                                             (org-element-at-point)))
+                    (type (org-element-type element)))
+               (memq type '(headline inlinetask))))
+        (org-beginning-of-line)
+      (let ((pt (point))
+            (pnts `(,(point-at-bol)))
+            to-go)
+        ;; List of interesting points
+        (save-excursion
+          (move-beginning-of-line 1)
+          (skip-chars-forward " \t" (point-at-eol))
+          (cl-pushnew (point) pnts)
+          (when (re-search-forward
+                 (concat "\\([%;]\\|"
+                         (format "%s" comment-start-skip)
+                         "\\)")
+                 (point-at-eol) t)
+            (skip-chars-forward ";% \t" (point-at-eol))))
+        (when (bound-and-true-p visual-line-mode)
+          (save-excursion
+            (beginning-of-visual-line)
+            (unless (or (< (point) pt) (cdr pnts))
+              (backward-char 1)
+              (beginning-of-visual-line))
+            (push (point) pnts)))
+        ;; Where to go
+        (setq to-go (list-util-bounded-max pnts pt))
+        (if to-go (goto-char to-go)
+          (unless (= pt (point-at-eol))
+            (goto-char (list-util-bounded-max pnts (point-at-eol))))))))
+#+END_SRC
+
+#+RESULTS:
+: list-util-bounded-max
+
+**** to ends
+#+BEGIN_SRC elisp
+  (defun brust-smart-move-end-of-line (arg)
+    "Goes to the following end of the current line: last non sapce char before
+      comments chars, last non space char of the line and the end of line.
+      If you know that you are at the end of the current line, then you go to the following line."
+    (interactive "^p")
+    ;; Move lines first
+    (when (and arg (or (< 1 arg) (< arg 0)))
+      (let ((line-move-visual nil))
+        (forward-line (1- arg))))
+    ;; Use org functions in org headers
+    (if (and (string= major-mode 'org-mode)
+             (let* ((element (save-excursion (beginning-of-line)
+                                             (org-element-at-point)))
+                    (type (org-element-type element)))
+               (memq type '(headline inlinetask))))
+        (org-end-of-line)
+      (let ((pt (point)) ;; Where I start.
+            (pnts `(,(point-at-eol))) ;; all posible end of the line.
+            to-go) ;; The point where we will go.
+        ;; Create the list of interesting points
+        (save-excursion ;; The end of the current visual line.
+          (when (bound-and-true-p visual-line-mode)
+            (end-of-visual-line)
+            (unless (< pt (point)) (forward-char 1) (end-of-visual-line))
+            (cl-pushnew (point) pnts)))
+        (save-excursion ;; The last non-space char before coments
+          (when (re-search-forward
+                 (concat "\\([%;]\\|"
+                         (format "%s" comment-start-skip)
+                         "\\)")
+                 (point-at-eol) t)
+            (goto-char (match-beginning 0))
+            (skip-syntax-backward "\t " (point-at-bol)) (cl-pushnew (point) pnts))
+          (goto-char (point-at-eol)) ;; The last non-space char.
+          (skip-syntax-backward "\t " (point-at-bol)) (cl-pushnew (point) pnts))
+        (setq to-go (list-util-bounded-min pnts pt)) ;; Which point to go, if it is.
+        (if to-go (goto-char to-go)
+          (when (string= last-command 'brust-smart-move-end-of-line)
+            (when (< 0 (forward-line 1)) (insert "\n")) ;; Insert new line at the end of the buffer.
+            (back-to-indentation))))))
+#+END_SRC
+
+**** COMMENT Keybinding
+     Remap =C-a= to `brust-smart-move-beginning-of-line'
+     Remap =C-e= to `brust-smart-move-end-of-line'
+     Remap =M-<= to `brust-toggle-begin&end-of-buffer'
+#+BEGIN_SRC elisp
+  (global-set-key [remap move-beginning-of-line]
+                  'brust-smart-move-beginning-of-line)
+  (global-set-key [remap move-end-of-line]
+                  'brust-smart-move-end-of-line)
+  (global-set-key [remap beginning-of-buffer]
+                  'brust-toggle-begin&end-of-buffer)
+#+END_SRC
+*** String start-p
+#+BEGIN_SRC elisp
+  (defun string-starts-with-p (string prefix)
+    "Return t if STRING starts with prefix."
+    (and (string-match (rx-to-string `(: bos ,prefix) t) string) t))
+#+END_SRC
+
+*** Toggle bars
+#+BEGIN_SRC elisp
+  (defun brust-toggle-menu-tool-bars ()
+    "Toggle Emacs menu and tool bar"
+    (interactive)
+    (let ((active-p
+           (if (or menu-bar-mode tool-bar-mode) -1 1)))
+      (menu-bar-mode active-p) (tool-bar-mode active-p)))
+#+END_SRC
+
+*** Word count
+#+BEGIN_SRC elisp
+  (defun brust-wc-get-word-count-list-of-current-project nil
+    (let ((project-master (expand-file-name (TeX-master-file t nil t))))
+      (with-temp-buffer
+        (call-process-shell-command
+         (concat "texcount -opt="
+                 (expand-file-name "~/.emacs.d/LaTeX/TeXcount-emacs.txt")
+                 " -dir="
+                 (file-name-directory project-master)
+                 " "
+                 project-master)
+         nil t)
+        (re-search-backward
+         "new\\([0-9]+\\)w\\([0-9]+\\)im\\([0-9]+\\)dm\\([0-9]+\\)cd\\([0-9]+\\)h\\([0-9]+\\)file" nil t)
+        (cl-loop for xx from 1 to 6
+                 if (= xx 3) collect (number-to-string (- (string-to-number (match-string-no-properties 3))
+                                                          (string-to-number (match-string-no-properties 4))))
+                 else
+                 collect (match-string-no-properties xx)))))
+
+  (defun brust-wc-save-words nil
+    (interactive)
+    (let ((wc-sat (brust-wc-get-word-count-list-of-current-project)))
+      (find-file (concat
+                  (file-name-directory (expand-file-name (TeX-master-file t nil t)))
+                  "wc-statistics.txt"))
+      (goto-char (point-max))
+      (insert "\n" (format-time-string "%x, %X, ")
+              (cl-loop for xx in wc-sat
+                       concat (concat xx ", ")))
+      (save-buffer)
+      (kill-buffer)))
+
+  (defun brust-wc-save-words-my-thesis nil
+    (interactive)
+    (find-file "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
+    (brust-wc-save-words))
+
+
 #+END_SRC
 ** External modes
 *** Ace window
@@ -2539,8 +2539,21 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
           ivy-count-format "(%d/%d) "
           ivy-extra-directories nil ; remove . and .. directory.
           ivy-display-style 'fancy
+          ;; Don't open in directory-mode
+          ivy-extra-directories nil
           ;; Always ignore buffers set in `ivy-ignore-buffers'
           ivy-use-ignore-default 'always)
+  
+    ;; Function to open a directory
+    (defun eh-ivy-open-current-typed-path ()
+      (interactive)
+      (when ivy--directory
+        (let* ((dir ivy--directory)
+               (text-typed ivy-text)
+               (path (concat dir text-typed)))
+          (delete-minibuffer-contents)
+          (ivy--done path))))
+
     :config
     ;; Ignore some buffers in `ivy-switch-buffer'
     ;; Ignore some files in `counsel-find-file'
@@ -2606,19 +2619,22 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ("s-X"      . ivy-pop-view)
     :bind
     (:map ivy-minibuffer-map
-          ("s-k"     . ivy-next-line)
-          ("s-i"     . ivy-previous-line)
-          ("s-u"     . ivy-insert-current)
-          ("s-w"     . ivy-yank-word)
-          ("M-a"     . ivy-dispatching-done)
-          ("s-k"     . ivy-alt-done)
-          ("s-o"     . ivy-occur)
-          ;;("C-M-k" . ivy-alt-done)
-          ("C-<"     . ivy-minibuffer-shrink)
-          ("C->"     . ivy-minibuffer-grow)
-          ("<down>"  . ivy-next-history-element)
-          ("<up>"    . ivy-previous-history-element)
-          ("<right>" . ivy-insert-current)))
+          ("s-k"        . ivy-next-line)
+          ("s-i"        . ivy-previous-line)
+          ("s-u"        . ivy-insert-current)
+          ("s-w"        . ivy-yank-word)
+          ("M-a"        . ivy-dispatching-done)
+          ("s-h"        . ivy-alt-done)
+          ("s-o"        . ivy-occur)
+          ("<return>"   . ivy-alt-done)
+          ("C-<return>" . ivy-partial)
+          ("C-f"        . eh-ivy-open-current-typed-path)
+          ;;("C-M-k"    . ivy-alt-done)
+          ("C-<"        . ivy-minibuffer-shrink)
+          ("C->"        . ivy-minibuffer-grow)
+          ("<down>"     . ivy-next-history-element)
+          ("<up>"       . ivy-previous-history-element)
+          ("<right>"    . ivy-insert-current)))
 #+END_SRC
 
 **** Flyspell-correct-ivy
@@ -3323,102 +3339,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 
 
-* May be some time
-** Better ps printing
-#+BEGIN_SRC elisp
-(setq ps-multibyte-buffer 'bdf-font-except-latin)
-
-#+END_SRC
-
-** Bookmark+
-#+BEGIN_SRC elisp
-  (use-package bookmark+)
-#+END_SRC
-
-** Discover
-    To dicover emacs functionality.
-#+BEGIN_SRC elisp
-  (use-package discover
-    :init
-    (global-discover-mode 1))
-
-#+END_SRC
-
-** Dired+
-#+BEGIN_SRC elisp
-  (use-package dired+)
-#+END_SRC
-
-** Embrace
-#+BEGIN_SRC elisp
-    (use-package embrace
-      :bind* ("M-ñ". embrace-commander)
-      :chords ("zz" . embrace-commander))
-#+END_SRC
-
-** Multiple cursors
-   Learn to use it!!
-#+BEGIN_SRC elisp
-(use-package multiple-cursors
-  :bind ("C->" . mc/mark-next-like-this)
-  ("C-<" . mc/mark-previous-like-this)
-  ("C-c C-x C-<" . mc/mark-all-like-this))
-#+END_SRC
-
-** Bongo
-#+BEGIN_SRC elisp
-  (use-package bongo
-    :init
-    (setq bongo-default-directory "~/Music"
-          bongo-default-library-buffer-name "Bongo-Library"
-          bongo-default-playlist-buffer-name "Bongo-Playlist"
-          bongo-enabled-backends (quote (vlc))
-          bongo-insert-whole-directory-trees t
-          bongo-mark-played-tracks t
-          bongo-next-action (quote bongo-play-random-or-stop)
-          bongo-player-finished-hook nil)
-    (defun brust-init-bongo (args)
-      (interactive "P")
-      (bongo)
-      (bongo-insert-file "~/Music"))
-    :bind ("<f9>" . brust-init-bongo))
-#+END_SRC
-
-** Web browser
-    Set specific browser to open links
-#+BEGIN_SRC elisp
-(setq browse-url-browser-function 'eww-browse-url) ; emacs browser
-
-#+END_SRC
-
-** Org Mobile
-     #+BEGIN_SRC elisp
-  (use-package org-mobile
-    :disabled t
-    :init
-    (progn
-      (autoload 'org-mobile-pull "org-mobile" nil t)
-      (autoload 'org-mobile-push "org-mobile" nil t))
-    :config
-      (setq org-mobile-directory "~/Dropbox/config/MobilOrg")
-      (setq org-mobile-inbox-for-pull "~/Dropbox/config/MobilOrg/mobileorg.org")
-      (setq default-buffer-file-coding-system 'utf-8)
-      (setq org-mobile-files '("~/Dropbox/config/MobilOrg/Merian.org"
-                               "~/Dropbox/config/MobilOrg/my.org"))
-      (setq org-mobile-agendas '("a"))))
-#+END_SRC
-
-
-
-* What I want learn
-** Org-ref
-(key-chord-define-global "kk" 'org-ref-cite-hydra/body)
-** worf.el documentation
-** Lispy
-** Follow mode
-
-
-* TODO No more needed
+* Old stuffs
 ** Tab and indentation
 **** Distance
 #+BEGIN_SRC elisp
@@ -3458,7 +3379,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+END_SRC
 
-** TODO Auto fill yes/no
+** Auto fill yes/no
 #+BEGIN_SRC elisp
 (defun y-auto-fill () "" (auto-fill-mode 1))
 (defun n-auto-fill () "" (auto-fill-mode 0))
@@ -4099,8 +4020,6 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 
 * Not usual packages
-  :TODO:     create functions to load: maxima, singular, teaching, my-dicctionary,..
-  and not load them on any startup
   Load each with =brust-endless/org-eval-current-header=
 ** Singular
 #+BEGIN_SRC elisp
@@ -4574,10 +4493,21 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 : headlong-bookmark-jump
 
 ** Teaching
-*** Table
-#+NAME: alumnes
+   From Excel save the table in csv format into /"tmp/my-table.csv"/ using {tab} as separators.
+   Eval =C-c C-c=:
+#+BEGIN_SRC elisp
+  (find-file (concat temporary-file-directory "new-notes.org"))
+  (insert "#+NAME: alumnes\n")
+  (org-table-import (concat temporary-file-directory "my-table.csv") nil)
+  (goto-char (point-max))
+  (insert "\n\n")
+#+END_SRC
 
-*** Function
+#+RESULTS:
+
+  And copy the following subtree =C-c C-x M-w= under the table and eval the code.
+
+*** Teaching functions
 #+BEGIN_SRC elisp :command export :var data=alumnes
   (require 's)
 
@@ -4644,7 +4574,6 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
             (completing-read "Jump to bookmark: " bookmark-alist nil t))))
     (ignore-errors
       (bookmark-jump bookmark)))
-
   ;; end abo-abo.
 
   (defun string-reverse (str)
