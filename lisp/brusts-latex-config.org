@@ -1,6 +1,6 @@
 
-* TODO LaTeX-init
-** COMMENT To use accents as char itself.
+* TODO init
+** COMMENT To insert accents.
    I do not need these any more, now I use the char =ñ=!!
 #+BEGIN_SRC elisp
   (require 'iso-transl)  
@@ -65,7 +65,7 @@
 
 
 
-* LaTeX-config
+* config
 ** Save options
 #+BEGIN_SRC elisp
      (setq TeX-save-query    nil ;; Don't query on TeX-save-document "C-c C-d" save all files of the document.
@@ -99,8 +99,7 @@
 
 #+END_SRC
 
-** Set seccions face
-*** Scale
+** Set sections face high
 #+BEGIN_SRC elisp
 (setq font-latex-fontify-sectioning 1.15)
 
@@ -413,7 +412,7 @@
 #+BEGIN_SRC elisp
   (defvar brust/LaTeX/init-dir "Directory of the tamplets")
 
-  (setq brust/LaTeX/init-dir "~/.emacs.d/LaTeX")
+  (setq brust/LaTeX/init-dir "~/Dropbox/LaTeX/")
 #+END_SRC
 
 ****** The function.
@@ -546,7 +545,7 @@
       (with-temp-buffer
         (call-process-shell-command
          (concat "texcount -opt="
-                 (expand-file-name "~/.emacs.d/LaTeX/TeXcount-emacs.txt")
+                 (expand-file-name "~/Dropbox/LaTeX/TeXcount-emacs.txt")
                  " -dir="
                  (file-name-directory project-master)
                  " "
@@ -575,7 +574,7 @@
 
   (defun brust-wc-save-words-my-thesis nil
     (interactive)
-    (find-file "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
+    (find-file "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
     (brust-wc-save-words))
 
 
@@ -682,7 +681,7 @@
 #+END_SRC
 
 
-* cdLaTeX
+* CDLaTeX
 
 ** Initial config
 
