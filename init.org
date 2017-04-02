@@ -4418,10 +4418,13 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
   (global-set-key (kbd "<s-return>") 'brust-my-dictionary-new-entry)
 
+  (defvar brust-my-dictionary-dir "Directory where is the dictionary")
 
+  (setq brust-my-dictionary-dir "~/Dropbox/English/My-dictionary/")
 
   (defun brust-my-dictionary-open-an-entry (header)
-    (find-file (concat "~/Dropbox/English/My-dictionary/sections/"
+    (find-file (concat brust-my-dictionary-dir
+                       "sections/"
                        (capitalize (substring header 0 1))
                        "/"
                        (replace-regexp-in-string "[ ]" "-" header)
@@ -4431,7 +4434,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
     (interactive (list
                   (read-string "Give me the header:")))
     (brust-my-dictionary-open-an-entry header)
-    (insert-file-contents "~/Dropbox/English/My-dictionary/tamplate-new-entry.tex")
+    (insert-file-contents (concat brust-my-dictionary-dir "tamplate-new-entry.tex"))
     (goto-char (point-min))
     (search-forward "entry{}{}{}{}" nil t)
     (backward-char 7)
@@ -4447,7 +4450,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
         "Give me the entry to edit:"
         (cl-remove-duplicates
          (mapcar (lambda (x) (replace-regexp-in-string "[-]" " " (file-name-base x)))
-                 (directory-files-recursively "~/Dropbox/English/My-dictionary/sections" ".+[.]tex"))
+                 (directory-files-recursively (concat brust-my-dictionary-dir "sections") ".+[.]tex"))
          :test (lambda (x y) (string= x y)))
         nil t))))
     (brust-my-dictionary-open-an-entry header))
