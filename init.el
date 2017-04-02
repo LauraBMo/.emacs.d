@@ -4,6 +4,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
+ '(org-agenda-files
+   (quote
+    ("~/Dropbox/Org/travels.org" "~/Dropbox/Org/my.org")))
  '(package-selected-packages
    (quote
     (org git-gutter-fringe+ package-utils wc-mode iedit wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame discover mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet bookmark+ bm embrace flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill fix-word org-mode emms key-chord golden-ratio use-package diminish auctex pdf-tools singular dired-x smartparents zone-nyan xah-lookup xah-find whitespace-cleanup-mode which-key volume use-package-chords undo-tree spinner smex smartparens smart-mode-line nyan-mode multiple-cursors magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region emms-mode-line-cycle emms-mark-ext emms-info-mediainfo ebib dired+ darktooth-theme company-math company-auctex color-theme chess cdlatex bongo auto-compile ace-window)))
