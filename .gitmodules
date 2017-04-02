@@ -1,0 +1,3 @@
+[submodule "lisp/keyfreq"]
+	path = lisp/keyfreq
+	url = https://github.com/dacap/keyfreq.git

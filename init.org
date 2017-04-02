@@ -2203,6 +2203,14 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+RESULTS:
 : t
 
+*** Key-frequency
+#+BEGIN_SRC elisp
+(require 'keyfreq)
+(keyfreq-mode 1)
+(keyfreq-autosave-mode 1)
+
+#+END_SRC
+
 *** Mic parent
    How to show the matching paren when it is offscreen
 #+BEGIN_SRC elisp
