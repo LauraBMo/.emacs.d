@@ -1720,30 +1720,23 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 *** Company
 #+BEGIN_SRC elisp
   (use-package company
-    :defer 5
+    :defer t
     :init 
     (setq  company-idle-delay 0.1
            company-lighter-base ""
            company-minimum-prefix-length 2
            company-show-numbers t)
-    (defun brust-company-abort-insert-spc ()
-      (interactive)
-      (company-abort)
-      (insert " "))
-    (defun brust-company-complete-selection-and-continue nil
-      (interactive)
-      (company-complete-selection))
     :bind (:map company-active-map
-                ("C-<return>"   . company-complete-common-or-cycle)  
-                ("<return>"     . company-complete-selection)
-                ("M-<return>"   . brust-company-complete-selection-and-continue)
-                ("TAB"          . company-abort)
-                ("<tab>"        . company-abort)
-                ("M-i"          . company-select-previous)
-                ("M-k"          . company-select-next)
-                ("C-d"          . company-show-doc-buffer)
-                ("C-l"          . company-show-location)
-                ("SPC"          . brust-company-abort-insert-spc))
+                ("<return>" . company-complete-selection)
+                ("TAB"      . company-abort)
+                ("<tab>"    . company-abort)
+                ("s-l"      . company-complete-common)  
+                ("s-i"      . company-select-previous)
+                ("s-k"      . company-select-next)
+                ("s-o"      . company-complete-selection)
+                ("s-g"      . company-abort)
+                ("C-d"      . company-show-doc-buffer)
+                ("C-l"      . company-show-location))
     :config 
     (global-company-mode)
     (use-package company-shell
