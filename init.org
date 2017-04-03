@@ -2423,6 +2423,17 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 
+*** Visual regexp
+#+BEGIN_SRC elisp
+  (use-package visual-regexp
+    :bind
+    ("M-s-r" . vr/replace)
+    ("s-r"   . vr/query-replace))
+  ;; Use multiple-cursors, this is for you:
+  ;; ("C-c m" . vr/mc-mark)
+
+#+END_SRC
+
 *** Wgrep
 #+BEGIN_SRC elisp
   (use-package wgrep
@@ -2532,7 +2543,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+RESULTS:
 : t
 
-** ToDo a clean
+** TODO To still clean
 *** Ivy
 **** General ivy
     - Learn ivy-bibtex
@@ -2622,7 +2633,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ("<f2> i"   . counsel-info-lookup-symbol)
     ;;("<f2> u" . counsel-unicode-char)
     ("C-b"      . ivy-switch-buffer)
-    ("s-r"      . counsel-git-grep)
+    ("s-g"      . counsel-git-grep)
     ("M-b"      . counsel-bookmark)
     ("C-M-b"    . ivy-resume)
     ("s-x"      . ivy-push-view)
