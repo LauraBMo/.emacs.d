@@ -7,7 +7,7 @@
  '(org-agenda-files (quote ("~/Dropbox/Org/")))
  '(package-selected-packages
    (quote
-    (visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish auctex pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-math company-auctex color-theme chess cdlatex auto-compile ace-window)))
+    (org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish auctex pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-math company-auctex color-theme chess cdlatex auto-compile ace-window)))
  '(safe-local-variable-values (quote ((eval brust-wc-save-words)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -32,11 +32,12 @@
  '(org-block ((t (:inherit default))))
  '(org-block-begin-line ((t (:inherit org-meta-line :overline t :underline t :slant italic))))
  '(org-block-end-line ((t (:inherit org-block-begin-line))))
+ '(org-checkbox ((t (:foreground "#000000" :background "#93a1a1" :box (:line-width -3 :color "#93a1a1" :style "released-button")))))
  '(org-date ((t (:foreground "DarkSlateGray3" :weight bold))))
- '(org-level-1 ((t (:foreground "DarkOrange2" :weight bold :height 1.3))))
- '(org-level-2 ((t (:foreground "DarkOliveGreen3" :weight bold :height 1.2))))
- '(org-level-3 ((t (:foreground "#83A598" :height 1.15))))
- '(org-level-4 ((t (:foreground "#FABD2F" :height 1.1))))
+ '(org-level-1 ((t (:family "Sans Serif" :foreground "DarkOrange2" :weight bold :height 1.3))))
+ '(org-level-2 ((t (:family "Sans Serif" :foreground "DarkOliveGreen3" :weight bold :height 1.2))))
+ '(org-level-3 ((t (:family "Sans Serif" :foreground "#83A598" :height 1.15))))
+ '(org-level-4 ((t (:family "Sans Serif" :foreground "#FABD2F" :weight bold :height 1.1))))
  '(org-table ((t (:foreground "#84BB26"))))
  '(shadow ((t (:foreground "gray48"))))
  '(show-paren-match ((t (:background "turquoise" :height 1.15))))
