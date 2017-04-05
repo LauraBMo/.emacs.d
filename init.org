@@ -2243,7 +2243,8 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ;; (nyan-start-animation)
     (use-package zone-nyan
       :config
-      (setq zone-programs [zone-nyan])
+      (setq zone-programs [zone-nyan]
+            zone-nyan-hide-progress t)
       (use-package zone
         :config
         (zone-when-idle (* 5 60)))))
