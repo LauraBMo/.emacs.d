@@ -904,7 +904,7 @@ abort completely with `C-g'."
           org-cycle-global-at-bob t
           org-startup-folded t
           org-hide-emphasis-markers t
-          org-ellipsis " ▼"
+          ;;org-ellipsis " ▼"
           ;;org-completion-use-ido t
           org-outline-path-complete-in-steps nil
           org-src-fontify-natively t   ;; Pretty code blocks
@@ -1007,6 +1007,23 @@ abort completely with `C-g'."
 
 #+RESULTS:
 | (lambda nil (require (quote org-ref)) (require (quote org-ref-latex))) | org-ref-latex-cite-on | er/add-latex-mode-expansions | flyspell-ignore-tex | outline-minor-mode | flyspell-mode | turn-on-reftex | LaTeX-math-mode | turn-on-cdlatex | visual-fill-column-mode | aggressive-indent-mode |
+*** Outline mode
+    Set symbol and face for ellipsis, from http://emacs.stackexchange.com/questions/17806/set-face-of-outline-ellipsis
+#+BEGIN_SRC elisp
+  (defun brust-outline-mode-set-ellipsis nil
+    (let ((display-table
+           (if buffer-display-table
+               buffer-display-table
+             (make-display-table))))
+      (unless buffer-display-table
+        (setq buffer-display-table display-table))
+      (set-display-table-slot display-table 4
+                              (vconcat (mapcar (lambda (c)
+                                                 (make-glyph-code c 'font-lock-keyword-face)) " ↴")))))
+
+  (add-hook 'outline-mode-hook #'brust-outline-mode-set-ellipsis)
+  (add-hook 'outline-minor-mode-hook #'brust-outline-mode-set-ellipsis)
+#+END_SRC
 
 *** Save cursor position
 #+BEGIN_SRC elisp
