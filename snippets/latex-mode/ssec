@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: section
+# name: ssection
 # key: ssec
 # --
 \subsection{${1:name}}

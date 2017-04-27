@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: section
+# name: chapter
 # key: chap
 # --
 \chapter{${1:name}}
