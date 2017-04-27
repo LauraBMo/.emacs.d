@@ -78,7 +78,7 @@
 #+END_SRC
 ** Master file
 #+BEGIN_SRC elisp
-(setq TeX-master 'dwin)
+(setq-default TeX-master 'dwin)
 
 #+END_SRC
 ** COMMENT Electric
@@ -297,7 +297,7 @@
 #+END_SRC
 ****** TODO Whole document
 #+BEGIN_SRC elisp
-  (defun brust/query-replace-document-TeX (&optional from to)
+  (defun brust-query-replace-document-TeX (&optional from to)
     "From reftex.el; Do `query-replace-regexp' of FROM with TO over the entire document.
   Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
   If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
@@ -323,7 +323,7 @@
 
 ****** TODO Whole directory
 #+BEGIN_SRC elisp
-  (defun brust/replace-regex-dir (from to ext)
+  (defun brust-replace-regex-dir (from to ext)
     "(defun ... (from to ext)) ;; ext -> extencion"
     (interactive
      (list
@@ -337,12 +337,12 @@
       (mapc (lambda (xbuffer)
                (if (get-buffer xbuffer)
                    (progn 
-                     (brust/replace-regex-whole-buffer from to)
+                     (brust-replace-regex-whole-buffer from to)
                      (save-buffer))
                  (progn 
                    ;; (dired-find-alternate-file)
                    (find-file (concat xdir xbuffer))
-                   (brust/replace-regex-whole-buffer from to)
+                   (brust-replace-regex-whole-buffer from to)
                    (save-buffer)
                    (kill-buffer))))
             (directory-files xdir nil (concat "^[^.#~]+\\." ext "$")))
@@ -356,7 +356,7 @@
 
 ****** TODO Whole buffer
 #+BEGIN_SRC elisp
-  (defun brust/replace-regex-whole-buffer (from to)
+  (defun brust-replace-regex-whole-buffer (from to)
     (interactive)
     (save-excursion 
       (goto-char (point-min))
@@ -367,7 +367,7 @@
 *** Compile only
 #+BEGIN_SRC elisp
 
-  (defun brust-get-path-to-a-file-from-TeX-master (file)
+  (defun brust-compile-only-get-rel-path-to-file (file)
     (save-excursion 
       (goto-char (point-min))
       (re-search-forward (concat "include{\\(.*" file "\\)}") nil t)
@@ -377,7 +377,7 @@
     (delete-region (point-min) (point-max))
     (insert -string))
 
-  (defun brust/compile-only (arg)
+  (defun brust-compile-only (arg)
     "Can Compile the master file with an \includeonly{buffer-from-called}.
        +If it is called from the master file (or 3 times C-u) all include's are compiled.
        +The reference to the master file can be an absolute path or ../master.
@@ -391,16 +391,15 @@
           (find-file (TeX-master-file t nil t))
           (save-excursion
             (let ((latex/view-after-compile nil)
-                  (path-to-file (brust-get-path-to-a-file-from-TeX-master init))
-                  (text-buffer (buffer-string)))
+                  (master-file (buffer-string)))
               (goto-char (point-min))
               (re-search-forward "^\\\\documentclass.*{.*}.*")
               (insert
                "\n\\includeonly{"
-               path-to-file
+               (brust-compile-only-get-rel-path-to-file init)
                "}")
               (latex/compile-commands-until-done arg)
-              (brust-restore-buffer-to text-buffer)))
+              (brust-restore-buffer-to master-file)))
           (set-buffer init)
           (set-window-buffer nil init)
           (goto-char pt)
@@ -410,14 +409,14 @@
 *** Iniciar un document LaTeX
 ****** Variabls
 #+BEGIN_SRC elisp
-  (defvar brust/LaTeX/init-dir "Directory of the tamplets")
+  (defvar brust-LaTeX-init-dir "Directory of the tamplets")
 
-  (setq brust/LaTeX/init-dir "~/Dropbox/LaTeX/")
+  (setq brust-LaTeX-init-dir "~/Dropbox/LaTeX/")
 #+END_SRC
 
 ****** The function.
 #+BEGIN_SRC elisp
-        (defun brust/LaTeX/init (name lang doc math bib)
+        (defun brust-LaTeX-init (name lang doc math bib)
           (interactive (list (ido-read-file-name "What file (all path)?  " nil "master.tex")
                              (ido-completing-read "Idiome?  " (list "Eng" "Cat" "Spain"))
                              (ido-completing-read "Doc type?  " (list "article" "book" "bemmar"))
@@ -425,9 +424,9 @@
                              (y-or-n-p-with-timeout "Do you want the default bib? Say 'n' or wait.  " 3 t)))
           (let ((dir (file-name-directory name)))
       ;;; Standard packages.
-           (when (brust/LaTeX/copy "package.tex") 
+           (when (brust-LaTeX-copy "package.tex") 
             (find-file (concat dir "/package.tex"))
-            (brust/LaTeX/look-for "::idiom::")
+            (brust-LaTeX-look-for "::idiom::")
             (if (string= lang "Eng") (insert "english")
               (if (string= lang "Cat") (insert "catalan")
                 (insert "spanish"))
@@ -435,38 +434,38 @@
               (insert "\n\frenchspacing")))
             (save-buffer) (kill-buffer)
       ;;; Create the file
-            (ignore-errors (copy-file (concat brust/LaTeX/init-dir "/tamplate.tex") name))
+            (ignore-errors (copy-file (concat brust-LaTeX-init-dir "/tamplate.tex") name))
             (find-file name)
       ;;; Doc type
-            (brust/LaTeX/look-for "::docType::")
+            (brust-LaTeX-look-for "::docType::")
             (insert doc)
           ;;; Math part
-            (brust/LaTeX/look-for "%%::math::")
+            (brust-LaTeX-look-for "%%::math::")
             (when math
-              (brust/LaTeX/copy "package-math.tex")
-              (brust/LaTeX/copy "style&command.tex")
+              (brust-LaTeX-copy "package-math.tex")
+              (brust-LaTeX-copy "style&command.tex")
               (insert "\\input{package-math}\n\\input{style&command}"))
       ;;; Bibliography
-            (brust/LaTeX/look-for "%%::bib::")
+            (brust-LaTeX-look-for "%%::bib::")
             (when bib
-              (copy-directory (concat brust/LaTeX/init-dir "/bib")  nil t t)
+              (copy-directory (concat brust-LaTeX-init-dir "/bib")  nil t t)
               (insert "\input{bibliography}\n\bibliography{bib/bib2,bib/ega,bib/sga,bib/semBourbaki}"))
-            (brust/LaTeX/look-for "%%::bib2::")
+            (brust-LaTeX-look-for "%%::bib2::")
             (when bib
               (insert "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%
   \printbibliography                             %%%\n%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"))
             ;;; Title and author
-            (brust/LaTeX/look-for "::author::")
+            (brust-LaTeX-look-for "::author::")
             (if (y-or-n-p-with-timeout "Standard author (say 'n' of wait)? " 0.5 t)
                 (insert "Pau Brustenga Moncusí"))
-            (brust/LaTeX/look-for "::title::")
+            (brust-LaTeX-look-for "::title::")
             (save-buffer)))
 
 #+END_SRC
 ******* Support functions
 ******** Look for
 #+BEGIN_SRC elisp
-    (defun brust/LaTeX/look-for (str-search)
+    (defun brust-LaTeX-look-for (str-search)
       (goto-char (point-min))
       (search-forward str-search nil t)
       (delete-region (match-beginning 0) (match-end 0)))
@@ -474,8 +473,8 @@
 #+END_SRC
 ******** Copy
 #+BEGIN_SRC elisp
-  (defun brust/LaTeX/copy (str-copy)
-    (ignore-errors (copy-file (concat brust/LaTeX/init-dir "/" str-copy) dir)
+  (defun brust-LaTeX-copy (str-copy)
+    (ignore-errors (copy-file (concat brust-LaTeX-init-dir "/" str-copy) dir)
                    t))
 #+END_SRC
 *** Brust-env
@@ -522,7 +521,7 @@
             ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
             ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
             ;; (xah-find-replace-text)
-            ;; (brust/replace-regex-dir
+            ;; (brust-replace-regex-dir
             (reftex-query-replace-document 
              (concat "{" prefix-old ":" name "}$") ;;str1
              (concat "{" prefix-new ":" name "}"))
@@ -1014,11 +1013,11 @@
     (if (texmathp) ad-do-it
       (insert (event-basic-type last-command-event))))
 
-  (defun brust/cdlatex-free-keys nil
+  (defun brust-cdlatex-free-keys nil
     (define-key cdlatex-mode-map (kbd "'") nil)
     (define-key cdlatex-mode-map (kbd "`") nil))
 
-  (add-hook 'LaTeX-mode-hook 'brust/cdlatex-free-keys t)
+  (add-hook 'LaTeX-mode-hook 'brust-cdlatex-free-keys t)
 
   (defadvice cdlatex-math-symbol (around out-math activate)
     (if (texmathp) ad-do-it

@@ -588,6 +588,9 @@
 
   (quietly-read-abbrev-file)
 #+END_SRC
+
+#+RESULTS:
+
 **** To use it as snippet
 #+BEGIN_SRC elisp
 (defun my-after-abbrev-expand ()
@@ -641,11 +644,13 @@ abort completely with `C-g'."
       (user-error "No typo at or before point"))))
 
 #+END_SRC
+
 ***** Keybinding
 #+BEGIN_SRC elisp
 (define-key ctl-x-map "\C-i"
   #'endless/ispell-word-then-abbrev)
 #+END_SRC
+
 *** Auto revert
     I need this to work with Git and branching.
     Auto refresh all buffers when files have changed on disk.
@@ -654,16 +659,17 @@ abort completely with `C-g'."
   (diminish 'auto-revert-mode)
 
 #+END_SRC
+
 *** Auto composition
     Disabled it, I never use it.
 #+BEGIN_SRC elisp
 (global-auto-composition-mode 0)
 #+END_SRC
+
 *** Bookmarks
 #+BEGIN_SRC elisp
 (setq bookmark-default-file "~/.emacs.d/backups/bookmarks"
       bookmark-save-flag 1) ;; autosave each change
-
 #+END_SRC
 
 *** Desktop save
@@ -698,6 +704,7 @@ abort completely with `C-g'."
            '(dired-mode Info-mode info-lookup-mode fundamental-mode)
            do (cl-pushnew mm desktop-modes-not-to-save))
 #+END_SRC
+
 *** Delete selection on type.
 
 #+BEGIN_SRC elisp
@@ -705,6 +712,7 @@ abort completely with `C-g'."
 ;; (setq delete-selection-save-to-register 'kill-ring)
 
 #+END_SRC
+
 *** Dired
 **** Settings
      In Dired, visit this file or directory instead of the Dired buffer.
@@ -808,6 +816,10 @@ abort completely with `C-g'."
           ;; try-expand-by-dict
           ))
 #+END_SRC
+
+#+RESULTS:
+| try-complete-file-name-partially | try-complete-file-name | pcomplete | try-expand-all-abbrevs | try-expand-dabbrev |
+
 *** Info mode
 #+BEGIN_SRC elisp
 (defun add-browser-backspace-key-to-Info-mode ()
@@ -872,6 +884,10 @@ abort completely with `C-g'."
   (isearch-push-state)
   (isearch-update))
 #+END_SRC
+
+#+RESULTS:
+: isearch-delete-something
+
 *** Line and column numbers
     Show line and column numbers just in the =mode-line=
 #+BEGIN_SRC elisp
@@ -879,8 +895,13 @@ abort completely with `C-g'."
 (setq-default line-number-mode t
               column-number-mode t)
 #+END_SRC
+
+#+RESULTS:
+: t
+
 *** Org mode
-**** My =org-mode= config.                                              :org:
+**** My =org-mode= config.                                                :org:
+
 #+BEGIN_SRC elisp
   (use-package org
     :ensure nil
@@ -913,7 +934,20 @@ abort completely with `C-g'."
           org-edit-src-auto-save-idle-delay 20
           org-confirm-babel-evaluate nil
           org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
-                              (sequence "|" "CANCELED(c)")))
+                              (sequence "|" "CANCELED(c)"))
+          org-return-follows-link 1
+          org-link-frame-setup (quote ((file . find-file)))
+          org-agenda-todo-list-sublevels nil
+          org-deadline-warning-days 3
+          org-agenda-skip-scheduled-if-done 1
+          org-agenda-skip-deadline-if-done 1
+          org-agenda-skip-deadline-if-done 1)
+
+    ;; org-mode my agenda view
+    (setq org-agenda-custom-commands
+          '(("h" "My agenda view"
+             ((agenda "")
+              (todo)))))
 
     :bind (:map org-mode-map
                 ("s-b" . org-text-bold)
@@ -955,7 +989,14 @@ abort completely with `C-g'."
              '(("TODO"       . "⚑")
                ("DOING"      . "⚐")
                ("CANCELED"   . "✘")
-               ("DONE"       . "✔")))))
+               ("DONE"       . "✔"))))
+    :bind
+    ;; ("C-c l" . org-store-link)
+    ;; ("C-c c" . org-capture)
+    ("C-c a" . org-agenda)
+    ("C-c b" . org-iswitchb))
+
+
 #+END_SRC
 
 #+RESULTS:
@@ -2557,7 +2598,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :config
     (setq yas-snippet-dirs '("~/.emacs.d/snippets" ;; personal snippets
                              yas-installed-snippets-dir) ;; the default collection
-          yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
+          ;; yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
           yas-wrap-around-region t)
     (yas-reload-all))
 #+END_SRC
@@ -2827,7 +2868,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 
-**** Change math display
+*** Change math display
      from http://emacs.stackexchange.com/questions/13933/cycling-through-latex-math-mode-and-equation
 #+BEGIN_SRC elisp
   (defun cycle-texmath nil
