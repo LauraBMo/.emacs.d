@@ -515,8 +515,8 @@
    ("<f5> <f5>"   . brust-toggle-menu-tool-bars)
    ("C-f"         . backward-delete-char-untabify)
    ("M-f"         . backward-kill-word)
-   ("<C-home>"    . delete-other-windows)
-   ("<C-end>"     . delete-window))
+   ("<home>"      . delete-other-windows)
+   ("<end>"       . delete-window))
 
   (global-set-key (kbd "C-x C-S-e")
                   (lambda (str end) "Eval region" (interactive "r")
@@ -1299,20 +1299,27 @@ Single Capitals as you type."
 #+END_SRC
 *** Kill buffer
 #+BEGIN_SRC elisp
-  (defun brust-kill-buffer (del-win)
-    (if del-win
-        (if (kill-buffer) (delete-window))
+  (defun brust-kill-buffer-delete-window (arg)
+    (interactive "P")
+    (when arg (save-buffer)) 
+    (when (if (not server-buffer-clients)
+              (kill-buffer)
+            (server-edit) t)
+      (delete-window)))
+
+  (defun brust-kill-buffer (arg)
+    (interactive "P")
+    (when arg (save-buffer)) 
+    (if server-buffer-clients
+        (server-edit)
       (kill-buffer)))
 
-  (global-set-key (kbd "<C-delete>")
-                  (lambda (args) (interactive "P")
-                    (if (not args) (brust-kill-buffer nil)
-                      (save-buffer) (brust-kill-buffer nil))))
-  (global-set-key (kbd "<delete>")
-                  (lambda (args) (interactive "P")
-                    (if (not args) (brust-kill-buffer t)
-                      (save-buffer) (brust-kill-buffer t))))
+  (bind-key "<C-delete>" #'brust-kill-buffer-delete-window)
+  (bind-key* "<delete>" #'brust-kill-buffer)
 #+END_SRC
+
+#+RESULTS:
+: brust-kill-buffer
 
 *** Macro query
 #+BEGIN_SRC elisp
