@@ -119,8 +119,8 @@
         reftex-use-multiple-selection-buffers nil
         ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
         ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
-        reftex-default-bibliography '("~/Dropbox/bibliografy/my.bib"
-                                      "~/Dropbox/bibliografy/zotero-bibl.bib")    
+        reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
+                                      "~/Dropbox/bibliography/zotero-bibl.bib")    
         reftex-cite-prompt-optional-args nil
         reftex-cite-cleanup-optional-args t
         ;; So that RefTeX also recognizes \addbibresource. Note that you

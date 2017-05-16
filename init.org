@@ -1030,10 +1030,10 @@ abort completely with `C-g'."
     :after org
     :init
     (setq org-ref-default-bibliography
-          '("~/Dropbox/bibliografy/my.bib")
-          org-ref-bibliography-notes "~/Dropbox/bibliografy/notes.org"
+          '("~/Dropbox/bibliography/my.bib")
+          org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
           org-ref-completion-library 'org-ref-ivy-cite
-          org-ref-pdf-directory "~/Dropbox/bibliografy/pdf")
+          org-ref-pdf-directory "~/Dropbox/bibliography/pdf")
 
     (setq bibtex-autokey-year-length 4
           bibtex-autokey-name-year-separator "-"
