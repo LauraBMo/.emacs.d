@@ -1108,11 +1108,28 @@ abort completely with `C-g'."
           compile-command file-name-history)
         savehist-file "~/.emacs.d/backups/history")
 #+END_SRC
+*** Server
+#+BEGIN_SRC elisp
+  (require 'server)
+  (unless (server-running-p) (server-start))
+
+;; see delete keys new generic functions -> kill buffer.
+
+;; ;; To kill a server buffer with the usual key 
+;; (add-hook 'server-switch-hook
+;;           (lambda nil
+;;             (when (current-local-map)
+;;               (use-local-map (copy-keymap (current-local-map))))
+;;             (when server-buffer-clients
+;;               (local-set-key (kbd "C-x k") 'server-edit))))
+;;
+#+END_SRC
 *** Shift select
     When non-nil, shifted motion keys activate the mark momentarily.
 #+BEGIN_SRC elisp
 (setq shift-select-mode t)
 #+END_SRC
+
 ** New generic functions
 *** Beginning<->end of a buffer
 #+BEGIN_SRC elisp
