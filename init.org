@@ -14,6 +14,7 @@
         inhibit-startup-screen t
         inhibit-startup-message t)
 #+END_SRC
+
 *** My init echo area message
     This may breaks in future versions, look at http://yann.hodique.info/blog/rant-obfuscation-in-emacs/
 #+BEGIN_SRC elisp
@@ -23,6 +24,7 @@
   (message "gc-cons-threshold restored to %S; Emacs init time: %s!"
 	   gc-cons-threshold (emacs-init-time)))
 #+END_SRC
+
 *** Scratch message
 #+BEGIN_SRC elisp
   (setq initial-scratch-message ";;;;;;;;;;;;; Bon Dia!!!! ;;;;;;;;;;;;;;;;\n\n\n")
@@ -57,6 +59,7 @@
 #+BEGIN_SRC elisp
 (setq confirm-kill-emacs nil)
 #+END_SRC
+
 *** Backup's
     Files into backups and auto-save-list.
 #+BEGIN_SRC elisp
@@ -66,6 +69,7 @@
         vc-make-backup-files t
         auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 #+END_SRC
+
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
   (when (member "Monoid HalfTight" (font-family-list))
@@ -202,14 +206,17 @@
 (put 'upcase-region               'disabled nil)
 (put 'downcase-region             'disabled nil)
 #+END_SRC
+
 *** Auto create non-existent files
 #+BEGIN_SRC elisp
 (setq confirm-nonexistent-file-or-buffer nil)
 #+END_SRC
+
 *** Answer any question with y or n
 #+BEGIN_SRC elisp
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
 ** Package.el
 *** General setting
 #+BEGIN_SRC elisp
