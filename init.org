@@ -39,6 +39,19 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 #+END_SRC
+*** StartUp files
+#+BEGIN_SRC elisp
+  (defun brust-init-files nil
+    (cl-loop for xx in
+             '("~/Dropbox/Org/my.org"
+               "~/Dropbox/Math/Doctorat_Laura/crossBlowup/master.tex"
+               "~/Dropbox/Org/Doc.org")
+             do (when (file-exists-p xx)
+                  (find-file xx))))
+
+  (add-hook 'emacs-startup-hook #'brust-init-files)
+#+END_SRC
+
 *** Clipboard
      Save whatever in the current (system) clipboard before replacing it with the Emacs' text.
 #+BEGIN_SRC elisp
@@ -679,7 +692,7 @@ abort completely with `C-g'."
       bookmark-save-flag 1) ;; autosave each change
 #+END_SRC
 
-*** Desktop save
+*** COMMENT Desktop save
     Type =M-x desktop-clear= to empty the Emacs desktop.
 
 #+BEGIN_SRC elisp
