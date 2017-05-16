@@ -2323,6 +2323,68 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+END_SRC
 
+*** LaTeX-mode-config
+
+#+BEGIN_SRC elisp
+  (use-package tex 
+    :ensure auctex
+    :mode ("\\.tex\\'"  . LaTeX-mode)
+    :mode ("\\.sty\\'"  . LaTeX-mode)
+    :mode ("\\.bib\\'"  . bibtex-mode)
+    :diminish 'reftex-mode
+    :diminish 'outline-minor-mode
+    :diminish 'flyspell-mode
+    :init
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
+    :config
+    (use-package cdlatex
+      :diminish cdlatex-mode
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
+      :bind
+      (:map cdlatex-mode-map
+            ("'" . nil)
+            ("`" . nil)
+            ("Ñ" . cdlatex-math-modify)
+            ("¡" . cdlatex-math-modify)
+            ("ñ" . cdlatex-math-symbol)))
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    :bind 
+    (:map LaTeX-mode-map
+          ("ç"              . brust-LaTeX-insert-math1)
+          ("Ç"              . brust-LaTeX-insert-math2)
+          ("."              . brust-LaTeX-smart-period)
+          ("<backtab>"      . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ("C-x C-s"        . brust-LaTeX-save)
+          ("C-c C-e"        . LaTeX-env-brust)
+          ("C-c n"          . TeX-next-error)
+          ("C-c e"          . TeX-error-overview)
+          ("C-c C-a"        . brust-compile-only)
+          ("s-="            . reftex-toc) 
+          ("s-ç"            . brust-LaTeX-smart-selection) 
+          ("C-c C-q"        . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"    . brust-wc-save-words)
+          ;; ("C-c C-a"     . latex/compile-commands-until-done)
+          ;; ("C-c C-a"     . TeX-texify) ;; subtitut by latex-extra
+                   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+          ;; ("<M-S-up>"    . latex/up-section)
+          ;; ("<tab>"       . latex/hide-show)
+          ;; ("<backtab>"   . latex/hide-show-all)
+          ;; (""            . latex/next-section)
+          ;; (""            . latex/next-section-same-level)
+          ;; (""            . latex/beginning-of-line)
+          ("C-M-e"          . latex/end-of-environment)
+          ("C-M-a"          . latex/beginning-of-environment)
+          ("C-M-p"          . latex/backward-environment)
+          ("C-M-n"          . latex/forward-environment)
+          ("C-M-9"          . cycle-texmath)
+          ))
+
+#+END_SRC
+
+#+RESULTS:
+
 *** Mic parent
    How to show the matching paren when it is offscreen
 #+BEGIN_SRC elisp
@@ -2645,8 +2707,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : t
-
-** TODO To still clean
 *** Ivy
 **** General ivy
     - Learn ivy-bibtex
@@ -2790,123 +2850,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
         (delete-region (car bnd) (cdr bnd))
         (insert res))))
 #+END_SRC
-
-*** TODO LaTeX
-
-#+BEGIN_SRC elisp
-  (use-package tex 
-    :ensure auctex
-    :mode ("\\.tex\\'"  . LaTeX-mode)
-    :mode ("\\.sty\\'"  . LaTeX-mode)
-    :mode ("\\.bib\\'"  . bibtex-mode)
-    :diminish 'reftex-mode
-    :diminish 'outline-minor-mode
-    :diminish 'flyspell-mode
-    :init
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
-
-    (defun brust-yas-expand-ignore-errors nil
-      (interactive)
-      (ignore-errors (yas-expand)))
-
-    (defun tex-smart-period ()
-      "Smart \".\" key: insert \".  \n\".
-         If the period key is pressed a second time, \".  \n\" is removed and replaced by the period."
-      (interactive)
-      (cond
-       ((looking-back "[a-zA-Z0-9)'}]" 1)
-        (delete-horizontal-space)
-        (insert ".\n")
-        (LaTeX-indent-line))
-       ((and (eq last-command this-command)
-             (looking-back "[.]\n[ ]*" 10))
-        (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))
-       ((and (eq last-command this-command)
-             (looking-back "[.]" 1))
-        (insert "\n")
-        (LaTeX-indent-line)
-        (insert "\\medskip\n")
-        (LaTeX-indent-line)
-        (insert "\n")
-        (LaTeX-indent-line))))
-    ;;     ((and (eq last-command this-command)
-    ;;           (looking-back "[.]\n[ ]*\\\\medskip\n[ ]*\n[ ]*" 50))
-    ;;      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))))
-
-    
-    (use-package cdlatex
-      :diminish cdlatex-mode
-      :init
-      (defadvice cdlatex-tab (around use-LaTeX-math activate)
-        "To stop before \) in LaTeX envirnment"
-        (let ((math-p (and (texmathp)
-                           (save-excursion (forward-char 2) (texmathp)))))
-          ad-do-it
-          (and
-           math-p
-           (string= "\\(" (car texmathp-why))
-           (not (texmathp))
-           (backward-char 2))))
-      
-      (defun brust-latex-set-yasnippet ()
-        ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
-        (define-key yas-minor-mode-map (kbd "SPC") nil)
-        (add-hook 'cdlatex-tab-hook #'brust-yas-expand-ignore-errors)
-        (setq-local yas-buffer-local-condition '(not (texmathp))))
-      (setq bibtex-maintain-sorted-entries t) ;; to sort bibtex entries with C-c C-c
-
-      (add-hook 'TeX-mode-hook 'brust-latex-set-yasnippet)
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
-      ;; (add-hook 'cdlatex-tab-hook #'brust-yas-expand-ignore-errors)
-      :bind
-      (:map cdlatex-mode-map
-            ;; ("C-<return>" . ido-switch-buffer) ;; Abans, ara tinc C-b
-            ;; ("C-+" . cdlatex-tab)
-            ;; ("C-'" . cdlatex-math-modify)
-            ("'" . nil)
-            ("`" . nil)
-            ("Ñ" . cdlatex-math-modify)
-            ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)))
-    (defun brust-LaTeX-insert-math1 nil
-      (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
-    (defun brust-LaTeX-insert-math2 nil
-      (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
-    :config
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
-    :bind 
-    (:map LaTeX-mode-map
-          ("C-4"            . brust-LaTeX-insert-math1)
-          ("C-ñ"            . brust-LaTeX-insert-math1)
-          ("C-$"            . brust-LaTeX-insert-math2)
-          ("C-Ñ"            . brust-LaTeX-insert-math2)
-          ("."              . tex-smart-period)
-          ("<backtab>"      . TeX-complete-symbol) ;; Auto-complete funcion of AuCTeX bind to S-tab
-          ("C-c C-e"        . LaTeX-env-brust)
-          ("C-c C-a"        . brust-compile-only)
-          ("C-c C-q"        . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"    . brust-wc-save-words)
-          ;; ("C-c C-a"     . latex/compile-commands-until-done)
-          ;; ("C-c C-a"     . TeX-texify) ;; subtitut by latex-extra
-                   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"    . latex/up-section)
-          ;; ("<tab>"       . latex/hide-show)
-          ;; ("<backtab>"   . latex/hide-show-all)
-          ;; (""            . latex/next-section)
-          ;; (""            . latex/next-section-same-level)
-          ;; (""            . latex/beginning-of-line)
-          ("C-M-e"          . latex/end-of-environment)
-          ("C-M-a"          . latex/beginning-of-environment)
-          ("C-M-p"          . latex/backward-environment)
-          ("C-M-n"          . latex/forward-environment)
-          ("C-M-9"          . cycle-texmath)
-          ))
-
-#+END_SRC
-
-#+RESULTS:
 
 *** Change math display
      from http://emacs.stackexchange.com/questions/13933/cycling-through-latex-math-mode-and-equation
@@ -3458,6 +3401,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (global-set-key (kbd "C-p") #'hydra-transpose/transpose-paragraphs)
   (global-set-key (kbd "C-x C-t") #'hydra-transpose/body) 
 #+END_SRC
+
+** TODO To still clean
 * Old stuffs
 ** Tab and indentation
 **** Distance
