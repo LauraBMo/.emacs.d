@@ -9,17 +9,26 @@
 
 ** TODO Add hooks
 #+BEGIN_SRC elisp
-  (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
-  (add-hook 'LaTeX-mode-hook #'flyspell-mode)
-  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
-  (add-hook 'LaTeX-mode-hook #'flyspell-ignore-tex)
+  (defun brust-LaTeX-modes nil
+    (turn-on-cdlatex)
+    ;; (LaTeX-math-mode) ;; I use cdlatex insted
+    (turn-on-reftex)
+    (flyspell-mode 1)
+    (outline-minor-mode 1)
+    (flyspell-ignore-tex)
+    (TeX-interactive-mode 1)
+    ;; (paren-toggle-matching-quoted-paren)
+    ;; (paren-toggle-matching-paired-delimiter)
+    ;; (imenu-add-menubar-index)
+    ;; (TeX-fold-mode) ;; fold LaTeX macros
+    )
 
- ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
+  (add-hook 'LaTeX-mode-hook #'brust-LaTeX-modes)
+
+  ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
 
   ;; (add-hook 'LaTeX-mode-hook '(LaTeX-add-environments 
-                              ;;;;;;;;;;;;;;;; Add it via cdlatex ;;;;;;;;;;;;;;;;
+                               ;;;;;;;;;;;;;;;; Add it via cdlatex ;;;;;;;;;;;;;;;;
   ;;                              '("axiom"       LaTeX-env-label)
   ;;                              '("theorem"     LaTeX-env-label)
   ;;                              '("definition"  LaTeX-env-label)
@@ -32,99 +41,71 @@
   ;;                              '("tikzpicture" LaTeX-env-label)
   ;;                              '("frame"       LaTeX-env-label)
   ;;                              '("block"       LaTeX-env-label)) t)
-  ;;(add-hook 'LaTeX-mode-hook 'paren-toggle-matching-quoted-paren 1 t)
-  ;;(add-hook 'LaTeX-mode-hook 'paren-toggle-matching-paired-delimiter 1 t)
-  ;;(add-hook 'LaTeX-mode-hook 'imenu-add-menubar-index)
-
-  ;;(add-hook 'LaTeX-mode-hook 'TeX-fold-mode  ;Ocultar seccions, mostrar simbols "fold the LaTeX macros")
-  ;; This needs (setq TeX-fold-auto t)
 
 #+END_SRC
-
-** Default command
-#+BEGIN_SRC elisp
-(setq-default TeX-command-default "LaTeX")
-
-#+END_SRC
-
-** Never open a file in TeX-mode, use LaTeX-mode
-#+BEGIN_SRC elisp
-(setq-default TeX-default-mode 'LaTeX-mode)
-
-#+END_SRC
-
-** Rename default =auto= directory to =~/.auctex-auto=
-   If you don't want to see an =./auto= directory in every single
-   source file directory, use this.
- 
-#+BEGIN_SRC elisp
-  (setq-default TeX-auto-local "~/.auctex-auto")
-
-#+END_SRC
-
-
-
 
 * config
 ** Save options
 #+BEGIN_SRC elisp
-     (setq TeX-save-query    nil ;; Don't query on TeX-save-document "C-c C-d" save all files of the document.
-           TeX-auto-untabify t   ;; remove all tabs before saving
-           TeX-auto-save     t  ;; Enable parse on save.
-           TeX-clean-confirm nil
-           ;; Provide forward and inverse search with SyncTeX
-           TeX-source-correlate-mode t
-           TeX-electric-math '("\\(" "\\)"))
+  (setq TeX-save-query    nil ;; Don't query on TeX-save-document 
+        TeX-auto-untabify t   ;; remove all tabs before saving
+        TeX-auto-save     t   ;; Enable parse on save.
+        )
 #+END_SRC
-** Master file
+
+** Set defaults
 #+BEGIN_SRC elisp
-(setq-default TeX-master 'dwin)
+  (setq-default TeX-command-default "LaTeX"      ;; LaTeX the default command 
+                ;; TeX-fold-auto t                  ;; To use with TeX-mode-fold
+                TeX-master 'dwin                 ;; AUCTeX will try to avoid querying
+                TeX-default-mode 'LaTeX-mode     ;; always use LaTeX-mode 
+                TeX-auto-local "~/.auctex-auto") ;; to not see the ./auto directory 
+#+END_SRC
+
+** Debug
+#+BEGIN_SRC elisp
+  (setq TeX-debug-bad-boxes t
+        TeX-debug-warnings t)
 
 #+END_SRC
-** COMMENT Electric
-*** COMMENT If non-nil, insert braces after typing _ and ^ in math mode
-#+BEGIN_SRC elisp
-(setq TeX-electric-sub-and-superscript nil)
 
-#+END_SRC
-*** COMMENT Autocomplet braces/parents 
+** Clean LaTeX intermediate files
 #+BEGIN_SRC elisp
-(setq LaTeX-electric-left-right-brace nil)
-
+  (setq TeX-clean-confirm nil
+  ;; LaTeX-clean-intermediate-suffixes (append LaTeX-clean-intermediate-suffixes '("\\.fdb_latexmk"))
+        )
 #+END_SRC
 
 ** Automatic Parsing of TeX Files
 #+BEGIN_SRC elisp
   (setq TeX-parse-self t)
-
-#+END_SRC
-
-** Set sections face high
-#+BEGIN_SRC elisp
-(setq font-latex-fontify-sectioning 1.15)
-
 #+END_SRC
 
 ** New line function
 #+BEGIN_SRC elisp
 (setq TeX-newline-function 'newline-and-indent)
-
-#+END_SRC
-** COMMENT Commands list
-#+BEGIN_SRC elisp
-;; (add-to-list 'TeX-command-list)
-
 #+END_SRC
 
 ** No/Yes insert braces after a TeX-macro
 #+BEGIN_SRC elisp
 (setq TeX-insert-braces nil)
-
 #+END_SRC
 
 ** To get commented lines idented as LaTeX want
 #+BEGIN_SRC elisp
 (setq LaTeX-syntactic-comments t)
+#+END_SRC
+
+** TODO Bibtex
+#+BEGIN_SRC elisp
+  (setq bibtex-maintain-sorted-entries t ;; to sort bibtex entries with C-c C-c
+        bibtex-align-at-equal-sign t ;; align entries to the equal sing
+        bibtex-entry-format
+        (append '(whitespace
+                  realign
+                  unify-case
+                  sort-fields)
+                bibtex-entry-format))
 
 #+END_SRC
 
@@ -154,6 +135,7 @@
 *** Label list 
 #+BEGIN_SRC elisp
   (setq reftex-label-alist
+        ;; reftex-label-alist '(AMSTeX)
         '(("axiom"         ?a "axm:"   "~\\cref{%s}" nil ("axiom"   "axm.")    -2)
           ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -3)
           ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
@@ -175,6 +157,7 @@
 
 
 #+END_SRC
+
 ** Ispell TeX skip regexp list 
 #+BEGIN_SRC elisp
   (setq ispell-tex-skip-alists 
@@ -218,52 +201,13 @@
 
 #+END_SRC
 
-** COMMENT TODO eBIB
-     Learm =helm-bib=
+** Some face config
+*** Set sections face high
 #+BEGIN_SRC elisp
-  (use-package ebib
-    :init
-    (defun load-ebib ()
-      "Look for the bibliography comand and load into ebib the
-  .bib fiels."
-      (interactive)
-      (if ebib--initialized (message "The bibliography is already load :)")
-        (save-current-buffer
-          (save-selected-window
-            (save-excursion
-              (unless (eq TeX-master t) (find-file (concat (file-truename TeX-master) ".tex")))
-              (goto-char 1)
-              (if (search-forward "\\bibliography{" nil t)
-                  (let ((nn (match-end 0)) (dir (file-name-directory (buffer-file-name))) lst)
-                    (search-forward "}" nil t)
-                    (setq lst (split-string (buffer-substring-no-properties nn (match-beginning 0)) "," t))
-                    (ebib--init)
-                    (cl-loop for item in lst
-                             do (ebib-load-bibtex-file (concat dir item ".bib")))
-                    ;;(ebib-lower nil)
-                    (message "Bibliography succesly load!!")
-                    (switch-to-prev-buffer))
-                (message "Bibliography not founded :(")))))))
-
-
-    (add-hook 'LaTeX-mode-hook 'load-ebib t)
-
-    :config
-    (setq ebib-citation-commands (quote
-                                  ((any
-                                    (("psimple see natbib.pdf" "\\citep{%K}")
-                                     ("pcomplet pre and post notes." "\\citep%<[%A]%>[%A]{%K}")
-                                     ("tsimple" "\\citet{%K}")
-                                     ("tcomplet pre and post notes" "\\citet%<[%A]%>[%A]{%K}")))
-                                   (org-mode
-                                    (("ebib" "[[ebib:%K][%D]]")))
-                                   (markdown-mode
-                                    (("text" "@%K%< [%A]%>")
-                                     ("paren" "[%(%<%A %>@%K%<, %A%>%; )]")
-                                     ("year" "[-@%K%< %A%>]")))))))
-
+(setq font-latex-fontify-sectioning 1.15)
 #+END_SRC
-** Unimportant math LaTeX face (by Endless)
+
+*** Unimportant math LaTeX face (by Endless)
 *** Deface
 #+BEGIN_SRC elisp
 (defface endless/unimportant-latex-face
@@ -275,7 +219,6 @@
 
 *** Add font lock to the keywords
 #+BEGIN_SRC elisp
-
 (font-lock-add-keywords
  'latex-mode
  `((,(rx (or (and "\\" (or (any ",.!;")
@@ -287,8 +230,69 @@
  'end)
 
 #+END_SRC
+
+** Pdf interaction
+*** Latexmk
+#+BEGIN_SRC elisp
+;;  (use-package auctex-latexmk
+;;    :config
+;;    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+;;  (auctex-latexmk-setup)
+
+  (add-to-list 
+   'TeX-expand-list
+   '("%(-PDF)"
+     (lambda ()
+       (if
+           (and
+            (not TeX-Omega-mode)
+            (or TeX-PDF-mode TeX-DVI-via-PDFTeX))
+           "-pdf -pvc -pdflatex=\" --shell-escape -interaction=nonstopmode -file-line-error --synctex=1\" "
+         "-dvi -latex=\"latex -interaction=nonstopmode\" "))))
+
+  (add-to-list 'TeX-command-list
+               '("my-LatexMk" "latexmk -pdf -pvc %s"
+                 TeX-run-TeX nil t
+                 :help "Run Latexmk on file to build everything.")
+               t)
+
+  (add-to-list 'TeX-command-list '("Make" "make" TeX-run-compile nil t))
+
+  (defun brust-LaTeX-save nil
+  (interactive)
+    (save-buffer)
+    (pdf-sync-forward-search)
+    (golden-ratio-mode -1)
+    (balance-windows)
+    (golden-ratio-mode 1))
+
+#+END_SRC
+
+*** To activate pdf/tex inverse/forward search
+#+BEGIN_SRC elisp
+    (setq TeX-source-correlate-method 'synctex
+          TeX-source-correlate-mode t
+          TeX-source-correlate-start-server t)
+
+#+END_SRC
+*** Use PDF-tools to open PDF files
+#+BEGIN_SRC elisp
+(push '(output-pdf "PDF Tools") TeX-view-program-selection)
+
+#+END_SRC
+
+*** Update PDF buffers after successful LaTeX runs
+#+BEGIN_SRC elisp
+  (add-hook 'TeX-after-compilation-finished-functions
+            'TeX-revert-document-buffer)
+
+  ;; Obsolete hook::
+  ;;(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+  ;;             #'TeX-revert-document-buffer)
+#+END_SRC
+
 ** LaTeX Brust defuns
-*** TODO Replace
+*** TODO COMMENT Replace
 ****** Var
        To delete.
 #+BEGIN_SRC elisp
@@ -367,10 +371,10 @@
 *** Compile only
 #+BEGIN_SRC elisp
 
-  (defun brust-compile-only-get-rel-path-to-file (file)
+  (defun brust-compile-only-get-rel-path-to-file (-file)
     (save-excursion 
       (goto-char (point-min))
-      (re-search-forward (concat "include{\\(.*" file "\\)}") nil t)
+      (re-search-forward (format "include{\\(.*%s\\)}" -file) nil t)
       (concat (match-string-no-properties 1) (or (file-name-extension (match-string 1)) ".tex"))))
 
   (defun brust-restore-buffer-to (-string)
@@ -477,8 +481,8 @@
     (ignore-errors (copy-file (concat brust-LaTeX-init-dir "/" str-copy) dir)
                    t))
 #+END_SRC
-*** Brust-env
-****** Function
+*** Enviroment
+**** Function
 #+BEGIN_SRC elisp
 (defun LaTeX-env-brust (&optional args)
   "Execute LaTex-environment or with argument:
@@ -529,165 +533,113 @@
 
 
 #+END_SRC
-****** Names envoirments
-#+BEGIN_SRC elisp
-(defconst environment-prefix-list '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
-                                    ("proposition" . "prop") ("remark" . "rmk")
-                                    ("definition" . "def") ("theorem" . "thr")
-                                    ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
 
+**** Names envoirments
+#+BEGIN_SRC elisp
+  (defconst environment-prefix-list
+    '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
+      ("proposition" . "prop") ("remark" . "rmk")
+      ("definition" . "def") ("theorem" . "thr")
+      ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
 #+END_SRC
-*** Word count
-#+BEGIN_SRC elisp
-  (defun brust-wc-get-word-count-list-of-current-project nil
-    (let ((project-master (expand-file-name (TeX-master-file t nil t))))
-      (with-temp-buffer
-        (call-process-shell-command
-         (concat "texcount -opt="
-                 (expand-file-name "~/Dropbox/LaTeX/TeXcount-emacs.txt")
-                 " -dir="
-                 (file-name-directory project-master)
-                 " "
-                 project-master)
-         nil t)
-        (re-search-backward
-         "new\\([0-9]+\\)w\\([0-9]+\\)im\\([0-9]+\\)dm\\([0-9]+\\)cd\\([0-9]+\\)h\\([0-9]+\\)file" nil t)
-        (cl-loop for xx from 1 to 6
-                 if (= xx 3) collect (number-to-string (- (string-to-number (match-string-no-properties 3))
-                                                          (string-to-number (match-string-no-properties 4))))
-                 else
-                 collect (match-string-no-properties xx)))))
 
-  (defun brust-wc-save-words nil
+*** Smart period
+#+BEGIN_SRC elisp
+  (defun brust-LaTeX-smart-period nil
+    "Smart \".\" key: insert \".  \n\".
+           If the period key is pressed a second time, \".  \n\" is removed and replaced by the period."
     (interactive)
-    (let ((wc-sat (brust-wc-get-word-count-list-of-current-project)))
-      (find-file (concat
-                  (file-name-directory (expand-file-name (TeX-master-file t nil t)))
-                  "wc-statistics.txt"))
-      (goto-char (point-max))
-      (insert "\n" (format-time-string "%x, %X, ")
-              (cl-loop for xx in wc-sat 
-                       concat (concat xx ", ")))
-      (save-buffer)
-      (kill-buffer)))
+    (cond
+     ((looking-back "[a-zA-Z0-9)'}]" 1)
+      (delete-horizontal-space)
+      (insert ".\n")
+      (LaTeX-indent-line))
+     ((and (eq last-command this-command)
+           (looking-back "[.]\n[ ]*" 10))
+      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))
+     ((and (eq last-command this-command)
+           (looking-back "[.]" 1))
+      (insert "\n")
+      (LaTeX-indent-line)
+      (insert "\\medskip\n")
+      (LaTeX-indent-line)
+      (insert "\n")
+      (LaTeX-indent-line))))
+  ;;     ((and (eq last-command this-command)
+  ;;           (looking-back "[.]\n[ ]*\\\\medskip\n[ ]*\n[ ]*" 50))
+  ;;      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))))
 
-  (defun brust-wc-save-words-my-thesis nil
+
+
+#+END_SRC
+
+*** Insert to math mode 
+#+BEGIN_SRC elisp
+  (defun brust-LaTeX-insert-math1 nil
+    (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
+  (defun brust-LaTeX-insert-math2 nil
+    (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
+#+END_SRC
+
+*** Select current math furmula
+#+BEGIN_SRC elisp
+  (defun brust-LaTeX-smart-selection nil
     (interactive)
-    (find-file "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
-    (brust-wc-save-words))
+    (cond
+     ((texmathp)
+      (push-mark (cdr texmathp-why))
+      (setq mark-active t)
+      (while (or (texmathp) (car texmathp-why)) (forward-char 1))
+      (setq deactivate-mark nil))
+     ((ignore-errors (brust-LaTeX-mark-environment)))
+     (t (er/expand-region 1))))
 
-
+  (defun brust-LaTeX-mark-environment (&optional count)
+    "Set mark to end of current environment and point to the matching begin.
+  If prefix argument COUNT is given, mark the respective number of
+  enclosing environments.  The command will not work properly if
+  there are unbalanced begin-end pairs in comments and verbatim
+  environments."
+    (interactive "p")
+    (setq count (if count (abs count) 1))
+    (let ((cur (point)) beg end)
+      ;; Only change point and mark after beginning and end were found.
+      ;; Point should not end up in the middle of nowhere if the search fails.
+      (save-excursion
+        (dotimes (c count) (LaTeX-find-matching-end))
+        (setq end (line-beginning-position 2))
+        (goto-char cur)
+        (dotimes (c count) (LaTeX-find-matching-begin))
+        (setq beg (point)))
+      (push-mark end)
+      (goto-char beg)
+      (TeX-activate-region))
+    t)
 #+END_SRC
 
-** Pdf interaction
-*** To activate pdf/tex inverse/forward search
-#+BEGIN_SRC elisp
-    (setq TeX-source-correlate-method 'synctex
-          TeX-source-correlate-mode t
-          TeX-source-correlate-start-server t)
-
-#+END_SRC
-
-*** COMMENT Use Okular to view AUCTeX-generated PDFs
-      Now, I use PDF-Tools
-****** COMMENT Intoduction
-   Okular setup: 
-   1.) Open Okular and go to...
-   2.) Settings -> Configure Okular -> Editor
-   3.) Set Editor to "Emacs client"
-   4.) Command should automatically set to: 
-   emacsclient -a emacs --no-wait +%l %f
-   Then just SHIFT + mouse open emacs at the correct line
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-****** COMMENT Setting
-#+BEGIN_SRC elisp
-  (when (require 'latex nil t)
-   (push '("%(masterdir)" (lambda nil (file-truename (TeX-master-directory))))
-            TeX-expand-list)
-   (push '("Okular" "okular --unique %o#src:%n%(masterdir)./%b")
-            TeX-view-program-list)
-   (push '(output-pdf "Okular") TeX-view-program-selection))
-  
-#+END_SRC
-
-*** Use PDF-tools to open PDF files
-#+BEGIN_SRC elisp
-    (when (require 'latex nil t)
-      (push '(output-pdf "PDF Tools") TeX-view-program-selection))
-
-#+END_SRC
-
-*** Update PDF buffers after successful LaTeX runs
-#+BEGIN_SRC elisp
-    (add-hook 'TeX-after-compilation-finished-functions
-              'TeX-revert-document-buffer)
-    ;; Obsolete hook::
-    ;;(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-    ;;             #'TeX-revert-document-buffer)
-
-#+END_SRC
-
-*** COMMENT Split horizontally when the screen lets
-    It's useless, better use 'switch split windows' in the hook!
-#+BEGIN_SRC elisp
-  (defvar pdf-minimal-width 72
-    "Minimal width of a window displaying a pdf.
-  If an integer, number of columns.  If a float, fraction of the
-  original window.")
-
-  (defvar pdf-split-width-threshold 120
-    "Minimum width a window should have to split it horizontally
-  for displaying a pdf in the right.")
-
-  (defun pdf-split-window-sensibly (&optional window)
-    "A version of `split-window-sensibly' for pdfs.
-  It prefers splitting horizontally, and takes `pdf-minimal-width'
-  into account."
-    (let ((window (or window (selected-window)))
-          (width (- (if (integerp pdf-minimal-width)
-                        pdf-minimal-width
-                      (round (* pdf-minimal-width (window-width window)))))))
-      (or (and (window-splittable-p window t)
-               ;; Split window horizontally.
-               (with-selected-window window
-                 (split-window-right width)))
-          (and (window-splittable-p window)
-               ;; Split window vertically.
-               (with-selected-window window
-                 (split-window-below)
-                 (delete-other-windows)))
-          (and (eq window (frame-root-window (window-frame window)))
-               (not (window-minibuffer-p window))
-               ;; If WINDOW is the only window on its frame and is not the
-               ;; minibuffer window, try to split it vertically disregarding
-               ;; the value of `split-height-threshold'.
-               (let ((split-height-threshold 0))
-                 (when (window-splittable-p window)
-                   (with-selected-window window
-                     (split-window-below)
-                     (delete-other-windows))))))))
-
-  (defun display-buffer-pop-up-window-pdf-split-horizontally (buffer alist)
-    "Call `display-buffer-pop-up-window', using `pdf-split-window-sensibly'
-  when needed."
-    (let ((split-height-threshold nil)
-     (split-width-threshold pdf-split-width-threshold)
-     (split-window-preferred-function #'pdf-split-window-sensibly))
-      (display-buffer-pop-up-window buffer alist)))
-
-  (add-to-list 'display-buffer-alist '("\\.pdf\\(<[^>]+>\\)?$" . (display-buffer-pop-up-window-pdf-split-horizontally)))
-
-#+END_SRC
-
+#+RESULTS:
+: brust-LaTeX-mathp-end
 
 * CDLaTeX
 
 ** Initial config
-
 #+BEGIN_SRC elisp
   (setq cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
   ;;(setq cdlatex-math-modify-prefix [f7])
 
+  (defun brust-yas-expand-ignore-errors nil
+    (interactive)
+    (ignore-errors (yas-expand)))
+
+  (defun brust-cdlatex-mode-hook nil
+    ;; (define-key cdlatex-mode-map (kbd "'") nil)
+    ;; (define-key cdlatex-mode-map (kbd "`") nil)
+    ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
+    (define-key yas-minor-mode-map (kbd "SPC") nil)
+    (add-hook 'cdlatex-tab-hook #'brust-yas-expand-ignore-errors)
+    (setq-local yas-buffer-local-condition '(not (texmathp))))
+
+  (add-hook 'LaTeX-mode-hook #'brust-cdlatex-mode-hook t)
 #+END_SRC
 
 ** Envirments alist definition
@@ -774,9 +726,9 @@
      ("apl"   "Insert \\(\\apl...\\)" "\\(\\apl{?}{}\\)"                cdlatex-position-cursor   nil t   nil)
      ("oapl"   "Insert \\(\\overapl...\\)" "\\(\\overapl{?}{}{}\\)"     cdlatex-position-cursor   nil t   nil)
      ("uapl"   "Insert \\(\\underapl...\\)" "\\(\\underapl{?}{}{}\\)"   cdlatex-position-cursor   nil t   nil)
-     ("4"     "Insert \\(...\\)"      "\\(?\\)"                         cdlatex-position-cursor   nil t   nil)
-     ;;("$"     "Insert \\(...\\)"      "\\(?\\)"                       cdlatex-position-cursor   nil t   nil)
-     ("44"    "Insert \\[...\\]"      "\\[\n  ?\n\\]"                   cdlatex-position-cursor   nil t   nil)
+     ;; ("4"     "Insert \\(...\\)"      "\\(?\\)"                         cdlatex-position-cursor   nil t   nil)
+     ;; ("$"     "Insert \\(...\\)"      "\\(?\\)"                       cdlatex-position-cursor   nil t   nil)
+     ;; ("44"    "Insert \\[...\\]"      "\\[\n  ?\n\\]"                   cdlatex-position-cursor   nil t   nil)
      ("tik"   "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
      ("caseeq"    "Insert a `f(x) = {...' construct"
@@ -1007,17 +959,11 @@
 
 #+END_SRC
 
-** Improvements
+** Adaptation to my style
 #+BEGIN_SRC elisp
   (defadvice cdlatex-sub-superscript (around not-add-dollar activate)
     (if (texmathp) ad-do-it
       (insert (event-basic-type last-command-event))))
-
-  (defun brust-cdlatex-free-keys nil
-    (define-key cdlatex-mode-map (kbd "'") nil)
-    (define-key cdlatex-mode-map (kbd "`") nil))
-
-  (add-hook 'LaTeX-mode-hook 'brust-cdlatex-free-keys t)
 
   (defadvice cdlatex-math-symbol (around out-math activate)
     (if (texmathp) ad-do-it
@@ -1027,55 +973,17 @@
         (replace-match "\\(" nil t))
       (save-excursion (close-quoted-open-paren 1 0))))
 
+  (defadvice cdlatex-tab (around use-LaTeX-math activate)
+    "To stop before \) in LaTeX envirnment"
+    (let ((math-p (and (texmathp)
+                       (save-excursion (forward-char 2) (texmathp)))))
+      ad-do-it
+      (and
+       math-p
+       (string= "\\(" (car texmathp-why))
+       (not (texmathp))
+       (backward-char 2))))
 
-  ;;
-  ;;   (defadvice cdlatex-dollar (around new-math activate)
-  ;;     ad-do-it
-  ;;     (save-excursion 
-  ;;       (when (texmathp)
-  ;;         (let ((env (car texmathp-why)))
-  ;;           (cond
-  ;;            ((string= env "$")
-  ;;             ((search-backward "$") ;; "\\$\\([^\\$]+\\)\\$")
-  ;;              (replace-match "\(" nil t) ;; \\1\\\\)"))
-  ;;              ((string= env "$$")
-  ;;               (search-backward "$$") ;; \\$\\$\\([^$]+\\)\\$\\$")
-  ;;               (replace-match "\[\\n  ") ;; \\1\\n\\\\)")))))))
-  ;;               ))))))))
-
-
-  ;; (ad-unadvise 'cdlatex-dollar)
-  ;;     (if (texmathp)
-  ;; (cond
-  ;;  ((string= (car texmathp-why) "$")
-
-  ;;        
-  ;;        )
-  ;;      (goto-char (cdr texmathp-why))
-  ;;    (re-search-forward (format "%s\([.]+\)%s" (car texmathp-why) (car texmathp-why)) nil t)
-  ;;    (replace-match 
-
-
-  ;;    (save-excursion
-  ;;      (if (search-backward "$$" (- (point) 100) t)
-  ;;          (replace-match "\[")
-  ;;        (when (search-backward "$" (- (point) 100) t)
-  ;;          (replace-match "\\(")))
-  ;;      (if (search-forward "$$" (- (point) 100) t)
-  ;;          (replace-match "\]")
-  ;;        (when (search-forward "$" (+ (point) 100) t)
-  ;;          (replace-match "\\)")))))
-
-
-  ;;(defadvice cdlatex-math-symbol (around use-out-math activate)
-  ;;  (if (texmathp) ad-do-it
-  ;;    (cdlatex-math-modify)))
-  ;;
-  ;;(defadvice cdlatex-math-modify (around use-only-in-math activate)
-  ;;  (if (texmathp) ad-do-it
-  ;;    (insert "'")))
-
-  ;;    (ad-unadvise 'cdlatex-math-symbol)
 #+END_SRC
 
 
@@ -1707,3 +1615,136 @@ is wrong).
 (setq latex/cleanup-do-fill nil)
 
 #+END_SRC
+
+
+* Old stuffs
+** COMMENT TODO eBIB
+     Learm =helm-bib=
+#+BEGIN_SRC elisp
+  (use-package ebib
+    :init
+    (defun load-ebib ()
+      "Look for the bibliography comand and load into ebib the
+  .bib fiels."
+      (interactive)
+      (if ebib--initialized (message "The bibliography is already load :)")
+        (save-current-buffer
+          (save-selected-window
+            (save-excursion
+              (unless (eq TeX-master t) (find-file (concat (file-truename TeX-master) ".tex")))
+              (goto-char 1)
+              (if (search-forward "\\bibliography{" nil t)
+                  (let ((nn (match-end 0)) (dir (file-name-directory (buffer-file-name))) lst)
+                    (search-forward "}" nil t)
+                    (setq lst (split-string (buffer-substring-no-properties nn (match-beginning 0)) "," t))
+                    (ebib--init)
+                    (cl-loop for item in lst
+                             do (ebib-load-bibtex-file (concat dir item ".bib")))
+                    ;;(ebib-lower nil)
+                    (message "Bibliography succesly load!!")
+                    (switch-to-prev-buffer))
+                (message "Bibliography not founded :(")))))))
+
+
+    (add-hook 'LaTeX-mode-hook 'load-ebib t)
+
+    :config
+    (setq ebib-citation-commands (quote
+                                  ((any
+                                    (("psimple see natbib.pdf" "\\citep{%K}")
+                                     ("pcomplet pre and post notes." "\\citep%<[%A]%>[%A]{%K}")
+                                     ("tsimple" "\\citet{%K}")
+                                     ("tcomplet pre and post notes" "\\citet%<[%A]%>[%A]{%K}")))
+                                   (org-mode
+                                    (("ebib" "[[ebib:%K][%D]]")))
+                                   (markdown-mode
+                                    (("text" "@%K%< [%A]%>")
+                                     ("paren" "[%(%<%A %>@%K%<, %A%>%; )]")
+                                     ("year" "[-@%K%< %A%>]")))))))
+
+#+END_SRC
+
+** COMMENT Electric
+#+BEGIN_SRC elisp
+(setq TeX-electric-sub-and-superscript nil
+      TeX-electric-math '("\\(" "\\)")
+      LaTeX-electric-left-right-brace nil)
+#+END_SRC
+
+
+** COMMENT Use Okular to view AUCTeX-generated PDFs
+      Now, I use PDF-Tools
+****** COMMENT Intoduction
+   Okular setup: 
+   1.) Open Okular and go to...
+   2.) Settings -> Configure Okular -> Editor
+   3.) Set Editor to "Emacs client"
+   4.) Command should automatically set to: 
+   emacsclient -a emacs --no-wait +%l %f
+   Then just SHIFT + mouse open emacs at the correct line
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+****** COMMENT Setting
+#+BEGIN_SRC elisp
+  (when (require 'latex nil t)
+   (push '("%(masterdir)" (lambda nil (file-truename (TeX-master-directory))))
+            TeX-expand-list)
+   (push '("Okular" "okular --unique %o#src:%n%(masterdir)./%b")
+            TeX-view-program-list)
+   (push '(output-pdf "Okular") TeX-view-program-selection))
+  
+#+END_SRC
+
+
+** COMMENT Split horizontally when the screen lets
+    It's useless, better use 'switch split windows' in the hook!
+#+BEGIN_SRC elisp
+  (defvar pdf-minimal-width 72
+    "Minimal width of a window displaying a pdf.
+  If an integer, number of columns.  If a float, fraction of the
+  original window.")
+
+  (defvar pdf-split-width-threshold 120
+    "Minimum width a window should have to split it horizontally
+  for displaying a pdf in the right.")
+
+  (defun pdf-split-window-sensibly (&optional window)
+    "A version of `split-window-sensibly' for pdfs.
+  It prefers splitting horizontally, and takes `pdf-minimal-width'
+  into account."
+    (let ((window (or window (selected-window)))
+          (width (- (if (integerp pdf-minimal-width)
+                        pdf-minimal-width
+                      (round (* pdf-minimal-width (window-width window)))))))
+      (or (and (window-splittable-p window t)
+               ;; Split window horizontally.
+               (with-selected-window window
+                 (split-window-right width)))
+          (and (window-splittable-p window)
+               ;; Split window vertically.
+               (with-selected-window window
+                 (split-window-below)
+                 (delete-other-windows)))
+          (and (eq window (frame-root-window (window-frame window)))
+               (not (window-minibuffer-p window))
+               ;; If WINDOW is the only window on its frame and is not the
+               ;; minibuffer window, try to split it vertically disregarding
+               ;; the value of `split-height-threshold'.
+               (let ((split-height-threshold 0))
+                 (when (window-splittable-p window)
+                   (with-selected-window window
+                     (split-window-below)
+                     (delete-other-windows))))))))
+
+  (defun display-buffer-pop-up-window-pdf-split-horizontally (buffer alist)
+    "Call `display-buffer-pop-up-window', using `pdf-split-window-sensibly'
+  when needed."
+    (let ((split-height-threshold nil)
+     (split-width-threshold pdf-split-width-threshold)
+     (split-window-preferred-function #'pdf-split-window-sensibly))
+      (display-buffer-pop-up-window buffer alist)))
+
+  (add-to-list 'display-buffer-alist '("\\.pdf\\(<[^>]+>\\)?$" . (display-buffer-pop-up-window-pdf-split-horizontally)))
+
+#+END_SRC
+
+
