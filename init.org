@@ -1712,7 +1712,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (with-temp-buffer
         (call-process-shell-command
          (concat "texcount -opt="
-                 (expand-file-name "~/.emacs.d/LaTeX/TeXcount-emacs.txt")
+                 (expand-file-name "~/Dropbox/LaTeX/TeXcount-emacs.txt")
                  " -dir="
                  (file-name-directory project-master)
                  " "
@@ -1741,7 +1741,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
   (defun brust-wc-save-words-my-thesis nil
     (interactive)
-    (find-file "~/Dropbox/Doctorat_Laura/Thesis/master.tex")
+    (find-file "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
     (brust-wc-save-words))
 
 
