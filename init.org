@@ -526,10 +526,6 @@
   (global-set-key (kbd "C-<menu>")
                   (lambda nil "Inverse delete indentation" (interactive) (delete-indentation t)))
 #+END_SRC
-*** To load the not so usal packages
-#+BEGIN_SRC elisp
-
-#+END_SRC
 *** Motion
     The keys were:
     =M-u= fix-word-upcase ; Now bind to M-S-c
@@ -991,7 +987,7 @@ abort completely with `C-g'."
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '(
                                    ;; (R . t)
-                                   ;; (singular .t)
+                                   ;; (singular . t)
                                    ;; (gnuplot . t)
                                    ;; (latex . t)
                                    ;; (org . t)
