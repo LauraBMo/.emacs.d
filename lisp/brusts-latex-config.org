@@ -723,9 +723,9 @@
   (cl-loop
    for xx in
    '(
-     ("apl"   "Insert \\(\\apl...\\)" "\\(\\apl{?}{}\\)"                cdlatex-position-cursor   nil t   nil)
-     ("oapl"   "Insert \\(\\overapl...\\)" "\\(\\overapl{?}{}{}\\)"     cdlatex-position-cursor   nil t   nil)
-     ("uapl"   "Insert \\(\\underapl...\\)" "\\(\\underapl{?}{}{}\\)"   cdlatex-position-cursor   nil t   nil)
+     ("apl"   "Insert \\(\\apl...\\)" "\\(\\apl{?}{}\\)"                cdlatex-position-cursor   nil t  t)
+     ("oapl"   "Insert \\(\\overapl...\\)" "\\(\\overapl{?}{}{}\\)"     cdlatex-position-cursor   nil t  t)
+     ("uapl"   "Insert \\(\\underapl...\\)" "\\(\\underapl{?}{}{}\\)"   cdlatex-position-cursor   nil t  t)
      ;; ("4"     "Insert \\(...\\)"      "\\(?\\)"                         cdlatex-position-cursor   nil t   nil)
      ;; ("$"     "Insert \\(...\\)"      "\\(?\\)"                       cdlatex-position-cursor   nil t   nil)
      ;; ("44"    "Insert \\[...\\]"      "\\[\n  ?\n\\]"                   cdlatex-position-cursor   nil t   nil)
