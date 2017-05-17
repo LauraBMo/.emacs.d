@@ -822,6 +822,7 @@
         ;; 4. rmdot:    t   if the dot on i and j has to be removed.
         ;; 5. it        t   if italic correction is required."
         ( ?r    "\\mathscr"           nil        t   nil nil )
+        ( ?t    "\\overline"          nil        t   nil nil )
         ( ?o    "\\op"                nil        t   nil nil )
         ( ?s    "\\s"                 nil        t   nil nil )
         ( ?\.   "\\dot"               nil        t   t   nil )
