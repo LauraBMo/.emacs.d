@@ -123,6 +123,7 @@
 
 (define-abbrev-table 'latex-mode-abbrev-table
   '(
+    ("ecd" "effective Cartier divisor" nil 0)
     ("Ç" "\\[
   ?
 \\]" cdlatex-position-cursor 6)
