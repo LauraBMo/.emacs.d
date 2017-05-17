@@ -502,7 +502,7 @@
 #+BEGIN_SRC elisp
   (bind-keys*
    ("M-c"         . brust-endless/capitalize)
-   ("C-l"         . brust-endless/downcase)
+   ("M-l"         . brust-endless/downcase)
    ("M-C"         . endless/upcase)
    ("C-+"         . universal-argument)
    ("C-ç"         . negative-argument)
