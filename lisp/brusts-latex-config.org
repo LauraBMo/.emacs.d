@@ -985,6 +985,8 @@
        (not (texmathp))
        (backward-char 2))))
 
+  (defadvice cdlatex-environment (after add-auto-indentation activate)
+    (LaTeX-indent-line))
 #+END_SRC
 
 
