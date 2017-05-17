@@ -124,6 +124,7 @@
 (define-abbrev-table 'latex-mode-abbrev-table
   '(
     ("ecd" "effective Cartier divisor" nil 0)
+    ("leg" "e.g." nil 1)
     ("Ç" "\\[
   ?
 \\]" cdlatex-position-cursor 6)
