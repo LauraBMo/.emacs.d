@@ -125,6 +125,7 @@
   '(
     ("ecd" "effective Cartier divisor" nil 0)
     ("leg" "e.g." nil 1)
+    ("scl" "schematic closure" nil 3)
     ("Ç" "\\[
   ?
 \\]" cdlatex-position-cursor 6)
