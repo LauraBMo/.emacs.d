@@ -630,7 +630,7 @@
 ;;Examples of use: ("rr" "\\quetal{}" my-after-abbrev-expand 0)
 #+END_SRC
 
-**** Endless ispell & abbrev
+**** COMMENT Endless ispell & abbrev
 ***** Function
 #+BEGIN_SRC elisp
 (defun endless/ispell-word-then-abbrev (p)
