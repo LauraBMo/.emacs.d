@@ -410,7 +410,6 @@
           (pdf-sync-forward-search)))))
 
 #+END_SRC
-*** Iniciar un document LaTeX
 *** Change math display
      from http://emacs.stackexchange.com/questions/13933/cycling-through-latex-math-mode-and-equation
 #+BEGIN_SRC elisp
@@ -440,6 +439,7 @@
 
 #+END_SRC
 
+*** COMMENT Iniciar un document LaTeX
 ****** Variabls
 #+BEGIN_SRC elisp
   (defvar brust-LaTeX-init-dir "Directory of the tamplets")
