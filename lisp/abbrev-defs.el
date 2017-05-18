@@ -164,8 +164,10 @@
 (define-abbrev-table 'latex-mode-abbrev-table
   '(
     ("apl" "\\(apl{?}{}\\)" abbrev-possition-cursor 0)
+    ("clem" "closed embedding" nil 1)
     ("ecd" "effective Cartier divisor" nil 0)
     ("leg" "e.g." nil 1)
+    ("opem" "open embedding" nil 0)
     ("scl" "schematic closure" nil 3)
     ("Ç" "\\[
   ?
