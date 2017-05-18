@@ -640,8 +640,8 @@
         (goto-char cur)
         (dotimes (c count) (LaTeX-find-matching-begin))
         (setq beg (point)))
-      (push-mark end)
-      (goto-char beg)
+      (push-mark beg)
+      (goto-char end)
       (TeX-activate-region))
     t)
 #+END_SRC
