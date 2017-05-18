@@ -612,7 +612,7 @@
 
 *** Select current math furmula
 #+BEGIN_SRC elisp
-  (defun brust-LaTeX-smart-selection nil
+  (defun brust-LaTeX-smart-selection (&optional count)
     (interactive)
     (cond
      ((texmathp)
@@ -620,7 +620,7 @@
       (setq mark-active t)
       (while (or (texmathp) (car texmathp-why)) (forward-char 1))
       (setq deactivate-mark nil))
-     ((ignore-errors (brust-LaTeX-mark-environment)))
+     ((ignore-errors (brust-LaTeX-mark-environment count)))
      (t (er/expand-region 1))))
 
   (defun brust-LaTeX-mark-environment (&optional count)
