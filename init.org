@@ -2713,6 +2713,8 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : t
+
+** TODO To still clean
 *** Ivy
 **** General ivy
     - Learn ivy-bibtex
@@ -3352,8 +3354,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+END_SRC
 
 **** Transpose
-
-
 #+BEGIN_SRC elisp
   (defhydra hydra-transpose (:color red)
     "
@@ -3379,7 +3379,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (global-set-key (kbd "C-x C-t") #'hydra-transpose/body) 
 #+END_SRC
 
-** TODO To still clean
+
 * Old stuffs
 ** Tab and indentation
 **** Distance
