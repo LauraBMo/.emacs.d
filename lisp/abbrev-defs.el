@@ -163,6 +163,7 @@
 
 (define-abbrev-table 'latex-mode-abbrev-table
   '(
+    ("apl" "\\(apl{?}{}\\)" abbrev-possition-cursor 0)
     ("ecd" "effective Cartier divisor" nil 0)
     ("leg" "e.g." nil 1)
     ("scl" "schematic closure" nil 3)
