@@ -411,6 +411,35 @@
 
 #+END_SRC
 *** Iniciar un document LaTeX
+*** Change math display
+     from http://emacs.stackexchange.com/questions/13933/cycling-through-latex-math-mode-and-equation
+#+BEGIN_SRC elisp
+  (defun cycle-texmath nil
+    (interactive)
+    (save-excursion
+      (while (member (TeX-current-macro) '("text"))
+        (backward-char))
+      (when (texmathp)
+        (let ((env (car texmathp-why)))
+          (cond
+           ((string= env "equation")
+            (search-backward "\\begin{equation}")
+            (replace-match "\\[" t t)
+            (search-forward "\\end{equation}")
+            (replace-match "\\]" t t))
+           ((string= env "\\[")
+            (search-backward "\n\\[\n  ")
+            (replace-match "\\(" t t)
+            (search-forward "\n\\]")
+            (replace-match "\\)" t t))
+           ((string= env "\\(")
+            (search-backward "\\(")
+            (replace-match "\n\\begin{equation}\n  " t t)
+            (search-forward "\\)")
+            (replace-match "\n\\end{equation}" t t)))))))
+
+#+END_SRC
+
 ****** Variabls
 #+BEGIN_SRC elisp
   (defvar brust-LaTeX-init-dir "Directory of the tamplets")
