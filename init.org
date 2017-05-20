@@ -1088,13 +1088,13 @@ abort completely with `C-g'."
   (add-hook 'outline-minor-mode-hook #'brust-outline-mode-set-ellipsis)
 #+END_SRC
 
-*** Save cursor position
+*** COMMENT Save cursor position
 #+BEGIN_SRC elisp
   (save-place-mode 1)
   (setq-default save-place t)
   (setq save-place-file "~/.emacs.d/backups/saved-places")
 #+END_SRC
-*** Save history
+*** COMMENT Save history
     Save kill ring, regexp-search-ring
 #+BEGIN_SRC elisp
   (require 'savehist) 
@@ -2883,6 +2883,24 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ;;               nil)
     ;;           t)))
     )
+#+END_SRC
+
+#+RESULTS:
+
+*** Session
+#+BEGIN_SRC elisp
+  (use-package session
+    :defer t
+    :init
+    (add-hook 'after-init-hook #'session-initialize)
+    :config
+    (setq session-save-file "~/.emacs.d/backups/session"
+          session-initialize '(de-saveplace session places)
+          session-jump-undo-remember 3
+          ;; session-use-package t nil (session))
+          session-use-package t)
+    )
+
 #+END_SRC
 
 #+RESULTS:
