@@ -1097,18 +1097,22 @@ abort completely with `C-g'."
 *** Save history
     Save kill ring, regexp-search-ring
 #+BEGIN_SRC elisp
-  (savehist-mode 1)
+  (require 'savehist) 
   (setq history-length 500
         desktop-load-locked-desktop t
         history-delete-duplicates t
-        savehist-save-minibuffer-history 1
+        savehist-autosave-interval 60
+        savehist-save-minibuffer-history t
         savehist-additional-variables
-        '(kill-ring search-ring
+        '(kill-ring 
+          search-ring
           regexp-search-ring
           buffer-name-history
           extended-command-history
-          compile-command file-name-history)
+          compile-command 
+          file-name-history)
         savehist-file "~/.emacs.d/backups/history")
+  (savehist-mode 1)
 #+END_SRC
 *** Server
 #+BEGIN_SRC elisp
