@@ -2690,7 +2690,10 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     (global-whitespace-cleanup-mode t)
     :config
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
-    (global-set-key [remap just-one-space] 'cycle-spacing))
+    (defun brust-cycle-spacing-mode-fast (&optional n preserve-nl-back)
+      (interactive "*p")
+      (cycle-spacing n preserve-nl-back 'fast))
+    (global-set-key [remap just-one-space] #'brust-cycle-spacing-mode-fast))
 #+END_SRC
 
 *** YaSnippet
