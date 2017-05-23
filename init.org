@@ -2483,6 +2483,21 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ("s-q" . projectile-command-map))
 
 #+END_SRC
+*** Rainbow delimiters
+#+BEGIN_SRC elisp
+  (use-package rainbow-delimiters
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'tex-mode-hook #'rainbow-delimiters-mode)
+    :config
+    (setq rainbow-delimiters-max-face-count 1)
+    (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                        :foreground 'unspecified
+                        :inherit 'default)
+    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                        :foreground 'unspecified
+                        :inherit 'error))
+#+END_SRC
 
 *** Recentf
     Keep a list of recently opened files.
