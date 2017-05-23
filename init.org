@@ -82,6 +82,9 @@
 *** Killing Emacs
 #+BEGIN_SRC elisp
 (setq confirm-kill-emacs nil)
+(require 'cl)
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+           (flet ((process-list ())) ad-do-it))
 #+END_SRC
 
 *** Backup's
