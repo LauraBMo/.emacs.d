@@ -2870,19 +2870,14 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :bind ("<f10>" . magit-status)
     :init
     (setq magit-completing-read-function 'ivy-completing-read
-	  magit-turn-on-auto-revert-mode nil
-	  magit-set-upstream-on-push 'dontask)
+          magit-turn-on-auto-revert-mode nil
+          magit-set-upstream-on-push 'dontask)
     :config
     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
-    (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
-    ;; (add-hook 'kill-emacs-query-functions
-    ;;       (lambda ()
-    ;;         (if (y-or-n-p "Do you want to run function vc-dir before exit?")
-    ;;             (progn
-    ;;               (vc-dir "your-directory")
-    ;;               nil)
-    ;;           t)))
-    )
+    (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
+  (use-package magit-gh-pulls
+    :after magit
+    :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 #+END_SRC
 
 #+RESULTS:
