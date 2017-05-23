@@ -1617,6 +1617,33 @@ should be. After calling this function, call 'meeting-done' to reset the environ
   (load-file brust-my-macro-file)
 
 #+END_SRC
+
+*** Search synonyms
+#+BEGIN_SRC elisp
+  (require 'browse-url) ; part of gnu emacs
+
+  (defun brust-xah-lee-lookup-synonyms (arg)
+    "Look up the word under cursor in Thesaurus.com.
+  If there is a text selection (a phrase), use that.
+
+  This command switches to browser."
+    (interactive "P")
+    (let ((*url
+           (concat "http://www.thesaurus.com/browse/"
+                   (if (use-region-p)
+                       (buffer-substring-no-(point)roperties (region-beginning) (region-end))
+                     (current-word)))))
+      ;;(setq word (replace-regexp-in-string " " "_" word))
+      (if arg (eww *url)
+        (browse-url *url))))
+
+  (global-set-key (kbd "C-c s") #'brust-xah-lee-lookup-synonyms)
+
+#+END_SRC
+
+#+RESULTS:
+: brust-xah-lee-lookup-synonyms
+
 *** Smarter navigation into a line
     "Move point back to indentation of beginning of line.
 
