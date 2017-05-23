@@ -142,6 +142,11 @@
       display-time-default-load-average nil)
 #+END_SRC
 
+*** Idle update
+#+BEGIN_SRC elisp
+(setq idle-update-delay 2)
+#+END_SRC
+
 *** European agenda.
 
 #+BEGIN_SRC elisp
