@@ -1125,13 +1125,13 @@ abort completely with `C-g'."
   (add-hook 'outline-minor-mode-hook #'brust-outline-mode-set-ellipsis)
 #+END_SRC
 
-*** COMMENT Save cursor position
+*** Save cursor position
 #+BEGIN_SRC elisp
   (save-place-mode 1)
   (setq-default save-place t)
   (setq save-place-file "~/.emacs.d/backups/saved-places")
 #+END_SRC
-*** COMMENT Save history
+*** Save history
     Save kill ring, regexp-search-ring
 #+BEGIN_SRC elisp
   (require 'savehist) 
@@ -1143,15 +1143,44 @@ abort completely with `C-g'."
         savehist-additional-variables
         '(kill-ring 
           search-ring
+          global-mark-ring
+          regexp-history
           regexp-search-ring
-          buffer-name-history
+          ;; buffer-name-history
+          minibuffer-history
+          query-replace-history
+          read-expression-history
+          ;; input-method-history
           extended-command-history
-          compile-command 
-          file-name-history)
+          shell-command-history
+          file-name-history
+          org-mark-ring
+          org-tags-history
+          ;; kmacro-ring
+          counsel-colors-emacs-history
+          counsel-colors-web-history
+          counsel-descbinds-history
+          counsel-describe-symbol-history
+          counsel-faces-history
+          counsel-git-grep-cmd-history
+          counsel-git-grep-history
+          counsel-locate-history
+          counsel-org-agenda-headlines-history
+          counsel-rhythmbox-history
+          counsel-set-variable-history
+          counsel-unicode-char-history
+          ivy-history
+          occur-collect-regexp-history
+          swiper-history
+          dired-regexp-history
+          dired-shell-command-history
+          ;; Info-history
+          Info-search-history
+          pdf-occur-history)
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
-*** Server
+*** COMMENT Server
 #+BEGIN_SRC elisp
   (require 'server)
   (unless (server-running-p) (server-start))
