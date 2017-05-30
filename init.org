@@ -2555,7 +2555,24 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     (pdf-tools-install)
     (pdf-occur-global-minor-mode 0)
     (add-hook 'dired-load-hook #'pdf-occur-dired-minor-mode)
-    (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode))
+    (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode)
+    :bind
+    (:map pdf-view-mode-map
+          ("<"     . pdf-view-first-page)
+          (">"     . pdf-view-last-page)
+          ("C-k"   . pdf-view-next-page-command)
+          ("C-i"   . pdf-view-previous-page-command)
+          ("s-SPC" . pdf-view-scroll-down-or-previous-page)
+          ("k"     . pdf-view-next-line-or-next-page)
+          ("i"     . pdf-view-previous-line-or-previous-page)
+          ("j"     . image-backward-hscroll)
+          ("l"     . image-forward-hscroll)
+          ("s-k"   . brust-pdf-view-next-line-or-next-page-5)
+          ("s-i"   . brust-pdf-view-previous-line-or-previous-page-5)
+          ("s-j"   . brust-image-backward-hsroll-5)
+          ("s-l"   . brust-image-forward-hsroll-5)
+          ("C-n"   . brust-ace-window)
+          ("n"     . brust-ace-window)))
 
 (defun brust-image-backward-hsroll-5 (args)
   (interactive "p")
@@ -2570,6 +2587,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (interactive "p")
   (brust-by-five #'pdf-view-previous-line-or-previous-page args))
 #+END_SRC
+
 *** Projectile
 #+BEGIN_SRC elisp
   (use-package projectile
