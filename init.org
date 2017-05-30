@@ -2444,7 +2444,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+END_SRC
 
 *** LaTeX-mode-config
-
 #+BEGIN_SRC elisp
   (use-package tex 
     :ensure auctex
@@ -2465,40 +2464,40 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
       (:map cdlatex-mode-map
             ("'" . nil)
             ("`" . nil)
-            ("Ñ" . cdlatex-math-modify)
+            ("¿" . cdlatex-math-modify)
             ("¡" . cdlatex-math-modify)
             ("ñ" . cdlatex-math-symbol)))
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
     :bind 
     (:map LaTeX-mode-map
-          ("ç"              . brust-LaTeX-insert-math1)
-          ("Ç"              . brust-LaTeX-insert-math2)
-          ("."              . brust-LaTeX-smart-period)
-          ("<backtab>"      . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ("C-x C-s"        . brust-LaTeX-save)
-          ("C-c C-e"        . LaTeX-env-brust)
-          ("C-c n"          . TeX-next-error)
-          ("C-c e"          . TeX-error-overview)
-          ("C-c C-a"        . brust-compile-only)
-          ("s-="            . reftex-toc) 
-          ("s-ç"            . brust-LaTeX-smart-selection) 
-          ("C-c C-q"        . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"    . brust-wc-save-words)
-          ;; ("C-c C-a"     . latex/compile-commands-until-done)
-          ;; ("C-c C-a"     . TeX-texify) ;; subtitut by latex-extra
+          ("ç"            . brust-LaTeX-insert-math1)
+          ("Ç"            . brust-LaTeX-insert-math2)
+          ;; ("           ."              . brust-LaTeX-smart-period)
+          ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ("C-x C-s"      . brust-LaTeX-save)
+          ("C-c C-e"      . LaTeX-env-brust)
+          ("C-c n"        . TeX-next-error)
+          ("C-c e"        . TeX-error-overview)
+          ("C-c C-a"      . brust-compile-only)
+          ("s-0"          . reftex-toc) 
+          ("s-ç"          . brust-LaTeX-smart-selection) 
+          ("C-c C-q"      . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"  . brust-wc-save-words)
+          ;; ("C-c C-a"   . latex/compile-commands-until-done)
+          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
                    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"    . latex/up-section)
-          ;; ("<tab>"       . latex/hide-show)
-          ;; ("<backtab>"   . latex/hide-show-all)
-          ;; (""            . latex/next-section)
-          ;; (""            . latex/next-section-same-level)
-          ;; (""            . latex/beginning-of-line)
-          ("C-M-e"          . latex/end-of-environment)
-          ("C-M-a"          . latex/beginning-of-environment)
-          ("C-M-p"          . latex/backward-environment)
-          ("C-M-n"          . latex/forward-environment)
-          ("C-M-9"          . cycle-texmath)
+          ;; ("<M-S-up>"  . latex/up-section)
+          ;; ("<tab>"     . latex/hide-show)
+          ;; ("<backtab>" . latex/hide-show-all)
+          ;; (""          . latex/next-section)
+          ;; (""          . latex/next-section-same-level)
+          ;; (""          . latex/beginning-of-line)
+          ("C-M-e"        . latex/end-of-environment)
+          ("C-M-a"        . latex/beginning-of-environment)
+          ("C-M-p"        . latex/backward-environment)
+          ("C-M-n"        . latex/forward-environment)
+          ("s-9"          . cycle-texmath)
           ))
 
 #+END_SRC
