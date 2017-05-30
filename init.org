@@ -1189,7 +1189,7 @@ abort completely with `C-g'."
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
-*** COMMENT Server
+*** Server
 #+BEGIN_SRC elisp
   (require 'server)
   (unless (server-running-p) (server-start))
@@ -3015,7 +3015,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 
-*** Session
+*** COMMENT Session
 #+BEGIN_SRC elisp
   (use-package session
     :defer t
@@ -3535,15 +3535,15 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   "
 ^Toggle^
 ^^^^^^^^----------------------
-_d_: debug-on-error             _+_: monitor jack in
-_D_: debug-on-quit              _-_: monitor jack out
-_f_: fixed/variable width mode  _0_: monitor reset
-_F_: auto-fill-mode             _R_: code reading mode
+_d_: debug-on-error             +: monitor jack in
+_D_: debug-on-quit              -: monitor jack out
+_f_: fixed/variable width mode  0: monitor reset
+_F_: auto-fill-mode             R: code reading mode
 _l_: toggle-truncate-lines
 _h_: hl-line-mode
 _r_: read-only-mode
-_v_: viewing-mode
-_n_: narrow-or-widen-dwim
+v: viewing-mode
+n: narrow-or-widen-dwim
 _g_: golden-ratio-mode
 _q_: quit
 "
@@ -3645,13 +3645,13 @@ _q_: quit
 (defhydra eos/hydra nil
   "
 ╭────────────────────────────────────────────────╯
-  [_a_] Org Agenda  [_E_] ERC       [_m_] Mail
-  [_t_] Toggle map  [_T_] Twitter   [_M_] Music
-  [_s_] Skeletons   [_P_] Prodigy   [_g_] Gnus
-  [_p_] Proced      [_W_] Weather   [(] Macros
-  [_e_] EWW         [_R_] RSS       [`] Errors
-  [_d_] Downloads   [_D_] Debbugs   [_C_] ES-CC
-  [_b_] Project's Eshell          [_B_] Bookmarks
+  [_a_] Org Agenda  [_E_] ERC       [m] Mail
+  [_t_] Toggle map  [T] Twitter   [_M_] Music
+  [_s_] Skeletons   [P] Prodigy   [_g_] Gnus
+  [p] Proced       [W] Weather   [(] Macros
+  [_e_] EWW         [R] RSS       [`] Errors
+  [d] Downloads   [_D_] Debbugs   [C] ES-CC
+  [b] Project's Eshell          [_B_] Bookmarks
   [_q_] quit
 "
 
