@@ -7,7 +7,7 @@
  '(org-agenda-files (quote ("~/Dropbox/Org/")))
  '(package-selected-packages
    (quote
-    (auctex-latexmk auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-math company-auctex color-theme chess cdlatex auto-compile ace-window)))
+    (magit-gh-pulls rainbow-delimiters session auctex-latexmk auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-math company-auctex color-theme chess cdlatex auto-compile ace-window)))
  '(safe-local-variable-values (quote ((eval brust-wc-save-words)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -52,10 +52,6 @@
 ;;(require 'benchmark-init-loaddefs)
 ;;(benchmark-init/activate)
 
-
-;; (setq debug-on-error t)
-;; (setq debug-init t)
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -65,7 +61,10 @@
 
 ;; To decrease the init time
 (setq gc-cons-threshold-usual gc-cons-threshold
-      gc-cons-threshold (* 100 1024 1024))
+      gc-cons-threshold (* 100 1024 1024)
+      ;; Since an error may occur in loading, I set some debugging things so a debugger is entered if there's a problem. These get unset after everything loads successfully. 
+      debug-on-error t
+      debug-init t)
 
 ;; (load "~/Dropbox/config/emacs/init_emacs") ;;Before Git and Org-mode!!
 
@@ -157,3 +156,10 @@ Subtrees under a COMMENTed header are not evaluated."
 	(buffer-substring-no-properties beg end)))))
 
 (brust-endless/org-eval-eblocks "~/.emacs.d/init.org" "init.el" t)
+;; Turn debugging back off, if there were no errors then things successfully got loaded.
+
+(setq debug-on-error nil
+      debug-init nil
+      ;; Split windows a bit better (don't split horizontally, I have a widescreen :P)
+      split-height-threshold nil
+      split-width-threshold 0)

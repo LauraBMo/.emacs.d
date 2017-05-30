@@ -27,17 +27,28 @@
 
 *** Scratch message
 #+BEGIN_SRC elisp
-  (setq initial-scratch-message ";;;;;;;;;;;;; Bon Dia!!!! ;;;;;;;;;;;;;;;;\n\n\n")
+  ;; (setq initial-scratch-message ";;;;;;;;;;;;; Bon Dia!!!! ;;;;;;;;;;;;;;;;\n\n\n")
+  (setq initial-scratch-message ";; ╔═╗┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬\n;; ╚═╗│  ├┬┘├─┤ │ │  ├─┤\n;; ╚═╝└─┘┴└─┴ ┴ ┴ └─┘┴ ┴\n")
+
 #+END_SRC
 *** **message* buffer
 #+BEGIN_SRC elisp
 (setq message-log-max 5000)
 #+END_SRC
-*** Not show bars
+*** not useful GUI modes 
 #+BEGIN_SRC elisp
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
+(when (functionp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (functionp 'set-scroll-bar-mode)
+  (set-scroll-bar-mode 'nil))
+(when (functionp 'mouse-wheel-mode)
+  (mouse-wheel-mode -1))
+(when (functionp 'tooltip-mode)
+  (tooltip-mode -1))
+(when (functionp 'tool-bar-mode)
+  (tool-bar-mode -1))
+;; (when (functionp 'blink-cursor-mode)
+  ;; (blink-cursor-mode -1))
 #+END_SRC
 *** StartUp files
 #+BEGIN_SRC elisp
@@ -71,6 +82,9 @@
 *** Killing Emacs
 #+BEGIN_SRC elisp
 (setq confirm-kill-emacs nil)
+(require 'cl)
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+           (flet ((process-list ())) ad-do-it))
 #+END_SRC
 
 *** Backup's
@@ -126,6 +140,11 @@
 (setq display-time-24hr-format t
       display-time-day-and-date t
       display-time-default-load-average nil)
+#+END_SRC
+
+*** Idle update
+#+BEGIN_SRC elisp
+(setq idle-update-delay 2)
 #+END_SRC
 
 *** European agenda.
@@ -813,8 +832,26 @@ abort completely with `C-g'."
     (outline-show-all)))
 
 (add-hook 'ediff-prepare-buffer-hook 'ora-ediff-prepare-buffer)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (defun ediff-copy-both-to-C ()
+    (interactive)
+    (ediff-copy-diff
+     ediff-current-difference nil 'C nil
+     (concat
+      (ediff-get-region-contents
+       ediff-current-difference 'A ediff-control-buffer)
+      (ediff-get-region-contents
+       ediff-current-difference 'B ediff-control-buffer))))
+
+  (defun add-d-to-ediff-mode-map ()
+    (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
+
+  (add-hook 'ediff-keymap-setup-hook #'add-d-to-ediff-mode-map)
 
 #+END_SRC
+
 *** Electric indent mode
     Now, I have aggressive indent insted.
 #+BEGIN_SRC elisp
@@ -1106,15 +1143,44 @@ abort completely with `C-g'."
         savehist-additional-variables
         '(kill-ring 
           search-ring
+          global-mark-ring
+          regexp-history
           regexp-search-ring
-          buffer-name-history
+          ;; buffer-name-history
+          minibuffer-history
+          query-replace-history
+          read-expression-history
+          ;; input-method-history
           extended-command-history
-          compile-command 
-          file-name-history)
+          shell-command-history
+          file-name-history
+          org-mark-ring
+          org-tags-history
+          ;; kmacro-ring
+          counsel-colors-emacs-history
+          counsel-colors-web-history
+          counsel-descbinds-history
+          counsel-describe-symbol-history
+          counsel-faces-history
+          counsel-git-grep-cmd-history
+          counsel-git-grep-history
+          counsel-locate-history
+          counsel-org-agenda-headlines-history
+          counsel-rhythmbox-history
+          counsel-set-variable-history
+          counsel-unicode-char-history
+          ivy-history
+          occur-collect-regexp-history
+          swiper-history
+          dired-regexp-history
+          dired-shell-command-history
+          ;; Info-history
+          Info-search-history
+          pdf-occur-history)
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
-*** Server
+*** COMMENT Server
 #+BEGIN_SRC elisp
   (require 'server)
   (unless (server-running-p) (server-start))
@@ -1134,6 +1200,14 @@ abort completely with `C-g'."
     When non-nil, shifted motion keys activate the mark momentarily.
 #+BEGIN_SRC elisp
 (setq shift-select-mode t)
+#+END_SRC
+*** Zap up to char
+#+BEGIN_SRC elisp
+(autoload 'zap-up-to-char "misc"
+  "Kill up to, but not including ARGth occurrence of CHAR.")
+(global-set-key (kbd "M-z") #'zap-up-to-char)
+(global-set-key (kbd "M-Z") #'zap-to-char)
+
 #+END_SRC
 
 ** New generic functions
@@ -1580,6 +1654,33 @@ should be. After calling this function, call 'meeting-done' to reset the environ
   (load-file brust-my-macro-file)
 
 #+END_SRC
+
+*** Search synonyms
+#+BEGIN_SRC elisp
+  (require 'browse-url) ; part of gnu emacs
+
+  (defun brust-xah-lee-lookup-synonyms (arg)
+    "Look up the word under cursor in Thesaurus.com.
+  If there is a text selection (a phrase), use that.
+
+  This command switches to browser."
+    (interactive "P")
+    (let ((*url
+           (concat "http://www.thesaurus.com/browse/"
+                   (if (use-region-p)
+                       (buffer-substring-no-(point)roperties (region-beginning) (region-end))
+                     (current-word)))))
+      ;;(setq word (replace-regexp-in-string " " "_" word))
+      (if arg (eww *url)
+        (browse-url *url))))
+
+  (global-set-key (kbd "C-c s") #'brust-xah-lee-lookup-synonyms)
+
+#+END_SRC
+
+#+RESULTS:
+: brust-xah-lee-lookup-synonyms
+
 *** Smarter navigation into a line
     "Move point back to indentation of beginning of line.
 
@@ -2464,6 +2565,21 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ("s-q" . projectile-command-map))
 
 #+END_SRC
+*** Rainbow delimiters
+#+BEGIN_SRC elisp
+  (use-package rainbow-delimiters
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'tex-mode-hook #'rainbow-delimiters-mode)
+    :config
+    (setq rainbow-delimiters-max-face-count 1)
+    (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                        :foreground 'unspecified
+                        :inherit 'default)
+    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                        :foreground 'unspecified
+                        :inherit 'error))
+#+END_SRC
 
 *** Recentf
     Keep a list of recently opened files.
@@ -2688,12 +2804,15 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :init
     (setq-default indent-tabs-mode nil)
     (global-whitespace-cleanup-mode t)
-    :config
+    ;; :config
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
-    (defun brust-cycle-spacing-mode-fast (&optional n preserve-nl-back)
-      (interactive "*p")
-      (cycle-spacing n preserve-nl-back 'fast))
-    (global-set-key [remap just-one-space] #'brust-cycle-spacing-mode-fast))
+    ;; (global-set-key [remap just-one-space] 'cycle-spacing)
+    :bind ("M-SPC" . brust-cycle-spacing))
+
+  (defun brust-cycle-spacing (&optional n preserve-nl-back)
+    "My workaround"
+    (interactive "*p")
+    (cycle-spacing (if n (- 0 (abs n)) -1) preserve-nl-back 'fast))
 #+END_SRC
 
 *** YaSnippet
@@ -2873,19 +2992,35 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :bind ("<f10>" . magit-status)
     :init
     (setq magit-completing-read-function 'ivy-completing-read
-	  magit-turn-on-auto-revert-mode nil
-	  magit-set-upstream-on-push 'dontask)
+          magit-turn-on-auto-revert-mode nil
+          magit-set-upstream-on-push 'dontask)
     :config
     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
-    (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
-    ;; (add-hook 'kill-emacs-query-functions
-    ;;       (lambda ()
-    ;;         (if (y-or-n-p "Do you want to run function vc-dir before exit?")
-    ;;             (progn
-    ;;               (vc-dir "your-directory")
-    ;;               nil)
-    ;;           t)))
+    (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
+  (use-package magit-gh-pulls
+    :after magit
+    :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+    :config
+    ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
+    (setq magit-gh-pulls-pull-detail-limit 50))
+#+END_SRC
+
+#+RESULTS:
+
+*** Session
+#+BEGIN_SRC elisp
+  (use-package session
+    :defer t
+    :init
+    (add-hook 'after-init-hook #'session-initialize)
+    :config
+    (setq session-save-file "~/.emacs.d/backups/session"
+          session-initialize '(de-saveplace session places)
+          session-jump-undo-remember 3
+          ;; session-use-package t nil (session))
+          session-use-package t)
     )
+
 #+END_SRC
 
 #+RESULTS:
@@ -3385,6 +3520,163 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (global-set-key (kbd "C-p") #'hydra-transpose/transpose-paragraphs)
   (global-set-key (kbd "C-x C-t") #'hydra-transpose/body) 
 #+END_SRC
+
+**** More hydras
+#+BEGIN_SRC elisp
+(defhydra eos/hydra-toggle-map nil
+  "
+^Toggle^
+^^^^^^^^----------------------
+_d_: debug-on-error             _+_: monitor jack in
+_D_: debug-on-quit              _-_: monitor jack out
+_f_: fixed/variable width mode  _0_: monitor reset
+_F_: auto-fill-mode             _R_: code reading mode
+_l_: toggle-truncate-lines
+_h_: hl-line-mode
+_r_: read-only-mode
+_v_: viewing-mode
+_n_: narrow-or-widen-dwim
+_g_: golden-ratio-mode
+_q_: quit
+"
+  ("d" toggle-debug-on-error :exit t)
+  ("D" toggle-debug-on-quit :exit t)
+  ("g" golden-ratio-mode :exit t)
+  ("f" variable-pitch-mode :exit t)
+  ("F" auto-fill-mode :exit t)
+  ("l" toggle-truncate-lines :exit t)
+  ("r" read-only-mode :exit t)
+  ;; This gets turned on/off unconditionally (not the eos/turn-on-hl-line-mode)
+  ("h" hl-line-mode :exit t)
+  ;;("v" eos/turn-on-viewing-mode :exit t)
+  ;;("n" eos/narrow-or-widen-dwim :exit t)
+  ;;("+" eos/monitor-jack-in :exit t)
+  ;;("-" eos/monitor-jack-out :exit t)
+  ;;("0" eos/monitor-reset :exit t)
+  ;;("R" eos/code-reading-mode :exit t)
+  ("q" nil :exit t))
+
+(defhydra eos/hydra-next-error nil
+  "Error Selection"
+  ("`" next-error "next")
+  ("j" next-error "next" :bind nil)
+
+  ("n" next-error "next" :bind nil)
+  ("k" previous-error "previous" :bind nil)
+  ("p" previous-error "previous" :bind nil)
+  ("l" flycheck-list-errors "list-errors" :exit t)
+  ("q" nil "quit" :color red))
+
+(defhydra eos/hydra-macro
+  (:pre
+   (when defining-kbd-macro
+     (kmacro-end-macro 1)))
+  "
+  ^Create-Cycle^   ^Basic^           ^Insert^        ^Save^         ^Edit^
+╭─────────────────────────────────────────────────────────────────────────╯
+     ^_k_^           [_e_] execute    [_n_] insert    [_b_] name      [_'_] previous
+     ^^↑^^           [_d_] delete     [_t_] set       [_K_] key       [_,_] last
+ ( ←   → )       [_o_] edit       [_a_] add       [_x_] register
+     ^^↓^^           [_r_] region     [_f_] format    [_B_] defun
+     ^_j_^           [_m_] step
+    ^^   ^^          [_s_] swap
+"
+  ("(" kmacro-start-macro :color blue)
+  (")" kmacro-end-or-call-macro-repeat)
+  ("k" kmacro-cycle-ring-previous)
+  ("j" kmacro-cycle-ring-next)
+  ("r" apply-macro-to-region-lines)
+  ("d" kmacro-delete-ring-head)
+  ("e" kmacro-end-or-call-macro-repeat)
+  ("o" kmacro-edit-macro-repeat)
+  ("m" kmacro-step-edit-macro)
+  ("s" kmacro-swap-ring)
+  ("n" kmacro-insert-counter)
+  ("t" kmacro-set-counter)
+  ("a" kmacro-add-counter)
+  ("f" kmacro-set-format)
+  ("b" kmacro-name-last-macro)
+  ("K" kmacro-bind-to-key)
+  ("B" insert-kbd-macro)
+  ("x" kmacro-to-register)
+  ("'" kmacro-edit-macro)
+  ("," edit-kbd-macro)
+  ("q" nil :color blue))
+
+;; Here's a Hydra for information about the system (and emacs) that I stole from a different user:
+
+(defhydra eos/hydra-about-emacs ()
+  "
+    About Emacs                                                        [_q_] quit
+    ^^--------------------------------------------------------------------------
+    PID:             %s(emacs-pid)
+    Uptime:          %s(emacs-uptime)
+    Init time:       %s(emacs-init-time)
+    Directory:       %s(identity user-emacs-directory)
+    Invoked from:    %s(concat invocation-directory invocation-name)
+    Version:         %s(identity emacs-version)
+
+    User Info
+    ^^--------------------------------------------------------------------------
+    User name:       %s(user-full-name)
+    Login (real):    %s(user-login-name) (%s(user-real-login-name))
+      UID (real):    %s(user-uid) (%s(user-real-uid))
+      GID (real):    %s(group-gid) (%s(group-real-gid))
+    Mail address:    %s(identity user-mail-address)
+
+    System Info
+    ^^--------------------------------------------------------------------------
+    System name:     %s(system-name)
+    System type:     %s(identity system-type)
+    System config:   %s(identity system-configuration)
+    "
+  ("q" nil nil))
+
+;;And finally, the main EOS Hydra for entry:
+
+(defhydra eos/hydra nil
+  "
+╭────────────────────────────────────────────────╯
+  [_a_] Org Agenda  [_E_] ERC       [_m_] Mail
+  [_t_] Toggle map  [_T_] Twitter   [_M_] Music
+  [_s_] Skeletons   [_P_] Prodigy   [_g_] Gnus
+  [_p_] Proced      [_W_] Weather   [(] Macros
+  [_e_] EWW         [_R_] RSS       [`] Errors
+  [_d_] Downloads   [_D_] Debbugs   [_C_] ES-CC
+  [_b_] Project's Eshell          [_B_] Bookmarks
+  [_q_] quit
+"
+
+  ("`" eos/hydra-next-error/body :exit t)
+  ("(" eos/hydra-macro/body :exit t)
+  ("a" (org-agenda nil " ") :exit t)
+  ;;("b" eos/popup-project-eshell :exit t)
+  ("A" eos/hydra-about-emacs/body :exit t)
+  ("t" eos/hydra-toggle-map/body :exit t)
+  ;;("T" eos/start-or-jump-to-twitter :exit t)
+  ("g" gnus :exit t)
+  ;;("d" eos/popup-downloads :exit t)
+  ("D" debbugs-gnu :exit t)
+  ("B" counsel-bookmark :exit t)
+  ;;("C" es-command-center :exit t)
+  ;;("m" eos/switch-to-mail :exit t)
+  ("M" eos/hydra-mpd/body :exit t)
+  ("e" eww :exit t)
+  ("E" (when (y-or-n-p "Really start ERC?") (start-erc)) :exit t)
+  ;;("R" elfeed :exit t)
+  ("s" eos/hydra-skeleton/body :exit t)
+  ;;("p" proced :exit t)
+  ;;("P" prodigy :exit t)
+  ;;("W" wttrin :exit t)
+  ("q" nil :exit t))
+
+;; Bind the main EOS hydra to M-t
+(global-set-key (kbd "M-t") 'eos/hydra/body)
+
+#+END_SRC
+
+#+RESULTS:
+: eos/hydra/body
 
 
 * Old stuffs
