@@ -616,6 +616,15 @@
 
 #+RESULTS:
 : outline-backward-same-level
+
+*** Delete
+#+BEGIN_SRC elisp
+  (bind-keys
+   ("s-f" . backward-kill-word)
+   ("s-d" . kill-word))
+
+#+END_SRC
+
 ** The built-in modes
 *** Abbrev's
 **** Setting
