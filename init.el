@@ -162,4 +162,4 @@ Subtrees under a COMMENTed header are not evaluated."
       debug-init nil
       ;; Split windows a bit better (don't split horizontally, I have a widescreen :P)
       split-height-threshold nil
-      split-width-threshold 0)
+      split-width-threshold 180)
