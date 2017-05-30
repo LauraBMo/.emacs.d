@@ -1425,12 +1425,20 @@ Single Capitals as you type."
 
 #+END_SRC
 
+*** By five
+#+BEGIN_SRC elisp
+  (defun brust-by-five (-function args)
+    (funcall-interactively -function (if (numberp args)
+                                         (* 5 args)
+                                       5)))
+#+END_SRC
+
 *** Mouse wheel
     Mouse wheel: try it with S and C
 **** Functions
 #+BEGIN_SRC elisp
-(defun up-slightly () (interactive) (scroll-up 5))
-(defun down-slightly () (interactive) (scroll-down 5))
+(defun up-slightly (args) (interactive "p") (brust-by-five #'scroll-up args))
+(defun down-slightly (args) (interactive "p") (brust-by-five #'scroll-down args))
 
 (defun up-one () (interactive) (scroll-up 1))
 (defun down-one () (interactive) (scroll-down 1))
