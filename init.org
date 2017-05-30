@@ -764,13 +764,20 @@ abort completely with `C-g'."
 #+END_SRC
 
 *** Dired
-**** Settings
      In Dired, visit this file or directory instead of the Dired buffer.
 #+BEGIN_SRC elisp
   (require 'dired)
-  (put 'dired-find-alternate-file 'disabled nil)
 
-  (setq dired-listing-switches "-lABGhv1c --group-directories-first"
+  (customize-set-variable 'diredp-hide-details-initially-flag nil)
+  (put 'dired-find-alternate-file 'disabled nil)
+  (setq ls-lisp-dirs-first t
+        ;; -F marks links with @
+        dired-ls-F-marks-symlinks t
+        delete-by-moving-to-trash t
+        ;; Auto refresh dired
+        global-auto-revert-non-file-buffers t
+        wdired-allow-to-change-permissions t
+        dired-listing-switches "-al --group-directories-first"
         ;; allow dired to delete or copy dir
         ;; “always” means no asking
         dired-recursive-copies 'always
@@ -779,46 +786,64 @@ abort completely with `C-g'."
         ;; copy other frame
         dired-dwim-target t
         ;; dired-x-hands-off-my-keys t
-        dired-hide-details-hide-information-lines nil
+        dired-hide-details-hide-information-lines t
         )
+  (add-hook 'dired-mode-hook #'brust-dired-mode-hook)
 
+  (bind-keys
+   ("C-x C-j" . dired-jump)) ;;auto-load function
+
+  (bind-keys :map dired-mode-map
+             ("RET"     . dired-find-alternate-file)
+             ("C-M-u"   . dired-up-directory)
+             ("M-o"     . 'my/dired-open)
+             ("C-x C-q" . wdired-change-to-wdired-mode)
+             ("ç"       . ora-dired-up-directory)
+             ("e"       . ora-ediff-files))
+
+  (use-package dired-x
+    :ensure nil
+    :init
+    (setq-default dired-omit-files-p t
+                  dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\.") 
+    :config
+    (add-to-list 'dired-omit-extensions ".DS_Store"))
+
+  (use-package dired-aux
+    :ensure nil
+    :init (use-package dired-async
+            :ensure nil))
+
+  (use-package dired+)
+#+END_SRC
+
+#+RESULTS:
+
+**** Defun's
+#+BEGIN_SRC elisp
   (defun ora-dired-up-directory ()
     (interactive)
     (let ((buffer (current-buffer)))
       (dired-up-directory)
       (unless (equal buffer (current-buffer))
-        (kill-buffer buffer))))
+	(kill-buffer buffer))))
 
   (defun ora-ediff-files ()
     (interactive)
     (let ((files (dired-get-marked-files)))
       (if (= 2 (length files))
-          (let ((file1 (car files))
-                (file2 (cadr files)))
-            (if (file-newer-than-file-p file1 file2)
-                (ediff-files file2 file1)
-              (ediff-files file1 file2)))
-        (error "two files should be marked"))))
+	  (let ((file1 (car files))
+		(file2 (cadr files)))
+	    (if (file-newer-than-file-p file1 file2)
+		(ediff-files file2 file1)
+	      (ediff-files file1 file2)))
+	(error "two files should be marked"))))
 
-  (bind-keys :map dired-mode-map
-             ("RET" . dired-find-alternate-file)
-             ("ç"   . ora-dired-up-directory)
-             ("e"   . ora-ediff-files))
-#+END_SRC
+  (defun brust-dired-mode-hook ()
+    (hl-line-mode 1)
+    (toggle-truncate-lines 1)
+    (dired-omit-mode 1))
 
-**** Dired-x
-#+BEGIN_SRC elisp
-  (use-package dired-x
-    ;;(autoload 'dired-jump "dired-x"
-    ;;"Jump to dired buffer corresponding to current buffer."
-    ;;      'interactive)
-    ;;    (autoload 'dired-jump-other-window "dired-x"
-    ;;      "Like \\[dired-jump] (`dired-jump') but in other window."
-    ;;      'interactive)
-    :ensure nil
-    :init
-    (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
-    (setq-default dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\."))
 #+END_SRC
 
 *** Display time
