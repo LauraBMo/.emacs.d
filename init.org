@@ -3067,18 +3067,18 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (use-package magit
     :bind ("<f10>" . magit-status)
     :init
-    (setq magit-completing-read-function 'ivy-completing-read
+    (setq ;; magit-completing-read-function #'helm--completing-read-default
           magit-turn-on-auto-revert-mode nil
           magit-set-upstream-on-push 'dontask)
     :config
     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
     (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
-  (use-package magit-gh-pulls
-    :after magit
-    :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
-    :config
-    ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
-    (setq magit-gh-pulls-pull-detail-limit 50))
+ ;; (use-package magit-gh-pulls
+ ;;   :after magit
+ ;;   :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+ ;;   :config
+ ;;   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
+ ;;   (setq magit-gh-pulls-pull-detail-limit 50))
 #+END_SRC
 
 #+RESULTS:
