@@ -2375,13 +2375,18 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
                 (balance-windows)))
     (add-hook 'ediff-cleanup-hook (lambda () (golden-ratio-mode 1)))
 
-    (add-to-list 'golden-ratio-extra-commands 'brust-ace-window)
-    (add-to-list 'golden-ratio-extra-commands 'avy-goto-char-timer)
-    (add-to-list 'golden-ratio-extra-commands 'avy-goto-word-1)
-    ;;(add-to-list 'golden-ratio-exclude-buffer-names "")
-    (add-to-list 'golden-ratio-exclude-buffer-regexp "^\\*magit: +.*"))
-
+    (add-to-list 'golden-ratio-extra-commands #'brust-ace-window)
+    (add-to-list 'golden-ratio-extra-commands #'avy-goto-char-timer)
+    (add-to-list 'golden-ratio-extra-commands #'avy-goto-word-1)
+    ;; (add-to-list 'golden-ratio-exclude-buffer-names "")
+    ;; (add-to-list 'golden-ratio-inhibit-functions #'brust-not-resize-on-mouse)
+    (add-to-list 'golden-ratio-exclude-buffer-regexp "^\\*magit: +.*")
+    (remove-hook 'mouse-leave-buffer-hook #'golden-ratio--mouse-leave-buffer-hook))
 #+END_SRC
+
+#+RESULTS:
+: t
+
 *** Go to last change
 #+BEGIN_SRC elisp
   (use-package goto-chg
