@@ -112,6 +112,7 @@
     ("lbm" "Laura Brustenga Moncusí" nil 0)
     ("lno" "locally Noetherian" nil 1)
     ("loc" "locally" nil 1)
+    ("lpp" "locally principal" nil 2)
     ("noet" "Noetherian" nil 1)
     ("oem" "open embedding" nil 0)
     ("op" "open" nil 2)
