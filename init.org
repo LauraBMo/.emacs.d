@@ -2907,6 +2907,7 @@ is already narrowed."
     (which-key-mode 1)
 #+END_SRC
 *** Whitespace cleanup
+:TODO: Add fast repeat like er/expand-region!!
 #+BEGIN_SRC elisp
   (use-package whitespace-cleanup-mode
     :diminish 'whitespace-cleanup-mode
