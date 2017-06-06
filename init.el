@@ -69,7 +69,7 @@
 ;; (load "~/Dropbox/config/emacs/init_emacs") ;;Before Git and Org-mode!!
 
 
-;; The following code is inspirated into
+;; The following code is inspirated by
 ;; http://endlessparentheses.com/init-org-Without-org-mode.html
 (defvar endless/init.org-message-depth 5
   "What depth of init.org headers to message at startup.")
