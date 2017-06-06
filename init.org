@@ -2535,7 +2535,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
           ("C-M-a"        . latex/beginning-of-environment)
           ("C-M-p"        . latex/backward-environment)
           ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . cycle-texmath)
+          ("s-9"          . brust-cycle-texmath)
           ))
 
 #+END_SRC

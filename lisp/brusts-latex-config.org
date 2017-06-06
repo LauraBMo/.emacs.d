@@ -413,30 +413,41 @@
 *** Change math display
      from http://emacs.stackexchange.com/questions/13933/cycling-through-latex-math-mode-and-equation
 #+BEGIN_SRC elisp
-  (defun cycle-texmath nil
-    (interactive)
-    (save-excursion
-      (while (member (TeX-current-macro) '("text"))
-        (backward-char))
-      (when (texmathp)
-        (let ((env (car texmathp-why)))
-          (cond
-           ((string= env "equation")
-            (search-backward "\\begin{equation}")
-            (replace-match "\\[" t t)
-            (search-forward "\\end{equation}")
-            (replace-match "\\]" t t))
-           ((string= env "\\[")
-            (search-backward "\n\\[\n  ")
-            (replace-match "\\(" t t)
-            (search-forward "\n\\]")
-            (replace-match "\\)" t t))
-           ((string= env "\\(")
-            (search-backward "\\(")
-            (replace-match "\n\\begin{equation}\n  " t t)
-            (search-forward "\\)")
-            (replace-match "\n\\end{equation}" t t)))))))
+  (defun brust-cycle-texmath-root nil
+    "Main function of 'brust-cycle-texmath-*'. It use the data stored by the last call of 'texmathp'"
+    (let ((-headers (cdr (assoc
+                          (car texmathp-why)
+                          brust-cycle-texmath--alist))))
+      (goto-char (cdr texmathp-why))
+      (skip-chars-backward " \t\r\n\v\f")
+      (re-search-forward
+       (concat
+        "[ \t\r\n\v\f]*"
+        (rx-to-string (car (car -headers)))
+        "[ \t\r\n\v\f]*"
+        "\\([^\000]*?\\)??"
+        "[ \t\r\n\v\f]*"
+        (rx-to-string (cdr (car -headers))))
+       nil t)
+      (replace-match (cdr -headers))))
 
+  (defun brust-cycle-texmath nil
+    "Workaround of 'brust-cycle-texmath-root'. Now the cursor end's position is an apropiated place in both calls, from inside a math formula or outside." 
+    (interactive)
+    (if (texmathp) (brust-cycle-texmath-root)
+      (save-excursion
+        (while (not (texmathp)) (backward-char 1))
+        (brust-cycle-texmath-root))))
+
+  (defvar brust-cycle-texmath--alist)
+
+  (setq
+   brust-cycle-texmath--alist
+   '(
+     ("equation" . (("\\begin{equation}" . "\\end{equation}") . " \\\\(\\1\\\\)"))
+     ("\\(" . (("\\(" . "\\)") . "\n\\\\[\n \\1\n\\\\]"))
+     ("\\[" . (("\\[" . "\\]") . "\n\\\\begin{equation}\n  \\1\n\\\\end{equation}"))
+     ))
 #+END_SRC
 
 *** COMMENT Iniciar un document LaTeX
