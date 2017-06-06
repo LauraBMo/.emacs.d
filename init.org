@@ -520,28 +520,30 @@
 *** Global and genric
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("M-c"         . brust-endless/capitalize)
-   ("M-l"         . brust-endless/downcase)
-   ("M-C"         . endless/upcase)
-   ("C-+"         . universal-argument)
-   ("C-ç"         . negative-argument)
-   ("C--"         . undo)
-   ("C-x C-S-F"   . xah-open-in-external-app)
-   ("C-x C-k s"   . save-macro)
-   ("M-ç"         . hippie-expand)
-   ("C-9"         . close-quoted-open-paren-right)
-   ("C-)"         . close-all-open-paren-right)
-   ("C-8"         . close-quoted-open-paren-left)
-   ("C-("         . close-all-open-paren-left)
-   ("C-x q"       . macro-query-my)
-   ("C-S-p"       . package-list-packages)
-   ("M-\""        . shell)
-   ("C-S-<menu>"  . delete-indentation)
-   ("<f5> <f5>"   . brust-toggle-menu-tool-bars)
-   ("C-f"         . backward-delete-char-untabify)
-   ("M-f"         . backward-kill-word)
-   ("<home>"      . delete-other-windows)
-   ("<end>"       . delete-window))
+   ("M-c"        . brust-endless/capitalize)
+   ("M-l"        . brust-endless/downcase)
+   ("M-C"        . endless/upcase)
+   ("C-+"        . universal-argument)
+   ("C-ç"        . negative-argument)
+   ("C--"        . undo)
+   ("C-x C-S-F"  . xah-open-in-external-app)
+   ("C-x C-k s"  . save-macro)
+   ("M-ç"        . hippie-expand)
+   ("C-9"        . close-quoted-open-paren-right)
+   ("C-)"        . close-all-open-paren-right)
+   ("C-8"        . close-quoted-open-paren-left)
+   ("C-("        . close-all-open-paren-left)
+   ("C-x q"      . macro-query-my)
+   ("C-S-p"      . package-list-packages)
+   ("M-\""       . shell)
+   ("C-S-<menu>" . delete-indentation)
+   ("<f5> <f5>"  . brust-toggle-menu-tool-bars)
+   ("C-f"        . backward-delete-char-untabify)
+   ("M-f"        . backward-kill-word)
+   ("<home>"     . delete-other-windows)
+   ("<end>"      . delete-window)
+   ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
+   ("s-n"        . endless/narrow-or-widen-dwim))
 
   (global-set-key (kbd "C-x C-S-e")
                   (lambda (str end) "Eval region" (interactive "r")
@@ -619,7 +621,7 @@
 
 *** Delete
 #+BEGIN_SRC elisp
-  (bind-keys
+  (bind-keys*
    ("s-f" . backward-kill-word)
    ("s-d" . kill-word))
 
@@ -2577,7 +2579,38 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
         :config
         (zone-when-idle (* 5 60)))))
     
-#+END_SRC 
+#+END_SRC
+*** Narrow or widen dwin
+ There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
+ of the narrow-or-widen so I don't have to keep remembering which is which 
+#+BEGIN_SRC elisp
+(defun endless/narrow-or-widen-dwim (p)
+  "Widen if buffer is narrowed, narrow-dwim otherwise.
+Dwim means: region, org-src-block, org-subtree, or
+defun, whichever applies first. Narrowing to
+org-src-block actually calls `org-edit-src-code'.
+
+With prefix P, don't widen, just narrow even if buffer
+is already narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning)
+                           (region-end)))
+        ((derived-mode-p 'org-mode)
+         ;; `org-edit-src-code' is not a real narrowing
+         ;; command. Remove this first conditional if
+         ;; you don't want it.
+         (cond ((ignore-errors (org-edit-src-code) t)
+                (delete-other-windows))
+               ((ignore-errors (org-narrow-to-block) t))
+               (t (org-narrow-to-subtree))))
+        ((derived-mode-p 'latex-mode)
+         (LaTeX-narrow-to-environment))
+        (t (narrow-to-defun))))
+#+END_SRC
+
 *** Pdf tools
 #+BEGIN_SRC elisp
   (use-package pdf-tools
