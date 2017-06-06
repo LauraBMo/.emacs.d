@@ -2916,13 +2916,70 @@ is already narrowed."
     ;; :config
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
     ;; (global-set-key [remap just-one-space] 'cycle-spacing)
-    :bind ("M-SPC" . brust-cycle-spacing))
+    :bind
+    ("M-SPC" . brust-cycle-whitespace)
+    ("s-SPC" . brust-cycle-whitespace))
 
-  (defun brust-cycle-spacing (&optional n preserve-nl-back)
-    "My workaround"
-    (interactive "*p")
-    (cycle-spacing (if n (- 0 (abs n)) -1) preserve-nl-back 'fast))
+  (defun brust-cycle-whitespace nil
+    (interactive)
+    (let* ((--pt0 (point))
+           (--inline-skip-chars " \t\v\f")
+           (--skip-chars " \t\v\f\n")
+           (--beg (progn
+                    (skip-chars-backward --skip-chars)
+                    (constrain-to-field nil --pt0)
+                    (point)))
+           (--end (progn
+                    (skip-chars-forward --skip-chars)
+                    (constrain-to-field nil --pt0)
+                    (point)))
+           (--indent (buffer-substring-no-properties
+                      (progn
+                        (skip-chars-backward --inline-skip-chars)
+                        (point))
+                      --end))
+           (--contex (buffer-substring --beg --end))
+           (--lnum (1- (length (split-string --contex "\n")))))
+      (cond
+       ((or (not (equal last-command this-command))
+            (not brust-cycle-whitespace--context))
+        ;; Special handling for case where there was no space at all.
+        (cond ((< --beg --end) 
+               (setq brust-cycle-whitespace--context ;;Save for later.
+                     (cons --pt0 --contex))
+               (delete-region --beg --end)
+               (when (and (< (1+ --beg) --end)   ;; more than one space
+                          (< --end (point-max))  ;; erase whitespace at eobp
+                          (< (point-min) --beg)) ;; and at bobp
+                 (insert 
+                  (cond ((< --lnum 2) " ")
+                        ((< --lnum 3) (concat "\n" --indent))
+                        (t (concat "\n\n" --indent))))))
+              (t ;; indent when it is called without surrounding whitespaces.
+               (end-of-line)
+               (brust-cycle-whitespace))))
+       ;; Final call: (and (equal last-command this-command) (equal --beg --end))
+       ((not (< --beg --end))
+        (insert (cdr brust-cycle-whitespace--context))
+        (goto-char (car brust-cycle-whitespace--context))
+        (setq cycle-spacing--context nil))
+       ;; Intermadiate calls (and (equal last-command this-command) (< --beg --end))
+       (t
+        (delete-region --beg --end)
+        (insert
+         (cond ((< --lnum 1) "")
+               ((< --lnum 2) " ")
+               ((< --lnum 3) (concat "\n" --indent))
+               (t (concat "\n\n" --indent))))))))
+
+  (defvar brust-cycle-whitespace--context nil
+    "Store context used in consecutive calls to `brust-cycle-whitespace' command.
+       The first time `brust-cycle-whitespace' runs, it saves in this variable:
+       the original point position, and the original spacing around point.")
 #+END_SRC
+
+#+RESULTS:
+: brust-cycle-whitespace--context
 
 *** YaSnippet
 #+BEGIN_SRC elisp
