@@ -444,6 +444,14 @@
   (setq
    brust-cycle-texmath--alist
    '(
+   ;; ("ident" . (("rstr" . "rend") . "rxrep"))
+   ;; indent : 'car' of 'texmathp-why' identifying the current envirment.
+   ;; rstr   : real starting sring of environment identifyed by 'indent'.
+   ;; rend   : close matching of 'rstar' (real ending).
+   ;; rxrep  : string used into 'replace-match'. 
+   ;;          It is the next envirment. 
+   ;;          \\1 means the body of the math formula.
+   ;;          Require espcify the space before environment.
      ("equation" . (("\\begin{equation}" . "\\end{equation}") . " \\\\(\\1\\\\)"))
      ("\\(" . (("\\(" . "\\)") . "\n\\\\[\n \\1\n\\\\]"))
      ("\\[" . (("\\[" . "\\]") . "\n\\\\begin{equation}\n  \\1\n\\\\end{equation}"))
