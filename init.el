@@ -27,6 +27,7 @@
  '(git-gutter+-modified ((t (:background "grey16" :foreground "dim gray" :height 0.9))))
  '(hydra-face-blue ((t (:foreground "turquoise" :weight bold))))
  '(hydra-face-red ((t (:foreground "firebrick1" :weight bold))))
+ '(hydra-face-pink ((t (:foreground "hot pink" :weight bold))))
  '(lv-separator ((t (:background "white smoke"))))
  '(minibuffer-prompt ((t (:box (:line-width 1 :color "orange red" :style released-button) :foreground "#FDF4C1"))))
  '(org-block ((t (:inherit default))))
