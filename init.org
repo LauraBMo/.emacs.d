@@ -3054,6 +3054,28 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+RESULTS:
 
+*** TODO Magit
+    For a git and github integration with emacs!
+#+BEGIN_SRC elisp
+  (use-package magit
+    :bind ("<f10>" . magit-status)
+    :init
+    (setq ;; magit-completing-read-function #'helm--completing-read-default
+          magit-turn-on-auto-revert-mode nil
+          magit-set-upstream-on-push 'dontask)
+    :config
+    (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
+    (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
+ ;; (use-package magit-gh-pulls
+ ;;   :after magit
+ ;;   :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+ ;;   :config
+ ;;   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
+ ;;   (setq magit-gh-pulls-pull-detail-limit 50))
+#+END_SRC
+
+#+RESULTS:
+
 *** Mic parent
    How to show the matching paren when it is offscreen
 #+BEGIN_SRC elisp
@@ -3693,28 +3715,6 @@ is already narrowed."
         (insert res))))
 #+END_SRC
 
-*** TODO Magit
-    For a git and github integration with emacs!
-#+BEGIN_SRC elisp
-  (use-package magit
-    :bind ("<f10>" . magit-status)
-    :init
-    (setq ;; magit-completing-read-function #'helm--completing-read-default
-          magit-turn-on-auto-revert-mode nil
-          magit-set-upstream-on-push 'dontask)
-    :config
-    (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
-    (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
- ;; (use-package magit-gh-pulls
- ;;   :after magit
- ;;   :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
- ;;   :config
- ;;   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
- ;;   (setq magit-gh-pulls-pull-detail-limit 50))
-#+END_SRC
-
-#+RESULTS:
-
 *** COMMENT Session
 #+BEGIN_SRC elisp
   (use-package session
@@ -3733,27 +3733,15 @@ is already narrowed."
 
 #+RESULTS:
 
-*** TODO Hydra
-    It has to be the last because the warning avoid.
-**** Init hydra
-#+BEGIN_SRC elisp
-  (use-package hydra
-    :config
-    (setq lv-use-separator t)
-    :bind*
-    ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
-    :chords
-    ;;("oo" . hydra-outline/body)
-    ("jf" . hydra-motion/body))
-#+END_SRC
-**** COMMENT Ignore warnings
+*** COMMENT Hydra
+**** Ignore warnings
      Needed to put art on hydra's docs. Reset to default with idle in =init.el=.
 #+BEGIN_SRC elisp
 (setq warning-minimum-log-level :emergency)
 #+END_SRC
-**** TODO Regular Motion
+**** Regular Motion
      Put down-upper-capitaliza in the usual keys
-***** TODO It was
+***** It was
     Make cursor movement keys under right hand's home-row.
 
 (global-set-key (kbd "M-i") 'previous-line) ;; was tab-to-tab-stop
@@ -3764,7 +3752,7 @@ is already narrowed."
 (global-set-key (kbd "M-u") 'backward-word)   ;; was endless/upcase
 (global-set-key (kbd "M-o") 'forward-word)    ;; was anything (outline prefix)
 
-***** COMMENT TODO Hydra
+***** Hydra
       key chord!!!
 #+BEGIN_SRC elisp
   (defhydra hydra-motion (:color pink :hint nil)
@@ -3812,156 +3800,7 @@ is already narrowed."
 
 #+END_SRC
 
-**** Yank
-#+BEGIN_SRC elisp
-(defhydra hydra-yank-pop ()
-  "yank"
-  ("C-y" brust-org-yank-or-yank nil)
-  ("M-y" yank-pop nil)
-  ("y" (yank-pop 1) "prev")
-  ("u" (yank-pop -1) "next")
-  ("t" counsel-yank-pop "list" :color blue))
-
-(global-set-key (kbd "M-y") #'hydra-yank-pop/yank-pop)
-;;(global-set-key (kbd "C-y") #'hydra-yank-poxxp/org-yank)
-
-(put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
-#+END_SRC
-
-***** org-yank or yank
-#+BEGIN_SRC elisp
-  (defun brust-org-yank-or-yank nil
-    (interactive)
-    (if (string= major-mode "org-mode")
-        (org-yank)
-      (yank)))
-#+END_SRC
-
-**** Outline
-***** Functions
-****** tab for org-mode and latex
-#+BEGIN_SRC elisp
-  (defun hydra-outline-tab-key nil
-    (interactive)
-    (or (and (string= major-mode "org-mode")
-             (org-cycle))
-        (and (save-excursion (describe-mode)
-                             
-                             (search-forward "Cdlatex" nil t))
-             (cl-member "cdlatex-mode" minor-mode-list)
-             (cdlatex-tab))))
-#+END_SRC
-
-#+RESULTS:
-: hydra-outline-tab-key
-
-****** Auxiliar
-#+BEGIN_SRC elisp
-(defun outline-body-p ()
-  (save-excursion
-    (outline-back-to-heading)
-    (outline-end-of-heading)
-    (and (not (eobp))
-         (progn (forward-char 1)
-                (not (outline-on-heading-p))))))
-
-(defun outline-body-visible-p ()
-  (save-excursion
-    (outline-back-to-heading)
-    (outline-end-of-heading)
-    (not (outline-invisible-p))))
-
-
-(defun outline-subheadings-p ()
-  (save-excursion
-    (outline-back-to-heading)
-    (let ((level (funcall outline-level)))
-      (outline-next-heading)
-      (and (not (eobp))
-           (< level (funcall outline-level))))))
-
-(defun outline-subheadings-visible-p ()
-  (interactive)
-  (save-excursion
-    (outline-next-heading)
-    (not (outline-invisible-p))))
-
-#+END_SRC
-        
-****** Hide more
-#+BEGIN_SRC elisp
-
-(defun outline-hide-more ()
-  (interactive)
-  (when (outline-on-heading-p)
-    (cond ((and (outline-body-p)
-                (outline-body-visible-p))
-           (outline-hide-entry)
-           (outline-hide-leaves))
-          (t
-           (outline-hide-subtree)))))
-
-
-#+END_SRC
-
-****** Show more
-#+BEGIN_SRC elisp
-(defun outline-show-more ()
-  (interactive)
-  (when (outline-on-heading-p)
-    (cond ((and (outline-subheadings-p)
-                (not (outline-subheadings-visible-p)))
-           (outline-show-children))
-          ((and (not (outline-subheadings-p))
-                (not (outline-body-visible-p)))
-           (outline-show-subtree))
-          ((and (outline-body-p)
-                (not (outline-body-visible-p)))
-           (outline-show-entry))
-          (t
-           (outline-show-subtree)))))
-
-#+END_SRC
-***** TODO Hydra
-#+BEGIN_SRC elisp
-  (defhydra hydra-outline (:color red :hint nil)
-    "
-  ^Hide-more^ _d_  ^Show-more^ _f_  ^Move     up^ _h_
-   _<tab>_ tab                    normal^ _i_/_k_ 
-                               same-lvl^ _u_/_j_
-  "
-    ;; Hide
-    ("d" outline-hide-more)
-    ("f" outline-show-more)
-    ("<tab>" hydra-outline-tab-key)
-   ;;("q" hide-sublevels)    ; Hide everything but the top-level headings
-   ;;("w" hide-body)         ; Hide everything but headings (all body lines)
-   ;;("o" hide-other)        ; Hide other branches
-   ;;("t" hide-entry)        ; Hide this entry's body
-   ;;("r" hide-leaves)       ; Hide body lines in this entry and sub-entries
-   ;;("e" hide-subtree)      ; Hide everything in this entry and sub-entries
-   ;;;; Show
-   ;;("a" show-all)          ; Show (expand) everything
-   ;;("g" show-entry)        ; Show this heading's body
-   ;;("s" show-children)     ; Show this heading's immediate child sub-headings
-   ;;("f" show-branches)     ; Show all sub-headings under this heading
-   ;;("d" show-subtree)      ; Show (expand) everything in this heading & below
-    ;; Move
-    ("h" outline-up-heading)                ; Up
-    ("k" outline-next-visible-heading)      ; Next
-    ("i" outline-previous-visible-heading)  ; Previous
-    ("j" outline-forward-same-level)        ; Forward - same level
-    ("u" outline-backward-same-level)       ; Backward - same level
-    ("q" nil "leave")
-    ("z" nil "leave"))
-
-  (global-set-key (kbd "C-o") 'hydra-outline/body) ; by example
-#+END_SRC
-
-#+RESULTS:
-: hydra-outline/body
-
-**** COMMENT Multiple Cursors
+**** Multiple Cursors
 #+BEGIN_SRC elisp
 (defhydra hydra-multiple-cursors (:hint nil)
   "
@@ -3981,109 +3820,7 @@ is already narrowed."
   ("q" nil))
 #+END_SRC
 
-**** Projectile
-#+BEGIN_SRC elisp
-(defhydra hydra-projectile (:color teal
-                            :hint nil)
-  "
-     PROJECTILE: %(projectile-project-root)
-
-     Find File            Search/Tags          Buffers                Cache
-------------------------------------------------------------------------------------------
-_s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
- _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
- _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
-  _r_: recent file                                               ^^^^_z_: cache current
-  _d_: dir
-
-"
-  ("a"   projectile-ag)
-  ("b"   projectile-switch-to-buffer)
-  ("c"   projectile-invalidate-cache)
-  ("d"   projectile-find-dir)
-  ("s-f" projectile-find-file)
-  ("ff"  projectile-find-file-dwim)
-  ("fd"  projectile-find-file-in-directory)
-  ("g"   ggtags-update-tags)
-  ("s-g" ggtags-update-tags)
-  ("i"   projectile-ibuffer)
-  ("K"   projectile-kill-buffers)
-  ("s-k" projectile-kill-buffers)
-  ("m"   projectile-multi-occur)
-  ("o"   projectile-multi-occur)
-  ("s-p" projectile-switch-project "switch project")
-  ("p"   projectile-switch-project)
-  ("s"   projectile-switch-project)
-  ("r"   projectile-recentf)
-  ("x"   projectile-remove-known-project)
-  ("X"   projectile-cleanup-known-projects)
-  ("z"   projectile-cache-current-file)
-  ("`"   hydra-projectile-other-window/body "other window")
-  ("q"   nil "cancel" :color blue))
-
-  (global-set-key (kbd "s-P") 'hydra-projectile/body)
-
-#+END_SRC
-
-**** Org template
-***** Hydra
-#+BEGIN_SRC elisp
-      (defhydra hydra-org-template (:color blue :hint nil)
-        "
-  _c_enter  _q_uote     _e_macs-lisp    _L_aTeX:
-  _l_atex   _E_xample   _p_erl          _i_ndex:
-  _a_scii   _v_erse     _P_erl tangled  _I_NCLUDE:
-  _s_rc     ^ ^         plant_u_ml      _H_TML:
-  _h_tml    ^ ^         ^ ^             _A_SCII:
-  "
-        ("c" (hot-expand "<c"))
-        ("l" (hot-expand "<l"))
-        ("a" (hot-expand "<a"))
-        ("s" (hot-expand "<s"))
-        ("h" (hot-expand "<h"))
-        ("q" (hot-expand "<q"))
-        ("E" (hot-expand "<e"))
-        ("v" (hot-expand "<v"))
-        ("e" (hot-expand "<s" "elisp"))
-        ("L" (hot-expand "<L"))
-        ("i" (hot-expand "<i"))
-        ("p" (hot-expand "<s" "perl"))
-        ("u" (hot-expand "<s" "plantuml :file CHANGE.png"))
-        ("P" (progn
-               (insert "#+HEADERS: :results output :exports both :shebang \"#!/usr/bin/env perl\"\n")
-               (hot-expand "<s" "perl")))
-        ("I" (hot-expand "<I"))
-        ("H" (hot-expand "<H"))
-        ("A" (hot-expand "<A"))
-        ("<" self-insert-command "ins")
-        ("o" nil "quit"))
-
-#+END_SRC
-***** Hot expand defun
-#+BEGIN_SRC elisp
-  (defun hot-expand (str &optional mod)
-    "Expand org template."
-    (let (text)
-      (when mod (setq text (concat mod "\n")))
-      (when (region-active-p)
-        (setq text (concat text (buffer-substring (region-beginning) (region-end))))
-        (delete-region (region-beginning) (region-end)))
-      (insert str "\n") (backward-char 1)
-      (org-try-structure-completion)
-      ;;(if (region-active-p) (delete-char 1))
-      (insert text)))
-#+END_SRC
-***** Key bind
-#+BEGIN_SRC elisp
-  (defun brust-org< ()
-    (interactive)
-    (if (or (region-active-p) (looking-back "^"))
-        (hydra-org-template/body)
-      (self-insert-command 1)))
-
-#+END_SRC
-
-**** COMMENT ORG Agenda
+**** ORG Agenda
 #+BEGIN_SRC elisp
   ;;(define-key org-agenda-mode-map
       ;; "v" 'hydra-org-agenda-view/body)
@@ -4180,27 +3917,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ("o" nil nil)
     ("RET" nil nil))
   (global-set-key (kbd "C-x SPC") 'hydra-rectangle/body)
-#+END_SRC
-
-**** Dired
-#+BEGIN_SRC elisp
-(eval-after-load 'dired
-  '(progn
-     (defhydra hydra-dired (:color blue)
-       "?"
-       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
-       ("s1" (shell-command (format "periscope.py -l en %s &"
-                                    (dired-file-name-at-point))) "1 subtitle")
-       ("cf" (let ((f (dired-file-name-at-point)))
-                (copy-yank-str f)
-                (message "filename %s => clipboard & yank ring" f)) "Copy filename")
-       ("C" dired-do-copy "cp")
-       ("mv" diredp-do-move-recursive "mv")
-       ("mk" dired-create-directory "mkdir")
-       ("q" nil "Bye"))))
-(defun dired-mode-hook-setup ()
-  (local-set-key (kbd "y") 'hydra-dired/body))
-(add-hook 'dired-mode-hook 'dired-mode-hook-setup)
 #+END_SRC
 
 **** Transpose
@@ -5694,3 +5410,5 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 #+RESULTS:
 : brust-call-niu-insert-mark
+
+
