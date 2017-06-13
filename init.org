@@ -767,6 +767,8 @@ abort completely with `C-g'."
 
 *** Dired
      In Dired, visit this file or directory instead of the Dired buffer.
+**** General setting
+
 #+BEGIN_SRC elisp
   (require 'dired)
 
@@ -796,12 +798,11 @@ abort completely with `C-g'."
    ("C-x C-j" . dired-jump)) ;;auto-load function
 
   (bind-keys :map dired-mode-map
-             ("RET"     . dired-find-alternate-file)
-             ("C-M-u"   . dired-up-directory)
-             ("M-o"     . 'my/dired-open)
-             ("C-x C-q" . wdired-change-to-wdired-mode)
-             ("ç"       . ora-dired-up-directory)
-             ("e"       . ora-ediff-files))
+             ("i" . diredp-previous-line) ;; was dired-maybe-insert-subdir
+             ("k" . diredp-next-line) ;; was dired-do-kill-lines
+             ("M-o" . my/dired-open)
+             ("^" . brust-dired-to-upper-dir)
+             ("o" . dired-find-alternate-file))
 
   (use-package dired-x
     :ensure nil
@@ -820,33 +821,59 @@ abort completely with `C-g'."
 #+END_SRC
 
 #+RESULTS:
+**** Hook function
+#+BEGIN_SRC elisp
+  (defun brust-dired-mode-hook nil
+    (hl-line-mode 1)
+    ;; (hydra-dired/body) ;; problems with it!!
+    (toggle-truncate-lines 1)
+    (dired-omit-mode 1)
+    (dired-hide-details-mode 1))
+#+END_SRC
 
-**** Defun's
+#+RESULTS:
+: brust-dired-mode-hook
+
+**** Defuns
 #+BEGIN_SRC elisp
   (defun ora-dired-up-directory ()
     (interactive)
     (let ((buffer (current-buffer)))
       (dired-up-directory)
       (unless (equal buffer (current-buffer))
-	(kill-buffer buffer))))
+        (kill-buffer buffer))))
 
   (defun ora-ediff-files ()
     (interactive)
     (let ((files (dired-get-marked-files)))
       (if (= 2 (length files))
 	  (let ((file1 (car files))
-		(file2 (cadr files)))
+	        (file2 (cadr files)))
 	    (if (file-newer-than-file-p file1 file2)
-		(ediff-files file2 file1)
+	        (ediff-files file2 file1)
 	      (ediff-files file1 file2)))
-	(error "two files should be marked"))))
+        (error "two files should be marked"))))
 
-  (defun brust-dired-mode-hook ()
-    (hl-line-mode 1)
-    (toggle-truncate-lines 1)
-    (dired-omit-mode 1))
+  (defun brust-dired-to-upper-dir nil
+    (interactive)
+    (let ((-marked-files (dired-get-marked-files nil t)))
+      (dired-do-shell-command
+       (format
+        "mv ? %s" (file-name-directory (directory-file-name (dired-current-directory))))
+       t
+       -marked-files)))
 
+  ;;    (dired-up-directory)
+  ;;    (setq -marked-files
+  ;;          (cl-loop for xx in -marked-files
+  ;;                   append (file-name-nondirectory xx)))
+  ;;    (dired-mark-if (lambda nil
+  ;;                     (memq (dired-get-filename) -marked-files)))))
+  ;;
 #+END_SRC
+
+#+RESULTS:
+: brust-dired-to-upper-dir
 
 *** Display time
     Not show the average of load times.
@@ -2571,6 +2598,113 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : hydra-outline/body
+
+**** Dired
+#+BEGIN_SRC elisp
+  (defhydra hydra-dired (:color pink :columns 3 :hint nil)
+    "
+  ^Mark^‗‗‗‗‗‗‗^Flag^‗‗‗‗‗‗‗‗^Emacs Op^‗‗‗‗‗‗^‗^‗‗‗‗‗‗‗‗‗‗‗‗‗^^File Op^^‗‗(_e_dit)
+  _*_: marks   _#_: temp     _Q_uery replace _F_ind marked   _!_shell_&_ _S_ymlink
+  _%_: regexp  _~_: backup   _A_: grep       _L_oad          ^^_C_opy    _H_ardlink
+  _u_n/_m_ark    _d_: this     _B_yte compile  kill li_n_e     ^^_D_elete  ch_M_od
+  _t_oggle     _x_: delete   _v_iew          _w_: file name  ^^_R_ename  ch_O_wn
+  _U_nmark all _<_ _>_:dirline _o_ther window  redisp_l_ay     ^^_T_ouch   ch_G_rp
+  "
+    ("SPC" nil)
+    ("RET" dired-find-alternate-file :exit t)
+    ("q" quit-window :exit t)
+    ("e" wdired-change-to-wdired-mode)
+    ("!" dired-do-shell-command)
+    ("m" dired-mark)
+    ("u" dired-unmark)
+    ("#" dired-flag-auto-save-files)
+    ("$" dired-hide-subdir "hide subdir")
+    ("%" hydra-dired-regexp/body :exit t)
+    ("&" dired-do-async-shell-command)
+    ("(" dired-hide-details-mode "hide details")
+    ("*" hydra-dired-mark/body :exit t)
+    ("+" dired-create-directory "create dir")
+    ("." dired-clean-directory "clean dir")
+    ("<" dired-prev-dirline)
+    ("=" ora-ediff-files "diff 2 files")
+    ;; ("=" dired-diff "diff")
+    (">" dired-next-dirline)
+    ("A" dired-do-find-regexp)
+    ("B" dired-do-byte-compile)
+    ("C" dired-do-copy)
+    ("D" dired-do-delete)
+    ("F" dired-do-find-marked-files :exit t)
+    ("G" dired-do-chgrp)
+    ("H" dired-do-hardlink)
+    ("L" dired-do-load)
+    ("M" dired-do-chmod)
+    ("O" dired-do-chown)
+    ("P" dired-do-print "print")
+    ("Q" dired-do-find-regexp-and-replace)
+    ("R" dired-do-rename)
+    ("S" dired-do-symlink)
+    ("T" dired-do-touch)
+    ("U" dired-unmark-all-marks)
+    ("Z" dired-do-compress "compress")
+    ("ç" ora-dired-up-directory "up-directory")
+    ;; ("^" dired-up-directory "up-directory")
+    ("a" dired-find-alternate-file "find-alternate-file")
+    ("c" dired-do-compress-to "compress-to")
+    ("d" dired-flag-file-deletion)
+    ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
+    ("j" dired-goto-file "goto-file")
+    ("n" dired-do-kill-lines) ;; was "k"
+    ("l" dired-do-redisplay)
+    ("o" dired-find-file-other-window)
+    ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
+    ("t" dired-toggle-marks)
+    ("v" dired-view-file)
+    ("w" dired-copy-filename-as-kill)
+    ("x" dired-do-flagged-delete)
+    ("y" dired-show-file-type "show-file-type")
+    ("a" dired-omit-mode "toggle omite mode")
+    ("~" dired-flag-backup-files))
+
+  (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
+                                     :after-exit
+                                     (if (eq major-mode 'dired-mode)
+                                         (hydra-dired/body)))
+    "Mark"
+    ("SPC" nil)
+    ("!" dired-unmark-all-marks  "unmark all")
+    ("%" dired-mark-files-regexp "regexp")
+    ("(" dired-mark-sexp         "sexp")
+    ("*" dired-mark-executables  "executables")
+    ("." dired-mark-extension    "extension")
+    ("/" dired-mark-directories  "directories")
+    ("?" dired-unmark-all-files  "unmark markchar")
+    ("@" dired-mark-symlinks     "symlinks")
+    ("O" dired-mark-omitted      "omitted")
+    ("c" dired-change-marks      "change")
+    ("s" dired-mark-subdir-files "subdir-files"))
+
+  (defhydra hydra-dired-regexp (:color teal :columns 3 :hint nil
+                                       :after-exit
+                                       (if (eq major-mode 'dired-mode)
+                                           (hydra-dired/body)))
+    "Regexp"
+    ("SPC" nil)
+    ("&" dired-flag-garbage-files "flag-garbage-files")
+    ("C" dired-do-copy-regexp "copy")
+    ("H" dired-do-hardlink-regexp "hardlink")
+    ("R" dired-do-rename-regexp "rename")
+    ("S" dired-do-symlink-regexp "symlink")
+    ("Y" dired-do-relsymlink-regexp "relsymlink")
+    ("d" dired-flag-files-regexp "flag-files")
+    ("g" dired-mark-files-containing-regexp "mark-containing")
+    ("l" dired-downcase "downcase")
+    ("m" dired-mark-files-regexp "mark")
+    ("r" dired-do-rename-regexp "rename")
+    ("u" dired-upcase "upcase"))
+#+END_SRC
+
+#+RESULTS:
+: hydra-dired-regexp/body
 
 *** Ibuffer
 #+BEGIN_SRC elisp
