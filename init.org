@@ -1976,22 +1976,22 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     :TODO: Learn which =avy-goto-??= is my favorite!
     :TODO: Find easy type and remember =chords=
 #+BEGIN_SRC elisp
-    (use-package avy
-      :chords
-      (("gg" . avy-goto-char-timer)
-       ;; ("gg" . avy-goto-word-2)
-       ("jj" . avy-goto-word-1))
-      
-      :bind (("M-g g"   . avy-goto-line)
-             ("s-."     . avy-goto-char-timer))
-            ;; ("M-SPC" . avy-goto-char)
-      :config
-      (set-face-attribute 'avy-lead-face nil :foreground "deep sky blue" :weight 'bold :height 1.0)
-      (setq avy-background t
-            avy-timeout-seconds 0.16)
-      ;; (setq avy-styles-alist '((avy-goto-word-or-subword-1 . de-brujin)))
-      ;; (bind-key "s-." 'avy-goto-word-or-subword-1)
-      )
+  (use-package avy
+    :chords
+    ("qk" . avy-goto-char-timer)
+    ;; ("gg" . avy-goto-word-2)
+    ("gg" . avy-goto-word-1)
+    :bind 
+    ("M-g g"   . avy-goto-line)
+    ("s-."     . avy-goto-char-timer)
+    ;; ("M-SPC" . avy-goto-char)
+    :config
+    (set-face-attribute 'avy-lead-face nil :foreground "deep sky blue" :weight 'bold :height 1.0)
+    (setq avy-background t
+	  avy-timeout-seconds 0.16)
+    ;; (setq avy-styles-alist '((avy-goto-word-or-subword-1 . de-brujin)))
+    ;; (bind-key "s-." 'avy-goto-word-or-subword-1)
+    )
 #+END_SRC
 *** Beacon mode
     Beacon, iluminació del cursor.
@@ -2150,7 +2150,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
   ;;:bind
   ;;("C-ñ" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
   :chords 
-  ("xx" . er/expand-region))
+  ;; ("xx" . er/expand-region)
+  ("qj" . er/expand-region)
+  )
 #+END_SRC
 *** COMMENT Evil mode
 #+BEGIN_SRC elisp
