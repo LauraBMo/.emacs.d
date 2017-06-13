@@ -606,12 +606,12 @@
 #+BEGIN_SRC elisp
   (bind-keys*
    ("M-s-j" . outline-hide-more)
-   ("M-s-l" . outline-show-more)
+   ("M-s-ñ" . outline-show-more)
    ("M-s-h" . outline-up-heading)                ; Up
    ("M-s-k" . outline-next-visible-heading)      ; Next
-   ("M-s-i" . outline-previous-visible-heading)  ; Previous
-   ("M-s-o" . outline-forward-same-level)        ; Forward - same level
-   ("M-s-u" . outline-backward-same-level))      ; Backward - same level
+   ("M-s-i" . hydra-outline/outline-previous-visible-heading)  ; Previous
+   ("M-s-l" . outline-forward-same-level)        ; Forward - same level
+   ("M-s-o" . outline-backward-same-level))      ; Backward - same level
 
 
 #+END_SRC
@@ -2448,6 +2448,129 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     (interactive)
     (if (string= major-mode "org-mode") (org-yank) (yank)))
 #+END_SRC
+
+**** Outline
+***** Functions
+****** tab for org-mode and latex
+#+BEGIN_SRC elisp
+  (defun hydra-outline-tab-key nil
+    (interactive)
+    (or (and (string= major-mode "org-mode")
+             (org-cycle))
+        (and (save-excursion (describe-mode)
+                             (search-forward "Cdlatex" nil t))
+             (cl-member "cdlatex-mode" minor-mode-list)
+             (cdlatex-tab))))
+#+END_SRC
+
+#+RESULTS:
+: hydra-outline-tab-key
+
+****** Auxiliar
+#+BEGIN_SRC elisp
+(defun outline-body-p ()
+  (save-excursion
+    (outline-back-to-heading)
+    (outline-end-of-heading)
+    (and (not (eobp))
+         (progn (forward-char 1)
+                (not (outline-on-heading-p))))))
+
+(defun outline-body-visible-p ()
+  (save-excursion
+    (outline-back-to-heading)
+    (outline-end-of-heading)
+    (not (outline-invisible-p))))
+
+
+(defun outline-subheadings-p ()
+  (save-excursion
+    (outline-back-to-heading)
+    (let ((level (funcall outline-level)))
+      (outline-next-heading)
+      (and (not (eobp))
+           (< level (funcall outline-level))))))
+
+(defun outline-subheadings-visible-p ()
+  (interactive)
+  (save-excursion
+    (outline-next-heading)
+    (not (outline-invisible-p))))
+
+#+END_SRC
+        
+****** Hide more
+#+BEGIN_SRC elisp
+
+(defun outline-hide-more ()
+  (interactive)
+  (when (outline-on-heading-p)
+    (cond ((and (outline-body-p)
+                (outline-body-visible-p))
+           (outline-hide-entry)
+           (outline-hide-leaves))
+          (t
+           (outline-hide-subtree)))))
+
+
+#+END_SRC
+
+****** Show more
+#+BEGIN_SRC elisp
+(defun outline-show-more ()
+  (interactive)
+  (when (outline-on-heading-p)
+    (cond ((and (outline-subheadings-p)
+                (not (outline-subheadings-visible-p)))
+           (outline-show-children))
+          ((and (not (outline-subheadings-p))
+                (not (outline-body-visible-p)))
+           (outline-show-subtree))
+          ((and (outline-body-p)
+                (not (outline-body-visible-p)))
+           (outline-show-entry))
+          (t
+           (outline-show-subtree)))))
+
+#+END_SRC
+***** TODO Hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-outline (:color red :hint nil)
+    "
+  ^        ^previous ^backward           _i_  _o_
+  ^Up hide     ^next  ^forward ^show ^_h_  _j_  _k_  _l_ _ñ_
+   _<tab>_ tab  
+  "
+    ;; Hide
+    ("j" outline-hide-more)
+    ("ñ" outline-show-more)
+    ("<tab>" hydra-outline-tab-key)
+   ;;("q" hide-sublevels)    ; Hide everything but the top-level headings
+   ;;("w" hide-body)         ; Hide everything but headings (all body lines)
+   ;;("o" hide-other)        ; Hide other branches
+   ;;("t" hide-entry)        ; Hide this entry's body
+   ;;("r" hide-leaves)       ; Hide body lines in this entry and sub-entries
+   ;;("e" hide-subtree)      ; Hide everything in this entry and sub-entries
+   ;;;; Show
+   ;;("a" show-all)          ; Show (expand) everything
+   ;;("g" show-entry)        ; Show this heading's body
+   ;;("s" show-children)     ; Show this heading's immediate child sub-headings
+   ;;("f" show-branches)     ; Show all sub-headings under this heading
+   ;;("d" show-subtree)      ; Show (expand) everything in this heading & below
+    ;; Move
+    ("h" outline-up-heading)                ; Up
+    ("k" outline-next-visible-heading)      ; Next
+    ("i" outline-previous-visible-heading)  ; Previous
+    ("l" outline-forward-same-level)        ; Forward - same level
+    ("o" outline-backward-same-level)       ; Backward - same level
+    ("q" nil "leave")
+    ("z" nil "leave"))
+
+  (global-set-key (kbd "C-o") 'hydra-outline/body) ; by example
+#+END_SRC
+
+#+RESULTS:
+: hydra-outline/body
 
 *** Ibuffer
 #+BEGIN_SRC elisp
