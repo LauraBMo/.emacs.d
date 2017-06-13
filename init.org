@@ -3217,7 +3217,6 @@ is already narrowed."
     (which-key-mode 1)
 #+END_SRC
 *** Whitespace cleanup
-:TODO: Add fast repeat like er/expand-region!!
 #+BEGIN_SRC elisp
   (use-package whitespace-cleanup-mode
     :diminish 'whitespace-cleanup-mode
@@ -3230,6 +3229,8 @@ is already narrowed."
     :bind
     ("M-SPC" . brust-cycle-whitespace)
     ("s-SPC" . brust-cycle-whitespace))
+
+  ;; This is a remake and merge of `cycle-spacing' `delete-blank-lines' and `xah-shrink-whitespaces'.
 
   (defun brust-cycle-whitespace nil
     (interactive)
@@ -3281,12 +3282,42 @@ is already narrowed."
          (cond ((< --lnum 1) "")
                ((< --lnum 2) " ")
                ((< --lnum 3) (concat "\n" --indent))
-               (t (concat "\n\n" --indent))))))))
+               (t (concat "\n\n" --indent)))))))
+    (more-expansions #'(brust-cycle-whitespace)))
 
   (defvar brust-cycle-whitespace--context nil
     "Store context used in consecutive calls to `brust-cycle-whitespace' command.
        The first time `brust-cycle-whitespace' runs, it saves in this variable:
        the original point position, and the original spacing around point.")
+
+  ;; Execute the last command with the last key stroke.
+  ;; Adapted from er/expand-region
+
+  (defun more-expansions-internal (repeat-key-str -function)
+    "Return bindings and a message to inform user about them"
+    (let ((msg (format "Type %s to repeat last command" repeat-key-str))
+          (bindings (list (cons repeat-key-str -function))))
+      (cons msg bindings)))
+
+  (defun brust-repeat-function (-function)
+    "Let one call more by just pressing the last key."
+    (let* ((repeat-key (event-basic-type last-input-event))
+           (repeat-key-str (single-key-description repeat-key))
+           (msg-and-bindings (more-expansions-internal repeat-key-str -function))
+           (msg (car msg-and-bindings))
+           (bindings (cdr msg-and-bindings)))
+      (when repeat-key
+        (set-transient-map
+         (let ((map (make-sparse-keymap)))
+           (dolist (binding bindings map)
+             (define-key map (read-kbd-macro (car binding))
+               `(lambda ()
+                  (interactive)
+                  (setq this-command `,(cadr ',binding))
+                  (or (minibufferp) (message "%s" ,msg))
+                  (eval `,(cdr ',binding))))))
+         t)
+        (or (minibufferp) (message "%s" msg)))))
 #+END_SRC
 
 #+RESULTS:
