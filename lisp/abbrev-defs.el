@@ -95,12 +95,12 @@
 
 (define-abbrev-table 'global-abbrev-table
   '(
-    ("apl" "\\(\\apl{?}{}\\)" abbrev-possition-cursor 8)
+    ("apl" "\\(\\apl{?}{}\\)" abbrev-possition-cursor 9)
     ("aspr" "associated prime" nil 4)
-    ("aspt" "associated point" nil 2)
-    ("cem" "closed embedding" nil 3)
+    ("aspt" "associated point" nil 7)
+    ("cem" "closed embedding" nil 4)
     ("cf" "c.f." nil 0)
-    ("cl" "closed" nil 3)
+    ("cl" "closed" nil 5)
     ("ecd" "effective Cartier divisor" nil 0)
     ("eg" "e.g." nil 0)
     ("emb" "embedding" nil 0)
@@ -117,11 +117,11 @@
     ("oem" "open embedding" nil 0)
     ("op" "open" nil 2)
     ("qch" "quasi-coherent" nil 1)
-    ("sc" "scheme" nil 1)
+    ("sc" "scheme" nil 2)
     ("scl" "schematic closure" nil 4)
     ("scti" "scheme theoretic image" nil 3)
-    ("sim" "schematic image" nil 3)
-    ("ssc" "subscheme" nil 4)
+    ("sim" "schematic image" nil 8)
+    ("ssc" "subscheme" nil 5)
     ("wp" "Wikipedia" nil 0)
    ))
 
@@ -206,6 +206,12 @@
 (define-abbrev-table 'process-menu-mode-abbrev-table '())
 
 (define-abbrev-table 'prog-mode-abbrev-table '())
+
+(define-abbrev-table 'reftex-select-bib-mode-abbrev-table '())
+
+(define-abbrev-table 'reftex-select-label-mode-abbrev-table '())
+
+(define-abbrev-table 'reftex-toc-mode-abbrev-table '())
 
 (define-abbrev-table 'select-tags-table-mode-abbrev-table '())
 
