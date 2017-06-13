@@ -1022,12 +1022,11 @@ abort completely with `C-g'."
 
 *** Org mode
 **** My =org-mode= config.                                                :org:
-
 #+BEGIN_SRC elisp
   (use-package org
     :ensure nil
     :init
-      ;;; To make compatible org-scr-tab-acts-natively with yasnipets
+        ;;; To make compatible org-scr-tab-acts-natively with yasnipets
     ;;    (defun yas/org-very-safe-expand ()
     ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
     ;;   (add-hook 'org-mode-hook
@@ -1037,7 +1036,7 @@ abort completely with `C-g'."
     ;;               (setq yas-trigger-key [tab])
     ;;               (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
     ;;               (define-key yas-keymap [tab] 'yas-next-field)))
-      ;;;;;;;;;;;;;;;;;
+        ;;;;;;;;;;;;;;;;;
     (setq org-src-window-setup (quote other-window)
           ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
           ;; headline text
@@ -1069,12 +1068,6 @@ abort completely with `C-g'."
           '(("h" "My agenda view"
              ((agenda "")
               (todo)))))
-
-    :bind (:map org-mode-map
-                ("s-b" . org-text-bold)
-                ("s-v" . org-text-italics)
-                ("s-c" . org-text-code)
-                ("<"   . brust-org<)) ;; Look at hydra's definition
     :config
     ;; use org-bullets-mode for utf8 symbols as org bullets
     (use-package org-bullets
@@ -1082,12 +1075,6 @@ abort completely with `C-g'."
       :init
       (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
       (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
-    (setq org-structure-template-alist
-          (append org-structure-template-alist
-                                    ;;;;;;;;;;;;;;;; Add here your new tamplates ;;;;;;;;;;;;;;;;
-                                    ;;;;;;;;;;;;;;;; But you have an hydra to insert tamplates!! ;;;;;;;;;;;;;;;;
-                  '(("se" "#+BEGIN_SRC elisp\n?\n#+END_SRC" "<src lang=\"lisp\">\n?\n</src>"))))
-
     ;; Org babel
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '(
@@ -1115,9 +1102,11 @@ abort completely with `C-g'."
     ;; ("C-c l" . org-store-link)
     ;; ("C-c c" . org-capture)
     ("C-c a" . org-agenda)
-    ("C-c b" . org-iswitchb))
-
-
+    ("C-c b" . org-iswitchb)
+    (:map org-mode-map
+          ("s-b" . org-text-bold)
+          ("s-v" . org-text-italics)
+          ("s-c" . org-text-code)))
 #+END_SRC
 
 #+RESULTS:
@@ -2599,6 +2588,84 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : hydra-outline/body
+
+**** Org block template
+***** Org block template alist
+#+BEGIN_SRC elisp
+  (eval-after-load "org"
+    '(cl-pushnew
+      '("not" "#+BEGIN_NOTES\n?\n#+END_NOTES")
+      org-structure-template-alist))
+#+END_SRC
+
+#+RESULTS:
+| not | #+BEGIN_NOTES |
+
+***** Hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-org-block-template (:color blue :hint nil)
+    "
+     _c_enter  _q_uote     _e_macs-lisp    _L_aTeX:
+     _l_atex   _E_xample   _p_erl          _i_ndex:
+     _a_scii   _v_erse     _P_erl tangled  _I_NCLUDE:
+     _s_rc     _n_ote      plant_u_ml      _H_TML:
+     _h_tml    _b_ash      ^ ^             _A_SCII:
+    "
+    ("s" (hot-expand "<s"))
+    ("E" (hot-expand "<e"))
+    ("q" (hot-expand "<q"))
+    ("v" (hot-expand "<v"))
+    ("n" (hot-expand "<not")) 
+    ("c" (hot-expand "<c"))
+    ("l" (hot-expand "<l"))
+    ("h" (hot-expand "<h"))
+    ("a" (hot-expand "<a"))
+    ("L" (hot-expand "<L"))
+    ("i" (hot-expand "<i"))
+    ("e" (hot-expand "<s" "elisp"))
+    ("b" (hot-expand "<s" "bash"))
+    ("p" (hot-expand "<s" "perl"))
+    ("u" (hot-expand "<s" "plantuml :file CHANGE.png"))
+    ("P" (hot-expand "<s" "perl" ":results output :exports both :shebang \"#!/usr/bin/env perl\"\n"))
+    ("I" (hot-expand "<I"))
+    ("H" (hot-expand "<H"))
+    ("A" (hot-expand "<A"))
+    ("<" self-insert-command "ins")
+    ("o" nil "quit"))
+#+END_SRC
+
+#+RESULTS:
+: hydra-org-block-template/body
+
+***** Hot expand defun
+#+BEGIN_SRC elisp
+  (defun hot-expand (str &optional mod header)
+    "Expand org block template.
+
+  STR is a structure template string recognised by org like <s. MOD is a
+  string with additional parameters to add the begin line of the
+  structure element. HEADER string includes more parameters that are
+  prepended to the element after the #+HEADERS: tag."
+    (let (text)
+      (when (region-active-p)
+        (setq text (buffer-substring (region-beginning) (region-end)))
+        (delete-region (region-beginning) (region-end))
+        (deactivate-mark))
+      (when header (insert "#+HEADERS: " header))
+      (insert str)
+      (org-try-structure-completion)
+      (when mod (insert mod) (forward-line))
+      (when text (insert text))))
+
+  (defun brust-org< nil
+    "Self insert command or expand hydra of org block templates 
+at the beginning of a line 
+or with region active."
+    (interactive)
+    (if (or (region-active-p) (looking-back "^"))
+        (hydra-org-block-template/body)
+      (self-insert-command 1)))
+#+END_SRC
 
 **** Dired
 #+BEGIN_SRC elisp
