@@ -2398,6 +2398,36 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+END_SRC
 
+*** TODO Hydra
+**** General setting
+#+BEGIN_SRC elisp
+  (use-package hydra
+    :config
+    (setq lv-use-separator t)
+    (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body))
+  (bind-keys*
+   ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
+   ("M-y" . hydra-yank-pop/yank-pop)
+   ("s-q" . hydra-projectile/body))
+
+  ;;  (eval-after-load "buff-menu" 
+  ;;    '(bind-keys :map ibuffer-mode-map 
+  ;;		("." . hydra-ibuffer-main/body)))
+  ;;
+  (eval-after-load "org"
+    '(bind-keys :map org-mode-map
+		("<" . brust-org<)))
+
+  (bind-keys :map dired-mode-map 
+	     ("y" . hydra-dired/body))
+
+  ;; :chords
+  ;; ("oo" . hydra-outline/body)
+  ;; ("jf" . hydra-motion/body)
+#+END_SRC
+
+#+RESULTS:
+: hydra-dired/body
 *** Ibuffer
 #+BEGIN_SRC elisp
   (use-package ibuffer
