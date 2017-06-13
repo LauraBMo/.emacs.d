@@ -943,20 +943,19 @@ abort completely with `C-g'."
 | try-complete-file-name-partially | try-complete-file-name | pcomplete | try-expand-all-abbrevs | try-expand-dabbrev |
 
 *** Info mode
-#+BEGIN_SRC elisp
-(defun add-browser-backspace-key-to-Info-mode ()
-  "Add some browser styled nav keys for `Info-mode'.
+  Add some browser styled nav keys for `Info-mode'.
   The following keys are added:
- 【Backspace】 for `Info-history-back'
- 【Shift+Backspace】 for `Info-history-forward'."
- (local-set-key (kbd "<backspace>") 'Info-history-back)
- (local-set-key (kbd "<S-backspace>") 'Info-history-forward))
+  【Backspace】 for `help-go-back'
+  【Shift+Backspace】 for `help-go-forward'.
+#+BEGIN_SRC elisp
+  (define-key help-mode-map (kbd "<s-backspace>") #'help-go-forward)
+  (define-key help-mode-map (kbd "<backspace>") #'help-go-back)
 
-(add-hook 'Info-mode-hook 'add-browser-backspace-key-to-Info-mode)
+  ;;(add-hook 'Info-mode-hook 'add-browser-backspace-key-to-Info-mode)
 #+END_SRC
 
 #+RESULTS:
-| add-browser-backspace-key-to-Info-mode | turn-on-font-lock |
+: Info-history-back
 
 *** iSearch
 **** Setting
