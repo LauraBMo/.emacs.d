@@ -2428,6 +2428,27 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : hydra-dired/body
+
+**** Yank hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-yank-pop ()
+    "yank"
+    ("C-y" brust-org-yank-or-yank nil)
+    ("M-y" yank-pop nil)
+    ("y" (yank-pop 1) "prev")
+    ("u" (yank-pop -1) "next")
+    ("t" counsel-yank-pop "list" :color blue))
+
+  (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
+#+END_SRC
+
+***** org-yank or yank
+#+BEGIN_SRC elisp
+  (defun brust-org-yank-or-yank nil
+    (interactive)
+    (if (string= major-mode "org-mode") (org-yank) (yank)))
+#+END_SRC
+
 *** Ibuffer
 #+BEGIN_SRC elisp
   (use-package ibuffer
