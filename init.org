@@ -549,7 +549,7 @@
                   (lambda (str end) "Eval region" (interactive "r")
                     (eval-region str end)))
   (global-set-key (kbd "S-SPC")
-                  (lambda nil "Insert SPC" (interactive) (insert " ")))
+                  (lambda nil "Insert SPC" (interactive) (insert " ") (forward-char -1)))
   (global-set-key (kbd "C-<menu>")
                   (lambda nil "Inverse delete indentation" (interactive) (delete-indentation t)))
 #+END_SRC
