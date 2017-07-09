@@ -4112,8 +4112,162 @@ _q_: quit
 #+RESULTS:
 : eos/hydra/body
 
+** Singular
+*** Config
+#+BEGIN_SRC elisp
+  (use-package singular
+    :ensure nil
+    :mode ("\\.sing\\'" . c++-mode)
+    :mode ("\\.lib\\'" .  c++-mode)
+    :load-path "lisp/Singular/"
+    :init
+    (add-hook 'c++-mode-hook #'brust-singular-mode-hook)
+    (defun brust-singular-mode-hook nil
+      ;; turn-on fontification for c++-mode
+      (font-lock-mode 1)
+      ;; turn on aut-new line and hungry-delete
+      (c-toggle-auto-hungry-state 1)
+      (company-mode -1)
+      (local-set-key (kbd "C-c a") #'brust-singular-eval-region-or-buffer)
+      (local-set-key (kbd "C-c l") #'brust-singular-eval-line)
+      (local-set-key (kbd "C-c e") #'brust-singular-eval-environment))
 
-* Old stuffs
+    ;; (setq load-path (cons "<singular-emacs-home-directory>" load-path))
+    (autoload 'singular "singular"
+      "Start Singular using default values." t)
+    (autoload 'singular-other "singular"
+      "Ask for arguments and start Singular." t))
+
+#+END_SRC
+
+#+RESULTS:
+
+*** function to send the working file.
+#+BEGIN_SRC elisp
+  (defun brust-singular-eval-region-or-buffer (args)
+    (interactive "P")
+    (let* ((--region-p (use-region-p))
+           (-poss
+            (if --region-p
+                (cons (region-beginning) (region-end))
+              (cons (point-min) (point-max))))
+           (-str (buffer-substring-no-properties
+                  (car -poss)
+                  (cdr -poss)))
+           (-name (file-name-base (buffer-name)))
+           -lines)
+      (when --region-p
+        (setq -lines (cons
+                      (line-number-at-pos (car -poss))
+                      (line-number-at-pos (cdr -poss)))))
+      (brust-singular--eval-string 
+       -str
+       -name
+       args)
+      (if --region-p
+          (message "Evaluated region from line %d to %d of %s"
+                   (car -lines)
+                   (cdr -lines)
+                   -name)
+        (message "Evaluated whole file %s"
+                 -name))))
+
+    (defun brust-singular-eval-buffer-line-by-line nil
+      (interactive)
+      (let ((-total-str (buffer-string))
+            (-base-name (file-name-base (buffer-name))))
+        (with-temp-buffer
+          (insert -total-str)
+          (brust-singular--delete-comments)
+          (goto-char (point-min))
+          (while (not (eobp))
+            ;;(or (brust-check-line-parents) (user-error "Unbalanced Parent!!!"))
+            (let ((-str (s-trim (buffer-substring-no-properties
+                                 (line-beginning-position)
+                                 (line-end-position))))
+                  (-line (line-number-at-pos)))
+              (unless
+                  (cond ((string= -str "") t)
+                        ((string= (substring -str -1) ";")
+                  (brust-singular--eval-string
+                   -str
+                   (format "line:%d:of::%s::" -line -base-name)
+                   nil)
+                  t)
+        (t (brust-singular-eval-environment args) t))
+      (message "Error on line:%d (%s)" -line -str)
+      ;;(when err (goto-char err))
+      (forward-line 1)))))))
+
+    (defun brust-singular-eval-environment (args)
+      (interactive "P")
+      (save-excursion
+        (let ((beg (line-beginning-position)))
+          (search-forward "{" nil t)
+          (forward-char -1)
+          (sp-forward-sexp)
+          (brust-singular--eval-string
+           (concat
+            (buffer-substring-no-properties beg (point))
+            ";")
+           args)
+          (point))))
+
+    (defun brust-singular-eval-line (args)
+      (interactive "P")
+      (or (brust-singular--check-line-parents) (user-error "Unbalanced Parent!!!"))
+      (let ((-str (s-trim
+                   (buffer-substring-no-properties
+                    (line-beginning-position)
+                    (line-end-position)))))
+        (unless (string= -str "")
+          (unless (string= (substring -str -1) ";") (setq -str (concat -str ";")))
+          (brust-singular--eval-string
+           -str
+           (format "line:%d:of::%s::"
+                   (line-number-at-pos)
+                   (file-name-base (buffer-name)))
+           args))))
+
+    (defun brust-singular--temp-file (-str -name)
+      (let ((-temp-file
+             (make-temp-file 
+              (replace-regexp-in-string "[.]" "-" -name)
+              nil ".sing")))
+        (with-temp-buffer
+          (insert -str)
+          (append-to-file (point-min) (point-max) -temp-file))
+        -temp-file))
+
+    (defun brust-singular--eval-string (-str -name args)
+      (let ((-buffer (current-buffer))
+            (-file
+             (brust-singular--temp-file -str -name)))
+        (singular)
+        1        (when args (singular-control-c 'restart))
+        (singular-load-file -file t)
+        (insert ";")
+        (singular-send-or-copy-input nil)
+        (switch-to-buffer -buffer)
+        (delete-file -file)))
+
+    (defun brust-singular--check-line-parents nil
+      (narrow-to-region (line-beginning-position) (line-end-position))
+      (save-excursion
+        (let ((err (ignore-errors (check-parens) t)))
+          (widen)
+          err)))
+
+    (defun brust-singular--delete-comments nil
+      (save-excursion
+        (goto-char (point-min))
+        (while (search-forward "//" nil t)
+          (forward-char -2)
+          (delete-region (point) (line-end-position)))))
+#+END_SRC
+
+
+* Old stuff
 ** Tab and indentation
 **** Distance
 #+BEGIN_SRC elisp
@@ -4803,31 +4957,42 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
     :mode ("\\.lib\\'" .  c++-mode)
     :load-path "lisp/Singular/"
     :init
-  ;; turn-on fontification for c++-mode
-  (add-hook 'c++-mode-hook
-            (lambda () (font-lock-mode 1)))
-  ;; turn on aut-new line and hungry-delete
-  (add-hook 'c++-mode-hook
-            (lambda () (c-toggle-auto-hungry-state 1)))
-
-  (add-hook 'c++-mode-hook
-            (lambda () (define-key c-mode-map (kbd "C-c a") 'brust-singular-eval-current-buffer))))
+    (add-hook 'c++-mode-hook #'brust-singular-mode-hook)
+    (defun brust-singular-mode-hook nil
+      ;; turn-on fontification for c++-mode
+      (font-lock-mode 1)
+      ;; turn on aut-new line and hungry-delete
+      (c-toggle-auto-hungry-state 1)
+      (company-mode -1)
+      (local-set-key (kbd "C-c a") #'brust-singular-eval-file-current-buffer)
+      (local-set-key (kbd "C-c l") #'brust-singular-eval-line)
+      (local-set-key (kbd "C-c s") #'brust-singular-eval-string))
+  
+    ;; (setq load-path (cons "<singular-emacs-home-directory>" load-path))
+    (autoload 'singular "singular"
+      "Start Singular using default values." t)
+    (autoload 'singular-other "singular"
+      "Ask for arguments and start Singular." t))
 
 #+END_SRC
+
+#+RESULTS:
+
 *** function to send the working file.
 #+BEGIN_SRC elisp
-  (defun brust-singular-eval-file-corrsp-current-buffer ()
-    (interactive)
+  (defun brust-singular-eval-file-current-buffer (args)
+    (interactive "P")
     (let ((file  (buffer-file-name))
           (buffer (current-buffer)))
       (save-buffer)
       (singular)
+      (when args (singular-control-c 'restart))
       (singular-load-file file t)
       (insert ";")
       (singular-send-or-copy-input nil)
       (switch-to-buffer buffer)))
 
-  (defun brust-singular-delete-comments ()
+  (defun brust-singular-delete-comments nil
     (interactive)
     (save-excursion
       (goto-char (point-min))
@@ -4835,7 +5000,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
         (forward-char -2)
         (delete-char (- (line-end-position) (point))))))
 
-  (defun brust-singular-eval-buffer-lbl ()
+  (defun brust-singular-eval-buffer-line-by-line nil
     (interactive)
     (let ((_buffer (buffer-string)))
       (with-temp-buffer
@@ -4844,18 +5009,18 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
         (goto-char (point-min))
         (while (not (eobp))
           ;;(or (brust-check-line-parents) (user-error "Unbalanced Parent!!!"))
-          (let* ((str (s-trim (buffer-substring-no-properties
-                               (line-beginning-position)
-                               (line-end-position))))
-                 (err (cond ((string= str "") nil)
-                            ((string= (substring str -1) ";")
-                             (brust-singular-eval-string str)
-                             nil)
-                            (t (brust-singular-eval-environment)))))
-            (message "despres del let line: %s" str)
-            ;;(when err (goto-char err))
-            (forward-line 1))))))
-
+          (let ((str (s-trim (buffer-substring-no-properties
+                              (line-beginning-position)
+                              (line-end-position)))))
+            (unless
+                (cond ((string= str "") t)
+                      ((string= (substring str -1) ";")
+                       (brust-singular-eval-string str) t)
+                      (t (brust-singular-eval-environment) t))
+              (message "despres del let line: %s" str)
+              ;;(when err (goto-char err))
+              (forward-line 1)))))))
+              
   (defun brust-singular-eval-environment ()
     (interactive)
     (save-excursion
@@ -4887,23 +5052,18 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
         (widen)
         err)))
 
-  ;; (if (brust-check-line-parents) (insert "hola") (insert "adew"))
-
   (defun brust-singular-eval-string (_str)
     (let ((_buffer (current-buffer)))
       (ignore-errors
-          (singular)
-          (let ((proces (singular-process)))
-            ;; insert string into history
-            (singular-history-insert _str)
-            ;; send string to process
-            (singular-send-string process _str)
-            ;; "insert" it into buffer
-            (singular-input-filter process _str)))
+        (singular)
+        (let ((proces (singular-process)))
+          ;; insert string into history
+          (singular-history-insert _str)
+          ;; send string to process
+          (singular-send-string process _str)
+          ;; "insert" it into buffer
+          (singular-input-filter process _str)))
       (switch-to-buffer _buffer)))
-
-
-
 #+END_SRC
 
 ** Maxima
