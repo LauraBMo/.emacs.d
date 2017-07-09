@@ -1277,8 +1277,8 @@ abort completely with `C-g'."
     "Go to beginning of buffer or toggle between
   the beginning and end of current buffer is you are already there."
     (interactive)
-    (if (bobp) (end-of-buffer)
-      (beginning-of-buffer)))
+    (if (eobp) (beginning-of-buffer)
+      (end-of-buffer)))
 #+END_SRC
 *** Bounded min/maximum
 #+BEGIN_SRC elisp
