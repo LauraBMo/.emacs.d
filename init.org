@@ -2024,6 +2024,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                 ("s-o"      . company-complete-selection)
                 ("s-g"      . company-abort)
                 ("C-d"      . company-show-doc-buffer)
+                ("s-h"      . company-show-doc-buffer)
                 ("C-l"      . company-show-location))
     :config 
     (global-company-mode)
