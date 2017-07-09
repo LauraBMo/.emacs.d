@@ -102,7 +102,6 @@
     (make-directory "~/.emacs.d/backups/"))
 #+END_SRC
 
-
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
   (when (member "Monoid HalfTight" (font-family-list))
@@ -253,6 +252,11 @@
 *** Answer any question with y or n
 #+BEGIN_SRC elisp
 (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+*** Use Caps as Super
+#+BEGIN_SRC elisp
+  (shell-command "setxkbmap -option caps:super")
 #+END_SRC
 
 ** Package.el
