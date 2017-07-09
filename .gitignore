@@ -9,3 +9,5 @@ other-repos/*
 other-people/*
 session.*
 url/*
+/#init.org#
+/shree.el
