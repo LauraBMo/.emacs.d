@@ -920,7 +920,7 @@
           ( ?A  ("\\Alpha"        "\\aleph"))
           ( ?b  ("\\beta"           ))
           ( ?B  ("\\Beta"            ))
-          ( ?C  (""                 ""                "\\arccos"))
+          ( ?C  ("\\complexes"      ""                "\\arccos"))
           ( ?d  ("\\delta"          "\\partial"))
           ( ?D  ("\\Delta"          "\\nabla"))
           ( ?e  ("\\varepsilon"     "\\epsilon"    "\\exp"))
@@ -946,7 +946,7 @@
           ( ?o  ("\\omega"          ))
           ( ?O  ("\\Omega"          "\\mho"))
           ( ?p  ("\\pi"             "\\varpi"))
-          ( ?P  ("\\Pi"             ))
+          ( ?P  ("\\Pi"             "\\projective"))
           ( ?q  ("\\theta"          "\\vartheta"))
           ( ?Q  ("\\Theta"          ))
           ( ?r  ("\\rho"            "\\varrho"))
@@ -1008,6 +1008,99 @@
           ( ?'  ("\\prime"          ))))
 
 #+END_SRC
+
+#+RESULTS:
+|  99 | (\circ \cdot \cos)                  |
+|  44 | (\!:\! \dots \bullet)               |
+|  46 | (\dots \bullet \cdot)               |
+|  97 | (\alpha \forall)                    |
+|  65 | (\Alpha \aleph)                     |
+|  98 | (\beta)                             |
+|  66 | (\Beta)                             |
+|  67 | (\complexes  \arccos)               |
+| 100 | (\delta \partial)                   |
+|  68 | (\Delta \nabla)                     |
+| 101 | (\varepsilon \epsilon \exp)         |
+|  69 | (\exists  \ln)                      |
+| 102 | (\phi \varphi)                      |
+|  70 | ()                                  |
+| 103 | (\gamma  \lg)                       |
+|  71 | (\Gamma  10^{?})                    |
+| 104 | (\eta \hbar)                        |
+|  72 | ()                                  |
+| 105 | (\in i=1,\dots,n)                   |
+|  73 | (\im \Im)                           |
+|  74 | ()                                  |
+| 107 | (\kappa)                            |
+|  75 | ()                                  |
+| 108 | (\lambda \ell \ln)                  |
+|  76 | (\Lambda)                           |
+| 109 | (\mu)                               |
+|  77 | ()                                  |
+| 110 | (\nu \not \ln)                      |
+|  78 | (\nabla  \exp)                      |
+| 111 | (\omega)                            |
+|  79 | (\Omega \mho)                       |
+| 112 | (\pi \varpi)                        |
+|  80 | (\Pi \projective)                   |
+| 113 | (\theta \vartheta)                  |
+|  81 | (\Theta)                            |
+| 114 | (\rho \varrho)                      |
+|  82 | ( \Re)                              |
+| 115 | (\sigma \varsigma \sin)             |
+|  83 | (\Sigma  \arcsin)                   |
+| 116 | (\tau  \tan)                        |
+|  84 | (  \arctan)                         |
+| 117 | (\upsilon)                          |
+|  85 | (\Upsilon)                          |
+| 118 | (\vee)                              |
+|  86 | (\Phi)                              |
+| 119 | (\xi)                               |
+|  87 | (\Xi)                               |
+| 120 | (\chi x_1,\dots,x_n x_0,\dots,x_n)  |
+|  88 | ()                                  |
+| 121 | (\psi y_1,\dots,y_m y_0,\dots,y_m)  |
+|  89 | (\Psi)                              |
+| 122 | (\zeta z_1,\dots,z_k z_0,\dots,z_k) |
+|  90 | ()                                  |
+|  32 | ()                                  |
+|  48 | (\emptyset)                         |
+|  49 | (^{-1} ^{*})                         |
+|  50 | (^{*})                               |
+|  51 | (\bigcup \bigcap)                   |
+|  53 | ()                                  |
+|  54 | ()                                  |
+|  55 | ()                                  |
+|  56 | (\infty)                            |
+|  57 | ()                                  |
+|  33 | (\neg)                              |
+|  64 | ()                                  |
+|  35 | ()                                  |
+|  36 | ()                                  |
+|  37 | ()                                  |
+|  94 | (\uparrow)                          |
+|  38 | (\wedge)                            |
+|  63 | ()                                  |
+| 126 | (\approx \simeq)                    |
+|  95 | (\downarrow)                        |
+|  42 | (\cup \cap)                         |
+|  45 | (\varrightarrow \varleftarrow)      |
+|  43 | (\times \otimes)                    |
+|  47 | (\not)                              |
+| 124 | (\mapsto \longmapsto)               |
+|  92 | (\setminus)                         |
+|  34 | ()                                  |
+|  61 | (\cong \Longleftrightarrow)         |
+|  40 | (\langle)                           |
+|  41 | (\rangle)                           |
+|  91 | (\Leftarrow \Longleftarrow)         |
+|  93 | (\Rightarrow \Longrightarrow)       |
+| 123 | (\subseteq \subset)                 |
+| 125 | (\supseteq \supset)                 |
+|  60 | (\le \min)                          |
+|  62 | (\ge \max)                          |
+|  96 | ()                                  |
+|  39 | (\prime)                            |
 
 ** Adaptation to my style
 #+BEGIN_SRC elisp
