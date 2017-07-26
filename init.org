@@ -656,12 +656,12 @@
 
 **** To use it as snippet
 #+BEGIN_SRC elisp
-(defun my-after-abbrev-expand ()
+(defun my-after-abbrev-expand nil
   (when (looking-back "\"\"\\|''\\|()\\|\\[\\]\\|{}")
     (backward-char 1))
   t)
 
-(defun abbrev-possition-cursor ()
+(defun abbrev-possition-cursor nil
   (cdlatex-position-cursor)
   (my-after-abbrev-expand))
 
@@ -847,14 +847,14 @@ abort completely with `C-g'."
 
 **** Defuns
 #+BEGIN_SRC elisp
-  (defun ora-dired-up-directory ()
+  (defun ora-dired-up-directory nil
     (interactive)
     (let ((buffer (current-buffer)))
       (dired-up-directory)
       (unless (equal buffer (current-buffer))
         (kill-buffer buffer))))
 
-  (defun ora-ediff-files ()
+  (defun ora-ediff-files nil
     (interactive)
     (let ((files (dired-get-marked-files)))
       (if (= 2 (length files))
@@ -901,7 +901,7 @@ abort completely with `C-g'."
 
    Make it compatible with =org-mode=
 #+BEGIN_SRC elisp
-(defun ora-ediff-prepare-buffer ()
+(defun ora-ediff-prepare-buffer nil
   (when (memq major-mode '(org-mode emacs-lisp-mode))
     (outline-show-all)))
 
@@ -909,7 +909,7 @@ abort completely with `C-g'."
 #+END_SRC
 
 #+BEGIN_SRC elisp
-  (defun ediff-copy-both-to-C ()
+  (defun ediff-copy-both-to-C nil
     (interactive)
     (ediff-copy-diff
      ediff-current-difference nil 'C nil
@@ -919,7 +919,7 @@ abort completely with `C-g'."
       (ediff-get-region-contents
        ediff-current-difference 'B ediff-control-buffer))))
 
-  (defun add-d-to-ediff-mode-map ()
+  (defun add-d-to-ediff-mode-map nil
     (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
 
   (add-hook 'ediff-keymap-setup-hook #'add-d-to-ediff-mode-map)
@@ -929,7 +929,7 @@ abort completely with `C-g'."
 *** Electric indent mode
     Now, I have aggressive indent insted.
 #+BEGIN_SRC elisp
-(add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
+(add-hook 'after-change-major-mode-hook (lambda nil (electric-indent-mode -1)))
 #+END_SRC
 
 *** Font lock.
@@ -992,7 +992,7 @@ abort completely with `C-g'."
 #+BEGIN_SRC elisp
   (add-hook 'isearch-mode-end-hook 'my-goto-match-beginning)
 
-  (defun my-goto-match-beginning ()
+  (defun my-goto-match-beginning nil
       (when isearch-forward (goto-char isearch-other-end)))
 #+END_SRC
 **** Improve backspace
@@ -1038,10 +1038,10 @@ abort completely with `C-g'."
     :ensure nil
     :init
         ;;; To make compatible org-scr-tab-acts-natively with yasnipets
-    ;;    (defun yas/org-very-safe-expand ()
+    ;;    (defun yas/org-very-safe-expand nil
     ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
     ;;   (add-hook 'org-mode-hook
-    ;;             (lambda ()
+    ;;             (lambda nil
     ;;               (yas-global-mode 1)
     ;;               (make-variable-buffer-local 'yas-trigger-key)
     ;;               (setq yas-trigger-key [tab])
@@ -1084,7 +1084,7 @@ abort completely with `C-g'."
     (use-package org-bullets
       ;; make available "org-bullet-face" such that I can control the font size individually
       :init
-      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+      (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
       (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
     ;; Org babel
     (org-babel-do-load-languages 'org-babel-load-languages
@@ -1342,7 +1342,7 @@ abort completely with `C-g'."
     (or args (setq args 1))
     (close-quoted-open-paren args 0))
 
-  (defun close-all-open-paren-right ()
+  (defun close-all-open-paren-right nil
     (interactive)
     (while  (ignore-errors (close-quoted-open-paren-right 1))))
 
@@ -1354,7 +1354,7 @@ abort completely with `C-g'."
     (or args (setq args 1))
     (close-quoted-open-paren args 1))
 
-  (defun close-all-open-paren-left ()
+  (defun close-all-open-paren-left nil
     (interactive)
     (while  (ignore-errors (close-quoted-open-paren-left 1))))
 #+END_SRC
@@ -1387,14 +1387,14 @@ Version 2015-12-02"
 
 **** Copy directory path
 #+BEGIN_SRC elisp
-  (defun brust-copy-directory-only ()
+  (defun brust-copy-directory-only nil
     (interactive)
     (xah-copy-file-path t))
 #+END_SRC
 *** Customize face at point
     A handy function for customization
 #+BEGIN_SRC elisp
-  (defun customize-face-at-point ()
+  (defun customize-face-at-point nil
     "Customize face which point is at."
     (interactive)
     (let ((face (get-text-property (point) 'face)))
@@ -1408,7 +1408,7 @@ Version 2015-12-02"
     Convert words in DOuble CApitals to Single Capitals.
 **** The function
 #+BEGIN_SRC elisp
-(defun dcaps-to-scaps ()
+(defun dcaps-to-scaps nil
   "Convert word in DOuble CApitals to Single Capitals."
   (interactive)
   (and (= ?w (char-syntax (char-before)))
@@ -1471,7 +1471,7 @@ Single Capitals as you type."
    If the input is non-empty, it is inserted at point."
   (interactive "P")
   (let* ((prompt (if arg (read-from-minibuffer "PROMPT: ") "Input: "))
-         (input (minibuffer-with-setup-hook (lambda () (kbd-macro-query t))
+         (input (minibuffer-with-setup-hook (lambda nil (kbd-macro-query t))
                   (read-from-minibuffer prompt))))
     (unless (string= "" input) (insert input))))
 
@@ -1493,11 +1493,11 @@ Single Capitals as you type."
 (defun up-slightly (args) (interactive "p") (brust-by-five #'scroll-up args))
 (defun down-slightly (args) (interactive "p") (brust-by-five #'scroll-down args))
 
-(defun up-one () (interactive) (scroll-up 1))
-(defun down-one () (interactive) (scroll-down 1))
+(defun up-one nil (interactive) (scroll-up 1))
+(defun down-one nil (interactive) (scroll-down 1))
 
-(defun up-a-lot () (interactive) (scroll-up))
-(defun down-a-lot () (interactive) (scroll-down))
+(defun up-a-lot nil (interactive) (scroll-up))
+(defun down-a-lot nil (interactive) (scroll-down))
 
 #+END_SRC
 **** Keybindings
@@ -1547,7 +1547,7 @@ Single Capitals as you type."
 
 **** Function to open it fast.
 #+BEGIN_SRC elisp
-  (defun xah-open-file-fast ()
+  (defun xah-open-file-fast nil
     "Prompt to open a file from `xah-filelist'.
       URL `http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html'
       Version 2015-04-23"
@@ -1623,7 +1623,7 @@ Single Capitals as you type."
 *** Orgmode functions
 **** COMMENT Meet notes
 #+BEGIN_SRC elisp
-(defun meeting-notes ()
+(defun meeting-notes nil
   "Call this after creating an org-mode heading for where the notes for the meeting
 should be. After calling this function, call 'meeting-done' to reset the environment."
   (interactive)
@@ -1635,7 +1635,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
   (fringe-mode 0)
   (message "When finished taking your notes, run meeting-done."))
 
-(defun meeting-done ()
+(defun meeting-done nil
   "Attempt to 'undo' the effects of taking meeting notes."
   (interactive)
   (widen)                                       ;; Opposite of narrow-to-region
@@ -1649,14 +1649,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     Usually used in Org-mode
 
 #+BEGIN_SRC elisp
-  (defun brust-char-at-point ()
+  (defun brust-char-at-point nil
     (buffer-substring-no-properties (point) (1+ (point))))
 
   (defun brust-move-untill (pass re-ex test)
     (while (not (string-match-p re-ex (funcall test)))
       (forward-char pass)))
 
-  (defun brust-string-at-point ()
+  (defun brust-string-at-point nil
     "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)"
     (save-excursion
       (brust-move-untill 1 "[ \t\n\r]+\\'" 'brust-char-at-point)
@@ -1681,13 +1681,13 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+END_SRC
 ***** Org surround
 #+BEGIN_SRC elisp
-        (defun org-text-bold () "Wraps the region with asterisks."
+        (defun org-text-bold nil "Wraps the region with asterisks."
                (interactive)
                (surround-text "*"))
-        (defun org-text-italics () "Wraps the region with slashes."
+        (defun org-text-italics nil "Wraps the region with slashes."
                (interactive)
                (surround-text "/"))
-        (defun org-text-code () "Wraps the region with equal signs."
+        (defun org-text-code nil "Wraps the region with equal signs."
                (interactive)
                (surround-text "="))
 #+END_SRC
@@ -1878,7 +1878,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 *** Toggle bars
 #+BEGIN_SRC elisp
-  (defun brust-toggle-menu-tool-bars ()
+  (defun brust-toggle-menu-tool-bars nil
     "Toggle Emacs menu and tool bar"
     (interactive)
     (let ((active-p
@@ -2090,7 +2090,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
     (let ((map company-active-map))
       (mapc (lambda (x) (define-key map (format "%d" x)
-                          `(lambda () (interactive) (company-complete-number ,x))))
+                          `(lambda nil (interactive) (company-complete-number ,x))))
             (number-sequence 0 9))))
 #+END_SRC
 
@@ -2157,7 +2157,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                  (or (and args (point-max)) (line-beginning-position 2))
                  (use-region-p)))
 
-  (defun brust-cut-previous-line ()
+  (defun brust-cut-previous-line nil
     (interactive)
     (previous-line) (kill-whole-line))
 #+END_SRC
@@ -2230,7 +2230,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 ***** COMMENT Capitalize
 #+BEGIN_SRC elisp
-(defun endless/capitalize ()
+(defun endless/capitalize nil
   "Capitalize region or word.
 Also converts commas to full stops, and kills
 extraneous space at beginning of line."
@@ -2249,7 +2249,7 @@ extraneous space at beginning of line."
 
 ***** COMMENT Downcase
 #+BEGIN_SRC elisp
-(defun endless/downcase ()
+(defun endless/downcase nil
   "Downcase region or word.
 Also converts full stops to commas."
   (interactive)
@@ -2263,7 +2263,7 @@ Also converts full stops to commas."
 
 ***** COMMENT Upcase
 #+BEGIN_SRC elisp
-(defun endless/upcase ()
+(defun endless/upcase nil
   "Upcase region or word."
   (interactive)
   (if (use-region-p)
@@ -2318,7 +2318,7 @@ Also converts full stops to commas."
 
 ***** Upcase
 #+BEGIN_SRC elisp
-(defun endless/upcase ()
+(defun endless/upcase nil
   "Upcase region or word."
   (interactive)
   (if (use-region-p)
@@ -2436,10 +2436,10 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     :config
     ;; Make a nice interaction with ediff 
     (add-hook 'ediff-before-setup-hook
-              (lambda ()
+              (lambda nil
                 (golden-ratio-mode -1)
                 (balance-windows)))
-    (add-hook 'ediff-cleanup-hook (lambda () (golden-ratio-mode 1)))
+    (add-hook 'ediff-cleanup-hook (lambda nil (golden-ratio-mode 1)))
 
     (add-to-list 'golden-ratio-extra-commands #'brust-ace-window)
     (add-to-list 'golden-ratio-extra-commands #'avy-goto-char-timer)
@@ -2532,7 +2532,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 ****** Auxiliar
 #+BEGIN_SRC elisp
-(defun outline-body-p ()
+(defun outline-body-p nil
   (save-excursion
     (outline-back-to-heading)
     (outline-end-of-heading)
@@ -2540,14 +2540,14 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
          (progn (forward-char 1)
                 (not (outline-on-heading-p))))))
 
-(defun outline-body-visible-p ()
+(defun outline-body-visible-p nil
   (save-excursion
     (outline-back-to-heading)
     (outline-end-of-heading)
     (not (outline-invisible-p))))
 
 
-(defun outline-subheadings-p ()
+(defun outline-subheadings-p nil
   (save-excursion
     (outline-back-to-heading)
     (let ((level (funcall outline-level)))
@@ -2555,7 +2555,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
       (and (not (eobp))
            (< level (funcall outline-level))))))
 
-(defun outline-subheadings-visible-p ()
+(defun outline-subheadings-visible-p nil
   (interactive)
   (save-excursion
     (outline-next-heading)
@@ -2566,7 +2566,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 ****** Hide more
 #+BEGIN_SRC elisp
 
-(defun outline-hide-more ()
+(defun outline-hide-more nil
   (interactive)
   (when (outline-on-heading-p)
     (cond ((and (outline-body-p)
@@ -2581,7 +2581,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 ****** Show more
 #+BEGIN_SRC elisp
-(defun outline-show-more ()
+(defun outline-show-more nil
   (interactive)
   (when (outline-on-heading-p)
     (cond ((and (outline-subheadings-p)
@@ -2978,7 +2978,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ("Help" (or (name . "^\\*Help\\*$") (mode . help-mode)))))
 
     
-    (defun brust-ibuffer-apply-filter-groups ()
+    (defun brust-ibuffer-apply-filter-groups nil
       "Combine my saved ibuffer filter groups with those generated
        by `ibuffer-vc-generate-filter-groups-by-vc-root' (I don't know its origine)"
       (interactive)
@@ -3303,7 +3303,7 @@ is already narrowed."
     (add-hook 'org-mode-hook 'y-sp)
     (add-hook 'LaTeX-mode-hook 'y-sp)
     (add-hook 'emacs-lisp-mode-hook 'y-sp)
-    (defun y-sp () "Activate smartparents" (smartparens-mode 1))
+    (defun y-sp nil "Activate smartparents" (smartparens-mode 1))
     ;;(smartparens-global-mode t) 
     :bind (("C-M-f" . sp-forward-sexp)
     ("C-M-b" . sp-backward-sexp)
@@ -3359,7 +3359,7 @@ is already narrowed."
     (setq ido-separator "\n")
     :config
     (add-hook 'ido-setup-hook
-              (lambda ()
+              (lambda nil
                 (define-key ido-completion-map [up] 'ido-prev-match)
                 (define-key ido-completion-map [down] 'ido-next-match)
                 (define-key ido-completion-map [left] 'previous-history-element)
@@ -3580,7 +3580,7 @@ is already narrowed."
          (let ((map (make-sparse-keymap)))
            (dolist (binding bindings map)
              (define-key map (read-kbd-macro (car binding))
-               `(lambda ()
+               `(lambda nil
                   (interactive)
                   (setq this-command `,(cadr ',binding))
                   (or (minibufferp) (message "%s" ,msg))
@@ -3640,7 +3640,7 @@ is already narrowed."
           ivy-use-ignore-default 'always)
   
     ;; Function to open a directory
-    (defun eh-ivy-open-current-typed-path ()
+    (defun eh-ivy-open-current-typed-path nil
       (interactive)
       (when ivy--directory
         (let* ((dir ivy--directory)
@@ -3872,7 +3872,7 @@ is already narrowed."
   ;;(define-key org-agenda-mode-map
       ;; "v" 'hydra-org-agenda-view/body)
 
-  (defun org-agenda-cts ()
+  (defun org-agenda-cts nil
     (let ((args (get-text-property
                  (min (1- (point-max)) (point))
                  'org-last-args)))
@@ -4328,7 +4328,7 @@ _q_: quit
      I heat =tabs=, so I always untabify when a filed is saved.
 ***** Function
 #+BEGIN_SRC elisp
-  (defun brust-untabify-whole-buffer ()
+  (defun brust-untabify-whole-buffer nil
     (interactive)
     (untabify (point-min) (point-max)))
 
@@ -4350,7 +4350,7 @@ _q_: quit
 #+END_SRC
 *** COMMENT Next function
 #+BEGIN_SRC elisp
-  (defun brust-next-complete-history-element ()
+  (defun brust-next-complete-history-element nil
     (interactive)
      (unless  (ignore-errors (next-complete-history-element 1))
        (delete-region (minibuffer-prompt-end) (line-end-position))))
@@ -4359,8 +4359,8 @@ _q_: quit
 
 ** Auto fill yes/no
 #+BEGIN_SRC elisp
-(defun y-auto-fill () "" (auto-fill-mode 1))
-(defun n-auto-fill () "" (auto-fill-mode 0))
+(defun y-auto-fill nil "" (auto-fill-mode 1))
+(defun n-auto-fill nil "" (auto-fill-mode 0))
 ;; Yes
 (add-hook 'fundamental-mode-hook 'y-auto-fill)
 (add-hook 'text-mode-hook 'y-auto-fill)
@@ -4559,7 +4559,7 @@ With a prefix argument P, isearch for the symbol at point."
   
 *** Next header
 #+BEGIN_SRC elisp
-  (defun brust-ibuffer-next-header ()
+  (defun brust-ibuffer-next-header nil
     (interactive)
     (while (ibuffer-next-line)))
 
@@ -4567,7 +4567,7 @@ With a prefix argument P, isearch for the symbol at point."
 
 *** Previous header
 #+BEGIN_SRC elisp
-  (defun brust-ibuffer-previous-header ()
+  (defun brust-ibuffer-previous-header nil
     (interactive)
     (while (ibuffer-previous-line)))
 
@@ -4587,7 +4587,7 @@ With a prefix argument P, isearch for the symbol at point."
 
 **** COMMENT Previous line
 #+BEGIN_SRC elisp
-  (defun ibuffer-previous-line ()
+  (defun ibuffer-previous-line nil
     (interactive) 
     (if (> 5 (line-number-at-pos))
         (progn (goto-line (- (line-number-at-pos (point-max)) 2)) nil)
@@ -4596,7 +4596,7 @@ With a prefix argument P, isearch for the symbol at point."
 #+END_SRC
 **** COMMENT Next line
 #+BEGIN_SRC elisp
-  (defun ibuffer-next-line ()
+  (defun ibuffer-next-line nil
     (interactive)
     (if (< (- (line-number-at-pos (point-max)) 3) (line-number-at-pos))
         (progn (goto-line 4) nil)
@@ -4637,19 +4637,19 @@ With a prefix argument P, isearch for the symbol at point."
       (let ((bm-cycle-all-buffers val))
         (funcall fun)))
     
-    (defun brust-bm-next-same-buffer ()
+    (defun brust-bm-next-same-buffer nil
       (interactive)
       (brust-bm-motion nil 'bm-next))
     
-    (defun brust-bm-next-all-buffer ()
+    (defun brust-bm-next-all-buffer nil
       (interactive)
       (brust-bm-motion t 'bm-next))
     
-    (defun brust-bm-previous-same-buffer ()
+    (defun brust-bm-previous-same-buffer nil
       (interactive)
       (brust-bm-motion nil 'bm-previous))
 
-    (defun brust-bm-previous-all-buffer ()
+    (defun brust-bm-previous-all-buffer nil
       (interactive)
       (brust-bm-motion t 'bm-previous))
     
@@ -4694,7 +4694,7 @@ With a prefix argument P, isearch for the symbol at point."
     ;; Saving the repository to file when on exit.
     ;; kill-buffer-hook is not called when Emacs is killed, so we
     ;; must save all bookmarks first.
-    (defun modi/bm-save-all-bm-to-repository ()
+    (defun modi/bm-save-all-bm-to-repository nil
       (bm-buffer-save-all)
       (bm-repository-save))
     (add-hook 'kill-emacs-hook #'modi/bm-save-all-bm-to-repository)
@@ -4903,7 +4903,7 @@ With a prefix argument P, isearch for the symbol at point."
     ("q"       nil "cancel" :color blue))
 
 
-  (defun modi/bm-bookmark-regexp ()
+  (defun modi/bm-bookmark-regexp nil
     (interactive)
     (if (use-region-p)
         (progn
@@ -4985,7 +4985,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
     ;;
     ;; http://www.reddit.com/r/emacs/comments/21a4p9/use_recentf_and_ido_together/cgbprem
     (add-hook 'ido-setup-hook
-              (lambda ()
+              (lambda nil
                 (define-key ido-completion-map [up] 'ido-prev-match)
                 (define-key ido-completion-map [down] 'ido-next-match)
                 (define-key ido-completion-map [left] 'previous-history-element)
@@ -5071,7 +5071,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
               ;;(when err (goto-char err))
               (forward-line 1)))))))
               
-  (defun brust-singular-eval-environment ()
+  (defun brust-singular-eval-environment nil
     (interactive)
     (save-excursion
       (let ((beg (line-beginning-position)))
@@ -5082,7 +5082,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
          (concat (buffer-substring-no-properties beg (point)) ";"))
         (point))))
 
-  (defun brust-singular-eval-line ()
+  (defun brust-singular-eval-line nil
     (interactive)
     (or (brust-check-line-parents) (user-error "Unbalanced Parent!!!"))
     (let ((str (s-trim
@@ -5094,7 +5094,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
         (brust-singular-eval-string str))))
 
 
-  (defun brust-check-line-parents ()
+  (defun brust-check-line-parents nil
     (interactive)
     (narrow-to-region (line-beginning-position) (line-end-position))
     (save-excursion
@@ -5163,7 +5163,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 *** Keybindings
 **** COMMENT Maxima
 #+BEGIN_SRC elisp
-(defun customize-maxima-mode ()
+(defun customize-maxima-mode nil
   (interactive)
   (local-set-key (kbd "TAB") 'maxima-complete)
   (local-set-key (kbd "C-2") 'AcMe-new-parameter))
@@ -5173,7 +5173,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 #+END_SRC
 **** COMMENT iMaxima
 #+BEGIN_SRC elisp
-(defun customize-imaxima ()
+(defun customize-imaxima nil
  "For the imaxima buffer"
   (interactive)
   (local-set-key (kbd "TAB") 'maxima-complete)
@@ -5441,7 +5441,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
   (defvar headlong-minibuffer-map
     (let ((map (copy-keymap minibuffer-local-must-match-map)))
       (define-key map [remap self-insert-command] 'headlong-self-insert-complete-and-exit)
-      (define-key map "\C-i" (lambda ()
+      (define-key map "\C-i" (lambda nil
                                (interactive)
                                (minibuffer-complete)
                                (minibuffer-completion-help)))
@@ -5531,7 +5531,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
   (defvar headlong-minibuffer-map
     (let ((map (copy-keymap minibuffer-local-must-match-map)))
       (define-key map [remap self-insert-command] 'headlong-self-insert-complete-and-exit)
-      (define-key map "\C-i" (lambda ()
+      (define-key map "\C-i" (lambda nil
                                (interactive)
                                (minibuffer-complete)
                                (minibuffer-completion-help)))
