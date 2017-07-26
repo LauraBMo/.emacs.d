@@ -5486,7 +5486,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
   (require 's)
 
   (defvar brust-mark-column "Column number (starting from 1) where to insert marks (hard-code)")
-  (defvar brust-niu-column "Columns number (starting from 1) where are nius (hard-code)")
+  (defvar brust-niu-column "Column number (starting from 1) where nius are (hard-code)")
   (defvar brust-whatever-to-comma-p "It has to be a string or nil. If it is nil do nothing, if not, then replace whatever string or char using as separator into its value")
   (defvar brust-time-if-there-was-a-mark "Time in seconds to wait for an acction if the studen had a mark")
   ;;  (defvar brust-marks-let-line-highlight-p "t doen't turn down the highlighted line between NIUs")
