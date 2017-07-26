@@ -547,8 +547,10 @@
    ("M-\""       . shell)
    ("C-S-<menu>" . delete-indentation)
    ("<f5> <f5>"  . brust-toggle-menu-tool-bars)
-   ("C-f"        . backward-delete-char-untabify)
-   ("M-f"        . backward-kill-word)
+   ("C-d"        . backward-delete-char-untabify)
+   ("C-f"        . delete-char)
+   ;; ("M-d"        . backward-kill-word)
+   ;; ("M-f"        . kill-word)
    ("<home>"     . delete-other-windows)
    ("<end>"      . delete-window)
    ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
@@ -631,8 +633,8 @@
 *** Delete
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("s-f" . backward-kill-word)
-   ("s-d" . kill-word))
+   ("s-f" . kill-word)
+   ("s-d" . backward-kill-word))
 
 #+END_SRC
 
@@ -2014,42 +2016,77 @@ should be. After calling this function, call 'meeting-done' to reset the environ
            company-lighter-base ""
            company-minimum-prefix-length 2
            company-show-numbers t)
+    (add-hook 'after-init-hook #'global-company-mode)
     :bind (:map company-active-map
                 ("<return>" . company-complete-selection)
-                ("TAB"      . company-abort)
-                ("<tab>"    . company-abort)
+                ("TAB"      . brust-company-abort-cdlatex-or-yas)
+                ("<tab>"    . brust-company-abort-cdlatex-or-yas)
                 ("s-l"      . company-complete-common)  
                 ("s-i"      . company-select-previous)
                 ("s-k"      . company-select-next)
                 ("s-o"      . company-complete-selection)
                 ("s-g"      . company-abort)
-                ("C-d"      . company-show-doc-buffer)
+                ("<f1>"     . company-show-doc-buffer)
+                ("C-h"      . company-show-doc-buffer)
                 ("s-h"      . company-show-doc-buffer)
+                ("s-j"      . company-show-location)
                 ("C-l"      . company-show-location))
-    :config 
-    (global-company-mode)
+    :config
+    (defun brust-company-abort-cdlatex-or-yas nil
+      (interactive)
+      (company-abort)
+      (if (fboundp 'cdlatex-tab)
+          (cdlatex-tab)
+        (yas-expand)))
+    (defun brust-generic-company-setup (-ll)
+      (make-local-variable 'company-backends)
+      (cl-loop for -add-backend in (reverse -ll) do
+               (add-to-list 'company-backends `,-add-backend)))
+    (defun toggle-company-ispell nil
+      (interactive)
+      (cond
+       ((memq 'company-ispell company-backends)
+        (setq company-backends (delete 'company-ispell company-backends))
+        (message "company-ispell disabled"))
+       (t
+        (add-to-list 'company-backends 'company-ispell)
+        (message "company-ispell enabled!"))))
+
+    (defun text-mode-hook-company-setup nil
+      (brust-generic-company-setup '(company-ispell))
+      ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
+      ;;  but I prefer hard code the dictionary path. That's more portable.
+      (setq company-ispell-dictionary (file-truename "~/.emacs.d/lisp/english-words.txt")))
+
+    (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
+
     (use-package company-shell
       :init
-      (add-to-list 'company-backends '(company-shell company-fish-shell)))
-    (use-package company-auctex
-      :init
-      (add-hook 'TeX-mode-hook 'company-auctex-init))
+      (defun shell-mode-hook-company-setup nil
+        (brust-generic-company-setup '((company-shell company-fish-shell))))
+
+      (add-hook 'shell-mode-hook #'shell-mode-hook-company-setup))
+
     (use-package company-statistics
       :init
       (setq company-statistics-file "~/.emacs.d/backups/company-statistics-cache.el")
       (company-statistics-mode))
-    (use-package company-math)
-    ;; local configuration for TeX modes
-    (defun my-latex-mode-setup ()
-      (setq-local company-backends (append '((company-math-symbols-latex company-latex-commands)) company-backends))
-      (define-key company-active-map (kbd "TAB") 'brust-company-abort-cdlatex-yas)
-      (define-key company-active-map (kbd "<tab>") 'brust-company-abort-cdlatex-yas))
 
-    (defun brust-company-abort-cdlatex-yas nil
-      (interactive)
-      (company-abort)
-      (cdlatex-tab))
-    (add-hook 'TeX-mode-hook 'my-latex-mode-setup)
+    (use-package company-math)
+    (use-package company-auctex)
+    ;; local configuration for TeX modes
+    (defun LaTeX-mode-hook-company-setup nil
+      (brust-generic-company-setup
+       '(;; company-auctex-labels
+         ;; company-auctex-bibs
+         (company-auctex-macros
+          company-auctex-symbols
+          company-auctex-environments
+          company-math-symbols-latex
+          company-latex-commands))))
+
+    (add-hook 'LaTeX-mode-hook #'LaTeX-mode-hook-company-setup)
+
     ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
     (let ((map company-active-map))
       (mapc (lambda (x) (define-key map (format "%d" x)
@@ -5462,7 +5499,7 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
   (require 's)
 
   (defvar brust-mark-column "Column number (starting from 1) where to insert marks (hard-code)")
-  (defvar brust-niu-column "Columns number (starting from 1) where are nius (hard-code)")
+  (defvar brust-niu-column "Column number (starting from 1) where nius are (hard-code)")
   (defvar brust-whatever-to-comma-p "It has to be a string or nil. If it is nil do nothing, if not, then replace whatever string or char using as separator into its value")
   (defvar brust-time-if-there-was-a-mark "Time in seconds to wait for an acction if the studen had a mark")
   ;;  (defvar brust-marks-let-line-highlight-p "t doen't turn down the highlighted line between NIUs")
