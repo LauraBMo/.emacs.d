@@ -547,8 +547,10 @@
    ("M-\""       . shell)
    ("C-S-<menu>" . delete-indentation)
    ("<f5> <f5>"  . brust-toggle-menu-tool-bars)
-   ("C-f"        . backward-delete-char-untabify)
-   ("M-f"        . backward-kill-word)
+   ("C-d"        . backward-delete-char-untabify)
+   ("C-f"        . delete-char)
+   ;; ("M-d"        . backward-kill-word)
+   ;; ("M-f"        . kill-word)
    ("<home>"     . delete-other-windows)
    ("<end>"      . delete-window)
    ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
@@ -631,8 +633,8 @@
 *** Delete
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("s-f" . backward-kill-word)
-   ("s-d" . kill-word))
+   ("s-f" . kill-word)
+   ("s-d" . backward-kill-word))
 
 #+END_SRC
 
