@@ -4223,6 +4223,7 @@ _q_: quit
        args)))
 
   (defun brust-singular-eval-proc (args)
+    "Eval last proc declaration."
     (interactive "P")
     (save-excursion
       (search-backward "proc" nil t)
@@ -4239,6 +4240,7 @@ _q_: quit
                  (file-name-base (buffer-name))))))
 
   (defun brust-singular-eval-line (args)
+    "Eval last line ended with a semicolon."
     (interactive "P")
     (unless (brust-singular--check-line-parents)
       (user-error "Unbalanced Parent!!!"))
