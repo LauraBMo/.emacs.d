@@ -4242,16 +4242,24 @@ _q_: quit
   (defun brust-singular-eval-line (args)
     "Eval last line ended with a semicolon."
     (interactive "P")
-    (unless (brust-singular--check-line-parents)
-      (user-error "Unbalanced Parent!!!"))
-    (brust-singular--eval-string
-     (buffer-substring-no-properties
-      (line-beginning-position)
-      (line-end-position))
-     args)
-    (message "Evaluated line (%d) in [[%s]]"
-             (line-number-at-pos (point))
-             (file-name-base (buffer-name))))
+    (save-excursion 
+      (while
+          (not (string= (substring-no-properties
+                         (s-trim
+                          (buffer-substring (line-beginning-position)
+                                            (line-end-position)))
+                         -1) ";"))
+        (forward-line -1))
+      (unless (brust-singular--check-line-parents)
+        (user-error "Unbalanced Parent!!!"))
+      (brust-singular--eval-string
+       (buffer-substring-no-properties
+        (line-beginning-position)
+        (line-end-position))
+       args)
+      (message "Evaluated line (%d) in [[%s]]"
+               (line-number-at-pos (point))
+               (file-name-base (buffer-name)))))
 
   ;;(defun brust-singular-eval-buffer-line-by-line nil
   ;;  (interactive)
