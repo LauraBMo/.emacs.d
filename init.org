@@ -4204,8 +4204,14 @@ _q_: quit
 
   (defun brust-singular-fixed-region-set-region (args)
     (interactive "P")
-    (setq brust-singular-fixed-region-poss
-          (cons (region-beginning) (region-end))))
+    (unless (use-region-p) (user-error "Region has to be activate"))
+    (let ((beg (region-beginning))
+          (end (region-end)))
+      (setq brust-singular-fixed-region-poss (cons beg end))
+      (message "Fixed-region seted from line %d to %d"
+               (line-number-at-pos beg)
+               (line-number-at-pos end)))
+    (deactivate-mark t))
 
   (defun brust-singular-fixed-region-eval (args)
     (interactive "P")
@@ -4256,14 +4262,8 @@ _q_: quit
   (defun brust-singular-eval-line (args)
     "Eval last line ended with a semicolon."
     (interactive "P")
-    (save-excursion 
-      (while
-          (not (string= (substring-no-properties
-                         (s-trim
-                          (buffer-substring (line-beginning-position)
-                                            (line-end-position)))
-                         -1) ";"))
-        (forward-line -1))
+    (save-excursion
+      (brust-singular--line-ending-semicolon)
       (unless (brust-singular--check-line-parents)
         (user-error "Unbalanced Parent!!!"))
       (brust-singular--eval-string
@@ -4274,6 +4274,17 @@ _q_: quit
       (message "Evaluated line (%d) in [[%s]]"
                (line-number-at-pos (point))
                (file-name-base (buffer-name)))))
+
+  (defun brust-singular--line-ending-semicolon nil
+    "Move point to the beginning of the last line ending with a semicolon"
+    ;;(beginning-of-line)
+    (while
+        (not (string= (substring-no-properties
+                       (s-trim
+                        (buffer-substring (line-beginning-position)
+                                          (line-end-position)))
+                       -1) ";"))
+      (forward-line -1)))
 
   ;;(defun brust-singular-eval-buffer-line-by-line nil
   ;;  (interactive)
@@ -4320,7 +4331,7 @@ _q_: quit
       (let ((process (singular-process))
             (--str (if (string= (substring -str -1) ";")
                        (s-trim -str)
-                     (concat (s-trim -str) ";"))))
+                     (concat (s-trim -str) "\n;"))))
         (when args (singular-control-c 'restart))
         (singular-input-filter process --str)
         (singular-send-string process --str))))
