@@ -4248,17 +4248,30 @@ _q_: quit
     (interactive "P")
     (save-excursion
       (search-backward "proc" nil t)
-      (let ((beg (point)))
+      (let ((-beg (point))
+            (-name 
+             (if (re-search-forward "[ \s\t]+" (line-end-position) t)
+                 (let ((-beg2 (point)))
+                   (if (search-forward "(" (line-end-position) t)
+                       (buffer-substring-no-properties -beg2 (1- (point)))
+                     nil))
+               nil)))
         (search-forward "{" nil t)
         (forward-char -1)
         (sp-forward-sexp)
         (brust-singular--eval-string
-         (buffer-substring-no-properties beg (point))
+         (buffer-substring-no-properties -beg (point))
          args)
-        (message "Evaluated proc (%d:%d) in [[%s]]"
-                 (line-number-at-pos beg)
-                 (line-number-at-pos (point))
-                 (file-name-base (buffer-name))))))
+        (if -name
+            (message "Evaluated proc {{%s}}, between lines (%d:%d), in file [[%s]]"
+                     -name
+                     (line-number-at-pos -beg)
+                     (line-number-at-pos (point))
+                     (file-name-base (buffer-name)))
+          (message "Evaluated proc between lines (%d:%d) and file [[%s]] (Warring:: its name is not on the definition line)"
+                   (line-number-at-pos -beg)
+                   (line-number-at-pos (point))
+                   (file-name-base (buffer-name)))))))
 
   (defun brust-singular-eval-line (args)
     "Eval last line ended with a semicolon."
