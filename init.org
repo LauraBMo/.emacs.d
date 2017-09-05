@@ -4225,7 +4225,7 @@ _q_: quit
     (message "Evaluated region (%d:%d) in [[%s]]"
              (line-number-at-pos (car brust-singular-fixed-region-poss))
              (line-number-at-pos (cdr brust-singular-fixed-region-poss))
-             (buffer-name))
+             buffer-file-name)
     (brust-singular--eval-string
      (buffer-substring-no-properties
       (car brust-singular-fixed-region-poss)
@@ -4240,10 +4240,10 @@ _q_: quit
                  (message "Evaluated region (%d:%d) in [[%s]]"
                           (line-number-at-pos (region-beginning))
                           (line-number-at-pos (region-end))
-                          (file-name-base (buffer-name)))
+                          buffer-file-name)
                  (cons (region-beginning) (region-end)))
              (message "File [[%s]] evaluated"
-                      (file-name-base (buffer-name)))
+                      buffer-file-name)
              (cons (point-min) (point-max)))))
       (brust-singular--eval-string
        (buffer-substring-no-properties (car -poss) (cdr -poss))
@@ -4259,7 +4259,7 @@ _q_: quit
              (if (re-search-forward "[ \s\t]+" (line-end-position) t)
                  (let ((-beg2 (point)))
                    (if (search-forward "(" (line-end-position) t)
-                       (buffer-substring-no-properties -beg2 (1- (point)))
+                       (s-trim (buffer-substring-no-properties -beg2 (1- (point))))
                      nil))
                nil)))
         (search-forward "{" nil t)
