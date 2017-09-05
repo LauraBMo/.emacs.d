@@ -4190,6 +4190,9 @@ _q_: quit
       (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
       (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
       (local-set-key (kbd "C-c e") #'brust-singular-eval-proc))
+    (defun brust-singular-int-mode nil
+      (local-set-key (kbd "C-n")   #'brust-ace-window))
+    (add-hook 'singular-interactive-mode-hook #'brust-singular-int-mode)
 
     ;; (setq load-path (cons "<singular-emacs-home-directory>" load-path))
     (autoload 'singular "singular"
