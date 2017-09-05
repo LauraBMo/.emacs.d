@@ -11,3 +11,5 @@ session.*
 url/*
 /#init.org#
 /shree.el
+/%backup%~
+/tramp

@@ -156,7 +156,8 @@ Subtrees under a COMMENTed header are not evaluated."
 	       (point-max))))
 	(buffer-substring-no-properties beg end)))))
 
-(brust-endless/org-eval-eblocks "~/.emacs.d/init.org" "init.el" t)
+(when (< 24 emacs-major-version)
+  (brust-endless/org-eval-eblocks "~/.emacs.d/init.org" "init.el" t))
 ;; Turn debugging back off, if there were no errors then things successfully got loaded.
 
 (setq debug-on-error nil
