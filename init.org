@@ -530,6 +530,9 @@
 *** Global and genric
 #+BEGIN_SRC elisp
   (bind-keys*
+   ("s-c"        . easy-kill)
+   ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
+   ("s-z"        . undo)
    ("M-c"        . brust-endless/capitalize)
    ("M-l"        . brust-endless/downcase)
    ("M-C"        . endless/upcase)
@@ -550,8 +553,8 @@
    ("<f5> <f5>"  . brust-toggle-menu-tool-bars)
    ("C-d"        . backward-delete-char-untabify)
    ("C-f"        . delete-char)
-   ;; ("M-d"        . backward-kill-word)
-   ;; ("M-f"        . kill-word)
+   ;; ("M-d"     . backward-kill-word)
+   ;; ("M-f"     . kill-word)
    ("<home>"     . delete-other-windows)
    ("<end>"      . delete-window)
    ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
