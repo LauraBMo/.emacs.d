@@ -4389,267 +4389,6 @@ _q_: quit
         (delete-region (point) (line-end-position)))))
 #+END_SRC
 
-** CoCoA
-*** Common settings
-#+BEGIN_SRC elisp
-  ;; ------------------------------------------------------------
-  ;; DISCARD ALL ctrl-m CHARACTERS FROM SHELL OUTPUT
-  (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
-
-  ;; ------------------------------------------------------------
-  ;; WORD COMPLETION: 
-  ;; dynamic abbrev expansion (M-/) replace also CASE PATTERN 
-  ;; (setq dabbrev-case-replace nil)
-
-  ;; ------------------------------------------------------------
-  ;; MY PREFERRED SET OF COLOURS ;-)
-  ;;(if window-system 
-  ;;    (progn
-  ;;      (set-face-foreground font-lock-comment-face       "red3" )
-  ;;      (set-face-foreground font-lock-keyword-face       "SteelBlue4" )
-  ;;      (set-face-foreground font-lock-string-face        "green4" )
-  ;;      (set-face-foreground font-lock-constant-face      "Orange3" )
-  ;;      (set-face-foreground font-lock-function-name-face "Blue" )
-  ;;      (set-face-foreground font-lock-reference-face     "Sienna" )
-  ;;      (set-face-foreground font-lock-type-face          "Orchid3" )
-  ;;      )
-  ;;  nil
-  ;;  )
-
-#+END_SRC
-*** CoCoA 4.7
-
-#+BEGIN_SRC elisp
-  ;;==============================================================>
-  ;;    CoCoA-Emacs CUSTOMIZATION: 
-  ;;==============================================================>
-  ;; ------------------------------------------------------------
-  ;; MY PREFERRED SET KEYBINDING ;-)
-
-  (defun brust-cocoa-send-region-or-buffer nil
-    "When region is active send region, when not send current buffer as input to CoCoA. See \\[cocoa-send-region] for 
-  more information. Does not save the buffer, so it's useful for trying 
-  experimental versions.
-  See \\[cocoa-send-file] for an alternative.
-
-  Note: if the *cocoa* buffer has no process, CoCoA will be restarted
-  automatically when this function is called.
-  "
-    (interactive)
-    (cocoa-shell-check-process)
-    (let ((-str
-           (if (use-region-p)
-               (progn
-                 (message "Evaluated region (%d:%d) in [[%s]]"
-                          (line-number-at-pos (region-beginning))
-                          (line-number-at-pos (region-end))
-                          buffer-file-name)
-                 (buffer-substring-no-properties (region-beginning) (region-end)))
-             (message "File [[%s]] evaluated"
-                      buffer-file-name)
-             (buffer-substring-no-properties (region-beginning) (region-end)))))
-      (cocoa-shell-check-window)
-      (save-excursion
-        (switch-to-buffer-other-window "*cocoa*")
-        (if (not (eq (process-status "cocoa") "run")) (cocoa-make-shell))
-        (goto-char (point-max))
-        (insert -str)
-        (comint-send-input))
-      ;; (switch-to-buffer-other-window cocoa-file-buffer-name)
-      (other-window 1)))
-
-
-  (add-hook 'cocoa-mode-hook #'brust-cocoa-mode-hook)
-  (defun brust-cocoa-mode-hook nil
-    (company-mode -1)
-    ;;   "\C-c\C-l" 'cocoa-send-line
-    ;;   "\C-c\C-b" 'cocoa-send-buffer
-    ;;   "\C-c\C-r" 'cocoa-send-region
-    ;;   "\C-c\C-f" 'cocoa-source-file
-    ;;   "\C-c\C-c" 'comment-region
-    ;;   "\C-c\C-e" 'cocoa-close-block  ;; writes the appropriate "End"
-    ;;   "\C-c\C-w" 'cocoa-open-wordlist-file
-    ;;   "\C-c\C-q" 'cocoa-shell-quit
-    ;;   "\C-c?"    'cocoa-word-man
-    ;;   "\C-cm"    'cocoa-word-man
-    ;;   "\C-c\C-m" 'cocoa-word-man
-    ;; (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
-    ;; (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
-    ;; (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
-    ;; (setq last-command-char ";")
-    (local-set-key (kbd "M->") #'cocoa-beg-of-defun)
-    (local-set-key (kbd "C-c a") #'brust-cocoa-send-region-or-buffer)
-    (local-set-key (kbd "C-c l") #'cocoa-send-line)
-    (local-set-key (kbd "C-c d") #'cocoa-send-line))
-
-  ;; PATH of the CoCoA directory:
-  (setq cocoa-install-dir "~/sources/cocoa-4.7/")     ;Unix/Linux
-
-  ;; PATH for the "cocoa.el" file
-  (setq load-path (cons (concat cocoa-install-dir "emacs/") load-path))
-
-  ;; PATH for the "cocoa" start-up script file
-  ;; this usually works:
-  (setq cocoa-executable (concat cocoa-install-dir "cocoa_text"))
-  (setq cocoaserver-executable (concat cocoa-install-dir "CoCoAServer"))
-
-  ;; PATH for the file containing the function names (to use dabbrev)
-  (setq cocoa-wordlist-default-file (concat cocoa-install-dir "wordlist.txt"))
-
-  ;; PATH of the directory where you usually save your CoCoA files:
-  (setq cocoa-dir "~/CoCoA/")
-
-  ;;==============================================================>
-
-  ;; ------------------------------------------------------------
-  ;; AUTO-LOAD cocoa.el for running CoCoA and cocoa-mode for files
-  ;; with CoCoA extensions
-  (autoload 'cocoa       "cocoa.el" "CoCoA running mode" 't)
-  (autoload 'cocoaserver "cocoa.el" "CoCoA running mode" 't)
-  (autoload 'cocoa-mode  "cocoa.el" "CoCoA editing mode" 't)
-
-  (setq auto-mode-alist  (append auto-mode-alist '(
-                                                   ("\\.\\(coc\\|cocoa\\|cocoarc\\|pkg\\|cpkg\\|ts\\)\\'" . cocoa-mode) )))
-
-  ;; ------------------------------------------------------------
-  ;; AUTO-LOAD wordlist when running CoCoA or using cocoa-mode
-  (setq cocoa-auto-load-wordlist 't)
-
-  ;; ------------------------------------------------------------
-  ;; TAB FOR COMPLETION
-  ;; *customize* with menu "CoCoA --> Preferences"
-  ;;     [ same as "<ESC>-x  customize-group <RET> cocoa"
-  ;;       sets (defvar cocoa-tab-is-completion nil)  ]
-  ;; *or* uncomment the following line
-  (defvar cocoa-tab-is-completion 't)
-
-  ;; ------------------------------------------------------------
-#+END_SRC
-
-*** CoCoA 5.2
-#+BEGIN_SRC elisp
-  (setq cocoa5-emacs-dir
-        "/home/lazycat/sources/cocoa-5.2/emacs/")
-
-  ;;==============================================================>
-  ;;    CoCoA5-Emacs CUSTOMIZATION: 
-  ;;==============================================================>
-
-  (add-hook 'cocoa5-mode-hook #'brust-cocoa5-mode-hook)
-  (defun brust-cocoa5-mode-hook nil
-    (company-mode -1)
-    ;; you can edit a CoCoA file and send commands from it to *cocoa5*:
-    ;; "\C-c\C-l" 'cocoa5-send-line
-    ;; "\C-c\C-r" 'cocoa5-send-region
-    ;; "\C-c\C-f" 'cocoa5-source-file
-    ;; "\C-c\C-c" 'cocoa5-interrupt-or-comment-region
-    ;; "\C-c\C-e" 'cocoa5-close-block  ;; writes the appropriate "End"
-    ;; "\C-c ]"   'cocoa5-close-block  ;; same as above
-    ;; "\C-c\C-w" 'cocoa5-open-wordlist-file
-    ;; "\C-c\C-q" 'cocoa5-shell-quit
-    ;; "\C-c?"    'cocoa5-word-man
-    ;; "\C-cm"    'cocoa5-word-man
-    ;; "\C-c\C-m" 'cocoa5-word-man
-
-    ;; (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
-    ;; (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
-    ;; (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
-
-    ;;  (define-key cocoa5-mode-map "\C-cm"    'cocoa5-word-man)
-    ;;  (define-key cocoa5-mode-map "\C-c?"    'cocoa5-word-man)
-    ;;  (define-key cocoa5-mode-map "\C-c\C-n" 'cocoa5-open-file)
-    ;;  (define-key cocoa5-mode-map "\C-c\C-o" 'cocoa5-shell-panic-string)
-    ;;  (define-key cocoa5-mode-map "\C-c " 'cocoa5-rotate-split)
-
-    (local-set-key (kbd "C-c C-w")   #'cocoa5-open-wordlist-file)
-    (local-set-key (kbd "C-c C-SPC") #'cocoa5-rotate-split)
-    (local-set-key (kbd "C-c h")     #'cocoa5-word-man)
-    (local-set-key (kbd ".")         #'cocoa5-electric-semi-or-dot)
-    (local-set-key (kbd "M->")       #'cocoa5-beg-of-defun)
-    (local-set-key (kbd "C-c a")     #'cocoa5-send-line-or-region)
-    (local-set-key (kbd "C-c l")     #'cocoa5-send-line)
-    (local-set-key (kbd "C-c d")     #'cocoa5-send-line))
-
-  ;; PATH for the "cocoa5.el" file
-  (setq load-path (cons cocoa5-emacs-dir load-path))
-
-  ;; PATH for the "cocoa5" start-up script file
-  (setq cocoa5-executable (concat cocoa5-emacs-dir "../cocoa5"))
-
-  ;; FOR WINDOWS set these two lines:
-                                          ; (setq cocoa5-executable (concat cocoa5-emacs-dir "../CoCoAInterpreter.exe"))
-                                          ; (setq cocoa5-packages (concat cocoa5-emacs-dir "../packages"))
-
-  ;; PATH for the file containing the function names (to use dabbrev)
-  (setq cocoa5-wordlist-default-file (concat cocoa5-emacs-dir "../CoCoAManual/wordlist.txt"))
-
-  ;; PATH of the directory where you usually save your CoCoA files:
-  (setq cocoa5-dir "~/CoCoA/")
-
-  ;; DEFAULT PROMPT IN EMACS
-  (setq  cocoa5-default-prompt "/**/")
-
-  ;;==============================================================>
-
-  ;; ------------------------------------------------------------
-  ;; AUTO-LOAD cocoa5.el for running CoCoA5 and cocoa5-mode for files
-  ;; with CoCoA5 extensions
-  (autoload 'c5           "cocoa5.el" "CoCoA5 running mode" 't)
-  (autoload 'cpkg5        "cocoa5.el" "CoCoA5 running mode" 't)
-  (autoload 'cocoa5       "cocoa5.el" "CoCoA5 running mode" 't)
-  (autoload 'cocoa5server "cocoa5.el" "CoCoA5 running mode" 't)
-  (autoload 'cocoa5-mode  "cocoa5.el" "CoCoA5 editing mode" 't)
-
-  (setq auto-mode-alist  (append auto-mode-alist '(
-                                                   ("\\.\\(cpkg5\\|cocoa5\\|cocoa5rc\\|c5\\)\\'" . cocoa5-mode) )))
-
-  ;; ------------------------------------------------------------
-  ;; AUTO-LOAD wordlist when running CoCoA5 or using cocoa5-mode
-  (setq cocoa5-auto-load-wordlist 't)
-
-  ;; ------------------------------------------------------------
-  ;; AUTOMATIC CAPITALIZATION of CoCoA5 keywords:
-  ;; (add-hook 'cocoa5-mode-hook '(lambda () (abbrev-mode 't)))
-
-  ;; ------------------------------------------------------------
-  ;; TAB FOR COMPLETION
-  ;; *customize* with menu "CoCoA5 --> Preferences"
-  ;;     [ same as "<ESC>-x  customize-group <RET> cocoa5"
-  ;;       sets (defvar cocoa-tab-is-completion nil)  ]
-  ;; *or* uncomment the following line
-  (defvar cocoa5-tab-is-completion 't)
-
-  ;; ------------------------------------------------------------
-
-#+END_SRC
-
-** Macaulay2
-#+BEGIN_SRC elisp
-;; add "/usr/share/emacs/site-lisp" to load-path if it isn't there
-(if (not (member "/usr/share/emacs/site-lisp" load-path))
-     (setq load-path (cons "/usr/share/emacs/site-lisp" load-path)))
-
-;; add "/usr/share/info" to Info-default-directory-list if it isn't there
-(if (not (member "/usr/share/info" Info-default-directory-list))
-     (setq Info-default-directory-list (cons "/usr/share/info" Info-default-directory-list)))
-
-;; add "/usr/bin" to PATH if it isn't there
-(if (not (string-match "/usr/bin" (getenv "PATH")))
-     (setenv "PATH" "/usr/bin:$PATH" t))
-
-;; this version will give an error if M2-init.el is not found:
-(load "M2-init")
-
-;; this version will not give an error if M2-init.el is not found:
-;;(load "M2-init" t)
-
-;; You may comment out the following line with an initial semicolon if you 
-;; want to use your f12 key for something else.  However, this action
-;; will be undone the next time you run setup() or setupEmacs().
-;; (global-set-key [ f12 ] 'M2)
-
-#+END_SRC
-
 * Old stuff
 ** Tab and indentation
 **** Distance
@@ -5811,6 +5550,267 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 #+RESULTS:
 : headlong-bookmark-jump
+
+** CoCoA
+*** Common settings
+#+BEGIN_SRC elisp
+  ;; ------------------------------------------------------------
+  ;; DISCARD ALL ctrl-m CHARACTERS FROM SHELL OUTPUT
+  (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+
+  ;; ------------------------------------------------------------
+  ;; WORD COMPLETION: 
+  ;; dynamic abbrev expansion (M-/) replace also CASE PATTERN 
+  ;; (setq dabbrev-case-replace nil)
+
+  ;; ------------------------------------------------------------
+  ;; MY PREFERRED SET OF COLOURS ;-)
+  ;;(if window-system 
+  ;;    (progn
+  ;;      (set-face-foreground font-lock-comment-face       "red3" )
+  ;;      (set-face-foreground font-lock-keyword-face       "SteelBlue4" )
+  ;;      (set-face-foreground font-lock-string-face        "green4" )
+  ;;      (set-face-foreground font-lock-constant-face      "Orange3" )
+  ;;      (set-face-foreground font-lock-function-name-face "Blue" )
+  ;;      (set-face-foreground font-lock-reference-face     "Sienna" )
+  ;;      (set-face-foreground font-lock-type-face          "Orchid3" )
+  ;;      )
+  ;;  nil
+  ;;  )
+
+#+END_SRC
+*** CoCoA 4.7
+
+#+BEGIN_SRC elisp
+  ;;==============================================================>
+  ;;    CoCoA-Emacs CUSTOMIZATION: 
+  ;;==============================================================>
+  ;; ------------------------------------------------------------
+  ;; MY PREFERRED SET KEYBINDING ;-)
+
+  (defun brust-cocoa-send-region-or-buffer nil
+    "When region is active send region, when not send current buffer as input to CoCoA. See \\[cocoa-send-region] for 
+  more information. Does not save the buffer, so it's useful for trying 
+  experimental versions.
+  See \\[cocoa-send-file] for an alternative.
+
+  Note: if the *cocoa* buffer has no process, CoCoA will be restarted
+  automatically when this function is called.
+  "
+    (interactive)
+    (cocoa-shell-check-process)
+    (let ((-str
+           (if (use-region-p)
+               (progn
+                 (message "Evaluated region (%d:%d) in [[%s]]"
+                          (line-number-at-pos (region-beginning))
+                          (line-number-at-pos (region-end))
+                          buffer-file-name)
+                 (buffer-substring-no-properties (region-beginning) (region-end)))
+             (message "File [[%s]] evaluated"
+                      buffer-file-name)
+             (buffer-substring-no-properties (region-beginning) (region-end)))))
+      (cocoa-shell-check-window)
+      (save-excursion
+        (switch-to-buffer-other-window "*cocoa*")
+        (if (not (eq (process-status "cocoa") "run")) (cocoa-make-shell))
+        (goto-char (point-max))
+        (insert -str)
+        (comint-send-input))
+      ;; (switch-to-buffer-other-window cocoa-file-buffer-name)
+      (other-window 1)))
+
+
+  (add-hook 'cocoa-mode-hook #'brust-cocoa-mode-hook)
+  (defun brust-cocoa-mode-hook nil
+    (company-mode -1)
+    ;;   "\C-c\C-l" 'cocoa-send-line
+    ;;   "\C-c\C-b" 'cocoa-send-buffer
+    ;;   "\C-c\C-r" 'cocoa-send-region
+    ;;   "\C-c\C-f" 'cocoa-source-file
+    ;;   "\C-c\C-c" 'comment-region
+    ;;   "\C-c\C-e" 'cocoa-close-block  ;; writes the appropriate "End"
+    ;;   "\C-c\C-w" 'cocoa-open-wordlist-file
+    ;;   "\C-c\C-q" 'cocoa-shell-quit
+    ;;   "\C-c?"    'cocoa-word-man
+    ;;   "\C-cm"    'cocoa-word-man
+    ;;   "\C-c\C-m" 'cocoa-word-man
+    ;; (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
+    ;; (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
+    ;; (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
+    ;; (setq last-command-char ";")
+    (local-set-key (kbd "M->") #'cocoa-beg-of-defun)
+    (local-set-key (kbd "C-c a") #'brust-cocoa-send-region-or-buffer)
+    (local-set-key (kbd "C-c l") #'cocoa-send-line)
+    (local-set-key (kbd "C-c d") #'cocoa-send-line))
+
+  ;; PATH of the CoCoA directory:
+  (setq cocoa-install-dir "~/sources/cocoa-4.7/")     ;Unix/Linux
+
+  ;; PATH for the "cocoa.el" file
+  (setq load-path (cons (concat cocoa-install-dir "emacs/") load-path))
+
+  ;; PATH for the "cocoa" start-up script file
+  ;; this usually works:
+  (setq cocoa-executable (concat cocoa-install-dir "cocoa_text"))
+  (setq cocoaserver-executable (concat cocoa-install-dir "CoCoAServer"))
+
+  ;; PATH for the file containing the function names (to use dabbrev)
+  (setq cocoa-wordlist-default-file (concat cocoa-install-dir "wordlist.txt"))
+
+  ;; PATH of the directory where you usually save your CoCoA files:
+  (setq cocoa-dir "~/CoCoA/")
+
+  ;;==============================================================>
+
+  ;; ------------------------------------------------------------
+  ;; AUTO-LOAD cocoa.el for running CoCoA and cocoa-mode for files
+  ;; with CoCoA extensions
+  (autoload 'cocoa       "cocoa.el" "CoCoA running mode" 't)
+  (autoload 'cocoaserver "cocoa.el" "CoCoA running mode" 't)
+  (autoload 'cocoa-mode  "cocoa.el" "CoCoA editing mode" 't)
+
+  (setq auto-mode-alist  (append auto-mode-alist '(
+                                                   ("\\.\\(coc\\|cocoa\\|cocoarc\\|pkg\\|cpkg\\|ts\\)\\'" . cocoa-mode) )))
+
+  ;; ------------------------------------------------------------
+  ;; AUTO-LOAD wordlist when running CoCoA or using cocoa-mode
+  (setq cocoa-auto-load-wordlist 't)
+
+  ;; ------------------------------------------------------------
+  ;; TAB FOR COMPLETION
+  ;; *customize* with menu "CoCoA --> Preferences"
+  ;;     [ same as "<ESC>-x  customize-group <RET> cocoa"
+  ;;       sets (defvar cocoa-tab-is-completion nil)  ]
+  ;; *or* uncomment the following line
+  (defvar cocoa-tab-is-completion 't)
+
+  ;; ------------------------------------------------------------
+#+END_SRC
+
+*** CoCoA 5.2
+#+BEGIN_SRC elisp
+  (setq cocoa5-emacs-dir
+        "/home/lazycat/sources/cocoa-5.2/emacs/")
+
+  ;;==============================================================>
+  ;;    CoCoA5-Emacs CUSTOMIZATION: 
+  ;;==============================================================>
+
+  (add-hook 'cocoa5-mode-hook #'brust-cocoa5-mode-hook)
+  (defun brust-cocoa5-mode-hook nil
+    (company-mode -1)
+    ;; you can edit a CoCoA file and send commands from it to *cocoa5*:
+    ;; "\C-c\C-l" 'cocoa5-send-line
+    ;; "\C-c\C-r" 'cocoa5-send-region
+    ;; "\C-c\C-f" 'cocoa5-source-file
+    ;; "\C-c\C-c" 'cocoa5-interrupt-or-comment-region
+    ;; "\C-c\C-e" 'cocoa5-close-block  ;; writes the appropriate "End"
+    ;; "\C-c ]"   'cocoa5-close-block  ;; same as above
+    ;; "\C-c\C-w" 'cocoa5-open-wordlist-file
+    ;; "\C-c\C-q" 'cocoa5-shell-quit
+    ;; "\C-c?"    'cocoa5-word-man
+    ;; "\C-cm"    'cocoa5-word-man
+    ;; "\C-c\C-m" 'cocoa5-word-man
+
+    ;; (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
+    ;; (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
+    ;; (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
+
+    ;;  (define-key cocoa5-mode-map "\C-cm"    'cocoa5-word-man)
+    ;;  (define-key cocoa5-mode-map "\C-c?"    'cocoa5-word-man)
+    ;;  (define-key cocoa5-mode-map "\C-c\C-n" 'cocoa5-open-file)
+    ;;  (define-key cocoa5-mode-map "\C-c\C-o" 'cocoa5-shell-panic-string)
+    ;;  (define-key cocoa5-mode-map "\C-c " 'cocoa5-rotate-split)
+
+    (local-set-key (kbd "C-c C-w")   #'cocoa5-open-wordlist-file)
+    (local-set-key (kbd "C-c C-SPC") #'cocoa5-rotate-split)
+    (local-set-key (kbd "C-c h")     #'cocoa5-word-man)
+    (local-set-key (kbd ".")         #'cocoa5-electric-semi-or-dot)
+    (local-set-key (kbd "M->")       #'cocoa5-beg-of-defun)
+    (local-set-key (kbd "C-c a")     #'cocoa5-send-line-or-region)
+    (local-set-key (kbd "C-c l")     #'cocoa5-send-line)
+    (local-set-key (kbd "C-c d")     #'cocoa5-send-line))
+
+  ;; PATH for the "cocoa5.el" file
+  (setq load-path (cons cocoa5-emacs-dir load-path))
+
+  ;; PATH for the "cocoa5" start-up script file
+  (setq cocoa5-executable (concat cocoa5-emacs-dir "../cocoa5"))
+
+  ;; FOR WINDOWS set these two lines:
+                                          ; (setq cocoa5-executable (concat cocoa5-emacs-dir "../CoCoAInterpreter.exe"))
+                                          ; (setq cocoa5-packages (concat cocoa5-emacs-dir "../packages"))
+
+  ;; PATH for the file containing the function names (to use dabbrev)
+  (setq cocoa5-wordlist-default-file (concat cocoa5-emacs-dir "../CoCoAManual/wordlist.txt"))
+
+  ;; PATH of the directory where you usually save your CoCoA files:
+  (setq cocoa5-dir "~/CoCoA/")
+
+  ;; DEFAULT PROMPT IN EMACS
+  (setq  cocoa5-default-prompt "/**/")
+
+  ;;==============================================================>
+
+  ;; ------------------------------------------------------------
+  ;; AUTO-LOAD cocoa5.el for running CoCoA5 and cocoa5-mode for files
+  ;; with CoCoA5 extensions
+  (autoload 'c5           "cocoa5.el" "CoCoA5 running mode" 't)
+  (autoload 'cpkg5        "cocoa5.el" "CoCoA5 running mode" 't)
+  (autoload 'cocoa5       "cocoa5.el" "CoCoA5 running mode" 't)
+  (autoload 'cocoa5server "cocoa5.el" "CoCoA5 running mode" 't)
+  (autoload 'cocoa5-mode  "cocoa5.el" "CoCoA5 editing mode" 't)
+
+  (setq auto-mode-alist  (append auto-mode-alist '(
+                                                   ("\\.\\(cpkg5\\|cocoa5\\|cocoa5rc\\|c5\\)\\'" . cocoa5-mode) )))
+
+  ;; ------------------------------------------------------------
+  ;; AUTO-LOAD wordlist when running CoCoA5 or using cocoa5-mode
+  (setq cocoa5-auto-load-wordlist 't)
+
+  ;; ------------------------------------------------------------
+  ;; AUTOMATIC CAPITALIZATION of CoCoA5 keywords:
+  ;; (add-hook 'cocoa5-mode-hook '(lambda () (abbrev-mode 't)))
+
+  ;; ------------------------------------------------------------
+  ;; TAB FOR COMPLETION
+  ;; *customize* with menu "CoCoA5 --> Preferences"
+  ;;     [ same as "<ESC>-x  customize-group <RET> cocoa5"
+  ;;       sets (defvar cocoa-tab-is-completion nil)  ]
+  ;; *or* uncomment the following line
+  (defvar cocoa5-tab-is-completion 't)
+
+  ;; ------------------------------------------------------------
+
+#+END_SRC
+
+** Macaulay2
+#+BEGIN_SRC elisp
+;; add "/usr/share/emacs/site-lisp" to load-path if it isn't there
+(if (not (member "/usr/share/emacs/site-lisp" load-path))
+     (setq load-path (cons "/usr/share/emacs/site-lisp" load-path)))
+
+;; add "/usr/share/info" to Info-default-directory-list if it isn't there
+(if (not (member "/usr/share/info" Info-default-directory-list))
+     (setq Info-default-directory-list (cons "/usr/share/info" Info-default-directory-list)))
+
+;; add "/usr/bin" to PATH if it isn't there
+(if (not (string-match "/usr/bin" (getenv "PATH")))
+     (setenv "PATH" "/usr/bin:$PATH" t))
+
+;; this version will give an error if M2-init.el is not found:
+(load "M2-init")
+
+;; this version will not give an error if M2-init.el is not found:
+;;(load "M2-init" t)
+
+;; You may comment out the following line with an initial semicolon if you 
+;; want to use your f12 key for something else.  However, this action
+;; will be undone the next time you run setup() or setupEmacs().
+;; (global-set-key [ f12 ] 'M2)
+
+#+END_SRC
 
 ** Teaching
    From Excel save the table in csv format into /"tmp/my-table.csv"/ using {tab} as separators.
