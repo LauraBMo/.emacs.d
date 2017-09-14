@@ -4476,7 +4476,7 @@ _q_: quit
     ;; (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
     ;; (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
     ;; (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
-    (setq last-command-char ";")
+    ;; (setq last-command-char ";")
     (local-set-key (kbd "M->") #'cocoa-beg-of-defun)
     (local-set-key (kbd "C-c a") #'brust-cocoa-send-region-or-buffer)
     (local-set-key (kbd "C-c l") #'cocoa-send-line)
@@ -4623,6 +4623,32 @@ _q_: quit
 
 #+END_SRC
 
+** Macaulay2
+#+BEGIN_SRC elisp
+;; add "/usr/share/emacs/site-lisp" to load-path if it isn't there
+(if (not (member "/usr/share/emacs/site-lisp" load-path))
+     (setq load-path (cons "/usr/share/emacs/site-lisp" load-path)))
+
+;; add "/usr/share/info" to Info-default-directory-list if it isn't there
+(if (not (member "/usr/share/info" Info-default-directory-list))
+     (setq Info-default-directory-list (cons "/usr/share/info" Info-default-directory-list)))
+
+;; add "/usr/bin" to PATH if it isn't there
+(if (not (string-match "/usr/bin" (getenv "PATH")))
+     (setenv "PATH" "/usr/bin:$PATH" t))
+
+;; this version will give an error if M2-init.el is not found:
+(load "M2-init")
+
+;; this version will not give an error if M2-init.el is not found:
+;;(load "M2-init" t)
+
+;; You may comment out the following line with an initial semicolon if you 
+;; want to use your f12 key for something else.  However, this action
+;; will be undone the next time you run setup() or setupEmacs().
+;; (global-set-key [ f12 ] 'M2)
+
+#+END_SRC
 
 * Old stuff
 ** Tab and indentation
