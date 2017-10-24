@@ -4208,10 +4208,11 @@ _q_: quit
       (local-set-key (kbd "C-c d") #'brust-singular-eval-line)
       (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
       (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
-      (local-set-key (kbd "C-c e") #'brust-singular-eval-proc))
+      (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
+      (local-set-key (kbd "C-c c") #'brust-singular-finish-line))
     (defun brust-singular-int-mode nil
       (local-set-key (kbd "C-n") #'brust-ace-window)
-      (local-set-key (kbd "C-c p") #'brust-singular-add-print))
+      (local-set-key (kbd "C-p") #'brust-singular-add-print))
 
     (add-hook 'singular-interactive-mode-hook #'brust-singular-int-mode)
 
@@ -4395,14 +4396,28 @@ _q_: quit
 *** functions for *singular*
 #+BEGIN_SRC elisp
   (defun brust-singular-add-print nil
-    (interactive "P")
+    (interactive)
     (save-excursion
-      (move-beginning-of-line)
-      (search-forward ">" (point-at-eol) t)
+      (move-beginning-of-line 1)
+      (search-forward "> " (point-at-eol) t)
       (insert "print(")
-      (move-end-of-line)
-      (search-backward ";" (point-at-bol) t)
-      (insert ")")))
+      (move-end-of-line 1)
+      (if (search-backward ";" (point-at-bol) t)
+          (insert ")")
+        (insert ");"))))
+
+  (defun brust-singular-finish-line nil
+    (interactive)
+    (narrow-to-region (point-at-bol) (point-at-eol))
+    (save-excursion
+      (move-end-of-line 1)
+      (delete-horizontal-space)
+      (if (string= (string (char-before)) ";")
+          (delete-char -1))
+      (close-all-open-paren-right)
+      (insert ";"))
+    (widen))
+
 #+END_SRC
 
 #+RESULTS:
