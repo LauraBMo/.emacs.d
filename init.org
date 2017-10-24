@@ -4209,7 +4209,9 @@ _q_: quit
       (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
       (local-set-key (kbd "C-c e") #'brust-singular-eval-proc))
     (defun brust-singular-int-mode nil
-      (local-set-key (kbd "C-n")   #'brust-ace-window))
+      (local-set-key (kbd "C-n") #'brust-ace-window)
+      (local-set-key (kbd "C-c p") #'brust-singular-add-print))
+
     (add-hook 'singular-interactive-mode-hook #'brust-singular-int-mode)
 
     ;; (setq load-path (cons "<singular-emacs-home-directory>" load-path))
@@ -4388,6 +4390,22 @@ _q_: quit
         (forward-char -2)
         (delete-region (point) (line-end-position)))))
 #+END_SRC
+
+*** functions for *singular*
+#+BEGIN_SRC elisp
+  (defun brust-singular-add-print nil
+    (interactive "P")
+    (save-excursion
+      (move-beginning-of-line)
+      (search-forward ">" (point-at-eol) t)
+      (insert "print(")
+      (move-end-of-line)
+      (search-backward ";" (point-at-bol) t)
+      (insert ")")))
+#+END_SRC
+
+#+RESULTS:
+: brust-singular-add-print
 
 * Old stuff
 ** Tab and indentation
