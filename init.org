@@ -4201,7 +4201,7 @@ _q_: quit
       (font-lock-mode 1)
       ;; turn on aut-new line and hungry-delete
       (c-toggle-auto-hungry-state 1)
-      
+
       (company-mode -1)
       (local-set-key (kbd "C-c a") #'brust-singular-eval-region-or-buffer)
       (local-set-key (kbd "C-c l") #'brust-singular-eval-line)
@@ -4209,7 +4209,9 @@ _q_: quit
       (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
       (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
       (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
-      (local-set-key (kbd "C-c c") #'brust-singular-finish-line))
+      ;; (local-set-key (kbd "C-c c") #'brust-singular-finish-line)
+      (local-set-key (kbd "<C-return>") #'brust-singular-finish-line))
+
     (defun brust-singular-int-mode nil
       (local-set-key (kbd "C-n") #'brust-ace-window)
       (local-set-key (kbd "C-p") #'brust-singular-add-print))
@@ -4220,7 +4222,10 @@ _q_: quit
     (autoload 'singular "singular"
       "Start Singular using default values." t)
     (autoload 'singular-other "singular"
-      "Ask for arguments and start Singular." t))
+      "Ask for arguments and start Singular." t)
+    :config
+    (defadvice singular-send-or-copy-input (before finish-line activate)
+      (brust-singular-finish-line))
 
 #+END_SRC
 
@@ -4409,13 +4414,12 @@ _q_: quit
   (defun brust-singular-finish-line nil
     (interactive)
     (narrow-to-region (point-at-bol) (point-at-eol))
-    (save-excursion
-      (move-end-of-line 1)
-      (delete-horizontal-space)
-      (if (string= (string (char-before)) ";")
-          (delete-char -1))
-      (close-all-open-paren-right)
-      (insert ";"))
+    (move-end-of-line 1)
+    (delete-horizontal-space)
+    (if (string= (string (char-before)) ";")
+        (delete-char -1))
+    (close-all-open-paren-right)
+    (insert ";")
     (widen))
 
 #+END_SRC
