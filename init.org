@@ -4225,7 +4225,7 @@ _q_: quit
       "Ask for arguments and start Singular." t)
     :config
     (defadvice singular-send-or-copy-input (before finish-line activate)
-      (brust-singular-finish-line))
+      (brust-singular-finish-line)))
 
 #+END_SRC
 
