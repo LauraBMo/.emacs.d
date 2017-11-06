@@ -4226,7 +4226,7 @@ _q_: quit
     :config
     (defadvice singular-send-or-copy-input (before finish-line activate)
       (brust-singular-finish-line))
-
+    )
 #+END_SRC
 
 #+RESULTS:
