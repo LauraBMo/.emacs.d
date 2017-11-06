@@ -543,6 +543,7 @@
    ("C-x C-k s"  . save-macro)
    ("M-ç"        . hippie-expand)
    ("C-9"        . close-quoted-open-paren-right)
+   ("M-SPC"      . close-quoted-open-paren-right-or-left)
    ("C-)"        . close-all-open-paren-right)
    ("C-8"        . close-quoted-open-paren-left)
    ("C-("        . close-all-open-paren-left)
@@ -1362,6 +1363,15 @@ abort completely with `C-g'."
     (interactive)
     (while  (ignore-errors (close-quoted-open-paren-left 1))))
 #+END_SRC
+**** By right or left
+#+BEGIN_SRC elisp
+  (defun close-quoted-open-paren-right-or-left (args)
+    (interactive "P")
+    (or args (setq args 1))
+    (unless (close-quoted-open-paren-right args)
+      (close-quoted-open-paren-left args)))
+#+END_SRC
+
 *** Copy file path to kill ring (by Xah Lee)
 **** Copy file path
 #+BEGIN_SRC elisp
@@ -4225,8 +4235,8 @@ _q_: quit
       "Ask for arguments and start Singular." t)
     :config
     (defadvice singular-send-or-copy-input (before finish-line activate)
-      (brust-singular-finish-line))
-    )
+      (brust-singular-finish-line)))
+
 #+END_SRC
 
 #+RESULTS:
