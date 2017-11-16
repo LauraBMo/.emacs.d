@@ -532,52 +532,52 @@
 *** Enviroment
 **** Function
 #+BEGIN_SRC elisp
-(defun LaTeX-env-brust (&optional args)
-  "Execute LaTex-environment or with argument:
+  (defun LaTeX-env-brust (&optional args)
+    "Execute LaTex-environment or with argument:
 
-1. Check if current environment has end
---- If it has end ----
-2. Change the environment with LaTeX-environment
-3. Change the label tag (e.g. lem -> prop) (if there is one)
---- If is has no end ---
-2. Print message error"
-  (interactive "P")
-  (save-excursion
-    (let ((pt (point)) (beg 0) (end 0) env-old env-new name prefix-old prefix-new)
-      (if (not args) (LaTeX-environment nil)
-        (LaTeX-find-matching-begin)
-        (setq beg (point))
-        (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
-        (setq env-old (match-string 1))
-        (if (search-forward (concat "begin{" env-old "}") (point-max) t)
-            (setq pass (point)) (setq pass (point-max)))
-        (goto-char beg) 
-        (if (search-forward (concat "end{" env-old "}") pass t)
-            (setq end (point)) (setq end pass))
-        (if (= pass end)
-            (message "This enviroment has no end!!!")
-          (goto-char pt)
-          (LaTeX-environment t)
-          (goto-char beg)
+  1. Check if current environment has end
+  --- If it has end ----
+  2. Change the environment with LaTeX-environment
+  3. Change the label tag (e.g. lem -> prop) (if there is one)
+  --- If is has no end ---
+  2. Print message error"
+    (interactive "P")
+    (save-excursion
+      (let ((pt (point)) (beg 0) (end 0) env-old env-new name prefix-old prefix-new)
+        (if (not args) (LaTeX-environment nil)
+          (LaTeX-find-matching-begin)
+          (setq beg (point))
           (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
-          (setq env-new (match-string 1)) 
-          (goto-char beg)
-          (when (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)\}" end t)
+          (setq env-old (match-string 1))
+          (if (search-forward (concat "begin{" env-old "}") (point-max) t)
+              (setq pass (point)) (setq pass (point-max)))
+          (goto-char beg) 
+          (if (search-forward (concat "end{" env-old "}") pass t)
+              (setq end (point)) (setq end pass))
+          (if (= pass end)
+              (message "This enviroment has no end!!!")
             (goto-char pt)
-            (setq prefix-old (match-string 1) name (match-string 2)
-                  ;; (insert prefix-old ":" name "::::" env)
-                  prefix-new (cdr (assoc env-new environment-prefix-list)))
-            ;; (insert prefix-new)
-;;;;;;;;;;;;;;;; To chage one file ;;;;;;;;;;;;;;;;                     
-            ;; (goto-char (point-min))
-            ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
-            ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
-            ;; (xah-find-replace-text)
-            ;; (brust-replace-regex-dir
-            (reftex-query-replace-document 
-             (concat "{" prefix-old ":" name "}$") ;;str1
-             (concat "{" prefix-new ":" name "}"))
-            ))))))
+            (LaTeX-environment t)
+            (goto-char beg)
+            (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
+            (setq env-new (match-string 1)) 
+            (goto-char beg)
+            (when (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)?\}" end t)
+              (goto-char pt)
+              (setq prefix-old (match-string 1) name (match-string 2)
+                    ;; (insert prefix-old ":" name "::::" env)
+                    prefix-new (cdr (assoc env-new environment-prefix-list)))
+              ;; (insert prefix-new)
+  ;;;;;;;;;;;;;;;; To chage one file ;;;;;;;;;;;;;;;;                     
+              ;; (goto-char (point-min))
+              ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
+              ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
+              ;; (xah-find-replace-text)
+              ;; (brust-replace-regex-dir
+              (reftex-query-replace-document 
+               (concat prefix-old ":" name) ;;str1
+               (concat prefix-new ":" name))
+              ))))))
 
 
 #+END_SRC
