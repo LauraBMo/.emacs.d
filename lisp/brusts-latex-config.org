@@ -180,25 +180,46 @@
   (set (make-variable-buffer-local 'ispell-parser) 'tex))
 #+END_SRC
 
-** TeX outline extra envirments
+** TeX-outline environment
+*** Section list
+Defaults 
+(("part" 0)
+ ("chapter" 1)
+ ("section" 2)
+ ("subsection" 3)
+ ("subsubsection" 4)
+ ("paragraph" 5)
+ ("subparagraph" 6))
+
+#+BEGIN_SRC elisp
+  (setq LaTeX-section-list
+        '(("part" 0)
+          ("chapter" 1)
+          ("section" 2)
+          ("subsection" 3)
+          ("subsubsection" 3)
+          ("paragraph" 5)
+          ("subparagraph" 6)))
+#+END_SRC
+
+*** Outline extra
 #+BEGIN_SRC elisp
   (setq TeX-outline-extra
-        '(("\\\\begin\{definition\}" 3)
-          ("\\\\begin\{theorem\}" 3)
-          ("\\\\begin\{remark\}" 3)
-          ("\\\\begin\{proposition\}" 3)
-          ("\\\\begin\{lemma\}" 3)
-          ("\\\\begin\{notation\}" 3)
-          ("\\\\begin\{corollary\}" 3)
-          ("\\\\begin\{proof\}" 3)
-          ("\\\\begin\{frame\}" 3)
+        '(("\\\\begin\{definition\}" 4)
+          ("\\\\begin\{theorem\}" 4)
+          ("\\\\begin\{remark\}" 4)
+          ("\\\\begin\{proposition\}" 4)
+          ("\\\\begin\{lemma\}" 4)
+          ("\\\\begin\{notation\}" 4)
+          ("\\\\begin\{corollary\}" 4)
+          ("\\\\begin\{proof\}" 5)
+          ("\\\\begin\{frame\}" 2)
+          ("\\\\item" 6)
           ;; ("\\\\\\[\\\\begin\{tikzcd\}" 4)
-          ("\\\\item" 4)
           ;; ("\\\\begin\{tikzpicture\}" 5)
           ;; ("\\\\begin\{equation\}" 5)
           ;; ("\\\\begin\{proof\}" 4)
           ))
-
 #+END_SRC
 
 ** Some face config
@@ -668,8 +689,7 @@
 #+RESULTS:
 : brust-LaTeX-mathp-end
 
-* CDLaTeX
-
+* cdLaTeX
 ** Initial config
 #+BEGIN_SRC elisp
   (setq cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
@@ -1120,14 +1140,25 @@
 
   (defadvice cdlatex-tab (around use-LaTeX-math activate)
     "To stop before \) in LaTeX envirnment"
-    (let ((math-p (and (texmathp)
-                       (save-excursion (forward-char 2) (texmathp)))))
+    (LaTeX-indent-line)
+    (let ((math-p1 (texmathp))
+          (-my-texmathp-why texmathp-why)
+          (math-p2 (save-excursion (forward-char 2) (texmathp))))
       ad-do-it
       (and
-       math-p
-       (string= "\\(" (car texmathp-why))
+       (and math-p1 math-p2)
+       (string= "\\(" (car -my-texmathp-why))
        (not (texmathp))
-       (backward-char 2))))
+       (backward-char 2))
+      (when (and math-p1 (not (texmathp)))
+        (save-excursion
+          (narrow-to-region (+ (cdr -my-texmathp-why)
+                               (length (car -my-texmathp-why)))
+                            (- (point)
+                               (length (car -my-texmathp-why))))
+          (end-of-buffer)
+          (close-all-open-paren-right)
+          (widen)))))
 
   (defadvice cdlatex-environment (after add-auto-indentation activate)
     (LaTeX-indent-line))
