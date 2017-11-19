@@ -9,7 +9,7 @@
 
 ** TODO Add hooks
 #+BEGIN_SRC elisp
-  (defun brust-LaTeX-modes nil
+  (defun brust-LaTeX-mode-hook nil
     (turn-on-cdlatex)
     ;; (LaTeX-math-mode) ;; I use cdlatex insted
     (turn-on-reftex)
@@ -17,13 +17,22 @@
     (outline-minor-mode 1)
     (flyspell-ignore-tex)
     (TeX-interactive-mode 1)
-    ;; (paren-toggle-matching-quoted-paren)
-    ;; (paren-toggle-matching-paired-delimiter)
-    ;; (imenu-add-menubar-index)
-    ;; (TeX-fold-mode) ;; fold LaTeX macros
-    )
+    (LaTeX-mode-hook-company-setup)
+    (setq TeX-clean-confirm nil
+          LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
+          LaTeX-clean-intermediate-suffixes
+          (append LaTeX-clean-intermediate-suffixes
+                  (list
+                   "-blx\\.bib"
+                   "\\.fdb_latexmk"
+                   "\\.run\\.xml")))
+  ;; (paren-toggle-matching-quoted-paren)
+  ;; (paren-toggle-matching-paired-delimiter)
+  ;; (imenu-add-menubar-index)
+  ;; (TeX-fold-mode) ;; fold LaTeX macros
+  )
 
-  (add-hook 'LaTeX-mode-hook #'brust-LaTeX-modes)
+  (add-hook 'LaTeX-mode-hook #'brust-LaTeX-mode-hook)
 
   ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
 
@@ -43,6 +52,7 @@
   ;;                              '("block"       LaTeX-env-label)) t)
 
 #+END_SRC
+
 
 * config
 ** Save options
@@ -72,7 +82,13 @@
 ** Clean LaTeX intermediate files
 #+BEGIN_SRC elisp
   (setq TeX-clean-confirm nil
-  ;; LaTeX-clean-intermediate-suffixes (append LaTeX-clean-intermediate-suffixes '("\\.fdb_latexmk"))
+        ;; LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
+        ;; LaTeX-clean-intermediate-suffixes
+        ;; (append LaTeX-clean-intermediate-suffixes
+        ;;       (list
+        ;;       "-blx\\.bib"
+        ;;       "\\.fdb_latexmk"
+        ;;       "\\.run\\.xml"))))
         )
 #+END_SRC
 
