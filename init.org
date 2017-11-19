@@ -1284,9 +1284,13 @@ abort completely with `C-g'."
     "Go to beginning of buffer or toggle between
   the beginning and end of current buffer is you are already there."
     (interactive)
-    (if (eobp) (beginning-of-buffer)
-      (end-of-buffer)))
+    (if (eobp) (goto-char (point-min))
+      (goto-char (point-max))))
 #+END_SRC
+
+#+RESULTS:
+: brust-toggle-begin&end-of-buffer
+
 *** Bounded min/maximum
 #+BEGIN_SRC elisp
   (defun list-util-bounded-max (nums bound)
