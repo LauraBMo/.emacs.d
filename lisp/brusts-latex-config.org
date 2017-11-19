@@ -741,8 +741,8 @@ Defaults
   (add-hook 'LaTeX-mode-hook #'brust-cdlatex-mode-hook t)
 #+END_SRC
 
-** Envirments alist definition
-
+** Envirments definition
+*** Alist (mines)
 #+BEGIN_SRC elisp
   (mapc (lambda (xx) (cl-pushnew xx cdlatex-env-alist))
 
@@ -756,10 +756,55 @@ Defaults
           ("definition"   "\\begin{definition}\\label{def:?}\n\n\\end{definition}"    nil)
           ("frame"        "\\begin{frame}\n\\frametitle{?}\n\n\\end{frame}"           nil)
           ("block"        "\\begin{block}{?}\n\n\\end{block}"                         nil)
-          ("corollary"    "\\begin{corollary}\\label{coro:?}\n\n\\end{corollary}"     nil)))
+          ("corollary"    "\\begin{corollary}\\label{coro:?}\n\n\\end{corollary}"     nil)
+          ("array"        "\\begin{array}{?}\n  \\\\\n\\end{array}"                   "&")))
 
 #+END_SRC
-
+*** Delete defaults
+#+BEGIN_SRC elisp
+  (mapc (lambda (-key)
+          (setq cdlatex-env-alist-default
+                (brust-list-delete-element -key cdlatex-env-alist-default)))
+        '(#("array" 0 1 (idx 13))
+          #("deflist" 0 1 (idx 15))
+          #("description" 0 1 (idx 16))
+          #("displaymath" 0 1 (idx 17))
+          #("eqnarray" 0 1 (idx 20))
+          #("eqnarray*" 0 1 (idx 21))
+          #("equation" 0 1 (idx 22))
+          #("figure" 0 1 (idx 23))
+          #("figure*" 0 1 (idx 24))
+          #("fussypar" 0 1 (idx 27))
+          #("letter" 0 1 (idx 29))
+          #("list" 0 1 (idx 30))
+          #("math" 0 1 (idx 31))
+          #("minipage" 0 1 (idx 32))
+          #("picture" 0 1 (idx 33))
+          #("sloppypar" 0 1 (idx 36))
+          #("tabbing" 0 1 (idx 37))
+          #("table" 0 1 (idx 38))
+          #("tabular" 0 1 (idx 39))
+          #("tabular*" 0 1 (idx 40))
+          #("thebibliography" 0 1 (idx 41))
+          #("theindex" 0 1 (idx 42))
+          #("titlepage" 0 1 (idx 43))
+          #("trivlist" 0 1 (idx 44))
+          #("alignat" 0 1 (idx 50))
+          #("alignat*" 0 1 (idx 51))
+          #("xalignat" 0 1 (idx 52))
+          #("xalignat*" 0 1 (idx 53))
+          #("xxalignat" 0 1 (idx 54))
+          #("multline" 0 1 (idx 55))
+          #("multline*" 0 1 (idx 56))
+          #("flalign" 0 1 (idx 57))
+          #("flalign*" 0 1 (idx 58))
+          #("gather" 0 1 (idx 59))
+          #("gather*" 0 1 (idx 60))
+          #("epsfigure" 0 1 (idx 61))
+          #("deluxetable" 0 1 (idx 62))
+          #("aafigure" 0 1 (idx 63))
+          #("aafigure*" 0 1 (idx 64))))
+#+END_SRC
 ** Snippets =TAB=
    List of lists each with: (see cdlatex-command-alist)
    (key description text-to-insert function-called arguments txt-p math-p)
@@ -838,11 +883,52 @@ Defaults
 
 #+END_SRC
     
-*** COMMENT Default ones
+*** Default ones
+    I delete the ones I do not want. In this way I keep the defaul list updated.
+    Because the =setq=, the following =mapc= can not be done with a =cl-loop= 
+#+BEGIN_SRC elisp
+  (mapc (lambda (-key)
+          (setq cdlatex-command-alist-default
+                (brust-list-delete-element -key cdlatex-command-alist-default)))
+        '("pref"
+          "ct"
+          "cte"
+          "cite{"
+          "equ"
+          "eqn"
+          "alit"
+          "alit*"
+          "xal"
+          "xal*"
+          "xxa"
+          "xxa*"
+          "mul"
+          "mul*"
+          "gat"
+          "gat*"
+          "fla"
+          "fla*"
+          "fg"
+          "sn"
+          "ss"
+          "sss"
+          "ssp"
+          "closed"
+          "caseeq"
+          "intl"
+          "suml"
+          "nonum"
+          "qq"
+          "qqq"))
+#+END_SRC
+
+#+RESULTS:
+| pref | ct | cte | cite{ | equ | eqn | alit | alit* | xal | xal* | xxa | xxa* | mul | mul* | gat | gat* | fla | fla* | fg | sn | ss | sss | ssp | closed | caseeq | intl | suml | nonum | qq | qqq |
+
 #+BEGIN_SRC elisp
     (mapc (lambda (xx) (cl-pushnew xx cdlatex-command-alist))
-          '(("pref"  "Make page reference"                      "" reftex-reference     nil    t  t)
-            ("ref"   "Make reference"                           "" reftex-reference     nil    t  t)
+          '(("pref"  "Make page reference"                      "" reftex-reference     nil    t  nil)
+            ("ref"   "Make reference"                           "" reftex-reference     nil    t  nil)
             ("lbl"   "Insert  label"                            "" reftex-label         nil    t  t)
             ("it"    "New item in current environment"          "" cdlatex-item         nil    t  t)
             
