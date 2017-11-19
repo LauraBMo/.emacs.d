@@ -1421,6 +1421,13 @@ Version 2015-12-02"
         (message "No face defined at point"))))
 
 #+END_SRC
+*** Delete element of a list by =car=
+#+BEGIN_SRC elisp
+  (defun brust-list-delete-element (-key -list)
+    (cl-loop for -element in -list
+             if (not (string= -key (car -element)))
+             collect -element))
+#+END_SRC
 
 *** Double Capitals
     Convert words in DOuble CApitals to Single Capitals.
