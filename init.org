@@ -2139,8 +2139,6 @@ should be. After calling this function, call 'meeting-done' to reset the environ
           company-math-symbols-latex
           company-latex-commands))))
 
-    (add-hook 'LaTeX-mode-hook #'LaTeX-mode-hook-company-setup)
-
     ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
     (let ((map company-active-map))
       (mapc (lambda (x) (define-key map (format "%d" x)
