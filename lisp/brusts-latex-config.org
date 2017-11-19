@@ -109,44 +109,6 @@
 
 #+END_SRC
 
-** RefTeX
-*** Settings
-#+BEGIN_SRC elisp
-  (setq reftex-plug-into-AUCTeX t ;; To integrate RefTeX with AUCTeX
-        reftex-allow-automatic-rescan t
-        reftex-enable-partial-scans t
-        reftex-save-parse-info t
-        reftex-use-multiple-selection-buffers nil
-        ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
-        ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
-        reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
-                                      "~/Dropbox/bibliography/zotero-bibl.bib")    
-        reftex-cite-prompt-optional-args nil
-        reftex-cite-cleanup-optional-args t
-        ;; So that RefTeX also recognizes \addbibresource. Note that you
-        ;; can't use $HOME in path for \addbibresource but that "~"
-        ;; works.
-        reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
-        ;; reftex-refstyle "\\Cref" ;; set the defult refstyle...
-        ;; reftex-ref-style-default-list (append (quote ("Cleveref")) reftex-ref-style-default-list)
-        )
-#+END_SRC
-
-*** Label list 
-#+BEGIN_SRC elisp
-  (setq reftex-label-alist
-        ;; reftex-label-alist '(AMSTeX)
-        '(("axiom"         ?a "axm:"   "~\\cref{%s}" nil ("axiom"   "axm.")    -2)
-          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -3)
-          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
-          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       )
-          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") )
-          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")           )
-          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")        )
-          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")      )))
-
-#+END_SRC
-
 ** To get a full featured `LaTeX-section' command
 #+BEGIN_SRC elisp
   (setq LaTeX-section-hook '(LaTeX-section-heading  
@@ -688,6 +650,59 @@ Defaults
 
 #+RESULTS:
 : brust-LaTeX-mathp-end
+
+* RefTeX
+*** Settings
+#+BEGIN_SRC elisp
+  (setq reftex-plug-into-AUCTeX t ;; To integrate RefTeX with AUCTeX
+        reftex-allow-automatic-rescan t
+        reftex-enable-partial-scans t
+        reftex-save-parse-info t
+        reftex-use-multiple-selection-buffers nil
+        ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
+        ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
+        reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
+                                      "~/Dropbox/bibliography/zotero-bibl.bib")
+        reftex-ref-style-alist '(("Default" t (("\\ref" 13) ("\\pageref" 112))))
+        reftex-ref-macro-prompt nil
+        reftex-cite-prompt-optional-args nil
+        reftex-cite-cleanup-optional-args t
+        ;; So that RefTeX also recognizes \addbibresource. Note that you
+        ;; can't use $HOME in path for \addbibresource but that "~"
+        ;; works.
+        reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
+        ;; reftex-refstyle "\\Cref" ;; set the defult refstyle...
+        ;; reftex-ref-style-default-list (append (quote ("Cleveref")) reftex-ref-style-default-list)
+        )
+#+END_SRC
+
+#+RESULTS:
+| bibliography | nobibliography | addbibresource |
+
+*** Label list 
+#+BEGIN_SRC elisp
+  (setq reftex-label-alist
+        ;; reftex-label-alist '(AMSTeX)
+        '(("axiom"         ?a "axm:"   "~\\cref{%s}" nil ("axiom"   "axm.")    -2)
+          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -3)
+          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
+          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       )
+          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") )
+          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")           )
+          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")        )
+          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")      )))
+
+#+END_SRC
+
+*** Selection mode key-map
+#+BEGIN_SRC elisp
+  (defun brust-reftex-set-select-label-mode-map nil
+    (bind-keys :map reftex-select-label-mode-map
+               ("k" . reftex-select-next)
+               ("i" . reftex-select-previous)))
+
+  (add-hook 'reftex-select-label-mode-hook #'brust-reftex-set-select-label-mode-map)
+#+END_SRC
 
 * cdLaTeX
 ** Initial config

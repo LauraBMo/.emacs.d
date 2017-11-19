@@ -3116,6 +3116,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ("¿" . cdlatex-math-modify)
             ("¡" . cdlatex-math-modify)
             ("ñ" . cdlatex-math-symbol)))
+    (use-package reftex
+      :ensure nil
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
     :bind 
