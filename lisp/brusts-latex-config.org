@@ -283,8 +283,7 @@ Defaults
 *** Update PDF buffers after successful LaTeX runs
 #+BEGIN_SRC elisp
   (add-hook 'TeX-after-compilation-finished-functions
-            'TeX-revert-document-buffer)
-
+            #'TeX-revert-document-buffer)
   ;; Obsolete hook::
   ;;(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
   ;;             #'TeX-revert-document-buffer)
