@@ -219,12 +219,12 @@
 
 (define-abbrev-table 'global-abbrev-table
   '(
-    ("apl" "\\(\\apl{?}{}\\)" abbrev-possition-cursor 9)
+    ;; ("apl" "\\(\\apl{?}{}\\)" abbrev-possition-cursor 9)
     ("aspr" "associated prime" nil 4)
     ("aspt" "associated point" nil 7)
-    ("cem" "closed embedding" nil 4)
+    ("clem" "closed embedding" nil 4)
     ("cf" "c.f." nil 0)
-    ("cl" "closed" nil 5)
+    ;; ("cl" "closed" nil 5)
     ("ecd" "effective Cartier divisor" nil 0)
     ("eg" "e.g." nil 0)
     ("emb" "embedding" nil 0)
@@ -237,8 +237,8 @@
     ("lno" "locally Noetherian" nil 1)
     ("loc" "locally" nil 1)
     ("lpp" "locally principal" nil 2)
-    ("noet" "Noetherian" nil 1)
-    ("oem" "open embedding" nil 0)
+    ("nt" "Noetherian" nil 1)
+    ("opem" "open embedding" nil 0)
     ("op" "open" nil 2)
     ("qch" "quasi-coherent" nil 1)
     ("sc" "scheme" nil 2)
