@@ -816,21 +816,29 @@ Defaults
   (cl-loop
    for xx in
    '(
-     ("id"    "Insert Id_{}"          "\\Id_{?}"        cdlatex-position-cursor   nil nil t)
-     ("bl"    "Insert bl_{}"          "\\bl_{?}"        cdlatex-position-cursor   nil nil t)
-     ("Bl"    "Insert Bl_{}()"        "\\Bl_{?}()"      cdlatex-position-cursor   nil nil t)
-     ("hom"   "Insert Hom_{}()"       "\\Hom_{?}()"     cdlatex-position-cursor   nil nil t)
-     ("im"    "Insert im_{}"          "\\im_{?}"        cdlatex-position-cursor   nil nil t)
-     ("sch"   "Insert Sch"            "\\Sch"           cdlatex-position-cursor   nil nil t)
-     ("set"   "Insert Set"            "\\Set"           cdlatex-position-cursor   nil nil t)
-     ("dar"   "Insert dar{} in tikz"  "\\dar{?}"        cdlatex-position-cursor   nil nil t)
-     ("uar"   "Insert uar{} in tikz"  "\\uar{?}"        cdlatex-position-cursor   nil nil t)
-     ("rar"   "Insert rar{} in tikz"  "\\rar{?}"        cdlatex-position-cursor   nil nil t)
-     ("lar"   "Insert lar{} in tikz"  "\\lar{?}"        cdlatex-position-cursor   nil nil t)
-     ("dars"  "Insert dar[swap]{}"    "\\dar[swap]{?}"  cdlatex-position-cursor   nil nil t)
-     ("uars"  "Insert uar[swap]{}"    "\\uar[swap]{?}"  cdlatex-position-cursor   nil nil t)
-     ("rars"  "Insert rar[swap]{}"    "\\rar[swap]{?}"  cdlatex-position-cursor   nil nil t)
-     ("lars"  "Insert lar[swap]{}"    "\\lar[swap]{?}"  cdlatex-position-cursor   nil nil t)
+  ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
+  ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
+  ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
+  ("hom"  "Insert Hom_{}()"      "\\Hom_{?}()"     cdlatex-position-cursor nil nil t)
+  ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
+  ("sch"  "Insert Sch"           "\\Sch"           cdlatex-position-cursor nil nil t)
+  ("set"  "Insert Set"           "\\Set"           cdlatex-position-cursor nil nil t)
+  ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
+  ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
+  ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
+  ("lar"  "Insert lar{} in tikz" "\\lar{?}"        cdlatex-position-cursor nil nil t)
+  ("dars" "Insert dar[swap]{}"   "\\dar[swap]{?}"  cdlatex-position-cursor nil nil t)
+  ("uars" "Insert uar[swap]{}"   "\\uar[swap]{?}"  cdlatex-position-cursor nil nil t)
+  ("rars" "Insert rar[swap]{}"   "\\rar[swap]{?}"  cdlatex-position-cursor nil nil t)
+  ("lars" "Insert lar[swap]{}"   "\\lar[swap]{?}"  cdlatex-position-cursor nil nil t)
+  ("drar" "Insert drar{}"        "\\drar{?}"       cdlatex-position-cursor nil nil t)
+  ("urar" "Insert urar{}"        "\\urar{?}"       cdlatex-position-cursor nil nil t)
+  ("dlar" "Insert dlar{}"        "\\dlar{?}"       cdlatex-position-cursor nil nil t)
+  ("ular" "Insert ular{}"        "\\ular{?}"       cdlatex-position-cursor nil nil t)
+  ("drar" "Insert drar[swap]{}"  "\\drar[swap]{?}" cdlatex-position-cursor nil nil t)
+  ("urar" "Insert urar[swap]{}"  "\\urar[swap]{?}" cdlatex-position-cursor nil nil t)
+  ("dlar" "Insert dlar[swap]{}"  "\\dlar[swap]{?}" cdlatex-position-cursor nil nil t)
+  ("ular" "Insert ular[swap]{}"  "\\ular[swap]{?}" cdlatex-position-cursor nil nil t)
      )
    do (cl-pushnew xx cdlatex-command-alist))
 
@@ -867,13 +875,14 @@ Defaults
   (cl-loop
    for xx in
    '(
-     ("apl"   "Insert \\(\\apl...\\)" "\\(\\apl{?}{}\\)"                cdlatex-position-cursor   nil t  t)
-     ("oapl"   "Insert \\(\\overapl...\\)" "\\(\\overapl{?}{}{}\\)"     cdlatex-position-cursor   nil t  t)
-     ("uapl"   "Insert \\(\\underapl...\\)" "\\(\\underapl{?}{}{}\\)"   cdlatex-position-cursor   nil t  t)
-     ;; ("4"     "Insert \\(...\\)"      "\\(?\\)"                         cdlatex-position-cursor   nil t   nil)
-     ;; ("$"     "Insert \\(...\\)"      "\\(?\\)"                       cdlatex-position-cursor   nil t   nil)
-     ;; ("44"    "Insert \\[...\\]"      "\\[\n  ?\n\\]"                   cdlatex-position-cursor   nil t   nil)
-     ("tik"   "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
+     ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil) 
+     ("tik" "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
+      cdlatex-position-cursor   nil t   nil)
+     ("tikfrm" "Insert tikz envirment for beamer presentation"
+      "\\[\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]\\ncd"
+      cdlatex-position-cursor   nil t   nil)
+     ("tiklong" "Insert tikz envirment with basic options" 
+     "\\[\\begin{tikzcd}[column sep=2.7em, row sep=2.2em]\%(Defaults)\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
      ("caseeq"    "Insert a `f(x) = {...' construct"
       "\\left\\{\n\\begin{array}{l@{\\quad:\\quad}l}\n? & \\\\\n & \n\\end{array}\\right."
