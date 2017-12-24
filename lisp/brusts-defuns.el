@@ -1,60 +1,21 @@
 
-
-;;; My improved surround-text ;;;
-
-(defun brust/char-at-point ()
-  (buffer-substring-no-properties (point) (1+ (point))))
-
-(defun brust/move-untill (pass re-ex test)
-  (while (not (string-match-p re-ex (funcall test)))
-    (forward-char pass)))
-
-(defun brust/string-at-point ()
-  "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)" 
-  (save-excursion 
-    (brust/move-untill 1 "[ \t\n\r]+\\'" 'brust/char-at-point)
-    (let ((end (point)))
-      (backward-char 1)
-      (brust/move-untill -1 "[ \t\n\r]+\\'" 'brust/char-at-point)
-      (cons (1+ (point)) end))))
-
-(defun brust/insert-poss (nn str)
-  (goto-char nn) (insert str))
-
-(defun surround-text (str)
-  "Surround selection or brust/string-at-point with str"
-  (interactive)
-  (save-excursion 
-    (let ((poss
-           (if (use-region-p)
-               `(,(region-beginning) . ,(region-end))
-             (brust/string-at-point))))
-      (brust/insert-poss (cdr poss) str) ;; First, the larger postion.
-      (brust/insert-poss (car poss) str)))) 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun re-member (str lst)
+(defun re-member (-str -list)
   "Given a string STR and a list LST of regex, return t if some regex match the STR and nil
 if not"
-  (let ((lstnew lst) (i 0) (j (length lst)))
+  (let ((list-new list) (i 0) (j (length list)))
     (while (< i j)
       (setq i (1+ i))
-      (if (string-match-p (pop lstnew) str)
+      (if (string-match-p (pop list-new) stir)
           (setq i (1+ j))))
     (< j i)))
 
-(defun brust/directory-files (dir &optional full match nosort)
+(defun brust-directory-files (dir &optional full match nosort)
   "List of all files without . and .."
-  (interactive)
   (let ((l (directory-files dir full match nosort))
         (lnew '()))
     (if nosort
         (dolist (str l lnew)
-          (if (string-match-p "^.*\\.\\{1,2\\}$" str)
+          (if (string-match-p "^\\.\\{1,2\\}$" str)
               (pop l)
             (push (pop l) lnew)))
       (pop l) (pop l) l)))
