@@ -47,24 +47,6 @@ if not"
   "Return the current line as stirng wihtout any initial or ending space char"
   (s-trim (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
 
-
-(defun s-trim-left (s)
-  "Remove whitespace at the beginning of S."
-  (if (string-match "\\`[ \t\n\r]+" s)
-      (replace-match "" t t s)
-    s))
-
-(defun s-trim-right (s)
-  "Remove whitespace at the end of S."
-  (if (string-match "[ \t\n\r]+\\'" s)
-      (replace-match "" t t s)
-    s))
-
-(defun s-trim (s)
-  "Remove whitespace at the beginning and end of S."
-  (s-trim-left (s-trim-right s)))
-
-
 ;;(defun make-ref-card-of-mode-key-bindings ()
 ;;  "You are in the buffer of ref-card in the position where to start and 
 ;;the buffer *Help* is open the cursor is on the first key binding of the mode."
@@ -120,34 +102,30 @@ if not"
 ;;          (setq true nil))))))
 ;;
 
-(defun fill-with-spaces (N)
-  (interactive "n")
+(defun fill-with-spaces-until (-max-col)
   (end-of-line)
-  (while (< (current-column) N) (insert " ")))
+  (cl-loop repeat (- -max-col (current-column)) do (insert " ")))
 
 (defun max-column-buffer nil
-  (interactive)
-  (let ((M 0))
-    (save-excursion 
-      (goto-char (point-min))
-      (while (not (eobp))
-        (end-of-line)
-        (setq M (max M (current-column)))
-        (forward-line 1))
-      (message "The maximum column is %s" (number-to-string M))
-      M)))
+  (save-excursion 
+    (goto-char (point-min))
+    (end-of-line)
+    (let ((-max (cl-loop until (eobp)
+                         maximize (current-column)
+                         do (forward-line 1) (end-of-line))))
+      ;; (message "The maximum column is %s" (number-to-string -max))
+      -max)))
 
-(defun split-in-two-columns (K)
+(defun split-in-two-columns (-space)
   (interactive "nHow much spaces between columns?")
-  (let ((N (+ (max-column-buffer) K)) (lst (split-string (car kill-ring) "\n" nil)))
+  (let ((-to-fill (+ (max-column-buffer) -space))
+        (-my-string (split-string (car kill-ring) "\n" nil)))
     (save-excursion
       (goto-char (point-min))
-      (while (not (eobp))
-        (fill-with-spaces N)
-        (insert (pop lst))
-        (forward-line 1)))))
-
-
+      (cl-loop until (eobp) do
+               (fill-with-spaces -to-fill)
+               (insert (pop -my-string))
+               (forward-line 1)))))
 
 ;;(defun cahnge (n)
 ;;  "Change all stirng (ch-st1 to ch-st2) from string (Str1) to delimiter (Str2) 'n' times"
