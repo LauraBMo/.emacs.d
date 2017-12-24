@@ -3306,7 +3306,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (use-package counsel-projectile
       :init
       ;; install replacements for some standard projectile commands
-      (counsel-projectile-on))
+      (counsel-projectile-mode 1))
     :bind*
     ("s-q" . projectile-command-map))
 
