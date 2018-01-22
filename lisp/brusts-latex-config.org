@@ -716,6 +716,20 @@ Defaults
                ("k" . reftex-select-next)
                ("i" . reftex-select-previous)))
 
+  (defun brust-reftex-set-toc-mode-map nil
+    (bind-keys :map reftex-toc-mode-map
+               ("q" . reftex-toc-quit-and-kill)
+               ("k" . reftex-toc-next)
+               ("i" . reftex-toc-previous)
+               ("m" . describe-mode)
+               ("RET" . brust-reftex-toc-goto-line-and-kill)))
+
+  (defun brust-reftex-toc-goto-line-and-kill nil
+    (interactive)
+    (reftex-toc-goto-line-and-hide)
+    (kill-buffer "*toc*"))
+
+  (add-hook 'reftex-toc-mode-hook #'brust-reftex-set-toc-mode-map)
   (add-hook 'reftex-select-label-mode-hook #'brust-reftex-set-select-label-mode-map)
 #+END_SRC
 
@@ -815,13 +829,23 @@ Defaults
   (cl-loop
    for xx in
    '(
-  ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
+  ("Pic"  "Insert Pic_{}"        "\\Pic_{?}"        cdlatex-position-cursor nil nil t)
+  ("adm"  "Insert adm_{}"        "\\adm_{?}"        cdlatex-position-cursor nil nil t)
+  ("Div"  "Insert Div_{}"        "\\Div_{?}"       cdlatex-position-cursor nil nil t)
+  ("nil"  "Insert nil_{}"        "\\nil_{?}"       cdlatex-position-cursor nil nil t)
+  ("ass"  "Insert ass_{}"        "\\ass_{?}"       cdlatex-position-cursor nil nil t)
+  ("sym"  "Insert sym_{}"        "\\sym_{?}"       cdlatex-position-cursor nil nil t)
+  ("aut"  "Insert aut_{}"        "\\aut_{?}"       cdlatex-position-cursor nil nil t)
+  ("aaut" "Insert algaut_{}"     "\\algaut_{?}"    cdlatex-position-cursor nil nil t)
+  ("mod"  "Insert module_{}"     "\\module_{?}"    cdlatex-position-cursor nil nil t)
+  ("qch"  "Insert qch_{}"        "\\qch_{?}"       cdlatex-position-cursor nil nil t)
+  ("matx" "Insert matx_{}"       "\\matx_{?}"      cdlatex-position-cursor nil nil t)
   ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
   ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
-  ("hom"  "Insert Hom_{}()"      "\\Hom_{?}()"     cdlatex-position-cursor nil nil t)
+  ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
   ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
-  ("sch"  "Insert Sch"           "\\Sch"           cdlatex-position-cursor nil nil t)
-  ("set"  "Insert Set"           "\\Set"           cdlatex-position-cursor nil nil t)
+  ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
+  ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
   ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
   ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
   ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
@@ -878,7 +902,7 @@ Defaults
      ("tik" "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
      ("tikfrm" "Insert tikz envirment for beamer presentation"
-      "\\[\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]\\ncd"
+      "\\[\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]"
       cdlatex-position-cursor   nil t   nil)
      ("tiklong" "Insert tikz envirment with basic options" 
      "\\[\\begin{tikzcd}[column sep=2.7em, row sep=2.2em]\%(Defaults)\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
