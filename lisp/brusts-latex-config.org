@@ -729,15 +729,27 @@ Defaults
     (interactive)
     (ignore-errors (yas-expand)))
 
+  (defun brust-cdlatex-tab-close-parent-in-math-mode nil
+    (interactive)
+    (when (texmathp)
+      (narrow-to-region (+ (cdr texmathp-why)
+                           (length (car texmathp-why)))
+                        (point))
+      (end-of-buffer)
+      (let ((-closed-p (ignore-errors (close-quoted-open-paren-right nil))))
+        (widen)
+        -closed-p)))
+
   (defun brust-cdlatex-mode-hook nil
     ;; (define-key cdlatex-mode-map (kbd "'") nil)
     ;; (define-key cdlatex-mode-map (kbd "`") nil)
     ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
     (define-key yas-minor-mode-map (kbd "SPC") nil)
+    ;; (add-hook 'cdlatex-tab-hook #'brust-cdlatex-tab-close-parent-in-math-mode)
     (add-hook 'cdlatex-tab-hook #'brust-yas-expand-ignore-errors)
     (setq-local yas-buffer-local-condition '(not (texmathp))))
 
-  (add-hook 'LaTeX-mode-hook #'brust-cdlatex-mode-hook t)
+    (add-hook 'LaTeX-mode-hook #'brust-cdlatex-mode-hook t)
 #+END_SRC
 
 ** Envirments definition
@@ -1267,14 +1279,15 @@ Defaults
        (not (texmathp))
        (backward-char 2))
       (when (and math-p1 (not (texmathp)))
-        (save-excursion
+        (let ((-pt (point)) -closed-p)
           (narrow-to-region (+ (cdr -my-texmathp-why)
                                (length (car -my-texmathp-why)))
                             (- (point)
                                (length (car -my-texmathp-why))))
           (end-of-buffer)
-          (close-all-open-paren-right)
-          (widen)))))
+          (setq -closed-p (ignore-errors (close-quoted-open-paren-right nil)))
+          (widen)
+          (unless -closed-p (goto-char -pt))))))
 
   (defadvice cdlatex-environment (after add-auto-indentation activate)
     (LaTeX-indent-line))
