@@ -1,60 +1,21 @@
 
-
-;;; My improved surround-text ;;;
-
-(defun brust/char-at-point ()
-  (buffer-substring-no-properties (point) (1+ (point))))
-
-(defun brust/move-untill (pass re-ex test)
-  (while (not (string-match-p re-ex (funcall test)))
-    (forward-char pass)))
-
-(defun brust/string-at-point ()
-  "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)" 
-  (save-excursion 
-    (brust/move-untill 1 "[ \t\n\r]+\\'" 'brust/char-at-point)
-    (let ((end (point)))
-      (backward-char 1)
-      (brust/move-untill -1 "[ \t\n\r]+\\'" 'brust/char-at-point)
-      (cons (1+ (point)) end))))
-
-(defun brust/insert-poss (nn str)
-  (goto-char nn) (insert str))
-
-(defun surround-text (str)
-  "Surround selection or brust/string-at-point with str"
-  (interactive)
-  (save-excursion 
-    (let ((poss
-           (if (use-region-p)
-               `(,(region-beginning) . ,(region-end))
-             (brust/string-at-point))))
-      (brust/insert-poss (cdr poss) str) ;; First, the larger postion.
-      (brust/insert-poss (car poss) str)))) 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun re-member (str lst)
+(defun re-member (-str -list)
   "Given a string STR and a list LST of regex, return t if some regex match the STR and nil
 if not"
-  (let ((lstnew lst) (i 0) (j (length lst)))
+  (let ((list-new list) (i 0) (j (length list)))
     (while (< i j)
       (setq i (1+ i))
-      (if (string-match-p (pop lstnew) str)
+      (if (string-match-p (pop list-new) stir)
           (setq i (1+ j))))
     (< j i)))
 
-(defun brust/directory-files (dir &optional full match nosort)
+(defun brust-directory-files (dir &optional full match nosort)
   "List of all files without . and .."
-  (interactive)
   (let ((l (directory-files dir full match nosort))
         (lnew '()))
     (if nosort
         (dolist (str l lnew)
-          (if (string-match-p "^.*\\.\\{1,2\\}$" str)
+          (if (string-match-p "^\\.\\{1,2\\}$" str)
               (pop l)
             (push (pop l) lnew)))
       (pop l) (pop l) l)))
@@ -85,24 +46,6 @@ if not"
 (defun line-to-string ()
   "Return the current line as stirng wihtout any initial or ending space char"
   (s-trim (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-
-
-(defun s-trim-left (s)
-  "Remove whitespace at the beginning of S."
-  (if (string-match "\\`[ \t\n\r]+" s)
-      (replace-match "" t t s)
-    s))
-
-(defun s-trim-right (s)
-  "Remove whitespace at the end of S."
-  (if (string-match "[ \t\n\r]+\\'" s)
-      (replace-match "" t t s)
-    s))
-
-(defun s-trim (s)
-  "Remove whitespace at the beginning and end of S."
-  (s-trim-left (s-trim-right s)))
-
 
 ;;(defun make-ref-card-of-mode-key-bindings ()
 ;;  "You are in the buffer of ref-card in the position where to start and 
@@ -159,34 +102,30 @@ if not"
 ;;          (setq true nil))))))
 ;;
 
-(defun fill-with-spaces (N)
-  (interactive "n")
+(defun fill-with-spaces-until (-max-col)
   (end-of-line)
-  (while (< (current-column) N) (insert " ")))
+  (cl-loop repeat (- -max-col (current-column)) do (insert " ")))
 
 (defun max-column-buffer nil
-  (interactive)
-  (let ((M 0))
-    (save-excursion 
-      (goto-char (point-min))
-      (while (not (eobp))
-        (end-of-line)
-        (setq M (max M (current-column)))
-        (forward-line 1))
-      (message "The maximum column is %s" (number-to-string M))
-      M)))
+  (save-excursion 
+    (goto-char (point-min))
+    (end-of-line)
+    (let ((-max (cl-loop until (eobp)
+                         maximize (current-column)
+                         do (forward-line 1) (end-of-line))))
+      ;; (message "The maximum column is %s" (number-to-string -max))
+      -max)))
 
-(defun split-in-two-columns (K)
+(defun split-in-two-columns (-space)
   (interactive "nHow much spaces between columns?")
-  (let ((N (+ (max-column-buffer) K)) (lst (split-string (car kill-ring) "\n" nil)))
+  (let ((-to-fill (+ (max-column-buffer) -space))
+        (-my-string (split-string (car kill-ring) "\n" nil)))
     (save-excursion
       (goto-char (point-min))
-      (while (not (eobp))
-        (fill-with-spaces N)
-        (insert (pop lst))
-        (forward-line 1)))))
-
-
+      (cl-loop until (eobp) do
+               (fill-with-spaces -to-fill)
+               (insert (pop -my-string))
+               (forward-line 1)))))
 
 ;;(defun cahnge (n)
 ;;  "Change all stirng (ch-st1 to ch-st2) from string (Str1) to delimiter (Str2) 'n' times"

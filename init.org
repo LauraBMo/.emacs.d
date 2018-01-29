@@ -1674,7 +1674,7 @@ Single Capitals as you type."
 
 #+END_SRC
 
-*** Orgmode functions
+*** Org-Mode functions
 **** COMMENT Meet notes
 #+BEGIN_SRC elisp
 (defun meeting-notes nil
@@ -1703,47 +1703,46 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     Usually used in Org-mode
 
 #+BEGIN_SRC elisp
-  (defun brust-char-at-point nil
-    (buffer-substring-no-properties (point) (1+ (point))))
+;;; My improved surround-text ;;;
 
-  (defun brust-move-untill (pass re-ex test)
-    (while (not (string-match-p re-ex (funcall test)))
-      (forward-char pass)))
+(defun brust-char-at-point nil
+  (buffer-substring-no-properties (point) (1+ (point))))
 
-  (defun brust-string-at-point nil
-    "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)"
-    (save-excursion
-      (brust-move-untill 1 "[ \t\n\r]+\\'" 'brust-char-at-point)
-      (let ((end (point)))
-        (backward-char 1)
-        (brust-move-untill -1 "[ \t\n\r]+\\'" 'brust-char-at-point)
-        (cons (1+ (point)) end))))
+(defun brust-move-untill (-step -regexp -to-test)
+  (cl-loop until (string-match-p -regexp (funcall -to-test)) do
+           (forward-char -step))
+  (backward-char -step)
+  (point))
 
-  (defun brust-insert-poss (nn str)
-    (goto-char nn) (insert str))
+(defun brust-string-at-point nil
+  "Return the bounds of the chain of caraters at point delemited by any space char (space, new line, tab,...)" 
+  (save-excursion
+    (cons (brust-move-untill -1 "[ \t\n\r]+\\'" 'brust-char-at-point)
+          (1+ (brust-move-untill 1 "[ \t\n\r]+\\'" 'brust-char-at-point)))))
 
-  (defun surround-text (str)
-    "Surround selection or brust-string-at-point with str"
-    (interactive)
-    (save-excursion
-      (let ((poss
-             (if (use-region-p)
-                 `(,(region-beginning) . ,(region-end))
-               (brust-string-at-point))))
-        (brust-insert-poss (cdr poss) str) ;; First, the larger postion.
-        (brust-insert-poss (car poss) str))))
+(defun brust-surround-text (str)
+  "Surround selection or brust-string-at-point with str"
+  (interactive "sSurrounding string:")
+  (save-excursion 
+    (let ((-poss-cons
+           (if (use-region-p)
+               `(,(region-beginning) . ,(region-end))
+             (brust-string-at-point))))
+      (goto-char (cdr -poss-cons)) (insert str) ;; First, the larger postion.
+      (goto-char (car -poss-cons)) (insert str))))
 #+END_SRC
+
 ***** Org surround
 #+BEGIN_SRC elisp
         (defun org-text-bold nil "Wraps the region with asterisks."
                (interactive)
-               (surround-text "*"))
+               (brust-surround-text "*"))
         (defun org-text-italics nil "Wraps the region with slashes."
                (interactive)
-               (surround-text "/"))
+               (brust-surround-text "/"))
         (defun org-text-code nil "Wraps the region with equal signs."
                (interactive)
-               (surround-text "="))
+               (brust-surround-text "="))
 #+END_SRC
 **** Eval elisp blocks under current header
 #+BEGIN_SRC elisp
@@ -2553,7 +2552,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ("M-y" yank-pop nil)
     ("y" (yank-pop 1) "prev")
     ("u" (yank-pop -1) "next")
-    ("t" counsel-yank-pop "list" :color blue))
+    ("t" helm-show-kill-ring "list" :color blue))
 
   (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
 #+END_SRC
