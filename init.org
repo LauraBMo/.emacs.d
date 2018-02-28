@@ -1377,6 +1377,9 @@ abort completely with `C-g'."
 #+END_SRC
 
 *** Copy file path to kill ring (by Xah Lee)
+    :PROPERTIES:
+    :ID:       09e39cd8-2272-4405-889a-3fb24205b7c5
+    :END:
 **** Copy file path
 #+BEGIN_SRC elisp
 (defun xah-copy-file-path (&optional φdir-path-only-p)
@@ -1410,6 +1413,9 @@ Version 2015-12-02"
     (xah-copy-file-path t))
 #+END_SRC
 *** Customize face at point
+    :PROPERTIES:
+    :CUSTOM_ID:894ce0eb-418b-4576-ae23-99f28f339e79
+    :END:
     A handy function for customization
 #+BEGIN_SRC elisp
   (defun customize-face-at-point nil
