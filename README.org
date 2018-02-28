@@ -24,6 +24,7 @@ If you are looking for useful functions, you should take look at the following l
    - [[file:init.org::*Open%20fast%20usual%20files%20(by%20Xah%20Lee)][Open fast usual files]]
  * Functions made by myself:
    - [[file:init.org::*Word%20count][Word count]]
+   - [[id:d7f7cfc9-9da0-4eb6-b8a9-2cd69279a0d2][Whitespace cycle]]
    - [[file:init.org::*function%20to%20send%20the%20working%20file.][Function to work with Singular]] [[https://www.singular.uni-kl.de/][Singular Webpage]]
    - [[file:lisp/brusts-latex-config.org::*Change%20math%20display][Change math display]]
    - [[file:lisp/brusts-latex-config.org::*Enviroment][Smart redefine of enviroment in LaTeX]]
