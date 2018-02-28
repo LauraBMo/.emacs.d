@@ -1268,7 +1268,7 @@ abort completely with `C-g'."
 #+BEGIN_SRC elisp
 (setq shift-select-mode t)
 #+END_SRC
-*** Zap up to char
+*** Zap (up) to char
 #+BEGIN_SRC elisp
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR.")
@@ -1518,6 +1518,44 @@ Single Capitals as you type."
     (unless (string= "" input) (insert input))))
 
 
+#+END_SRC
+
+*** Narrow or widen dwin
+ There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
+ of the narrow-or-widen so I don't have to keep remembering which is which 
+#+BEGIN_SRC elisp
+  (defun endless/narrow-or-widen-dwim (p)
+    "Widen if buffer is narrowed, narrow-dwim otherwise.
+  Dwim means: region, org-src-block, org-subtree, or
+  defun, whichever applies first. Narrowing to
+  org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer
+  is already narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p)
+                (not p))
+           (widen)
+           (let ((recenter-redisplay t))
+             (recenter nil)))
+          ((region-active-p)
+           (narrow-to-region (region-beginning)
+                             (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing
+           ;; command. Remove this first conditional if
+           ;; you don't want it.
+           (cond ((ignore-errors (org-edit-src-code) t)
+                  (delete-other-windows))
+                 ((ignore-errors (org-narrow-to-block) t))
+                 (t (org-narrow-to-subtree))))
+          ((and (derived-mode-p 'latex-mode)
+                (ignore-errors (LaTeX-narrow-to-environment))))
+          ((derived-mode-p 'emacs-lisp-mode)
+           (narrow-to-defun))
+          (t
+           (brust-narrow-to-paragraph))))
 #+END_SRC
 
 *** By five
@@ -1804,7 +1842,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+RESULTS:
 : brust-xah-lee-lookup-synonyms
 
-*** Smarter navigation into a line
+*** Smarter navigation inside a line
     "Move point back to indentation of beginning of line.
 
     Move point to the first non-whitespace character on this line.
@@ -3214,40 +3252,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
         (zone-when-idle (* 5 60)))))
     
 #+END_SRC
-*** Narrow or widen dwin
- There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
- of the narrow-or-widen so I don't have to keep remembering which is which 
-#+BEGIN_SRC elisp
-  (defun endless/narrow-or-widen-dwim (p)
-    "Widen if buffer is narrowed, narrow-dwim otherwise.
-  Dwim means: region, org-src-block, org-subtree, or
-  defun, whichever applies first. Narrowing to
-  org-src-block actually calls `org-edit-src-code'.
-
-  With prefix P, don't widen, just narrow even if buffer
-  is already narrowed."
-    (interactive "P")
-    (declare (interactive-only))
-    (cond ((and (buffer-narrowed-p) (not p)) (widen))
-          ((region-active-p)
-           (narrow-to-region (region-beginning)
-                             (region-end)))
-          ((derived-mode-p 'org-mode)
-           ;; `org-edit-src-code' is not a real narrowing
-           ;; command. Remove this first conditional if
-           ;; you don't want it.
-           (cond ((ignore-errors (org-edit-src-code) t)
-                  (delete-other-windows))
-                 ((ignore-errors (org-narrow-to-block) t))
-                 (t (org-narrow-to-subtree))))
-          ((derived-mode-p 'latex-mode)
-           (LaTeX-narrow-to-environment))
-          ((derived-mode-p 'emacs-lisp-mode)
-           (narrow-to-defun))
-          (t
-           (brust-narrow-to-paragraph))))
-#+END_SRC
-
 *** Pdf tools
 #+BEGIN_SRC elisp
   (use-package pdf-tools
@@ -3312,6 +3316,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+END_SRC
 *** Rainbow delimiters
+    I use it just to auto color unmatched parents.
 #+BEGIN_SRC elisp
   (use-package rainbow-delimiters
     :init
