@@ -1378,7 +1378,7 @@ abort completely with `C-g'."
 
 *** Copy file path to kill ring (by Xah Lee)
     :PROPERTIES:
-    :ID:       09e39cd8-2272-4405-889a-3fb24205b7c5
+    :CUSTOM_ID: 09e39cd8-2272-4405-889a-3fb24205b7c5
     :END:
 **** Copy file path
 #+BEGIN_SRC elisp

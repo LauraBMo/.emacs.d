@@ -13,7 +13,7 @@ There are also a lot of other packages, take a look at [[file:init.el][init.el]]
 If you are looking for useful functions, you should take look at the following list.
  * Functions from other places (there are some references, but I forget many):
    - [[file:init.org::*Customize%20face%20at%20point][Customize face at point]]
-   - [[id:09e39cd8-2272-4405-889a-3fb24205b7c5][Copy file path to kill ring]]
+   - [[file:init.org::#09e39cd8-2272-4405-889a-3fb24205b7c5][Copy file path to kill ring (by Xah Lee]]
    - [[file:init.org::*Double%20Capitals][Double Capitals]]
    - [[file:init.org::*Find%20file%20sudo][Find file sudo]]
    - [[file:init.org::*Macro%20query][Macro query]]
