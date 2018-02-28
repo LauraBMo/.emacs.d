@@ -8,4 +8,55 @@ The specific packages used in a LaTeX file are:
  * [[https://github.com/jkitchin/org-ref][Org-ref]] (The amazing package of John Kitchin (a reference in Emacs world)) : to make \cite's and edit .bib files (in a while to make \label's and \ref's also!)
  * [[https://github.com/cdominik/cdlatex][CDLaTeX]] : A perfect complement. To improve =TAB=, math symbols insertion, LaTeX modifications (like \mathcal{S}...)...
 
-There are also a lot of other packages, take a look at [[file:init.el][init.el]] and [[file:init.org][init.org]].
+There are also a lot of other packages, take a look at [[file:init.el][init.el]] and [[file:init.org][init.org]] (recall that the configuration for LaTeX-mode is in [[file:lisp/brusts-latex-config.org][brust-latex-config.org]]).
+
+If you are looking for useful functions, you should take look at the following list.
+ * Functions from other places (there are some references, but I forget many):
+   - [[file:init.org::*Customize%20face%20at%20point][Customize face at point]]
+   - [[file:init.org::*Double%20Capitals][Double Capitals]]
+   - [[file:init.org::*Find%20file%20sudo][Find file sudo]]
+   - [[file:init.org::*Macro%20query][Macro query]]
+   - [[file:init.org::*Mouse%20wheel][Mouse wheel]]
+   - [[file:lisp/brusts-latex-config.org::*Whitespace%20cleaning][Whitespace cleaning]] (To clean up LaTeX documents)
+ * Functions from other places but improved/adapted by and to me:
+   - [[file:init.org::*Close<->open%20parents][Close<->open parents]]
+   - [[file:init.org::*Narrow%20or%20widen%20dwin][Narrow or widen dwin]]
+   - [[file:init.org::*Open%20fast%20usual%20files%20(by%20Xah%20Lee)][Open fast usual files]]
+ * Functions made by myself:
+   - [[file:init.org::*Word%20count][Word count]]
+   - [[file:init.org::*function%20to%20send%20the%20working%20file.][Function to work with Singular]] [[https://www.singular.uni-kl.de/][Singular Webpage]]
+   - [[file:lisp/brusts-latex-config.org::*Change%20math%20display][Change math display]]
+   - [[file:lisp/brusts-latex-config.org::*Enviroment][Smart redefine of enviroment in LaTeX]]
+   - [[file:lisp/brusts-latex-config.org::*Select%20current%20math%20furmula][Select current math furmula]]
+   - [[file:lisp/brusts-latex-config.org::*Adaptation%20to%20my%20style][Adaptation to my style]] (cdlatex is a great package, but I need some advices ;)
+   - [[file:init.org::*My-dictionary][My-dictionary]] (To make you own dictionary with LaTeX, they work together with https://github.com/LauBrust/MyDictionary)
+   - [[file:init.org::*Teaching%20functions][Teaching functions]] (sort of functions to write down the marks of my students).
+     (Both "My-dictionary" and "Teaching functions" use the incredible [[https://github.com/abo-abo/headlong][abo-abo's headlong.el]])
+
+I have configured many mode, but I do not use all of them at all.
+The following is the list of modes which I can not live without.
+ * Build in modes (they come with a standard plain Emacs)
+   - [[file:init.org::*Abbrev's][Abbrev]]
+   - [[file:init.org::*Dired][Dired]]
+   - [[file:init.org::*Ediff][Ediff]]
+   - [[file:init.org::*Electric%20indent%20mode][Electric indent mode]]
+   - [[file:init.org::*Org%20mode][Org mode]]
+   - [[file:init.org::*Save%20cursor%20position][Save cursor position]]
+   - [[file:init.org::*Save%20history][Save history]]
+   - [[file:init.org::*Server][Server]]
+   - [[file:init.org::*Zap%20(up)%20to%20char][Zap (up) to char]]
+ * External modes (they require to be installed)
+   - [[file:init.org::*Beacon%20mode][Beacon mode]]
+   - [[file:init.org::*Company][Company]]
+   - [[file:init.org::*Easy%20kill][Easy kill]]
+   - [[file:init.org::*Fix%20word%20-%20Capitalize][Fix word - Capitalize]]
+   - [[file:init.org::*Go%20to%20last%20change][Go to last change]]
+   - [[file:init.org::*Magit][Magit]]
+   - [[file:init.org::*Mic%20parent][Mic parent]]
+   - [[file:init.org::*Pdf%20tools][Pdf tools]]
+   - [[file:init.org::*Rainbow%20delimiters][Rainbow delimiters]]
+   - [[file:init.org::*Recentf][Recentf]]
+   - [[file:init.org::*Transpose%20buffers][Transpose buffers]]
+   - [[file:init.org::*Visual%20fill%20column][Visual fill column]]
+   - [[file:init.org::*Which%20key][Which key]]
+   - [[file:init.org::*Visual%20regexp][Visual regexp]]
