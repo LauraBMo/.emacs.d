@@ -5534,24 +5534,26 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
   (setq brust-my-dictionary-dir "~/Dropbox/English/My-dictionary/")
 
   (defun brust-my-dictionary-open-an-entry (header)
-    (find-file (concat brust-my-dictionary-dir
+    (let ((TeX-master t))
+      (find-file (concat brust-my-dictionary-dir
                        "sections/"
                        (capitalize (substring header 0 1))
                        "/"
                        (replace-regexp-in-string "[ ]" "-" header)
-                       ".tex")))
+                       ".tex"))))
 
-  (defun brust-my-dictionary-new-entry (header)
-    (interactive (list
-                  (read-string "Give me the header:")))
-    (brust-my-dictionary-open-an-entry header)
-    (insert-file-contents (concat brust-my-dictionary-dir "tamplate-new-entry.tex"))
-    (goto-char (point-min))
-    (search-forward "entry{}{}{}{}" nil t)
-    (backward-char 7)
-    (insert header)
-    (forward-char 2)
-    (save-buffer))
+    (defun brust-my-dictionary-new-entry (header)
+      (interactive (list
+                    (read-string "Give me the header:")))
+      (brust-my-dictionary-open-an-entry header)
+      (erase-buffer)
+      (insert-file-contents (concat brust-my-dictionary-dir "tamplate-new-entry.tex"))
+      (goto-char (point-min))
+      (search-forward "entry{}{}{}{}" nil t)
+      (backward-char 7)
+      (insert header)
+      (forward-char 2)
+      (save-buffer))
 
   (defun brust-my-dictionary-edit-an-entry (header)
     (interactive
