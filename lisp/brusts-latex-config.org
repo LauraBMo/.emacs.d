@@ -301,82 +301,6 @@ Defaults
 #+END_SRC
 
 ** LaTeX Brust defuns
-*** TODO COMMENT Replace
-****** Var
-       To delete.
-#+BEGIN_SRC elisp
-(defvar files-terminations-history '("tex" "el") "terminations history")
-
-#+END_SRC
-****** TODO Whole document
-#+BEGIN_SRC elisp
-  (defun brust-query-replace-document-TeX (&optional from to)
-    "From reftex.el; Do `query-replace-regexp' of FROM with TO over the entire document.
-  Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
-  If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
-  with the command \\[tags-loop-continue].
-  No active TAGS table is required."
-    (interactive)
-    (let ((default (reftex-this-word)))
-      (setq from (or from (read-string (format "Replace regexp in document [%s]: "
-                                               default))))
-      (if (string= from "") (setq from (regexp-quote default))))
-    (setq to (or to (read-string (format "Replace regexp %s with: " from))))
-    (reftex-access-scan-info current-prefix-arg)
-    (tags-query-replace from to (or delimited current-prefix-arg)
-                        (list 'reftex-all-document-files)))
-
-
-  (defun foo ()
-    (interactive)
-    (if (reftex-all-document-files) (insert "hello") (insert "bye bye")))
-
-
-#+END_SRC
-
-****** TODO Whole directory
-#+BEGIN_SRC elisp
-  (defun brust-replace-regex-dir (from to ext)
-    "(defun ... (from to ext)) ;; ext -> extencion"
-    (interactive
-     (list
-      (read-regexp "Find regex: " )
-      (read-string (format "Replace string: ") nil 'query-replace-history)
-      (read-string (format "Extension: ") nil 'files-terminations-history)))
-    (let ((str-buffer (buffer-file-name)) (xdir (file-name-directory (buffer-file-name))) (pt (point)))
-      ;;(dired-jump)
-      ;;(goto-char (point-min))
-      ;;(while (re-search-forward (concat " [-a-zA-Z]*\." ext "$") nil t)
-      (mapc (lambda (xbuffer)
-               (if (get-buffer xbuffer)
-                   (progn 
-                     (brust-replace-regex-whole-buffer from to)
-                     (save-buffer))
-                 (progn 
-                   ;; (dired-find-alternate-file)
-                   (find-file (concat xdir xbuffer))
-                   (brust-replace-regex-whole-buffer from to)
-                   (save-buffer)
-                   (kill-buffer))))
-            (directory-files xdir nil (concat "^[^.#~]+\\." ext "$")))
-      ;; (dired-mark nil)
-      ;; (dired-do-find-regexp-and-replace from to)
-      (find-file str-buffer)
-      (goto-char pt)))
-
-
-#+END_SRC
-
-****** TODO Whole buffer
-#+BEGIN_SRC elisp
-  (defun brust-replace-regex-whole-buffer (from to)
-    (interactive)
-    (save-excursion 
-      (goto-char (point-min))
-      (while (re-search-forward from nil t)
-        (replace-match to))))
-
-#+END_SRC
 *** Compile only
 #+BEGIN_SRC elisp
 
@@ -467,6 +391,68 @@ Defaults
      ))
 #+END_SRC
 
+*** Enviroment
+**** Function
+#+BEGIN_SRC elisp
+  (defun LaTeX-env-brust (&optional args)
+    "Execute LaTex-environment or with argument:
+
+  1. Check if current environment has end
+  --- If it has end ----
+  2. Change the environment with LaTeX-environment
+  3. Change the label tag (e.g. lem -> prop) (if there is one)
+  --- If is has no end ---
+  2. Print message error"
+    (interactive "P")
+    (save-excursion
+      (let ((pt (point)) (beg 0) (end 0) env-old env-new name prefix-old prefix-new)
+        (if (not args) (LaTeX-environment nil)
+          (LaTeX-find-matching-begin)
+          (setq beg (point))
+          (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
+          (setq env-old (match-string 1))
+          (if (search-forward (concat "begin{" env-old "}") (point-max) t)
+              (setq pass (point)) (setq pass (point-max)))
+          (goto-char beg) 
+          (if (search-forward (concat "end{" env-old "}") pass t)
+              (setq end (point)) (setq end pass))
+          (if (= pass end)
+              (message "This enviroment has no end!!!")
+            (goto-char pt)
+            (LaTeX-environment t)
+            (goto-char beg)
+            (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
+            (setq env-new (match-string 1)) 
+            (goto-char beg)
+            (when (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)?\}" end t)
+              (goto-char pt)
+              (setq prefix-old (match-string 1) name (match-string 2)
+                    ;; (insert prefix-old ":" name "::::" env)
+                    prefix-new (cdr (assoc env-new environment-prefix-list)))
+              ;; (insert prefix-new)
+  ;;;;;;;;;;;;;;;; To chage one file ;;;;;;;;;;;;;;;;                     
+              ;; (goto-char (point-min))
+              ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
+              ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
+              ;; (xah-find-replace-text)
+              ;; (brust-replace-regex-dir
+              (reftex-query-replace-document 
+               (concat prefix-old ":" name) ;;str1
+               (concat prefix-new ":" name))
+              ))))))
+
+
+#+END_SRC
+
+**** Names envoirments
+#+BEGIN_SRC elisp
+  (defconst environment-prefix-list
+    '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
+      ("proposition" . "prop") ("remark" . "rmk")
+      ("definition" . "def") ("theorem" . "thr")
+      ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
+#+END_SRC
+
 *** COMMENT Iniciar un document LaTeX
 ****** Variabls
 #+BEGIN_SRC elisp
@@ -538,60 +524,13 @@ Defaults
     (ignore-errors (copy-file (concat brust-LaTeX-init-dir "/" str-copy) dir)
                    t))
 #+END_SRC
-*** Enviroment
-**** Function
+*** Insert to math mode 
 #+BEGIN_SRC elisp
-  (defun LaTeX-env-brust (&optional args)
-    "Execute LaTex-environment or with argument:
-
-  1. Check if current environment has end
-  --- If it has end ----
-  2. Change the environment with LaTeX-environment
-  3. Change the label tag (e.g. lem -> prop) (if there is one)
-  --- If is has no end ---
-  2. Print message error"
-    (interactive "P")
-    (save-excursion
-      (let ((pt (point)) (beg 0) (end 0) env-old env-new name prefix-old prefix-new)
-        (if (not args) (LaTeX-environment nil)
-          (LaTeX-find-matching-begin)
-          (setq beg (point))
-          (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
-          (setq env-old (match-string 1))
-          (if (search-forward (concat "begin{" env-old "}") (point-max) t)
-              (setq pass (point)) (setq pass (point-max)))
-          (goto-char beg) 
-          (if (search-forward (concat "end{" env-old "}") pass t)
-              (setq end (point)) (setq end pass))
-          (if (= pass end)
-              (message "This enviroment has no end!!!")
-            (goto-char pt)
-            (LaTeX-environment t)
-            (goto-char beg)
-            (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
-            (setq env-new (match-string 1)) 
-            (goto-char beg)
-            (when (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)?\}" end t)
-              (goto-char pt)
-              (setq prefix-old (match-string 1) name (match-string 2)
-                    ;; (insert prefix-old ":" name "::::" env)
-                    prefix-new (cdr (assoc env-new environment-prefix-list)))
-              ;; (insert prefix-new)
-  ;;;;;;;;;;;;;;;; To chage one file ;;;;;;;;;;;;;;;;                     
-              ;; (goto-char (point-min))
-              ;; (while (search-forward (concat "{" prefix-old ":" name "}") (point-max) t)
-              ;; (replace-match (concat "{" prefix-new ":" name "}") t t nil))
-              ;; (xah-find-replace-text)
-              ;; (brust-replace-regex-dir
-              (reftex-query-replace-document 
-               (concat prefix-old ":" name) ;;str1
-               (concat prefix-new ":" name))
-              ))))))
-
-
+  (defun brust-LaTeX-insert-math1 nil
+    (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
+  (defun brust-LaTeX-insert-math2 nil
+    (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
 #+END_SRC
-
-**** Names envoirments
 *** Insert chars
 #+BEGIN_SRC emacs-lisp
 (defun brust-LaTeX-insert-ç nil (interactive) (insert "ç"))
@@ -749,6 +688,36 @@ Defaults
 #+RESULTS:
 : brust-LaTeX-mathp-end
 
+*** Smart period
+#+BEGIN_SRC elisp
+  (defun brust-LaTeX-smart-period nil
+    "Smart \".\" key: insert \".  \n\".
+           If the period key is pressed a second time, \".  \n\" is removed and replaced by the period."
+    (interactive)
+    (cond
+     ((looking-back "[a-zA-Z0-9)'}]" 1)
+      (delete-horizontal-space)
+      (insert ".\n")
+      (LaTeX-indent-line))
+     ((and (eq last-command this-command)
+           (looking-back "[.]\n[ ]*" 10))
+      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))
+     ((and (eq last-command this-command)
+           (looking-back "[.]" 1))
+      (insert "\n")
+      (LaTeX-indent-line)
+      (insert "\\medskip\n")
+      (LaTeX-indent-line)
+      (insert "\n")
+      (LaTeX-indent-line))))
+  ;;     ((and (eq last-command this-command)
+  ;;           (looking-back "[.]\n[ ]*\\\\medskip\n[ ]*\n[ ]*" 50))
+  ;;      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))))
+
+
+
+#+END_SRC
+
 * RefTeX
 *** Settings
 #+BEGIN_SRC elisp
@@ -819,12 +788,8 @@ Defaults
 * cdLaTeX
 ** Initial config
 #+BEGIN_SRC elisp
-  (setq cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
+  (setq-default cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
   ;;(setq cdlatex-math-modify-prefix [f7])
-
-  (defun brust-yas-expand-ignore-errors nil
-    (interactive)
-    (ignore-errors (yas-expand)))
 
   (defun brust-cdlatex-tab-close-parent-in-math-mode nil
     (interactive)
@@ -874,10 +839,21 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
 
 #+END_SRC
 *** Delete defaults
+There are many defaults that I do not use, this is to clean a bit.
+**** Deleteing function =car=
+#+BEGIN_SRC elisp
+  (defun brust-list-delete-by-car (-key -list)
+    "Delete all ocurrences of '-key' in the car's of '-list'."
+    (cl-loop for -element in -list
+             if (not (string= -key (car -element)))
+             collect -element))
+#+END_SRC
+
+**** env-alist
 #+BEGIN_SRC elisp
   (mapc (lambda (-key)
           (setq cdlatex-env-alist-default
-                (brust-list-delete-element -key cdlatex-env-alist-default)))
+                (brust-list-delete-by-car -key cdlatex-env-alist-default)))
         '(#("array" 0 1 (idx 13))
           #("deflist" 0 1 (idx 15))
           #("description" 0 1 (idx 16))
@@ -918,6 +894,49 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
           #("aafigure" 0 1 (idx 63))
           #("aafigure*" 0 1 (idx 64))))
 #+END_SRC
+**** command-alist
+    I delete the ones I do not want. In this way I keep the defaul list updated.
+    Because the =setq=, the following =mapc= can not be done with a =cl-loop= 
+#+BEGIN_SRC elisp
+  (mapc (lambda (-key)
+          (setq-default cdlatex-command-alist-default
+                        (brust-list-delete-by-car -key cdlatex-command-alist-default)))
+        '("pref"
+          "ct"
+          "cte"
+          "cite{"
+          "equ"
+          "eqn"
+          "alit"
+          "alit*"
+          "xal"
+          "xal*"
+          "xxa"
+          "xxa*"
+          "mul"
+          "mul*"
+          "gat"
+          "gat*"
+          "fla"
+          "fla*"
+          "fg"
+          "sn"
+          "ss"
+          "sss"
+          "ssp"
+          "closed"
+          "caseeq"
+          "intl"
+          "suml"
+          "nonum"
+          "qq"
+          "qqq"))
+#+END_SRC
+
+#+RESULTS:
+| pref | ct | cte | cite{ | equ | eqn | alit | alit* | xal | xal* | xxa | xxa* | mul | mul* | gat | gat* | fla | fla* | fg | sn | ss | sss | ssp | closed | caseeq | intl | suml | nonum | qq | qqq |
+
+
 ** Snippets =TAB=
    List of lists each with: (see cdlatex-command-alist)
    (key description text-to-insert function-called arguments txt-p math-p)
@@ -1002,18 +1021,18 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
      ("eqn"   "Insert an EQUATION environment template"  "" cdlatex-environment ("eqnarray")   t   nil)
      ("ali"   "Insert an ALIGN environment template"     "" cdlatex-environment ("align")          t  nil)
      ("ali*"  "Insert an ALIGN* environment template"    "" cdlatex-environment ("align*")      t  nil)
-     ("alit"  "Insert an ALIGNAT environment template"   "" cdlatex-environment ("alignat")     t  nil)
-     ("alit*" "Insert an ALIGNAT* environment template"  "" cdlatex-environment ("alignat*")    t  nil)
-     ("xal"   "Insert a XALIGNAT environment template"   "" cdlatex-environment ("xalignat")    t  nil)
-     ("xal*"  "Insert a XALIGNAT* environment template"  "" cdlatex-environment ("xalignat*")   t  nil)
-     ("xxa"   "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
-     ("xxa*"  "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
-     ("mul"   "Insert a MULTINE environment template"    "" cdlatex-environment ("multline")    t  nil)
-     ("mul*"  "Insert a MULTINE* environment template"   "" cdlatex-environment ("multline*")   t  nil)
-     ("gat"   "Insert a GATHER environment template"     "" cdlatex-environment ("gather")      t  nil)
-     ("gat*"  "Insert a GATHER* environment template"    "" cdlatex-environment ("gather*")     t  nil)
-     ("fla"   "Insert a FLALIGN environment template"    "" cdlatex-environment ("flalign")     t  nil)
-     ("fla*"  "Insert a FLALIGN* environment template"   "" cdlatex-environment ("flalign*")    t  nil)
+     ;; ("alit"  "Insert an ALIGNAT environment template"   "" cdlatex-environment ("alignat")     t  nil)
+     ;; ("alit*" "Insert an ALIGNAT* environment template"  "" cdlatex-environment ("alignat*")    t  nil)
+     ;; ("xal"   "Insert a XALIGNAT environment template"   "" cdlatex-environment ("xalignat")    t  nil)
+     ;; ("xal*"  "Insert a XALIGNAT* environment template"  "" cdlatex-environment ("xalignat*")   t  nil)
+     ;; ("xxa"   "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+     ;; ("xxa*"  "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+     ;; ("mul"   "Insert a MULTINE environment template"    "" cdlatex-environment ("multline")    t  nil)
+     ;; ("mul*"  "Insert a MULTINE* environment template"   "" cdlatex-environment ("multline*")   t  nil)
+     ;; ("gat"   "Insert a GATHER environment template"     "" cdlatex-environment ("gather")      t  nil)
+     ;; ("gat*"  "Insert a GATHER* environment template"    "" cdlatex-environment ("gather*")     t  nil)
+     ;; ("fla"   "Insert a FLALIGN environment template"    "" cdlatex-environment ("flalign")     t  nil)
+     ;; ("fla*"  "Insert a FLALIGN* environment template"   "" cdlatex-environment ("flalign*")    t  nil)
      ("fg"    "Insert a FIGURE environment template"     "" cdlatex-environment ("figure")      t  nil)
 
      ("chap"  "Insert a \\chapter{} statement"           "" LaTeX-section (1)  t   nil)
@@ -1026,9 +1045,9 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
      ("fn"         "Make a footnote"                "\\footnote{?}"         cdlatex-position-cursor nil t   nil)
      ("cl"         "Insert \\centerline"            "\\centerline{?}"       cdlatex-position-cursor nil t   nil)
 
-     ("nonum"      "Insert \\nonumber\\\\"          "\\nonumber\\\\\n"      nil nil nil t)
-     ("qq"         "Insert \\quad"                  "\\quad"                nil nil t t)
-     ("qqq"        "Insert \\qquad"                 "\\qquad"               nil nil t t)
+     ;; ("nonum"      "Insert \\nonumber\\\\"          "\\nonumber\\\\\n"      nil nil nil t)
+     ;; ("qq"         "Insert \\quad"                  "\\quad"                nil nil t t)
+     ;; ("qqq"        "Insert \\qquad"                 "\\qquad"               nil nil t t)
 
      ("inc" "Insert \\includegraphics with file name"
       "\\includegraphics[]{?}" (lambda ()
@@ -1093,48 +1112,6 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
 
 #+END_SRC
     
-*** Delete some Default ones
-    I delete the ones I do not want. In this way I keep the defaul list updated.
-    Because the =setq=, the following =mapc= can not be done with a =cl-loop= 
-#+BEGIN_SRC elisp
-  (mapc (lambda (-key)
-          (setq cdlatex-command-alist-default
-                (brust-list-delete-element -key cdlatex-command-alist-default)))
-        '("pref"
-          "ct"
-          "cte"
-          "cite{"
-          "equ"
-          "eqn"
-          "alit"
-          "alit*"
-          "xal"
-          "xal*"
-          "xxa"
-          "xxa*"
-          "mul"
-          "mul*"
-          "gat"
-          "gat*"
-          "fla"
-          "fla*"
-          "fg"
-          "sn"
-          "ss"
-          "sss"
-          "ssp"
-          "closed"
-          "caseeq"
-          "intl"
-          "suml"
-          "nonum"
-          "qq"
-          "qqq"))
-#+END_SRC
-
-#+RESULTS:
-| pref | ct | cte | cite{ | equ | eqn | alit | alit* | xal | xal* | xxa | xxa* | mul | mul* | gat | gat* | fla | fla* | fg | sn | ss | sss | ssp | closed | caseeq | intl | suml | nonum | qq | qqq |
-
 ** Modify keys ='=
 
 #+BEGIN_SRC elisp
@@ -1398,7 +1375,7 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
       (save-excursion (close-quoted-open-paren 1 0))))
 
   (defadvice cdlatex-tab (around use-LaTeX-math activate)
-    "To stop before \) in LaTeX envirnment"
+    "To stop before '\)' in LaTeX envirnment and close opened parents (but just before leaving the math-environment)"
     (LaTeX-indent-line)
     (let ((math-p1 (texmathp))
           (-my-texmathp-why texmathp-why)
