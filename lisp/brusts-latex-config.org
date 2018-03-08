@@ -821,7 +821,7 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
           ("lemma"        "\\begin{lemma}\\label{lem:?}\n\n\\end{lemma}"              nil)
           ("proposition"  "\\begin{proposition}\\label{prop:?}\n\n\\end{proposition}" nil)
           ("remark"       "\\begin{remark}\\label{rmk:?}\n\n\\end{remark}"            nil)
-          ("notation"     "\\begin{notation}\\label{not:}\n?\n\\end{notation}"        nil)
+          ("notation"     "\\begin{notation}\\label{not:?}\n\n\\end{notation}"        nil)
           ("definition"   "\\begin{definition}\\label{def:?}\n\n\\end{definition}"    nil)
           ("frame"        "\\begin{frame}\n\\frametitle{?}\n\n\\end{frame}"           nil)
           ("block"        "\\begin{block}{?}\n\n\\end{block}"                         nil)
