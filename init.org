@@ -3235,7 +3235,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (key-chord-define LaTeX-mode-map "fd" 'brust-LaTeX-save)
     (key-chord-define LaTeX-mode-map "qc" 'org-ref-helm-insert-cite-link)
     (key-chord-define LaTeX-mode-map "qr" 'reftex-reference)
-    (key-chord-define LaTeX-mode-map "qp" (lambda nil (interactive) (insert "^{}") (forward-char -1)))bg
+    (key-chord-define LaTeX-mode-map "qp" (lambda nil (interactive) (insert "^{}") (forward-char -1)))
     (key-chord-define LaTeX-mode-map "qd" (lambda nil (interactive) (insert "_{}") (forward-char -1)))
     :bind 
     (:map LaTeX-mode-map
