@@ -18,6 +18,7 @@
     (flyspell-ignore-tex)
     (TeX-interactive-mode 1)
     (yas-minor-mode -1)
+    (brust-er/add-latex-mode-expansions)
     (LaTeX-mode-hook-company-setup)
     (setq TeX-clean-confirm nil
           LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
@@ -591,53 +592,125 @@ Defaults
 #+END_SRC
 
 **** Names envoirments
-#+BEGIN_SRC elisp
-  (defconst environment-prefix-list
-    '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
-      ("proposition" . "prop") ("remark" . "rmk")
-      ("definition" . "def") ("theorem" . "thr")
-      ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
+*** Insert chars
+#+BEGIN_SRC emacs-lisp
+(defun brust-LaTeX-insert-ç nil (interactive) (insert "ç"))
+(defun brust-LaTeX-insert-backslash nil (interactive) (insert "\\"))
+(defun brust-LaTeX-insert-_ nil (interactive) (insert "_{}") (forward-char -1))
+(defun brust-LaTeX-insert-^ nil (interactive) (insert "^{}") (forward-char -1))
+(defun brust-LaTeX-insert-ñ nil (interactive) (insert "ñ"))
 #+END_SRC
-
-*** Smart period
+*** My er/mark-LaTeX
 #+BEGIN_SRC elisp
-  (defun brust-LaTeX-smart-period nil
-    "Smart \".\" key: insert \".  \n\".
-           If the period key is pressed a second time, \".  \n\" is removed and replaced by the period."
+  (defun er/mark-LaTeX-inside-math ()
+    "Mark inside current math environment"
     (interactive)
-    (cond
-     ((looking-back "[a-zA-Z0-9)'}]" 1)
-      (delete-horizontal-space)
-      (insert ".\n")
-      (LaTeX-indent-line))
-     ((and (eq last-command this-command)
-           (looking-back "[.]\n[ ]*" 10))
-      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))
-     ((and (eq last-command this-command)
-           (looking-back "[.]" 1))
-      (insert "\n")
-      (LaTeX-indent-line)
-      (insert "\\medskip\n")
-      (LaTeX-indent-line)
-      (insert "\n")
-      (LaTeX-indent-line))))
-  ;;     ((and (eq last-command this-command)
-  ;;           (looking-back "[.]\n[ ]*\\\\medskip\n[ ]*\n[ ]*" 50))
-  ;;      (delete-backward-char (1- (- (match-end 0) (match-beginning 0)))))))
+    (when (texmathp)
+      (let* ((string (car texmathp-why))
+             (N (length (car texmathp-why)))
+             (type (cadr (assoc string texmathp-tex-commands1))))
+        (er/mark-LaTeX-math)
+        (when (or (eq type 'sw-toggle) (eq type 'sw-on))
+          (forward-char N)
+          (exchange-point-and-mark)
+          (backward-char N)
+          (exchange-point-and-mark)))))
 
-
-
+  (defun brust-er/add-latex-mode-expansions ()
+    "Adds expansions for buffers in latex-mode"
+    (set (make-local-variable 'er/try-expand-list)
+         (mapc (lambda (xx) (setq er/try-expand-list
+                                  (delete xx er/try-expand-list)))
+               '(er/mark-outside-quotes
+                 er/mark-inside-quotes
+                 er/mark-url
+                 er/mark-email))
+         (append
+          er/try-expand-list
+          '(LaTeX-mark-environment
+            LaTeX-mark-section
+            er/mark-LaTeX-inside-environment
+            er/mark-LaTeX-inside-math
+            er/mark-LaTeX-math))))
 #+END_SRC
-
-*** Insert to math mode 
+*** TODO COMMENT Replace
+****** Var
+       To delete.
 #+BEGIN_SRC elisp
-  (defun brust-LaTeX-insert-math1 nil
-    (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
-  (defun brust-LaTeX-insert-math2 nil
-    (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
+(defvar files-terminations-history '("tex" "el") "terminations history")
+
+#+END_SRC
+****** TODO Whole document
+#+BEGIN_SRC elisp
+  (defun brust-query-replace-document-TeX (&optional from to)
+    "From reftex.el; Do `query-replace-regexp' of FROM with TO over the entire document.
+  Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
+  If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
+  with the command \\[tags-loop-continue].
+  No active TAGS table is required."
+    (interactive)
+    (let ((default (reftex-this-word)))
+      (setq from (or from (read-string (format "Replace regexp in document [%s]: "
+                                               default))))
+      (if (string= from "") (setq from (regexp-quote default))))
+    (setq to (or to (read-string (format "Replace regexp %s with: " from))))
+    (reftex-access-scan-info current-prefix-arg)
+    (tags-query-replace from to (or delimited current-prefix-arg)
+                        (list 'reftex-all-document-files)))
+
+
+  (defun foo ()
+    (interactive)
+    (if (reftex-all-document-files) (insert "hello") (insert "bye bye")))
+
+
 #+END_SRC
 
-*** Select current math furmula
+****** TODO Whole directory
+#+BEGIN_SRC elisp
+  (defun brust-replace-regex-dir (from to ext)
+    "(defun ... (from to ext)) ;; ext -> extencion"
+    (interactive
+     (list
+      (read-regexp "Find regex: " )
+      (read-string (format "Replace string: ") nil 'query-replace-history)
+      (read-string (format "Extension: ") nil 'files-terminations-history)))
+    (let ((str-buffer (buffer-file-name)) (xdir (file-name-directory (buffer-file-name))) (pt (point)))
+      ;;(dired-jump)
+      ;;(goto-char (point-min))
+      ;;(while (re-search-forward (concat " [-a-zA-Z]*\." ext "$") nil t)
+      (mapc (lambda (xbuffer)
+               (if (get-buffer xbuffer)
+                   (progn 
+                     (brust-replace-regex-whole-buffer from to)
+                     (save-buffer))
+                 (progn 
+                   ;; (dired-find-alternate-file)
+                   (find-file (concat xdir xbuffer))
+                   (brust-replace-regex-whole-buffer from to)
+                   (save-buffer)
+                   (kill-buffer))))
+            (directory-files xdir nil (concat "^[^.#~]+\\." ext "$")))
+      ;; (dired-mark nil)
+      ;; (dired-do-find-regexp-and-replace from to)
+      (find-file str-buffer)
+      (goto-char pt)))
+
+
+#+END_SRC
+
+****** TODO Whole buffer
+#+BEGIN_SRC elisp
+  (defun brust-replace-regex-whole-buffer (from to)
+    (interactive)
+    (save-excursion 
+      (goto-char (point-min))
+      (while (re-search-forward from nil t)
+        (replace-match to))))
+
+#+END_SRC
+*** COMMENT Select current math furmula
+    Now I use er/expand-LaTeX-...
 #+BEGIN_SRC elisp
   (defun brust-LaTeX-smart-selection (&optional count)
     (interactive)
@@ -764,6 +837,11 @@ Defaults
         (widen)
         -closed-p)))
 
+#+END_SRC
+** COMMENT Yasnippets config
+I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I keep the packeg for org-mode, elsip and many others!
+#+BEGIN_SRC elisp
+
   (defun brust-cdlatex-mode-hook nil
     ;; (define-key cdlatex-mode-map (kbd "'") nil)
     ;; (define-key cdlatex-mode-map (kbd "`") nil)
@@ -774,8 +852,8 @@ Defaults
     (setq-local yas-buffer-local-condition '(not (texmathp))))
 
     (add-hook 'LaTeX-mode-hook #'brust-cdlatex-mode-hook t)
-#+END_SRC
 
+#+END_SRC
 ** Envirments definition
 *** Alist (mines)
 #+BEGIN_SRC elisp

@@ -320,15 +320,30 @@
 
   (use-package key-chord
     :init
-    (setq key-chord-one-key-delay 0.7)
+    (setq key-chord-one-key-delay 0.16
+          key-chord-two-keys-delay 0.7)
     (key-chord-mode 1)
     :config
-    (key-chord-define-global "jj" 'undo)
-    (key-chord-define-global "qw" 'brust-cycle-whitespace)
-    (key-chord-define-global "bf" 'ivy-switch-buffer)
-    (key-chord-define-global "bg" 'brust-ace-window))
+    (defadvice key-chord-define (after bind-just-one-key-chord activate)
+      "Undefine the transposed key chord that key chord defines by default."
+      (let ((key1 (logand 255 (aref keys 0)))
+            (key2 (logand 255 (aref keys 1))))
+        (unless (eq key1 key2)
+          (define-key keymap (vector 'key-chord key2 key1) nil))))
 
-  (use-package use-package-chords)
+    ;; (key-chord-define-global "jj" 'undo)
+    ;; (key-chord-define-global "cj" 'brust-cycle-whitespace)
+    (key-chord-define-global "bg" 'ivy-switch-buffer)
+    (key-chord-define-global "bf" 'brust-ace-window))
+
+  (use-package use-package-chords
+    :config
+    (defmacro bind-chord (chord command &optional keymap)
+      "Bind CHORD to COMMAND in KEYMAP (`global-map' if not passed)."
+      (let ((key1 (logand 255 (aref chord 0)))
+            (key2 (logand 255 (aref chord 1))))
+        `(bind-key (vector 'key-chord ,key1 ,key2) ,command ,keymap)))
+    )
 
   (use-package bind-key)
 
@@ -536,20 +551,22 @@
 
 ** My key binding
 *** Global and genric
+
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("s-c"        . easy-kill)
-   ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
-   ;; ("s-z"        . undo)
+   ;; ("s-c"        . easy-kill)
+   ;; ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
+   ("M-j"        . undo)
+   ("M-h"        . brust-cycle-whitespace)
    ("M-c"        . brust-endless/capitalize)
    ("M-l"        . brust-endless/downcase)
    ("M-C"        . endless/upcase)
-   ("C-+"        . universal-argument)
-   ("C-ç"        . negative-argument)
+   ;; ("C-+"        . universal-argument)
+   ;; ("C-ç"        . negative-argument)
    ;; ("C--"        . undo)
    ("C-x C-S-F"  . xah-open-in-external-app)
    ("C-x C-k s"  . save-macro)
-   ("M-ç"        . hippie-expand)
+   ;; ("M-ç"        . hippie-expand)
    ;; ("C-9"        . close-quoted-open-paren-right)
    ("M-SPC"      . close-quoted-open-paren-right-or-left)
    ;; ("C-)"        . close-all-open-paren-right)
@@ -577,6 +594,10 @@
   (global-set-key (kbd "C-<menu>")
                   (lambda nil "Inverse delete indentation" (interactive) (delete-indentation t)))
 #+END_SRC
+
+#+RESULTS:
+| lambda | nil | Inverse delete indentation | (interactive) | (delete-indentation t) |
+
 *** Motion
     The keys were:
     =M-u= fix-word-upcase ; Now bind to M-S-c
@@ -945,6 +966,18 @@ abort completely with `C-g'."
 (add-hook 'after-change-major-mode-hook (lambda nil (electric-indent-mode -1)))
 #+END_SRC
 
+*** Elisp
+#+BEGIN_SRC elisp
+  (defun brust-er/add-elisp-mode-expansions ()
+    "Adds expansions for buffers in elisp-mode"
+    (set (make-local-variable 'er/try-expand-list)
+	 (append
+	  er/try-expand-list
+	  '(er/mark-defun))))
+
+  (add-hook 'emacs-lisp-mode-hook 
+	    #'brust-er/add-elisp-mode-expansions)
+#+END_SRC
 *** Font lock.
 #+BEGIN_SRC elisp
 (setq font-lock-maximum-decoration t)
@@ -2141,9 +2174,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+BEGIN_SRC elisp
   (use-package avy
     :chords
-    ("qk" . avy-goto-char-timer)
+    ("qq" . avy-goto-char-timer)
     ;; ("gg" . avy-goto-word-2)
-    ("qq" . avy-goto-word-2)
+    ;; ("qq" . avy-goto-word-2)
     :bind 
     ("M-g g"   . avy-goto-line)
     ("s-."     . avy-goto-char-timer)
@@ -2344,13 +2377,35 @@ should be. After calling this function, call 'meeting-done' to reset the environ
  
 #+BEGIN_SRC elisp
   (use-package expand-region
-  ;;:bind
-  ;;("C-ñ" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
-  :chords 
-  ;; ("xx" . er/expand-region)
-  ("qj" . er/expand-region)
-  )
+    ;;:bind
+    ;;("s-ç" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
+    :init (setq-default er/try-expand-list
+                        '(er/mark-word
+                          er/mark-symbol
+                          ;; er/mark-symbol-with-prefix
+                          ;; er/mark-next-accessor
+                          ;; er/mark-method-call
+                          er/mark-inside-quotes
+                          er/mark-outside-quotes
+                          er/mark-inside-pairs
+                          er/mark-outside-pairs
+                          er/mark-comment
+                          er/mark-url
+                          er/mark-email
+                          ;; er/mark-defun
+                          ))
+    :chords 
+    ;; ("xx" . er/expand-region)
+    ("<-" . er/expand-region)
+    ("jj" . er/expand-region)
+    ;; ("<." . goto-last-change)
+    ;; ("<," . brust-toggle-begin&end-of-buffer)
+    )
 #+END_SRC
+
+#+RESULTS:
+: brust-toggle-begin&end-of-buffer
+
 *** COMMENT Evil mode
 #+BEGIN_SRC elisp
 (use-package evil
@@ -3225,31 +3280,36 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ("`" . nil)
             ("¿" . cdlatex-math-modify)
             ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)))
+            ("ñ" . cdlatex-math-symbol)
+            ("M-ñ" . brust-LaTeX-insert-ñ)))
     (use-package reftex
       :ensure nil
       :config
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
-    (key-chord-define LaTeX-mode-map "fd" 'brust-LaTeX-save)
-    (key-chord-define LaTeX-mode-map "qc" 'org-ref-helm-insert-cite-link)
-    (key-chord-define LaTeX-mode-map "qr" 'reftex-reference)
-    (key-chord-define LaTeX-mode-map "qp" (lambda nil (interactive) (insert "^{}") (forward-char -1)))
-    (key-chord-define LaTeX-mode-map "qd" (lambda nil (interactive) (insert "_{}") (forward-char -1)))
+    :chords
+    (:map LaTeX-mode-map 
+          ("<p" . brust-LaTeX-save)
+          ("<i" . org-ref-helm-insert-cite-link)
+          ("<u" . reftex-reference)
+          ("<j" . brust-LaTeX-insert-)
+          ("<k" . brust-LaTeX-insert-_)
+          ("<l" . brust-LaTeX-insert-backslash))
     :bind 
     (:map LaTeX-mode-map
           ("ç"            . brust-LaTeX-insert-math1)
           ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
           ;; ("           ."              . brust-LaTeX-smart-period)
-          ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
           ("C-x C-s"      . brust-LaTeX-save)
           ("C-c C-e"      . LaTeX-env-brust)
           ("C-c n"        . TeX-next-error)
           ("C-c e"        . TeX-error-overview)
           ("C-c C-a"      . brust-compile-only)
           ("s-0"          . reftex-toc) 
-          ("s-ç"          . brust-LaTeX-smart-selection) 
+          ;; ("s-ç"          . brust-LaTeX-smart-selection) 
           ("C-c C-q"      . latex/clean-fill-indent-environment)
           ("C-c C-w C-s"  . brust-wc-save-words)
           ;; ("C-c C-a"   . latex/compile-commands-until-done)
@@ -3261,16 +3321,17 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; (""          . latex/next-section)
           ;; (""          . latex/next-section-same-level)
           ;; (""          . latex/beginning-of-line)
-          ("C-M-e"        . latex/end-of-environment)
-          ("C-M-a"        . latex/beginning-of-environment)
-          ("C-M-p"        . latex/backward-environment)
-          ("C-M-n"        . latex/forward-environment)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
           ("s-9"          . brust-cycle-texmath)
           ))
 
 #+END_SRC
 
 #+RESULTS:
+: brust-cycle-texmath
 
 *** TODO Magit
     For a git and github integration with emacs!
@@ -3658,7 +3719,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
            (msg (car msg-and-bindings))
            (bindings (cdr msg-and-bindings)))
       (when repeat-key
-        (set-transient-map
+        (er/set-temporary-overlay-map
          (let ((map (make-sparse-keymap)))
            (dolist (binding bindings map)
              (define-key map (read-kbd-macro (car binding))
