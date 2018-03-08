@@ -3215,7 +3215,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             (pop-to-buffer ibuf)
             (ibuffer-update nil t)))))
 
-    (add-hook 'ibuffer-hook 'brust-ibuffer-apply-filter-groups)
+    (add-hook 'ibuffer-hook #'brust-ibuffer-apply-filter-groups)
+    (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body)
 
     (define-ibuffer-column lines-h
       (:name "nºLines" :inline t)
