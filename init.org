@@ -1380,7 +1380,7 @@ abort completely with `C-g'."
   (defun close-quoted-open-paren-right-or-left (args)
     (interactive "P")
     (or args (setq args 1))
-    (unless (close-quoted-open-paren-right args)
+    (unless (ignore-errors (close-quoted-open-paren-right args))
       (close-quoted-open-paren-left args)))
 #+END_SRC
 
