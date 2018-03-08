@@ -792,19 +792,8 @@ Defaults
 #+BEGIN_SRC elisp
   (setq-default cdlatex-paired-parens "") ;; with C-9 and C-) I have all I need.
   ;;(setq cdlatex-math-modify-prefix [f7])
-
-  (defun brust-cdlatex-tab-close-parent-in-math-mode nil
-    (interactive)
-    (when (texmathp)
-      (narrow-to-region (+ (cdr texmathp-why)
-                           (length (car texmathp-why)))
-                        (point))
-      (end-of-buffer)
-      (let ((-closed-p (ignore-errors (close-quoted-open-paren-right nil))))
-        (widen)
-        -closed-p)))
-
 #+END_SRC
+
 ** COMMENT Yasnippets config
 I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I keep the packeg for org-mode, elsip and many others!
 #+BEGIN_SRC elisp
