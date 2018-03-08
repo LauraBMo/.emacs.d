@@ -1660,12 +1660,14 @@ Single Capitals as you type."
                       ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
                       ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
                       ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-		      ))
+                      ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
+                      ))
      (config-files . (
                       ("Org-init"     . "~/.emacs.d/init.org")
                       ("el-init"      . "~/.emacs.d/init.el")
                       ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
-		      ))
+                      ("abbrevs-tbl"  . "~/.emacs.d/lisp/abbrev-defs.el")
+                      ))
      (org-files    . (
                       ("My-Org"   . "~/Dropbox/Org/my.org")
                       ("Recetari" . "~/Dropbox/Org/recetari.org")
