@@ -313,7 +313,7 @@
   (use-package key-chord
     :init
     (setq key-chord-one-key-delay 0.16
-          key-chord-two-keys-delay 0.7)
+          key-chord-two-keys-delay 0.8)
     (key-chord-mode 1)
     :config
     (defadvice key-chord-define (after bind-just-one-key-chord activate)
@@ -549,6 +549,7 @@
    ;; ("s-c"        . easy-kill)
    ;; ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
    ("M-j"        . undo)
+   ("s-ç"        . endless/ispell-word-then-abbrev)
    ("M-h"        . brust-cycle-whitespace)
    ("M-c"        . brust-endless/capitalize)
    ("M-l"        . brust-endless/downcase)
@@ -575,7 +576,7 @@
    ;; ("M-f"     . kill-word)
    ("<home>"     . delete-other-windows)
    ("<end>"      . delete-window)
-   ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
+   ("C-x n l"    . endless/narrow-or-widen-dwim)
    ("s-n"        . endless/narrow-or-widen-dwim))
 
   (global-set-key (kbd "C-x C-S-e")
@@ -697,7 +698,7 @@
 ;;Examples of use: ("rr" "\\quetal{}" my-after-abbrev-expand 0)
 #+END_SRC
 
-**** COMMENT Endless ispell & abbrev
+**** Endless ispell & abbrev
 ***** Function
 #+BEGIN_SRC elisp
 (defun endless/ispell-word-then-abbrev (p)
@@ -733,6 +734,9 @@ abort completely with `C-g'."
       (user-error "No typo at or before point"))))
 
 #+END_SRC
+
+#+RESULTS:
+: endless/ispell-word-then-abbrev
 
 ***** Keybinding
 #+BEGIN_SRC elisp
@@ -1556,7 +1560,7 @@ Single Capitals as you type."
 
 *** Narrow or widen dwin
  There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
- of the narrow-or-widen so I don't have to keep remembering which is which 
+ of the narrow-or-widen so I don't have to keep remembering which is which. 
 #+BEGIN_SRC elisp
   (defun endless/narrow-or-widen-dwim (p)
     "Widen if buffer is narrowed, narrow-dwim otherwise.
@@ -2389,8 +2393,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                           ))
     :chords 
     ;; ("xx" . er/expand-region)
-    ("<-" . er/expand-region)
+    ;; ("<-" . er/expand-region)
     ("jj" . er/expand-region)
+    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
     ;; ("<." . goto-last-change)
     ;; ("<," . brust-toggle-begin&end-of-buffer)
     )
@@ -3283,12 +3288,12 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
     :chords
     (:map LaTeX-mode-map 
-          ("<p" . brust-LaTeX-save)
-          ("<i" . org-ref-helm-insert-cite-link)
-          ("<u" . reftex-reference)
-          ("<j" . brust-LaTeX-insert-)
-          ("<k" . brust-LaTeX-insert-_)
-          ("<l" . brust-LaTeX-insert-backslash))
+          ("zp" . brust-LaTeX-save)
+          ("zn" . org-ref-helm-insert-cite-link)
+          ("zm" . reftex-reference)
+          ("zj" . brust-LaTeX-insert-up)
+          ("zk" . brust-LaTeX-insert-down)
+          ("zñ" . brust-LaTeX-insert-backslash))
     :bind 
     (:map LaTeX-mode-map
           ("ç"            . brust-LaTeX-insert-math1)

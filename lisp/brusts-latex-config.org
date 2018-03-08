@@ -524,20 +524,20 @@ Defaults
     (ignore-errors (copy-file (concat brust-LaTeX-init-dir "/" str-copy) dir)
                    t))
 #+END_SRC
+*** Insert chars
+#+BEGIN_SRC emacs-lisp
+(defun brust-LaTeX-insert-ç nil (interactive) (insert "ç"))
+(defun brust-LaTeX-insert-backslash nil (interactive) (insert "\\"))
+(defun brust-LaTeX-insert-down nil (interactive) (insert "_{}") (forward-char -1))
+(defun brust-LaTeX-insert-up nil (interactive) (insert "^{}") (forward-char -1))
+(defun brust-LaTeX-insert-ñ nil (interactive) (insert "ñ"))
+#+END_SRC
 *** Insert to math mode 
 #+BEGIN_SRC elisp
   (defun brust-LaTeX-insert-math1 nil
     (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
   (defun brust-LaTeX-insert-math2 nil
     (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
-#+END_SRC
-*** Insert chars
-#+BEGIN_SRC emacs-lisp
-(defun brust-LaTeX-insert-ç nil (interactive) (insert "ç"))
-(defun brust-LaTeX-insert-backslash nil (interactive) (insert "\\"))
-(defun brust-LaTeX-insert-_ nil (interactive) (insert "_{}") (forward-char -1))
-(defun brust-LaTeX-insert-^ nil (interactive) (insert "^{}") (forward-char -1))
-(defun brust-LaTeX-insert-ñ nil (interactive) (insert "ñ"))
 #+END_SRC
 *** My er/mark-LaTeX
 #+BEGIN_SRC elisp
