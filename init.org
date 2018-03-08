@@ -834,17 +834,11 @@ abort completely with `C-g'."
         ;; dired-x-hands-off-my-keys t
         dired-hide-details-hide-information-lines t
         )
+
   (add-hook 'dired-mode-hook #'brust-dired-mode-hook)
 
-  (bind-keys
+  (bind-keys*
    ("C-x C-j" . dired-jump)) ;;auto-load function
-
-  (bind-keys :map dired-mode-map
-             ("i" . diredp-previous-line) ;; was dired-maybe-insert-subdir
-             ("k" . diredp-next-line) ;; was dired-do-kill-lines
-             ("M-o" . my/dired-open)
-             ("^" . brust-dired-to-upper-dir)
-             ("o" . dired-find-alternate-file))
 
   (use-package dired-x
     :ensure nil
@@ -870,7 +864,16 @@ abort completely with `C-g'."
     ;; (hydra-dired/body) ;; problems with it!!
     (toggle-truncate-lines 1)
     (dired-omit-mode 1)
-    (dired-hide-details-mode 1))
+    (dired-hide-details-mode 1)
+    (bind-keys :map dired-mode-map
+               ("i" . diredp-previous-line) ;; was dired-maybe-insert-subdir
+               ("k" . diredp-next-line) ;; was dired-do-kill-lines
+               ("M-o" . my/dired-open)
+               ;; ("^" . brust-dired-to-upper-dir)
+               ;; ("o" . dired-find-alternate-file)
+               ("y" . hydra-dired/body))
+    ;; (hydra-dired/body)
+    )
 #+END_SRC
 
 #+RESULTS:
@@ -3113,21 +3116,21 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ("Z" dired-do-compress "compress")
     ("ç" ora-dired-up-directory "up-directory")
     ;; ("^" dired-up-directory "up-directory")
-    ("a" dired-find-alternate-file "find-alternate-file")
+    ("a" dired-find-alternate-file "open folder")
     ("c" dired-do-compress-to "compress-to")
     ("d" dired-flag-file-deletion)
     ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
     ("j" dired-goto-file "goto-file")
     ("n" dired-do-kill-lines) ;; was "k"
     ("l" dired-do-redisplay)
-    ("o" dired-find-file-other-window)
+    ;; ("o" dired-find-file-other-window)
     ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
     ("t" dired-toggle-marks)
     ("v" dired-view-file)
     ("w" dired-copy-filename-as-kill)
     ("x" dired-do-flagged-delete)
     ("y" dired-show-file-type "show-file-type")
-    ("a" dired-omit-mode "toggle omite mode")
+    ("o" dired-omit-mode "toggle show hide files")
     ("~" dired-flag-backup-files))
 
   (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
