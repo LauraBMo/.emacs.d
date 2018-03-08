@@ -320,8 +320,13 @@
 
   (use-package key-chord
     :init
-    (setq key-chord-one-key-delay 0.16)
-    (key-chord-mode 1))
+    (setq key-chord-one-key-delay 0.7)
+    (key-chord-mode 1)
+    :config
+    (key-chord-define-global "jj" 'undo)
+    (key-chord-define-global "qw" 'brust-cycle-whitespace)
+    (key-chord-define-global "bf" 'ivy-switch-buffer)
+    (key-chord-define-global "bg" 'brust-ace-window))
 
   (use-package use-package-chords)
 
@@ -535,21 +540,21 @@
   (bind-keys*
    ("s-c"        . easy-kill)
    ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
-   ("s-z"        . undo)
+   ;; ("s-z"        . undo)
    ("M-c"        . brust-endless/capitalize)
    ("M-l"        . brust-endless/downcase)
    ("M-C"        . endless/upcase)
    ("C-+"        . universal-argument)
    ("C-ç"        . negative-argument)
-   ("C--"        . undo)
+   ;; ("C--"        . undo)
    ("C-x C-S-F"  . xah-open-in-external-app)
    ("C-x C-k s"  . save-macro)
    ("M-ç"        . hippie-expand)
-   ("C-9"        . close-quoted-open-paren-right)
+   ;; ("C-9"        . close-quoted-open-paren-right)
    ("M-SPC"      . close-quoted-open-paren-right-or-left)
-   ("C-)"        . close-all-open-paren-right)
-   ("C-8"        . close-quoted-open-paren-left)
-   ("C-("        . close-all-open-paren-left)
+   ;; ("C-)"        . close-all-open-paren-right)
+   ;; ("C-8"        . close-quoted-open-paren-left)
+   ;; ("C-("        . close-all-open-paren-left)
    ("C-x q"      . macro-query-my)
    ("C-S-p"      . package-list-packages)
    ("M-\""       . shell)
@@ -2138,7 +2143,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     :chords
     ("qk" . avy-goto-char-timer)
     ;; ("gg" . avy-goto-word-2)
-    ("gg" . avy-goto-word-1)
+    ("qq" . avy-goto-word-2)
     :bind 
     ("M-g g"   . avy-goto-line)
     ("s-."     . avy-goto-char-timer)
@@ -3227,6 +3232,11 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    (key-chord-define LaTeX-mode-map "fd" 'brust-LaTeX-save)
+    (key-chord-define LaTeX-mode-map "qc" 'org-ref-helm-insert-cite-link)
+    (key-chord-define LaTeX-mode-map "qr" 'reftex-reference)
+    (key-chord-define LaTeX-mode-map "qp" (lambda nil (interactive) (insert "^{}") (forward-char -1)))bg
+    (key-chord-define LaTeX-mode-map "qd" (lambda nil (interactive) (insert "_{}") (forward-char -1)))
     :bind 
     (:map LaTeX-mode-map
           ("ç"            . brust-LaTeX-insert-math1)
@@ -3627,7 +3637,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
     ;; (global-set-key [remap just-one-space] 'cycle-spacing)
     :bind
-    ("C-<menu>" . brust-cycle-whitespace)
+    ;; ("C-<menu>" . brust-cycle-whitespace)
     ;; ("s-SPC" . brust-cycle-whitespace)
     )
 
