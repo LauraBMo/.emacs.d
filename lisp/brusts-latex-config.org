@@ -186,7 +186,7 @@ Defaults
           ("chapter" 1)
           ("section" 2)
           ("subsection" 3)
-          ("subsubsection" 3)
+          ("subsubsection" 4)
           ("paragraph" 5)
           ("subparagraph" 6)))
 #+END_SRC
@@ -728,16 +728,24 @@ Defaults
         reftex-use-multiple-selection-buffers nil
         ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
         ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
-        reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
-                                      "~/Dropbox/bibliography/zotero-bibl.bib")
-        reftex-ref-style-alist '(("Default" t (("\\ref" 13) ("\\pageref" 112))))
+        ;; reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
+        ;;                              "~/Dropbox/bibliography/zotero-bibl.bib")
+
+        ;; When prompt macro is nil, reftex-ref use macro defined at reftex-label-alist.
+        ;; reftex-ref-style-alist '(("Default" t (("\\ref" 13) ("\\pageref" 112))))
         reftex-ref-macro-prompt nil
-        reftex-cite-prompt-optional-args nil
-        reftex-cite-cleanup-optional-args t
+
+        reftex-toc-max-level 3
+        reftex-auto-recenter-toc t
+        ;; reftex-toc-auto-recenter-timer 1
+        ;; reftex-toc-include-context t
+        reftex-toc-confirm-promotion nil
+        reftex-toc-follow-mode t
+        ;; reftex-cite-prompt-optional-args nil
+        ;; reftex-cite-cleanup-optional-args t
         ;; So that RefTeX also recognizes \addbibresource. Note that you
-        ;; can't use $HOME in path for \addbibresource but that "~"
-        ;; works.
-        reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
+        ;; can't use $HOME in path for \addbibresource but "~".
+        ;; reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
         ;; reftex-refstyle "\\Cref" ;; set the defult refstyle...
         ;; reftex-ref-style-default-list (append (quote ("Cleveref")) reftex-ref-style-default-list)
         )
@@ -747,19 +755,37 @@ Defaults
 | bibliography | nobibliography | addbibresource |
 
 *** Label list 
+    The numbers in both lists are *toc* levels, negative does not show the "section" number.
 #+BEGIN_SRC elisp
   (setq reftex-label-alist
         ;; reftex-label-alist '(AMSTeX)
-        '(("axiom"         ?a "axm:"   "~\\cref{%s}" nil ("axiom"   "axm.")    -2)
-          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -3)
+        '(("axiom"         ?a "axm:"   "~\\cref{%s}" t ("axiom"   "axm."))
+          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -4)
           ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
-          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       )
-          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") )
-          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")           )
-          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")        )
-          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")      )))
+          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.") -6)
+          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") -5)
+          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.") -5)
+          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.") -6)
+          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.") -6)))
 
+  (setq reftex-section-levels
+        '(("part" . 0)
+          ("chapter" . 1)
+          ("section" . 2)
+          ("beamersec" . -2)
+          ("subsection" . 3)
+          ("beamersubsec" . -3)
+          ("subsubsection" . 4)
+          ("beamersubsubsec" . -4)
+          ("paragraph" . 5)
+          ("subparagraph" . 6)
+          ("frametitle" . 7)
+          ("addchap" . -1)
+          ("addsec" . -2)))
 #+END_SRC
+
+#+RESULTS:
+: ((part . 0) (chapter . 1) (section . 2) (beamersec . -2) (subsection . 3) (beamersubsec . -3) (subsubsection . 4) (beamersubsubsec . -4) (paragraph . 5) (subparagraph . 6) (frametitle . 7) (addchap . -1) (addsec . -2))
 
 *** Selection mode key-map
 #+BEGIN_SRC elisp
