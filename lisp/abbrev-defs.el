@@ -219,23 +219,25 @@
 
 (define-abbrev-table 'global-abbrev-table
   '(
+    ("adn" "and" nil 3)
     ("aspr" "associated prime" nil 4)
     ("aspt" "associated point" nil 7)
-    ("cf" "c.f." nil 1)
-    ("clem" "closed embedding" nil 2)
-    ("clsc" "closed subscheme" nil 7)
-    ("ecd" "effective Cartier divisor" nil 0)
+    ("center" "centre" nil 1)
+    ("cf" "c.f." nil 2)
+    ("clem" "closed embedding" nil 4)
+    ("clsc" "closed subscheme" nil 8)
+    ("ecd" "effective Cartier divisor" nil 3)
     ("eg" "e.g." nil 0)
     ("emb" "embedding" nil 1)
     ("eng" "English" nil 0)
     ("env" "environment" nil 0)
     ("eta" "et al." nil 0)
     ("ex" "example" nil 0)
-    ("ie" "i.e." nil 3)
+    ("ie" "i.e." nil 4)
     ("lbm" "Laura Brustenga Moncusí" nil 0)
-    ("lno" "locally Noetherian" nil 1)
+    ("lno" "locally Noetherian" nil 5)
     ("loc" "locally" nil 1)
-    ("lpp" "locally principal" nil 2)
+    ("lpp" "locally principal" nil 4)
     ("nt" "Noetherian" nil 1)
     ("op" "open" nil 4)
     ("opem" "open embedding" nil 1)
@@ -246,12 +248,16 @@
     ("scti" "scheme theoretic image" nil 3)
     ("sim" "schematic image" nil 8)
     ("ssc" "subscheme" nil 6)
+    ("taht" "that" nil 4)
+    ("wiht" "with" nil 3)
     ("wp" "Wikipedia" nil 0)
    ))
 
 (define-abbrev-table 'gnus-group-mode-abbrev-table '())
 
 (define-abbrev-table 'grep-mode-abbrev-table '())
+
+(define-abbrev-table 'helm-major-mode-abbrev-table '())
 
 (define-abbrev-table 'help-mode-abbrev-table '())
 
