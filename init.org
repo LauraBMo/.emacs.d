@@ -118,14 +118,6 @@
 #+BEGIN_SRC emacs-lisp
   (setq sentence-end-double-space nil
         sentence-end "[.?!][]\"')]*\\($\\|\t\\| \\)[ \t\n]*")
-
-  (defun brust-elisp-sentence-end-double-sapce-t nil
-    (mapc #'make-local-variable '(sentence-end-double-space sentence-end))
-    (setq sentence-end nil
-          sentence-end-double-space t))
-
-    (add-hook 'emacs-lisp-mode-hook
-              #'brust-elisp-sentence-end-double-sapce-t)
 #+END_SRC
 
 #+RESULTS:
@@ -320,10 +312,31 @@
 
   (use-package key-chord
     :init
-    (setq key-chord-one-key-delay 0.16)
-    (key-chord-mode 1))
+    (setq key-chord-one-key-delay 0.16
+          key-chord-two-keys-delay 0.8)
+    (key-chord-mode 1)
+    :config
+    (defadvice key-chord-define (after bind-just-one-key-chord activate)
+      "Undefine the transposed key chord that key chord defines by default."
+      (let ((key1 (logand 255 (aref keys 0)))
+            (key2 (logand 255 (aref keys 1))))
+        (unless (eq key1 key2)
+          (define-key keymap (vector 'key-chord key2 key1) nil))))
 
-  (use-package use-package-chords)
+    ;; (key-chord-define-global "jj" 'undo)
+    ;; (key-chord-define-global "cj" 'brust-cycle-whitespace)
+    (key-chord-define-global "bg" 'ivy-switch-buffer)
+    (key-chord-define-global "bf" 'brust-ace-window)
+    (key-chord-define-global "vv" 'hydra-outline/body)
+    (key-chord-define-global "ww" 'zap-up-to-char))
+
+  (use-package use-package-chords
+    :config
+    (defmacro bind-chord (chord command &optional keymap)
+      "Bind CHORD to COMMAND in KEYMAP (`global-map' if not passed)."
+      (let ((key1 (logand 255 (aref chord 0)))
+            (key2 (logand 255 (aref chord 1))))
+        `(bind-key (vector 'key-chord ,key1 ,key2) ,command ,keymap))))
 
   (use-package bind-key)
 
@@ -356,6 +369,9 @@
 
 #+END_SRC
 *** TODO My mode line
+    :PROPERTIES:
+    :ID:       cb1d577a-ce25-4009-8385-4129785d5c4e
+    :END:
 **** Faces
 
 #+BEGIN_SRC elisp
@@ -528,25 +544,28 @@
 
 ** My key binding
 *** Global and genric
+
 #+BEGIN_SRC elisp
   (bind-keys*
-   ("s-c"        . easy-kill)
-   ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
-   ("s-z"        . undo)
+   ;; ("s-c"        . easy-kill)
+   ;; ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
+   ("M-j"        . undo)
+   ("s-ç"        . endless/ispell-word-then-abbrev)
+   ("M-h"        . brust-cycle-whitespace)
    ("M-c"        . brust-endless/capitalize)
    ("M-l"        . brust-endless/downcase)
    ("M-C"        . endless/upcase)
-   ("C-+"        . universal-argument)
-   ("C-ç"        . negative-argument)
-   ("C--"        . undo)
+   ;; ("C-+"        . universal-argument)
+   ;; ("C-ç"        . negative-argument)
+   ;; ("C--"        . undo)
    ("C-x C-S-F"  . xah-open-in-external-app)
    ("C-x C-k s"  . save-macro)
-   ("M-ç"        . hippie-expand)
-   ("C-9"        . close-quoted-open-paren-right)
+   ;; ("M-ç"        . hippie-expand)
+   ;; ("C-9"        . close-quoted-open-paren-right)
    ("M-SPC"      . close-quoted-open-paren-right-or-left)
-   ("C-)"        . close-all-open-paren-right)
-   ("C-8"        . close-quoted-open-paren-left)
-   ("C-("        . close-all-open-paren-left)
+   ;; ("C-)"        . close-all-open-paren-right)
+   ;; ("C-8"        . close-quoted-open-paren-left)
+   ;; ("C-("        . close-all-open-paren-left)
    ("C-x q"      . macro-query-my)
    ("C-S-p"      . package-list-packages)
    ("M-\""       . shell)
@@ -558,7 +577,7 @@
    ;; ("M-f"     . kill-word)
    ("<home>"     . delete-other-windows)
    ("<end>"      . delete-window)
-   ("C-x C-n"    . endless/narrow-or-widen-dwim) ;; was #'set-goal-column
+   ("C-x n l"    . endless/narrow-or-widen-dwim)
    ("s-n"        . endless/narrow-or-widen-dwim))
 
   (global-set-key (kbd "C-x C-S-e")
@@ -569,6 +588,10 @@
   (global-set-key (kbd "C-<menu>")
                   (lambda nil "Inverse delete indentation" (interactive) (delete-indentation t)))
 #+END_SRC
+
+#+RESULTS:
+| lambda | nil | Inverse delete indentation | (interactive) | (delete-indentation t) |
+
 *** Motion
     The keys were:
     =M-u= fix-word-upcase ; Now bind to M-S-c
@@ -676,7 +699,7 @@
 ;;Examples of use: ("rr" "\\quetal{}" my-after-abbrev-expand 0)
 #+END_SRC
 
-**** COMMENT Endless ispell & abbrev
+**** Endless ispell & abbrev
 ***** Function
 #+BEGIN_SRC elisp
 (defun endless/ispell-word-then-abbrev (p)
@@ -712,6 +735,9 @@ abort completely with `C-g'."
       (user-error "No typo at or before point"))))
 
 #+END_SRC
+
+#+RESULTS:
+: endless/ispell-word-then-abbrev
 
 ***** Keybinding
 #+BEGIN_SRC elisp
@@ -808,17 +834,11 @@ abort completely with `C-g'."
         ;; dired-x-hands-off-my-keys t
         dired-hide-details-hide-information-lines t
         )
+
   (add-hook 'dired-mode-hook #'brust-dired-mode-hook)
 
-  (bind-keys
+  (bind-keys*
    ("C-x C-j" . dired-jump)) ;;auto-load function
-
-  (bind-keys :map dired-mode-map
-             ("i" . diredp-previous-line) ;; was dired-maybe-insert-subdir
-             ("k" . diredp-next-line) ;; was dired-do-kill-lines
-             ("M-o" . my/dired-open)
-             ("^" . brust-dired-to-upper-dir)
-             ("o" . dired-find-alternate-file))
 
   (use-package dired-x
     :ensure nil
@@ -844,7 +864,16 @@ abort completely with `C-g'."
     ;; (hydra-dired/body) ;; problems with it!!
     (toggle-truncate-lines 1)
     (dired-omit-mode 1)
-    (dired-hide-details-mode 1))
+    (dired-hide-details-mode 1)
+    (bind-keys :map dired-mode-map
+               ("i" . diredp-previous-line) ;; was dired-maybe-insert-subdir
+               ("k" . diredp-next-line) ;; was dired-do-kill-lines
+               ("M-o" . my/dired-open)
+               ;; ("^" . brust-dired-to-upper-dir)
+               ;; ("o" . dired-find-alternate-file)
+               ("y" . hydra-dired/body))
+    ;; (hydra-dired/body)
+    )
 #+END_SRC
 
 #+RESULTS:
@@ -937,6 +966,27 @@ abort completely with `C-g'."
 (add-hook 'after-change-major-mode-hook (lambda nil (electric-indent-mode -1)))
 #+END_SRC
 
+*** Elisp
+#+BEGIN_SRC elisp
+  (defun brust-er/add-elisp-mode-expansions ()
+    "Adds expansions for buffers in elisp-mode"
+    (set (make-local-variable 'er/try-expand-list)
+	 (append
+	  er/try-expand-list
+	  '(er/mark-defun))))
+
+
+  (defun brust-elisp-sentence-end-double-sapce-t nil
+    (mapc #'make-local-variable '(sentence-end-double-space sentence-end))
+    (setq sentence-end nil
+	  sentence-end-double-space t))
+
+  (add-hook 'emacs-lisp-mode-hook
+	    #'brust-elisp-sentence-end-double-sapce-t)
+
+  (add-hook 'emacs-lisp-mode-hook 
+	    #'brust-er/add-elisp-mode-expansions)
+#+END_SRC
 *** Font lock.
 #+BEGIN_SRC elisp
 (setq font-lock-maximum-decoration t)
@@ -1054,36 +1104,36 @@ abort completely with `C-g'."
     ;;               (define-key yas-keymap [tab] 'yas-next-field)))
         ;;;;;;;;;;;;;;;;;
     (setq org-src-window-setup (quote other-window)
-          ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
-          ;; headline text
-          org-special-ctrl-a/e t
-          org-use-speed-commands t
-          org-cycle-global-at-bob t
-          org-startup-folded t
-          org-hide-emphasis-markers t
-          ;;org-ellipsis " ▼"
-          ;;org-completion-use-ido t
-          org-outline-path-complete-in-steps nil
-          org-src-fontify-natively t   ;; Pretty code blocks
-          ;; org-src-tab-acts-natively t
-          org-src-ask-before-returning-to-edit-buffer nil
-          org-edit-src-auto-save-idle-delay 20
-          org-confirm-babel-evaluate nil
-          org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
-                              (sequence "|" "CANCELED(c)"))
-          org-return-follows-link 1
-          org-link-frame-setup (quote ((file . find-file)))
-          org-agenda-todo-list-sublevels nil
-          org-deadline-warning-days 3
-          org-agenda-skip-scheduled-if-done 1
-          org-agenda-skip-deadline-if-done 1
-          org-agenda-skip-deadline-if-done 1)
+	  ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
+	  ;; headline text
+	  org-special-ctrl-a/e t
+	  org-use-speed-commands t
+	  org-cycle-global-at-bob t
+	  org-startup-folded t
+	  org-hide-emphasis-markers t
+	  ;;org-ellipsis " ▼"
+	  ;;org-completion-use-ido t
+	  org-outline-path-complete-in-steps nil
+	  org-src-fontify-natively t   ;; Pretty code blocks
+	  ;; org-src-tab-acts-natively t
+	  org-src-ask-before-returning-to-edit-buffer nil
+	  org-edit-src-auto-save-idle-delay 20
+	  org-confirm-babel-evaluate nil
+	  org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
+			      (sequence "|" "CANCELED(c)"))
+	  org-return-follows-link 1
+	  org-link-frame-setup (quote ((file . find-file)))
+	  org-agenda-todo-list-sublevels nil
+	  org-deadline-warning-days 3
+	  org-agenda-skip-scheduled-if-done 1
+	  org-agenda-skip-deadline-if-done 1
+	  org-agenda-skip-deadline-if-done 1)
 
     ;; org-mode my agenda view
     (setq org-agenda-custom-commands
-          '(("h" "My agenda view"
-             ((agenda "")
-              (todo)))))
+	  '(("h" "My agenda view"
+	     ((agenda "")
+	      (todo)))))
     :config
     ;; use org-bullets-mode for utf8 symbols as org bullets
     (use-package org-bullets
@@ -1093,36 +1143,37 @@ abort completely with `C-g'."
       (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
     ;; Org babel
     (org-babel-do-load-languages 'org-babel-load-languages
-                                 '(
-                                   ;; (R . t)
-                                   ;; (singular . t)
-                                   ;; (gnuplot . t)
-                                   ;; (latex . t)
-                                   ;; (org . t)
-                                   ;; (sh . t)
-                                   ;; (lisp . t)
-                                   (shell . t)
-                                   ))
+				 '(
+				   ;; (R . t)
+				   ;; (singular . t)
+				   ;; (gnuplot . t)
+				   ;; (latex . t)
+				   ;; (org . t)
+				   ;; (sh . t)
+				   ;; (lisp . t)
+				   (shell . t)
+				   ))
 
     (font-lock-add-keywords            ;; A bit silly but my headers are now
      'org-mode                         ;; shorter, and that is nice canceled
      (mapcar (lambda (xx)
-               `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
-                 (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
-                           nil))))
-             '(("TODO"       . "⚑")
-               ("DOING"      . "⚐")
-               ("CANCELED"   . "✘")
-               ("DONE"       . "✔"))))
+	       `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
+		 (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
+			   nil))))
+	     '(("TODO"       . "⚑")
+	       ("DOING"      . "⚐")
+	       ("CANCELED"   . "✘")
+	       ("DONE"       . "✔"))))
     :bind
     ;; ("C-c l" . org-store-link)
     ;; ("C-c c" . org-capture)
     ("C-c a" . org-agenda)
     ("C-c b" . org-iswitchb)
     (:map org-mode-map
-          ("s-b" . org-text-bold)
-          ("s-v" . org-text-italics)
-          ("s-c" . org-text-code)))
+	  ("s-b" . org-text-bold)
+	  ("s-v" . org-text-italics)
+	  ("s-c" . org-text-code)
+	  ("<" . brust-org<)))
 #+END_SRC
 
 #+RESULTS:
@@ -1268,7 +1319,7 @@ abort completely with `C-g'."
 #+BEGIN_SRC elisp
 (setq shift-select-mode t)
 #+END_SRC
-*** Zap up to char
+*** Zap (up) to char
 #+BEGIN_SRC elisp
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR.")
@@ -1284,8 +1335,8 @@ abort completely with `C-g'."
     "Go to beginning of buffer or toggle between
   the beginning and end of current buffer is you are already there."
     (interactive)
-    (if (eobp) (goto-char (point-min))
-      (goto-char (point-max))))
+    (if (bobp) (goto-char (point-max))
+    (goto-char (point-min))))
 #+END_SRC
 
 #+RESULTS:
@@ -1372,7 +1423,7 @@ abort completely with `C-g'."
   (defun close-quoted-open-paren-right-or-left (args)
     (interactive "P")
     (or args (setq args 1))
-    (unless (close-quoted-open-paren-right args)
+    (unless (ignore-errors (close-quoted-open-paren-right args))
       (close-quoted-open-paren-left args)))
 #+END_SRC
 
@@ -1421,14 +1472,6 @@ Version 2015-12-02"
         (message "No face defined at point"))))
 
 #+END_SRC
-*** Delete element of a list by =car=
-#+BEGIN_SRC elisp
-  (defun brust-list-delete-element (-key -list)
-    (cl-loop for -element in -list
-             if (not (string= -key (car -element)))
-             collect -element))
-#+END_SRC
-
 *** Double Capitals
     Convert words in DOuble CApitals to Single Capitals.
 **** The function
@@ -1520,6 +1563,44 @@ Single Capitals as you type."
 
 #+END_SRC
 
+*** Narrow or widen dwin
+ There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
+ of the narrow-or-widen so I don't have to keep remembering which is which. 
+#+BEGIN_SRC elisp
+  (defun endless/narrow-or-widen-dwim (p)
+    "Widen if buffer is narrowed, narrow-dwim otherwise.
+  Dwim means: region, org-src-block, org-subtree, or
+  defun, whichever applies first. Narrowing to
+  org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer
+  is already narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p)
+                (not p))
+           (widen)
+           (let ((recenter-redisplay t))
+             (recenter nil)))
+          ((region-active-p)
+           (narrow-to-region (region-beginning)
+                             (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing
+           ;; command. Remove this first conditional if
+           ;; you don't want it.
+           (cond ((ignore-errors (org-edit-src-code) t)
+                  (delete-other-windows))
+                 ((ignore-errors (org-narrow-to-block) t))
+                 (t (org-narrow-to-subtree))))
+          ((and (derived-mode-p 'latex-mode)
+                (ignore-errors (LaTeX-narrow-to-environment))))
+          ((derived-mode-p 'emacs-lisp-mode)
+           (narrow-to-defun))
+          (t
+           (brust-narrow-to-paragraph))))
+#+END_SRC
+
 *** By five
 #+BEGIN_SRC elisp
   (defun brust-by-five (-function args)
@@ -1579,12 +1660,14 @@ Single Capitals as you type."
                       ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
                       ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
                       ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-		      ))
+                      ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
+                      ))
      (config-files . (
                       ("Org-init"     . "~/.emacs.d/init.org")
                       ("el-init"      . "~/.emacs.d/init.el")
                       ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
-		      ))
+                      ("abbrevs-tbl"  . "~/.emacs.d/lisp/abbrev-defs.el")
+                      ))
      (org-files    . (
                       ("My-Org"   . "~/Dropbox/Org/my.org")
                       ("Recetari" . "~/Dropbox/Org/recetari.org")
@@ -1804,7 +1887,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+RESULTS:
 : brust-xah-lee-lookup-synonyms
 
-*** Smarter navigation into a line
+*** Smarter navigation inside a line
     "Move point back to indentation of beginning of line.
 
     Move point to the first non-whitespace character on this line.
@@ -1980,6 +2063,71 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 
 #+END_SRC
+*** Whitespace cycle
+    :PROPERTIES:
+    :ID:       d7f7cfc9-9da0-4eb6-b8a9-2cd69279a0d2
+    :END:
+    This is a remake and merge of `cycle-spacing' `delete-blank-lines' and `xah-shrink-whitespaces'.
+#+BEGIN_SRC elisp
+  (defun brust-cycle-whitespace nil
+    (interactive)
+    (let* ((--pt0 (point))
+           (--inline-skip-chars " \t\v\f")
+           (--skip-chars " \t\v\f\n")
+           (--beg (progn
+                    (skip-chars-backward --skip-chars)
+                    (constrain-to-field nil --pt0)
+                    (point)))
+           (--end (progn
+                    (skip-chars-forward --skip-chars)
+                    (constrain-to-field nil --pt0)
+                    (point)))
+           (--indent (buffer-substring-no-properties
+                      (progn
+                        (skip-chars-backward --inline-skip-chars)
+                        (point))
+                      --end))
+           (--contex (buffer-substring --beg --end))
+           (--lnum (1- (length (split-string --contex "\n")))))
+      (cond
+       ((or (not (equal last-command this-command))
+            (not brust-cycle-whitespace--context))
+        ;; Special handling for case where there was no space at all.
+        (cond ((< --beg --end) 
+               (setq brust-cycle-whitespace--context ;;Save for later.
+                     (cons --pt0 --contex))
+               (delete-region --beg --end)
+               (when (and (< (1+ --beg) --end)   ;; more than one space
+                          (< --end (point-max))  ;; erase whitespace at eobp
+                          (< (point-min) --beg)) ;; and at bobp
+                 (insert 
+                  (cond ((< --lnum 2) " ")
+                        ((< --lnum 3) (concat "\n" --indent))
+                        (t (concat "\n\n" --indent))))))
+              (t ;; indent when it is called without surrounding whitespaces.
+               (end-of-line)
+               (brust-cycle-whitespace))))
+       ;; Final call: (and (equal last-command this-command) (equal --beg --end))
+       ((not (< --beg --end))
+        (insert (cdr brust-cycle-whitespace--context))
+        (goto-char (car brust-cycle-whitespace--context))
+        (setq cycle-spacing--context nil))
+       ;; Intermadiate calls (and (equal last-command this-command) (< --beg --end))
+       (t
+        (delete-region --beg --end)
+        (insert
+         (cond ((< --lnum 1) "")
+               ((< --lnum 2) " ")
+               ((< --lnum 3) (concat "\n" --indent))
+               (t (concat "\n\n" --indent))))))))
+    ;; (more-expansions #'(brust-cycle-whitespace)))
+
+  (defvar brust-cycle-whitespace--context nil
+    "Store context used in consecutive calls to `brust-cycle-whitespace' command.
+       The first time `brust-cycle-whitespace' runs, it saves in this variable:
+       the original point position, and the original spacing around point.")
+
+#+END_SRC
 ** External modes
 *** Ace window
    With one "universal-argument" swap the selected and current window.
@@ -2030,9 +2178,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+BEGIN_SRC elisp
   (use-package avy
     :chords
-    ("qk" . avy-goto-char-timer)
+    ("qq" . avy-goto-char-timer)
     ;; ("gg" . avy-goto-word-2)
-    ("gg" . avy-goto-word-1)
+    ;; ("qq" . avy-goto-word-2)
     :bind 
     ("M-g g"   . avy-goto-line)
     ("s-."     . avy-goto-char-timer)
@@ -2233,13 +2381,36 @@ should be. After calling this function, call 'meeting-done' to reset the environ
  
 #+BEGIN_SRC elisp
   (use-package expand-region
-  ;;:bind
-  ;;("C-ñ" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
-  :chords 
-  ;; ("xx" . er/expand-region)
-  ("qj" . er/expand-region)
-  )
+    ;;:bind
+    ;;("s-ç" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
+    :init (setq-default er/try-expand-list
+                        '(er/mark-word
+                          er/mark-symbol
+                          ;; er/mark-symbol-with-prefix
+                          ;; er/mark-next-accessor
+                          ;; er/mark-method-call
+                          er/mark-inside-quotes
+                          er/mark-outside-quotes
+                          er/mark-inside-pairs
+                          er/mark-outside-pairs
+                          er/mark-comment
+                          er/mark-url
+                          er/mark-email
+                          ;; er/mark-defun
+                          ))
+    :chords 
+    ;; ("xx" . er/expand-region)
+    ;; ("<-" . er/expand-region)
+    ("jj" . er/expand-region)
+    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
+    ;; ("<." . goto-last-change)
+    ;; ("<," . brust-toggle-begin&end-of-buffer)
+    )
 #+END_SRC
+
+#+RESULTS:
+: brust-toggle-begin&end-of-buffer
+
 *** COMMENT Evil mode
 #+BEGIN_SRC elisp
 (use-package evil
@@ -2508,9 +2679,9 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+BEGIN_SRC elisp
   (use-package goto-chg
     :bind*
-  ("C-<" . goto-last-change)
-  ("C->" . goto-last-change-reverse))
-
+    ("s-ñ" . goto-last-change)
+    ("C-<" . goto-last-change)
+    ("C->" . goto-last-change-reverse))
 #+END_SRC
 
 *** TODO Hydra
@@ -2518,23 +2689,22 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+BEGIN_SRC elisp
   (use-package hydra
     :config
-    (setq lv-use-separator t)
-    (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body))
-  (bind-keys*
-   ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
-   ("M-y" . hydra-yank-pop/yank-pop)
-   ("s-q" . hydra-projectile/body))
+    (setq lv-use-separator t))
+
+  ;; (bind-keys*
+  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
+  ;;("M-y" . hydra-yank-pop/yank-pop)
 
   ;;  (eval-after-load "buff-menu" 
   ;;    '(bind-keys :map ibuffer-mode-map 
   ;;		("." . hydra-ibuffer-main/body)))
   ;;
-  (eval-after-load "org"
-    '(bind-keys :map org-mode-map
-		("<" . brust-org<)))
+  ;; (eval-after-load "org"
+  ;; '(bind-keys :map org-mode-map
+  ;;   ("<" . brust-org<)))
 
-  (bind-keys :map dired-mode-map 
-	     ("y" . hydra-dired/body))
+  ;; (bind-keys :map dired-mode-map 
+  ;; ("y" . hydra-dired/body))
 
   ;; :chords
   ;; ("oo" . hydra-outline/body)
@@ -2948,21 +3118,21 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ("Z" dired-do-compress "compress")
     ("ç" ora-dired-up-directory "up-directory")
     ;; ("^" dired-up-directory "up-directory")
-    ("a" dired-find-alternate-file "find-alternate-file")
+    ("a" dired-find-alternate-file "open folder")
     ("c" dired-do-compress-to "compress-to")
     ("d" dired-flag-file-deletion)
     ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
     ("j" dired-goto-file "goto-file")
     ("n" dired-do-kill-lines) ;; was "k"
     ("l" dired-do-redisplay)
-    ("o" dired-find-file-other-window)
+    ;; ("o" dired-find-file-other-window)
     ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
     ("t" dired-toggle-marks)
     ("v" dired-view-file)
     ("w" dired-copy-filename-as-kill)
     ("x" dired-do-flagged-delete)
     ("y" dired-show-file-type "show-file-type")
-    ("a" dired-omit-mode "toggle omite mode")
+    ("o" dired-omit-mode "toggle show hide files")
     ("~" dired-flag-backup-files))
 
   (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
@@ -3045,7 +3215,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             (pop-to-buffer ibuf)
             (ibuffer-update nil t)))))
 
-    (add-hook 'ibuffer-hook 'brust-ibuffer-apply-filter-groups)
+    (add-hook 'ibuffer-hook #'brust-ibuffer-apply-filter-groups)
+    (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body)
 
     (define-ibuffer-column lines-h
       (:name "nºLines" :inline t)
@@ -3114,41 +3285,55 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ("`" . nil)
             ("¿" . cdlatex-math-modify)
             ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)))
+            ("ñ" . cdlatex-math-symbol)
+            ("M-ñ" . brust-LaTeX-insert-ñ)))
     (use-package reftex
       :ensure nil
       :config
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    :chords
+    (:map LaTeX-mode-map 
+          ("zp" . brust-LaTeX-save)
+          ("zn" . org-ref-helm-insert-cite-link)
+          ("zm" . reftex-reference)
+          ("zj" . brust-LaTeX-insert-up)
+          ("zk" . brust-LaTeX-insert-down)
+          ("zñ" . brust-LaTeX-insert-backslash)
+          ("e3" . reftex-toc)
+          ("q1" . latex/clean-fill-indent-environment)
+          ("w2" . LaTeX-env-brust))
     :bind 
     (:map LaTeX-mode-map
           ("ç"            . brust-LaTeX-insert-math1)
           ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
           ;; ("           ."              . brust-LaTeX-smart-period)
-          ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
           ("C-x C-s"      . brust-LaTeX-save)
           ("C-c C-e"      . LaTeX-env-brust)
           ("C-c n"        . TeX-next-error)
+          ("s-e"          . TeX-next-error)
           ("C-c e"        . TeX-error-overview)
           ("C-c C-a"      . brust-compile-only)
           ("s-0"          . reftex-toc) 
-          ("s-ç"          . brust-LaTeX-smart-selection) 
+          ;; ("s-ç"          . brust-LaTeX-smart-selection) 
           ("C-c C-q"      . latex/clean-fill-indent-environment)
           ("C-c C-w C-s"  . brust-wc-save-words)
           ;; ("C-c C-a"   . latex/compile-commands-until-done)
           ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+                       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
           ;; ("<M-S-up>"  . latex/up-section)
           ;; ("<tab>"     . latex/hide-show)
           ;; ("<backtab>" . latex/hide-show-all)
           ;; (""          . latex/next-section)
           ;; (""          . latex/next-section-same-level)
           ;; (""          . latex/beginning-of-line)
-          ("C-M-e"        . latex/end-of-environment)
-          ("C-M-a"        . latex/beginning-of-environment)
-          ("C-M-p"        . latex/backward-environment)
-          ("C-M-n"        . latex/forward-environment)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
           ("s-9"          . brust-cycle-texmath)
           ))
 
@@ -3214,40 +3399,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
         (zone-when-idle (* 5 60)))))
     
 #+END_SRC
-*** Narrow or widen dwin
- There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean version 
- of the narrow-or-widen so I don't have to keep remembering which is which 
-#+BEGIN_SRC elisp
-  (defun endless/narrow-or-widen-dwim (p)
-    "Widen if buffer is narrowed, narrow-dwim otherwise.
-  Dwim means: region, org-src-block, org-subtree, or
-  defun, whichever applies first. Narrowing to
-  org-src-block actually calls `org-edit-src-code'.
-
-  With prefix P, don't widen, just narrow even if buffer
-  is already narrowed."
-    (interactive "P")
-    (declare (interactive-only))
-    (cond ((and (buffer-narrowed-p) (not p)) (widen))
-          ((region-active-p)
-           (narrow-to-region (region-beginning)
-                             (region-end)))
-          ((derived-mode-p 'org-mode)
-           ;; `org-edit-src-code' is not a real narrowing
-           ;; command. Remove this first conditional if
-           ;; you don't want it.
-           (cond ((ignore-errors (org-edit-src-code) t)
-                  (delete-other-windows))
-                 ((ignore-errors (org-narrow-to-block) t))
-                 (t (org-narrow-to-subtree))))
-          ((derived-mode-p 'latex-mode)
-           (LaTeX-narrow-to-environment))
-          ((derived-mode-p 'emacs-lisp-mode)
-           (narrow-to-defun))
-          (t
-           (brust-narrow-to-paragraph))))
-#+END_SRC
-
 *** Pdf tools
 #+BEGIN_SRC elisp
   (use-package pdf-tools
@@ -3293,7 +3444,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (use-package projectile
     :init 
     (setq projectile-known-projects-file "~/.emacs.d/backups/projectile-bookmarks.eld")
-    (projectile-mode)
+    (projectile-mode 1)
     ;; :diminish (projectile-mode . " Proj")
     :config
     (setq projectile-mode-line 
@@ -3308,10 +3459,13 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       ;; install replacements for some standard projectile commands
       (counsel-projectile-mode 1))
     :bind*
-    ("s-q" . projectile-command-map))
+    ("s-q" . project-find-file)
+    ;; ("s-q" . projectile-command-map)
+    )
 
 #+END_SRC
 *** Rainbow delimiters
+    I use it just to auto color unmatched parents.
 #+BEGIN_SRC elisp
   (use-package rainbow-delimiters
     :init
@@ -3363,16 +3517,17 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (add-hook 'emacs-lisp-mode-hook 'y-sp)
     (defun y-sp nil "Activate smartparents" (smartparens-mode 1))
     ;;(smartparens-global-mode t) 
-    :bind (("C-M-f" . sp-forward-sexp)
-    ("C-M-b" . sp-backward-sexp)
+    :bind
+    ("M-f" . sp-forward-sexp)
+    ("M-d" . sp-backward-sexp)
     ;; ("C-M-d" . sp-down-sexp)
     ;; ("C-M-a" . sp-backward-down-sexp)
     ;; ("C-S-d" . sp-beginning-of-sexp)
     ;; ("C-S-a" . sp-end-of-sexp)
     ;;("C-M-e" . sp-up-sexp)
     ;;("C-M-u" . sp-backward-up-sexp)
-    ("C-M-n" . sp-next-sexp)
-    ("C-M-p" . sp-previous-sexp)
+    ("M-n" . sp-next-sexp)
+    ("M-p" . sp-previous-sexp)
 
     ("M-S-d" . sp-splice-sexp)
     ("C-]" . sp-select-next-thing-exchange)
@@ -3391,7 +3546,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;("C-S-<backspace>" . sp-splice-sexp-killing-around)
     ;;("M-F" . 'sp-forward-symbol)
     ;;("M-B" . 'sp-backward-symbol)
-    ))
+    )
 #+END_SRC
 
 *** Smex
@@ -3554,69 +3709,9 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
     ;; (global-set-key [remap just-one-space] 'cycle-spacing)
     :bind
-    ("C-<menu>" . brust-cycle-whitespace)
+    ;; ("C-<menu>" . brust-cycle-whitespace)
     ;; ("s-SPC" . brust-cycle-whitespace)
     )
-
-  ;; This is a remake and merge of `cycle-spacing' `delete-blank-lines' and `xah-shrink-whitespaces'.
-
-  (defun brust-cycle-whitespace nil
-    (interactive)
-    (let* ((--pt0 (point))
-           (--inline-skip-chars " \t\v\f")
-           (--skip-chars " \t\v\f\n")
-           (--beg (progn
-                    (skip-chars-backward --skip-chars)
-                    (constrain-to-field nil --pt0)
-                    (point)))
-           (--end (progn
-                    (skip-chars-forward --skip-chars)
-                    (constrain-to-field nil --pt0)
-                    (point)))
-           (--indent (buffer-substring-no-properties
-                      (progn
-                        (skip-chars-backward --inline-skip-chars)
-                        (point))
-                      --end))
-           (--contex (buffer-substring --beg --end))
-           (--lnum (1- (length (split-string --contex "\n")))))
-      (cond
-       ((or (not (equal last-command this-command))
-            (not brust-cycle-whitespace--context))
-        ;; Special handling for case where there was no space at all.
-        (cond ((< --beg --end) 
-               (setq brust-cycle-whitespace--context ;;Save for later.
-                     (cons --pt0 --contex))
-               (delete-region --beg --end)
-               (when (and (< (1+ --beg) --end)   ;; more than one space
-                          (< --end (point-max))  ;; erase whitespace at eobp
-                          (< (point-min) --beg)) ;; and at bobp
-                 (insert 
-                  (cond ((< --lnum 2) " ")
-                        ((< --lnum 3) (concat "\n" --indent))
-                        (t (concat "\n\n" --indent))))))
-              (t ;; indent when it is called without surrounding whitespaces.
-               (end-of-line)
-               (brust-cycle-whitespace))))
-       ;; Final call: (and (equal last-command this-command) (equal --beg --end))
-       ((not (< --beg --end))
-        (insert (cdr brust-cycle-whitespace--context))
-        (goto-char (car brust-cycle-whitespace--context))
-        (setq cycle-spacing--context nil))
-       ;; Intermadiate calls (and (equal last-command this-command) (< --beg --end))
-       (t
-        (delete-region --beg --end)
-        (insert
-         (cond ((< --lnum 1) "")
-               ((< --lnum 2) " ")
-               ((< --lnum 3) (concat "\n" --indent))
-               (t (concat "\n\n" --indent))))))))
-    ;; (more-expansions #'(brust-cycle-whitespace)))
-
-  (defvar brust-cycle-whitespace--context nil
-    "Store context used in consecutive calls to `brust-cycle-whitespace' command.
-       The first time `brust-cycle-whitespace' runs, it saves in this variable:
-       the original point position, and the original spacing around point.")
 
   ;; Execute the last command with the last key stroke.
   ;; Adapted from er/expand-region
@@ -3635,7 +3730,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
            (msg (car msg-and-bindings))
            (bindings (cdr msg-and-bindings)))
       (when repeat-key
-        (set-transient-map
+        (er/set-temporary-overlay-map
          (let ((map (make-sparse-keymap)))
            (dolist (binding bindings map)
              (define-key map (read-kbd-macro (car binding))
@@ -3767,7 +3862,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;("<f2> u" . counsel-unicode-char)
     ("C-b"      . ivy-switch-buffer)
     ("s-g"      . counsel-git-grep)
-    ("M-b"      . counsel-bookmark)
+    ("s-b"      . counsel-bookmark)
     ("C-M-b"    . ivy-resume)
     ("s-x"      . ivy-push-view)
     ("s-X"      . ivy-pop-view)
