@@ -1441,8 +1441,10 @@
   (defun close-quoted-open-paren-right-or-left (args)
     (interactive "P")
     (or args (setq args 1))
-    (unless (ignore-errors (close-quoted-open-paren-right args))
-      (close-quoted-open-paren-left args)))
+    (cl-loop repeat args do
+             (unless (ignore-errors (close-quoted-open-paren-right 1))
+               (unless (ignore-errors (close-quoted-open-paren-left 1))
+                 (insert "(")))))
 #+END_SRC
 
 *** Copy file path to kill ring (by Xah Lee)
