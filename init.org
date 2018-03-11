@@ -145,11 +145,12 @@
       calendar-week-start-day 1)
 #+END_SRC
 
-*** Use aspell
+*** Spelling
 #+BEGIN_SRC elisp
-;;(setq ispell-personal-dictionary "~/Dropbox/config/emacs/.aspell.en.pws")
-(setq ispell-program-name "aspell")
-(setq ispell-really-aspell t)
+  ;;(setq ispell-personal-dictionary "~/Dropbox/config/emacs/.aspell.en.pws")
+  (setq ispell-program-name "aspell"
+        ispell-really-aspell t
+        ispell-personal-dictionary (file-truename "~/.emacs.d/lisp/english-words.txt")) ;; "~/.emacs.d/myDictionary.pws"
 #+END_SRC
  %%% ispell-local-dictionary: "british" or "catalan"
 
@@ -325,10 +326,11 @@
 
     ;; (key-chord-define-global "jj" 'undo)
     ;; (key-chord-define-global "cj" 'brust-cycle-whitespace)
-    (key-chord-define-global "bg" 'ivy-switch-buffer)
-    (key-chord-define-global "bf" 'brust-ace-window)
-    (key-chord-define-global "vv" 'hydra-outline/body)
-    (key-chord-define-global "ww" 'zap-up-to-char))
+    (key-chord-define-global "bg" #'ivy-switch-buffer)
+    (key-chord-define-global "bf" #'brust-ace-window)
+    (key-chord-define-global "vv" #'hydra-outline/body)
+    (key-chord-define-global "ww" #'zap-up-to-char)
+    (key-chord-define-global ".s" #'flyspell-correct-previous-word-generic))
 
   (use-package use-package-chords
     :config
@@ -700,50 +702,66 @@
 #+END_SRC
 
 **** Endless ispell & abbrev
-***** Function
+     It comes from [[http://endlessparentheses.com/ispell-and-abbrev-the-perfect-auto-correct.html][Ispell and abbrev]], to find the misspelled work plain =ispell= is used, I adapted it to use =flyspell=, now I just get words which are underlined as misspelled (red curvi line under the word).
+     That's useful in TeX files where plain ispell has many false misspellings, but it could be a problem on buffers without =flyspell= minormode.
 #+BEGIN_SRC elisp
-(defun endless/ispell-word-then-abbrev (p)
-  "Call `ispell-word', then create an abbrev for it.
-With prefix P, create local abbrev. Otherwise it will
-be global.
-If there's nothing wrong with the word at point, keep
-looking for a typo until the beginning of buffer. You can
-skip typos you don't want to fix with `SPC', and you can
-abort completely with `C-g'."
-  (interactive "P")
-  (let (bef aft)
-    (save-excursion
-      (while (if (setq bef (thing-at-point 'word))
-                 ;; Word was corrected or used quit.
-                 (if (ispell-word nil 'quiet)
-                     nil ; End the loop.
-                   ;; Also end if we reach `bob'.
-                   (not (bobp)))
-               ;; If there's no word at point, keep looking
-               ;; until `bob'.
-               (not (bobp)))
-        (backward-word))
-      (setq aft (thing-at-point 'word)))
-    (if (and aft bef (not (equal aft bef)))
-        (let ((aft (downcase aft))
-              (bef (downcase bef)))
-          (define-abbrev
-            (if p local-abbrev-table global-abbrev-table)
-            bef aft)
-          (message "\"%s\" now expands to \"%s\" %sally"
-                   bef aft (if p "loc" "glob")))
-      (user-error "No typo at or before point"))))
+  (defun endless/simple-get-word ()
+    (car-safe (save-excursion (ispell-get-word nil))))
 
+  (defun endless/ispell-word-then-abbrev (p)
+    "Call `ispell-word', then create an abbrev for it.
+  With prefix P, create local abbrev. Otherwise it will
+  be global.
+  If there's nothing wrong with the word at point, keep
+  looking for a typo until the beginning of buffer. You can
+  skip typos you don't want to fix with `SPC', and you can
+  abort completely with `C-g'."
+    (interactive "P")
+  
+    (let ((top (window-start))
+          (bot (window-end))
+          incorrect-word-pos
+          position-at-incorrect-word
+          bef aft)
+      (save-excursion
+        (save-restriction
+          ;; make sure that word under point is checked first
+          (forward-word)
+
+          ;; narrow the region
+          (narrow-to-region top bot)
+          (overlay-recenter (point))
+
+          (let ((overlay-list (overlays-in (point-min) (+ position 1)))
+                (overlay 'dummy-value))
+
+            (while overlay
+              (setq overlay (car-safe overlay-list))
+              (setq overlay-list (cdr-safe overlay-list))
+              (when (and overlay
+                         (flyspell-overlay-p overlay))
+                ;; try to correct word
+                (save-excursion
+                  (goto-char incorrect-word-pos)
+                  (setq bef (endless/simple-get-word))
+                  ;; `flyspell-correct-at-point' returns t when there is
+                  ;; nothing to correct. In such case we just skip current word.
+                  (unless (flyspell-correct-at-point)
+                    (setq overlay nil)
+                    (setq aft (endless/simple-get-word)))))))))
+      (if (and aft bef (not (equal aft bef)))
+          (let ((aft (downcase aft))
+                (bef (downcase bef)))
+            (define-abbrev
+              (if p local-abbrev-table global-abbrev-table)
+              bef aft)
+            (message "\"%s\" now expands to \"%s\" %sally"
+                     bef aft (if p "loc" "glob")))
+        (user-error "No typo at or before point"))))
 #+END_SRC
 
 #+RESULTS:
 : endless/ispell-word-then-abbrev
-
-***** Keybinding
-#+BEGIN_SRC elisp
-(define-key ctl-x-map "\C-i"
-  #'endless/ispell-word-then-abbrev)
-#+END_SRC
 
 *** Auto revert
     I need this to work with Git and branching.
@@ -3894,7 +3912,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   ;;  (use-package flyspell-correct
   ;;    :init 
   (use-package flyspell-correct-ivy)
-  (bind-key "C-." 'flyspell-correct-previous-word-generic flyspell-mode-map)
+  ;; (bind-key "C-." 'flyspell-correct-previous-word-generic flyspell-mode-map)
   ;;    ;; :config
   ;;    ;;(setq flyspell-correct-interface 'flyspell-correct-ivy)
   ;;)

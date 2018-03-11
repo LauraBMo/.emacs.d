@@ -14,6 +14,7 @@
     ;; (LaTeX-math-mode) ;; I use cdlatex insted
     (turn-on-reftex)
     (flyspell-mode 1)
+    (setq ispell-parser 'tex) ;; Now ispell knows it is a LaTeX file.
     (outline-minor-mode 1)
     (flyspell-ignore-tex)
     (TeX-interactive-mode 1)
