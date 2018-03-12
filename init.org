@@ -1438,13 +1438,26 @@
 #+END_SRC
 **** By right or left
 #+BEGIN_SRC elisp
+  (defun my-texmathp nil
+    (interactive)
+    (when (texmathp)
+      (when (string= (car texmathp-why) "\\(")
+        (ignore-errors (scan-sexps (cdr texmathp-why) 1)))))
+
   (defun close-quoted-open-paren-right-or-left (args)
     (interactive "P")
     (or args (setq args 1))
     (cl-loop repeat args do
-             (unless (ignore-errors (close-quoted-open-paren-right 1))
-               (unless (ignore-errors (close-quoted-open-paren-left 1))
-                 (insert "(")))))
+             (if (and (fboundp 'texmathp)
+                      (my-texmathp))
+                 (unless (and (ignore-errors (close-quoted-open-paren-right 1))
+                              (if (texmathp) t (delete-char -2) nil))
+                   (unless (and (ignore-errors (close-quoted-open-paren-left 1))
+                                (if (my-texmathp) t (delete-char 2) nil))
+                     (insert "(")))
+               (unless (ignore-errors (close-quoted-open-paren-right 1))
+                 (unless (ignore-errors (close-quoted-open-paren-left 1))
+                   (insert "("))))))
 #+END_SRC
 
 *** Copy file path to kill ring (by Xah Lee)
