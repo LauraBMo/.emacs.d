@@ -14,12 +14,16 @@
     ;; (LaTeX-math-mode) ;; I use cdlatex insted
     (turn-on-reftex)
     (flyspell-mode 1)
+    (setq ispell-parser 'tex) ;; Now ispell knows it is working on a LaTeX file.
     (outline-minor-mode 1)
     (flyspell-ignore-tex)
     (TeX-interactive-mode 1)
     (yas-minor-mode -1)
     (brust-er/add-latex-mode-expansions)
     (LaTeX-mode-hook-company-setup)
+    ;; mic-parent futures
+    (paren-toggle-matching-paired-delimiter 1)
+    (paren-toggle-matching-quoted-paren 1)
     (setq TeX-clean-confirm nil
           LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
           LaTeX-clean-intermediate-suffixes

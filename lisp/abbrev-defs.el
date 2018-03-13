@@ -37,7 +37,7 @@
     ("`ti" "\\title" nil 0)
     ("`us" "\\usage" nil 0)
     ("`va" "\\value" nil 0)
-   ))
+    ))
 
 (define-abbrev-table 'TeX-error-overview-mode-abbrev-table '())
 
@@ -125,7 +125,7 @@
     ("vector" "Vector" nil 0)
     ("while" "While" nil 0)
     ("xel" "Xel" nil 0)
-   ))
+    ))
 
 (define-abbrev-table 'cocoa5-mode-abbrev-table
   '(
@@ -185,7 +185,7 @@
     ("vector" "Vector" cocoa5-check-expansion 0)
     ("while" "While" cocoa5-check-expansion 0)
     ("xel" "Xel" cocoa5-check-expansion 0)
-   ))
+    ))
 
 (define-abbrev-table 'comint-mode-abbrev-table '())
 
@@ -222,11 +222,10 @@
     ("adn" "and" nil 3)
     ("aspr" "associated prime" nil 4)
     ("aspt" "associated point" nil 7)
-    ("center" "centre" nil 1)
-    ("cf" "c.f." nil 2)
-    ("clem" "closed embedding" nil 4)
-    ("clsc" "closed subscheme" nil 8)
-    ("ecd" "effective Cartier divisor" nil 3)
+    ("cf" "c.f." nil 4)
+    ("clem" "closed embedding" nil 2)
+    ("clsc" "closed subscheme" nil 11)
+    ("ecd" "effective Cartier divisor" nil 0)
     ("eg" "e.g." nil 0)
     ("emb" "embedding" nil 1)
     ("eng" "English" nil 0)
@@ -236,22 +235,23 @@
     ("ie" "i.e." nil 4)
     ("lbm" "Laura Brustenga Moncusí" nil 0)
     ("lno" "locally Noetherian" nil 5)
-    ("loc" "locally" nil 1)
-    ("lpp" "locally principal" nil 4)
+    ("loc" "locally" nil 3)
+    ("lpp" "locally principal" nil 5)
     ("nt" "Noetherian" nil 1)
     ("op" "open" nil 4)
     ("opem" "open embedding" nil 1)
     ("opsc" "open subscheme" nil 6)
     ("qch" "quasi-coherent" nil 1)
-    ("sc" "scheme" nil 2)
+    ("sc" "scheme" nil 5)
     ("scl" "schematic closure" nil 4)
     ("scti" "scheme theoretic image" nil 3)
+    ("shceme" "scheme" nil 0)
     ("sim" "schematic image" nil 8)
     ("ssc" "subscheme" nil 6)
     ("taht" "that" nil 4)
     ("wiht" "with" nil 3)
     ("wp" "Wikipedia" nil 0)
-   ))
+    ))
 
 (define-abbrev-table 'gnus-group-mode-abbrev-table '())
 
