@@ -147,10 +147,14 @@
 
 *** Spelling
 #+BEGIN_SRC elisp
-  ;;(setq ispell-personal-dictionary "~/Dropbox/config/emacs/.aspell.en.pws")
   (setq ispell-program-name "aspell"
         ispell-really-aspell t
+        ispell-silently-savep t
+        ispell-quietly t
         ispell-personal-dictionary (file-truename "~/.emacs.d/lisp/english-words.txt")) ;; "~/.emacs.d/myDictionary.pws"
+  (require 'flyspell)
+
+  (setq flyspell-default-dictionary "en")
 #+END_SRC
  %%% ispell-local-dictionary: "british" or "catalan"
 

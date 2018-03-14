@@ -14,9 +14,8 @@
     ;; (LaTeX-math-mode) ;; I use cdlatex insted
     (turn-on-reftex)
     (flyspell-mode 1)
-    (setq ispell-parser 'tex) ;; Now ispell knows it is working on a LaTeX file.
     (outline-minor-mode 1)
-    (flyspell-ignore-tex)
+    (flyspell-ignore-tex) ;; Now ispell knows it is working on a LaTeX file.
     (TeX-interactive-mode 1)
     (yas-minor-mode -1)
     (brust-er/add-latex-mode-expansions)
@@ -168,7 +167,7 @@
          (cadr ispell-tex-skip-alists)))
 
 ;; Flyspell ignore tex commands
-(defun flyspell-ignore-tex ()
+(defun flyspell-ignore-tex nil
   (interactive)
   (set (make-variable-buffer-local 'ispell-parser) 'tex))
 #+END_SRC
