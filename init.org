@@ -150,8 +150,8 @@
   (setq ispell-program-name "aspell"
         ispell-really-aspell t
         ispell-silently-savep t
-        ispell-quietly t
-        ispell-personal-dictionary (file-truename "~/.emacs.d/lisp/english-words.txt")) ;; "~/.emacs.d/myDictionary.pws"
+        ispell-quietly t 
+        ispell-personal-dictionary (file-truename "~/Dropbox/config/english-words.txt")) ;; "~/.emacs.d/myDictionary.pws"
   (require 'flyspell)
 
   (setq flyspell-default-dictionary "en")
@@ -678,7 +678,7 @@
 #+BEGIN_SRC elisp
   (diminish 'abbrev-mode)
   (setq pre-abbrev-expand-hook (quote (ignore))
-        abbrev-file-name "~/.emacs.d/lisp/abbrev-defs.el"
+        abbrev-file-name "~/Dropbox/config/abbrev-def.el"
         save-abbrevs 'silently)
 
   (setq-default abbrev-mode t)
@@ -1710,7 +1710,7 @@ Single Capitals as you type."
                       ("Org-init"     . "~/.emacs.d/init.org")
                       ("el-init"      . "~/.emacs.d/init.el")
                       ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
-                      ("abbrevs-tbl"  . "~/.emacs.d/lisp/abbrev-defs.el")
+                      ("abbrevs-tbl"  . "~/Dropbox/config/abbrev-def.el")
                       ))
      (org-files    . (
                       ("My-Org"   . "~/Dropbox/Org/my.org")
@@ -2301,7 +2301,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (brust-generic-company-setup '(company-ispell))
       ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
       ;;  but I prefer hard code the dictionary path. That's more portable.
-      (setq company-ispell-dictionary (file-truename "~/.emacs.d/lisp/english-words.txt")))
+      (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt")))
 
     (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
 
