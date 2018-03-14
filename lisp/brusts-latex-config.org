@@ -1145,7 +1145,7 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?i    "\\im"                "\\textit" t   nil nil )
         ( ?I    "\\mathit"            "\\textit" t   nil nil )
         ( ?l    nil                   "\\textsl" t   nil nil )
-        ( ?b    "\\mathbb"            "\\textbf" t   nil nil )
+        ( ?b    "\\mathbf"            "\\textbf" t   nil nil )
         ( ?E    "\\mathem"            "\\emph"   t   nil nil )
         ( ?e    "\\mathem"            "\\emph"   t   nil nil )
         ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
