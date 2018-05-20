@@ -3380,10 +3380,20 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; ("C-M-n"        . latex/forward-environment)
           ("s-9"          . brust-cycle-texmath)
           ))
+**** Bralatex
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
 
 #+END_SRC
 
 #+RESULTS:
+: bratex
 
 *** TODO Magit
     For a git and github integration with emacs!
