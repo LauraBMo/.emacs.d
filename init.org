@@ -2,6 +2,11 @@
 
 #+TITLE=Main config file
 
+(What the world needs (I think) is not
+      (a Lisp (with fewer parentheses))
+      but (an English (with more.)))
+-- Brian Hayes, http://tinyurl.com/3y9l2kf
+
 * init.el
 ** Generic settings
 *** Personal data
