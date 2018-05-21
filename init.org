@@ -3400,7 +3400,13 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+BEGIN_SRC elisp
   (use-package interleave
     :config
-    (setq interleave-org-notes-dir-list (quote ("~/Dropbox/bibliography/notes.org"))))
+    (setq interleave-org-notes-dir-list (quote ("~/Dropbox/bibliography/notes.org"))
+          ;; interleave-sort-order (quote desc)
+          )
+    :bind
+    (:map interleave-pdf-mode-map
+          ("i" . nil)
+          ("a" . interleave-add-note)))
 
 #+END_SRC
 *** Key-frequency
@@ -3570,7 +3576,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     
 #+END_SRC
 *** Org-ref
-
+**** General config
 #+BEGIN_SRC elisp
   (use-package org-ref
     :after org
@@ -3592,46 +3598,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;                                (require 'org-ref)
     ;;                                (require 'org-ref-latex)))
 
-    (defvar brust-arxiv-lengh-base-web)
-    (setq  brust-arxiv-lengh-base-web 22)
-    (defun brust-arxiv-get-number-from-web (arxiv-web)
-      (with-temp-buffer
-        (insert arxiv-web)
-        (delete-region (point-min) (+ (point-min) brust-arxiv-lengh-base-web))
-        (buffer-string)))
-
-    (defun brust-arxiv-get-pdf-add-bibtex-entry (arxiv-web)
-      "Add an entry for ARXIV-WEB to 'notes.org'.
-  Remove troublesome chars from the bibtex key, retrieve a pdf
-  for ARXIV-NUMBER and save it to PDFDIR with the same name of the
-  key."
-      (interactive
-       (list (read-string "arxiv web: ")))
-      (let ((-tempbib "/tmp/temp-biblio.bib"))
-        (find-file -tempbib)
-        (save-buffer)
-        (ignore-errors (arxiv-get-pdf-add-bibtex-entry
-                        (brust-arxiv-get-number-from-web arxiv-web)
-                        -tempbib
-                        (expand-file-name "~/Dropbox/bibliography/pdf/")))
-        (save-buffer)
-        (bibtex-beginning-of-entry)
-        (let ((abstract
-               (cdr (assoc "abstract" (bibtex-parse-entry t)))))
-          (save-excursion 
-            (org-ref-open-bibtex-notes)
-            (org-narrow-to-subtree)
-            (goto-char (point-min))
-            (if (search-forward "cite:" nil t)
-                (delete-region (point-at-bol) (1+ (point-at-eol)))
-              (goto-char (point-max)))
-            (insert "*** Abstract\n")
-            (insert abstract)
-            (indent-region (point-min) (point-max))
-            (widen)))
-        (erase-buffer)
-        (save-buffer)
-        (kill-buffer)))
 
     (setq org-ref-note-title-format
           "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
@@ -3662,6 +3628,98 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : t
 
+**** Functions
+#+BEGIN_SRC elisp
+
+  (defun brust-arxiv-get-number-from-web (arxiv-web)
+    (with-temp-buffer
+      (insert arxiv-web)
+      (goto-char (point-min))
+      (if (search-forward "https://" nil t)
+          (cond ((search-forward "/abs/" nil t)
+                 (buffer-substring-no-properties (point) (point-max)))
+                ((search-forward "/pdf/" nil t)
+                 (buffer-substring-no-properties (point)
+                                                 (progn (search-forward ".pdf" nil t)
+                                                        (match-beginning 0))))
+                (t (message "Unkown web format")))
+        arxiv-web)))
+
+  (defun brust-org-ref-bibtex-open-notes nil
+    "It assume that you are at the beginning of a bibtex entry in a .bib file"
+    (interactive)
+    (let ((abstract
+           (cdr (assoc "abstract" (bibtex-parse-entry t)))))
+      (save-excursion 
+        (org-ref-open-bibtex-notes)
+        (org-narrow-to-subtree)
+        (goto-char (point-min))
+        (when (search-forward "cite:" nil t)
+          (delete-region (point-at-bol) (1+ (point-at-eol)))
+          (goto-char (point-max)))
+        (when abstract
+          (insert "*** Abstract\n" abstract))
+        (indent-region (point-min) (point-max))
+        (widen))))
+
+  (defun brust-arxiv-get-pdf-add-notes-entry (arxiv-web)
+    "Add an entry for ARXIV-WEB to 'notes.org'.
+  Remove troublesome chars from the bibtex key, retrieve a pdf
+  for ARXIV-NUMBER and save it to PDFDIR with the same name of the
+  key."
+    (interactive
+     (list (read-string "arxiv web: ")))
+    (let ((-tempbib "/tmp/temp-biblio.bib"))
+      (find-file -tempbib)
+      (save-buffer)
+      (ignore-errors (arxiv-get-pdf-add-bibtex-entry
+                      (brust-arxiv-get-number-from-web arxiv-web)
+                      -tempbib
+                      (expand-file-name "~/Dropbox/bibliography/pdf/")))
+      (save-buffer)
+      (bibtex-beginning-of-entry)
+      (brust-org-ref-bibtex-open-notes) 
+      ;; (erase-buffer)
+      (save-buffer)
+      ;;(kill-buffer)
+      ))
+
+
+  (defun brust-org-mode-get-top-header-list (file)
+    (let ((-list '()))
+      (save-window-excursion
+        (find-file file)
+        (goto-char (point-min))
+        (while (re-search-forward "^\\* .*$" nil t)
+          (push (match-string-no-properties 0) -list)))
+      -list))
+
+  (defun brust-add-notes-entry-from-pdf (-entry-type -title -author -year -pages -header)
+    (interactive
+     (list (ivy-read
+            "Entry Type: "
+            (cl-loop for -entry-type in bibtex-BibTeX-entry-alist
+                     collect (car -entry-type)))
+           (read-string "Title: ")
+           (read-string "Author: ")
+           (read-string "Year: ")
+           (read-string "Pages: ")
+           (ivy-read
+            "Header: "
+            (brust-org-mode-get-top-header-list org-ref-bibliography-notes))))
+    (let ((-type (downcase -entry-type))
+          (-file (buffer-file-name))
+          (-key (file-name-base (buffer-file-name))))
+      (find-file org-ref-bibliography-notes)
+      (goto-char (point-min))
+      (search-forward -header nil t)
+      (insert (format
+               "\n\n** TODO %s - %s\n :PROPERTIES:\n  :Custom_ID: %s\n  :AUTHOR: %s\n  :INTERLEAVE_PDF: %s \n :YEAR: %s\n :TYPE: %s\n :PAGES: %s\n :END:\n"
+               -year -title -key -author -file -year -type -pages)))
+    (insert "*** Comments\n\n*** Interleave\n")
+    (indent-region (point-min) (point-max)))
+
+#+END_SRC
 *** Pdf tools
 #+BEGIN_SRC elisp
   (use-package pdf-tools
@@ -4153,6 +4211,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (:map ivy-minibuffer-map
           ("s-k"        . ivy-next-line)
           ("s-i"        . ivy-previous-line)
+          ("s-u"        . ivy-backward-delete-char)
           ("s-C-k"      . ivy-next-line-and-call)
           ("s-C-i"      . ivy-previous-line-and-call)
           ("s-l"        . ivy-alt-done)
@@ -4175,6 +4234,9 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; ("<right>"    . ivy-insert-current)
           ))
 #+END_SRC
+
+#+RESULTS:
+: ivy-previous-history-element
 
 **** Flyspell-correct-ivy
 #+BEGIN_SRC elisp
