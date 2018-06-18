@@ -1365,9 +1365,12 @@
 #+END_SRC
 *** Shift select
     When non-nil, shifted motion keys activate the mark momentarily.
+    Time ago I used to use it, now I am an Emacs rock!
+    (In this way I have more bindings =s-S-*=)
 #+BEGIN_SRC elisp
-(setq shift-select-mode t)
+(setq shift-select-mode nil)
 #+END_SRC
+
 *** Zap (up) to char
 #+BEGIN_SRC elisp
 (autoload 'zap-up-to-char "misc"
