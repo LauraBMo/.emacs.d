@@ -1578,6 +1578,40 @@ Single Capitals as you type."
 (add-hook 'text-mode-hook #'dubcaps-mode)
 
 #+END_SRC
+*** Emacs info recoder
+    http://manuel-uberti.github.io//emacs/2018/05/25/display-version/
+
+#+BEGIN_SRC elisp
+(defun mu--os-version ()
+  "Call `lsb_release' to retrieve OS version."
+  (replace-regexp-in-string
+   "Description:\\|[\t\n\r]+" ""
+   (shell-command-to-string "lsb_release -d")))
+
+(defun mu--gnome-version ()
+  "Call `gnome-shell' to retrieve GNOME version."
+  (replace-regexp-in-string
+   "[\t\n\r]+" ""
+   (shell-command-to-string "gnome-shell --version")))
+
+;;;###autoload
+(defun mu-display-version ()
+  "Display Emacs version and system details in a temporary buffer."
+  (interactive)
+  (let ((buffer-name "*version*"))
+    (with-help-window buffer-name
+      (with-current-buffer buffer-name
+        (insert (emacs-version) "\n")
+        (when emacs-repository-version
+          (insert "\nRepository revision: " emacs-repository-version "\n"))
+        (when (and system-configuration-options
+                   (not (equal system-configuration-options "")))
+          (insert "\nConfigured using:\n"
+                  system-configuration-options))
+        (insert "\n\nOperating system: " (mu--os-version) "\n")
+        (insert "Window system: " (getenv "XDG_SESSION_TYPE") "\n")
+        (insert "Desktop environment: " (mu--gnome-version))))))
+#+END_SRC
 
 *** Find file sudo
 #+BEGIN_SRC elisp
