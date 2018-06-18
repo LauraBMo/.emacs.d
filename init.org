@@ -3956,6 +3956,19 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+RESULTS:
 
+*** View Large files
+#+BEGIN_SRC elisp
+  (use-package vlf
+    ;; :diminish vlf-mode
+    :config
+    ;; (require 'vlf-setup)
+    (setq vlf-batch-size 1024)   
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
 *** Visual regexp
 #+BEGIN_SRC elisp
   (use-package visual-regexp
@@ -4174,6 +4187,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (ivy-set-actions
      t
      '(("i" insert "insert")
+       ("v" vlf "Very large files")
        ("w" kill-new "copy")))
 
     (ivy-set-actions
