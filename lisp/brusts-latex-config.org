@@ -1228,6 +1228,7 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?I    "\\mathit"            "\\textit" t   nil nil )
         ( ?l    nil                   "\\textsl" t   nil nil )
         ( ?b    "\\mathbf"            "\\textbf" t   nil nil )
+        ( ?d    "\\mathbb"            "\\textbb" t   nil nil )
         ( ?E    "\\mathem"            "\\emph"   t   nil nil )
         ( ?e    "\\mathem"            "\\emph"   t   nil nil )
         ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
@@ -1238,6 +1239,43 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?3    "\\scriptscriptstyle" nil        nil nil nil )))
 
 #+END_SRC
+
+#+RESULTS:
+| 114 | \mathscr           | nil     | t   | nil | nil |
+| 116 | \overline          | nil     | t   | nil | nil |
+| 111 | \op                | nil     | t   | nil | nil |
+| 115 | \s                 | nil     | t   | nil | nil |
+|  46 | \dot               | nil     | t   | t   | nil |
+|  58 | \ddot              | nil     | t   | t   | nil |
+| 126 | \tilde             | nil     | t   | t   | nil |
+|  78 | \widetilde         | nil     | t   | t   | nil |
+|  94 | \hat               | nil     | t   | t   | nil |
+|  72 | \widehat           | nil     | t   | t   | nil |
+|  45 | \bar               | nil     | t   | t   | nil |
+|  84 | \overline          | nil     | t   | nil | nil |
+|  95 | \underline         | nil     | t   | nil | nil |
+| 123 | \overbrace         | nil     | t   | nil | nil |
+| 125 | \underbrace        | nil     | t   | nil | nil |
+|  62 | \vec               | nil     | t   | t   | nil |
+|  47 | \grave             | nil     | t   | t   | nil |
+|  92 | \acute             | nil     | t   | t   | nil |
+| 118 | \check             | nil     | t   | t   | nil |
+| 117 | \breve             | nil     | t   | t   | nil |
+| 109 | \mbox              | nil     | t   | nil | nil |
+|  99 | \mathcal           | nil     | t   | nil | nil |
+| 105 | \im                | \textit | t   | nil | nil |
+|  73 | \mathit            | \textit | t   | nil | nil |
+| 108 | nil                | \textsl | t   | nil | nil |
+|  98 | \mathbf            | \textbf | t   | nil | nil |
+| 100 | \mathbb            | \textbb | t   | nil | nil |
+|  69 | \mathem            | \emph   | t   | nil | nil |
+| 101 | \mathem            | \emph   | t   | nil | nil |
+| 121 | \mathtt            | \texttt | t   | nil | nil |
+| 102 | \mathfrak          | \textsf | t   | nil | nil |
+|  48 | \textstyle         | nil     | nil | nil | nil |
+|  49 | \displaystyle      | nil     | nil | nil | nil |
+|  50 | \scriptstyle       | nil     | nil | nil | nil |
+|  51 | \scriptscriptstyle | nil     | nil | nil | nil |
 
 ** Math symbol list =ñ=
 
