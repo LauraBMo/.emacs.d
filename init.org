@@ -4962,6 +4962,7 @@ _q_: quit
 #+END_SRC
 
 *** functions for *singular*
+**** Add print std...
 #+BEGIN_SRC elisp
   (defun brust-singular-add-print nil
     (interactive)
@@ -4987,8 +4988,12 @@ _q_: quit
       (insert -fun "(" -str ")")
       (move-end-of-line 1)
       (insert ";")))
+#+END_SRC
 
-
+#+RESULTS:
+: brust-singular-finish-line
+**** Finish line
+#+BEGIN_SRC elisp
   (defun brust-singular-finish-line nil
     (interactive)
     (narrow-to-region (point-at-bol) (point-at-eol))
@@ -5000,9 +5005,6 @@ _q_: quit
     (insert ";")
     (widen))
 #+END_SRC
-
-#+RESULTS:
-: brust-singular-finish-line
 
 **** Dynamic expand in non-running Singular buffer
 #+BEGIN_SRC elisp
