@@ -3586,7 +3586,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     :init
     (setq ;; magit-completing-read-function #'helm--completing-read-default
           magit-turn-on-auto-revert-mode nil
-          magit-set-upstream-on-push 'dontask)
+          magit-set-upstream-on-push 'dontask
+          magit-completing-read-function 'ivy-completing-read)
     :config
     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
     (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
@@ -3599,6 +3600,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+END_SRC
 
 #+RESULTS:
+: magit-status
 
 *** Mic parent
     To show matching paren on minibuffer when it is offscreen
