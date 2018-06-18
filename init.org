@@ -804,6 +804,12 @@
 #+RESULTS:
 : endless/ispell-word-then-abbrev
 
+*** Auto composition
+    Disabled it, I never use it.
+#+BEGIN_SRC elisp
+(global-auto-composition-mode 0)
+#+END_SRC
+
 *** Auto revert
     I need this to work with Git and branching.
     Auto refresh all buffers when files have changed on disk.
