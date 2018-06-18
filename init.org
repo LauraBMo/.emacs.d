@@ -98,21 +98,6 @@
            (flet ((process-list ())) ad-do-it))
 #+END_SRC
 
-*** Backup's
-    Files into backups and auto-save-list.
-#+BEGIN_SRC elisp
-  (setq backup-directory-alist '(("." . "~/.emacs.d/backups/"))
-        delete-old-versions -1
-        version-control t
-        vc-make-backup-files t
-        auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
-#+END_SRC
-
-#+BEGIN_SRC elisp
-  (unless (file-exists-p "~/.emacs.d/backups/")
-    (make-directory "~/.emacs.d/backups/"))
-#+END_SRC
-
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
   (when (member "Monoid HalfTight" (font-family-list))
@@ -820,10 +805,33 @@
 
 #+END_SRC
 
-*** Auto composition
-    Disabled it, I never use it.
+*** Backup and auto-save
+    Backup files and auto-save files are two methods by which Emacs tries to protect the user from the consequences of crashes or of the user's own errors. 
+    Auto-saving preserves the text from earlier in the current editing session; 
+    backup files preserve file contents prior to the current session.
+**** Backup's
+     Files into backups and auto-save-list.
+ #+BEGIN_SRC elisp
+   (setq backup-directory-alist '(("." . "~/.emacs.d/backups/"))
+         delete-old-versions t
+         version-control t
+         kept-new-versions 6
+         kept-old-versions 2
+         vc-make-backup-files t)
+ #+END_SRC
+
+**** Auto save
+ #+BEGIN_SRC elisp
+   (setq auto-save-interval 100
+         auto-save-timeout 5
+         auto-save-file-name-transforms '((".*" "~/.emacs.d/backups/" t)))
+ #+END_SRC
+
+**** Is there directory?
+     When I am intalling Emacs on a new computer ;)
 #+BEGIN_SRC elisp
-(global-auto-composition-mode 0)
+  (unless (file-exists-p "~/.emacs.d/backups/")
+    (make-directory "~/.emacs.d/backups/"))
 #+END_SRC
 
 *** Bookmarks
