@@ -117,6 +117,18 @@ Suggestions: %s
                                              (region-end)))
       (thing-at-point 'word)))))
 
+(defun words-singular-manual nil
+  (interactive)
+  (let* ((-maybe (thing-at-point 'word))
+         (-str (concat "Singular Manual "
+                       (if (region-active-p)
+                           (url-hexify-string (buffer-substring (region-beginning)
+                                                                (region-end)))
+                         (read-string "Search in Singular manual for: " -maybe)))))
+    (browse-url
+     (format
+      "http://www.google.com/search?q=%s" -str))))
+
 (defun words-twitter ()
   "Search twitter for word at point or selection."
   (interactive)
@@ -393,7 +405,7 @@ words
 _d_: Dictionary  _g_: Google           _T_: Twitter _b_: Bibtex      _r_: Translate
 _t_: Thesaurus   _G_: Google Scholar   ^ ^          _w_: swiper-all
 _s_: Spell       _c_: Crossref         ^ ^          _M_: Unix locate
-^ ^              _S_: Scopus           ^ ^
+^ ^              _S_: Scopus           _m_: Singular Manual
 ^ ^              _W_: Web Of Science
 ^ ^              _p_: Pubmed
 ^ ^              _a_: Arxiv
@@ -407,6 +419,7 @@ _q_: quit
   ("T" words-twitter "Twitter")
   ("W" words-wos "Web of Science")
   ("G" words-google-scholar "Google scholar")
+  ("m" words-singular-manual "SingManual")
   ("c" words-crossref "CrossRef")
   ("S" words-scopus "Scopus")
   ("o" words-semantic-scholar "Semantic Scholar")
