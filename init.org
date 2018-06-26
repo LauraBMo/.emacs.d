@@ -3720,6 +3720,139 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;; To could see the matching parent.
     (remove-hook 'post-command-hook 'eldoc-schedule-timer))
 #+END_SRC
+
+*** TODO Mu4e
+    - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
+    - TODOs [0/5]
+      - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
+      - [ ] Improve keybinding
+      - [ ] Show links
+      - [ ] Show images
+      - [ ] Check autopudate (related to point one).
+      - [ ] Improve contact completion with ivy :) [[http://pragmaticemacs.com/emacs/even-better-email-contact-completion-in-mu4e/]]
+    - Helpful places
+      - [[https://webgefrickel.de/blog/a-modern-mutt-setup][A modern mutt setup with neomutt, mbsync, msmtp and mu]] (blog - interesting not just emacs)
+      - [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][A Complete Guide to Email in Emacs using Mu and Mu4e]] (blog interesting by itself - really fancy emacs stuff)
+      - [[https://www.djcbsoftware.nl/code/mu/mu4e/Example-configurations.html#Example-configurations][Example config (from mu4e the manual)]]
+      - [[http://xenodium.com/#trying-out-mu4e-and-offlineimap][Albaro]] & [[http://xenodium.com/#trying-out-mu4e-with-mbsync][Albaro2]] (here there are many nice links) (blog - interesting not just emacs).
+      - [[https://stackoverflow.com/questions/50199837/mu4e-with-msmtp-does-not-store-mail-sent-directory-after-sending-mails][How to config mu4e to send mail using msmtp]]
+      - [[https://blog.programster.org/ubuntu-install-gpg-2][Install gpg2 (much better)]] to encript your mail password (echo password | gpg2 -c) then delete the corresponding line on bash history ;)
+      - [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
+      - [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
+      - [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
+      -
+
+#+BEGIN_SRC elisp
+  (add-to-list 'load-path (expand-file-name "~/sources/mu/mu4e"))
+  (require 'mu4e)
+  (use-package mu4e
+    :ensure nil
+    :config
+    ;; Update mail using 'U' in main view:
+    ;; Include a bookmark to open all of my inboxes
+    (add-to-list 'mu4e-bookmarks
+                 (make-mu4e-bookmark
+                  :name "All Inboxes"
+                  :query "maildir:/Exchange/INBOX OR maildir:/Gmail/INBOX"
+                  :key ?i))
+
+    (defun search-for-sender (msg)
+      "Search for messages sent by the sender of the message at point."
+      (mu4e-headers-search
+       (concat "from:" (cdar (mu4e-message-field msg :from)))))
+
+    ;; define 'x' as the shortcut
+    (add-to-list 'mu4e-view-actions
+                 '("xsearch for sender" . search-for-sender) t)
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+    ;; Difine 'V' as the shortcut
+    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+    ;; use imagemagick, if available
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+
+    (setq mu4e-get-mail-command "mbsync -Va"
+          mail-user-agent 'mu4e-user-agent
+          mu4e-view-show-addresses t
+          ;; use 'fancy' non-ascii characters in various places in mu4e
+          mu4e-use-fancy-chars t
+          ;; attempt to show images when viewing messages
+          mu4e-view-show-images t
+          ;; save attachment to my Downloads (this can also be a function)
+          mu4e-attachment-dir (expand-file-name "~/Downloads/")
+          ;; when search include related msg to the one matching the query.
+          mu4e-headers-include-related t
+          ;; enable inline images
+          mu4e-maildir (expand-file-name "~/Maildir")
+          mu4e-mu-binary (expand-file-name "~/sources/mu/mu/mu")
+          ;; mu4e-mu-home
+          mu4e-html2text-command "w3m -T text/html"
+          ;; alternatively "textutil -stdin -format html -convert txt -stdout"
+          ;; mu4e-maildir-shortcuts
+          ;; '(;; ("/archive"     . ?a)
+          ;;   ("/Inbox"       . ?i)
+          ;;   ;; ("/work"        . ?w)
+          ;;   ("/Sent"        . ?s))
+          mu4e-user-mail-address-list `(,user-mail-address
+                                        ;; "brust@mat.uab.cat"
+                                        )
+          ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
+          mu4e-compose-context-policy 'always-ask
+          ;; This allows me to use 'helm' to select mailboxes
+          mu4e-completing-read-function 'completing-read
+          ;; Why would I want to leave my message open after I've sent it?
+          message-kill-buffer-on-exit t
+          ;; Don't ask for a 'context' upon opening mu4e
+          mu4e-context-policy 'pick-first
+          ;; Don't ask to quit... why is this the default?
+          mu4e-confirm-quit nil
+          message-send-mail-function 'message-send-mail-with-sendmail
+          message-sendmail-extra-arguments '("--read-envelope-from")
+          message-sendmail-f-is-evil 't
+          sendmail-program "msmtp"
+          mu4e-contexts
+          (list
+           (make-mu4e-context
+            :name "gmail"
+            :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+            :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
+            :vars '((user-mail-address . "laurea987@gmail.com")
+                    (user-full-name . "Laura Brustenga")
+                    (mu4e-sent-folder . "/gmail/Sent")
+                    (mu4e-drafts-folder . "/gmail/Drafts")
+                    (mu4e-trash-folder . "/gmail/Trash")
+                    (mu4e-compose-signature . nil)
+                    (mu4e-compose-format-flowed . nil)))
+           (make-mu4e-context
+            :name "mathuab"
+            :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
+            :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
+            :match-func (lambda (msg)
+                          (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+            :vars '((user-mail-address . "brust@mat.uab.cat")
+                    (user-full-name . "Laura Brustenga i Moncusí")
+                    (mu4e-sent-folder . "/mathuab/Sent")
+                    (mu4e-drafts-folder . "/mathuab/Drafts")
+                    (mu4e-trash-folder . "/mathuab/Trash")
+                    (mu4e-compose-signature . nil)
+                    (mu4e-compose-format-flowed . nil)))
+           ))
+    :bind
+    (:map mu4e-headers-mode-map
+          ("k" . mu4e-headers-next)
+          ("i" . mu4e-headers-prev)))
+#+END_SRC
+
+#+RESULTS:
+: mu4e-headers-prev
+
 *** Nyan
     Show the rainbow line.
 #+BEGIN_SRC elisp
