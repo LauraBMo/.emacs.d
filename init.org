@@ -4381,7 +4381,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (setq-default indent-tabs-mode nil)
     (global-whitespace-cleanup-mode t)
     :config
-    (setq whitespace-style '(trailing))
+    (setq whitespace-style '(empty indentation::space trailing))
     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
     ;; (global-set-key [remap just-one-space] 'cycle-spacing)
     ;; :bind
