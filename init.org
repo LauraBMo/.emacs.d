@@ -80,6 +80,24 @@
   (setq save-interprogram-paste-before-kill t
         kill-ring-max 100)
 #+END_SRC
+
+*** Do not ding
+  Quiet, please! No dinging!
+
+#+BEGIN_SRC elisp
+  (setq visible-bell nil
+        ring-bell-function
+        `(lambda ()
+           (let ((-face-background (face-background 'default)))
+                 ;; (-face-font (face-font 'default))
+                 ;; (set-face-font 'default "DodgerBlue")
+                 (set-face-background 'default "DodgerBlue")
+                 (set-face-background 'default -face-background))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (let ((-face-background (face-background (quote default)))) (set-face-background (quote default) DodgerBlue) (set-face-background (quote default) -face-background)) |
+
 *** Echo keystrokes
     Nonzero means echo unfinished commands after this many seconds of pause.
 #+BEGIN_SRC elisp
