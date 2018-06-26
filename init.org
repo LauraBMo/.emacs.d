@@ -569,7 +569,7 @@
    ;; ("s-v"        . hydra-yank-pop/brust-org-yank-or-yank)
    ("M-j"        . undo)
    ("M-h"        . brust-cycle-whitespace)
-   ("C-M-h"      . delete-indentation)
+   ("C-M-h"      . brust-delete-indentation)
    ;; ("M-c"        . brust-endless/capitalize)
    ;; ("M-l"        . brust-endless/downcase)
    ;; ("M-C"        . endless/upcase)
@@ -1560,6 +1560,16 @@ Version 2015-12-02"
         (message "No face defined at point"))))
 
 #+END_SRC
+*** Delete indentation "reversed"
+#+BEGIN_SRC elisp
+  (defun brust-delete-indentation (args)
+    (interactive "P")
+    (delete-indentation (not args)))
+#+END_SRC
+
+#+RESULTS:
+: brust-delete-indentation
+
 *** Double Capitals
     Convert words in DOuble CApitals to Single Capitals.
 **** The function
