@@ -4149,11 +4149,11 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (use-package recentf
     :init
     (setq recentf-max-saved-items 200
-          recentf-max-menu-items 15
+          ;; recentf-max-menu-items 15
           recentf-save-file "~/.emacs.d/backups/recentf"
           recentf-exclude '("COMMIT_MSG" "COMMIT_EDITMSG" "github.*txt$"
                             "^.*png$" "^.*~$" "^.*-autoloads.el$"
-                            "/elpa/"))
+                            "/elpa/" "^.*rel$" "^.*latexmk$" "^.*[0-9]$" "^.*fls$"))
     ;; :bind ("C-<f2>" . recentf-open-files)
     (recentf-mode 1))
     (run-with-timer 0 (* 30 60) 'recentf-save-list)
