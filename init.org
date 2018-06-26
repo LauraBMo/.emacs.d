@@ -3968,7 +3968,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           (insert "\n\n" -entry))
         (widen))))
 
-  (defun brust-arxiv-get-pdf-add-notes-entry (arxiv-web header)
+  (defun brust-arxiv-get-pdf-add-notes-entry (-arxiv-web -header)
     "Add an entry for ARXIV-WEB to 'notes.org'.
   Remove troublesome chars from the bibtex key, retrieve a pdf
   for ARXIV-NUMBER and save it to PDFDIR with the same name of the
@@ -3985,12 +3985,12 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       (find-file -tempbib)
       (save-buffer)
       (ignore-errors (arxiv-get-pdf-add-bibtex-entry
-                      (brust-arxiv-get-number-from-web arxiv-web)
+                      (brust-arxiv-get-number-from-web -arxiv-web)
                       -tempbib
                       (expand-file-name "~/Dropbox/bibliography/pdf/")))
       (save-buffer)
       (bibtex-beginning-of-entry)
-      (brust-org-ref-bibtex-open-notes)
+      (brust-org-ref-bibtex-open-notes -header)
       ;; (erase-buffer)
       (save-buffer)
       ;;(kill-buffer)
