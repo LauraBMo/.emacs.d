@@ -519,9 +519,8 @@
      mode-line-misc-info
      (:propertize "|\[" face mode-line-bars-face)
      (:propertize "%l" face sml/line-number)
-     (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "%l"))
-                        ;; (line-number-at-pos (point-max)))
-                        'face 'mode-line-top-line-number))
+     (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "/%l")) 'face 'mode-line-top-line-number))
+     ;; (line-number-at-pos (point-max))
      (:propertize ":" face sml/line-number)
      (:eval (propertize "%c" 'face
                         (if (< (current-column) 80)
@@ -559,7 +558,7 @@
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | mode-line-misc-info | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line %l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) | (:propertize ] | face mode-line-bars-face) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) | (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize | (quote face) (quote mode-line-bars-face))  )) | mode-line-frame-identification | mode-line-buffer-identification | (:propertize |   | face mode-line-bars-face) | mode-line-modes | (:propertize | face mode-line-bars-face) | (vc-mode vc-mode) | (vc-mode vc-status) | (:propertize |   | face mode-line-bars-face) | (quote (:eval (quote (nyan-create)))) | mode-line-position | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
+| %e | (:propertize |   | face mode-line-bars-face) | mode-line-misc-info | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line %l)) (quote face) (quote mode-line-top-line-number)) (:propertize : face sml/line-number) (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) (:propertize ] | face mode-line-bars-face) (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize | (quote face) (quote mode-line-bars-face))  )) mode-line-frame-identification mode-line-buffer-identification (:propertize |   | face mode-line-bars-face) mode-line-modes (:propertize | face mode-line-bars-face) (vc-mode vc-mode) (vc-mode vc-status) (:propertize |   | face mode-line-bars-face) (quote (:eval (quote (nyan-create)))) mode-line-position (:propertize |   | %- face mode-line-bars-face) mode-line-end-spaces) |
 
 ** My key binding
 *** Global and genric
