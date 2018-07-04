@@ -4093,6 +4093,15 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (setq-default pdf-view-display-size 'fit-page)
     ;; automatically annotate highlights
     (setq pdf-annot-activate-created-annotations nil)
+
+    :config
+    (defun brust-pdf-tools-hook ()
+      (bind-keys :map pdf-view-mode-map ("i" . brust-pdf-view-previous-line-or-previous-page-5)))
+
+    :chords
+    (:map pdf-view-mode-map
+          ("jj" . brust-image-backward-hsroll-5))
+
     :bind
     (:map pdf-view-mode-map
           ("<"           . pdf-view-first-page)
@@ -4117,18 +4126,21 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ("s-<mouse-5>" . pdf-view-next-line-or-next-page)
           ("s-<mouse-4>" . pdf-view-previous-line-or-previous-page)))
 
-(defun brust-image-backward-hsroll-5 (args)
-  (interactive "p")
-  (brust-by-five #'image-backward-hscroll args))
-(defun brust-image-forward-hsroll-5 (args)
-  (interactive "p")
-  (brust-by-five #'image-forward-hscroll args))
-(defun brust-pdf-view-next-line-or-next-page-5 (args)
-  (interactive "p")
-  (brust-by-five #'pdf-view-next-line-or-next-page args))
-(defun brust-pdf-view-previous-line-or-previous-page-5 (args)
-  (interactive "p")
-  (brust-by-five #'pdf-view-previous-line-or-previous-page args))
+  (eval-after-load 'interleave
+    (add-hook 'pdf-view-mode-hook #'brust-pdf-tools-hook t))
+
+  (defun brust-image-backward-hsroll-5 (args)
+    (interactive "p")
+    (brust-by-five #'image-backward-hscroll args))
+  (defun brust-image-forward-hsroll-5 (args)
+    (interactive "p")
+    (brust-by-five #'image-forward-hscroll args))
+  (defun brust-pdf-view-next-line-or-next-page-5 (args)
+    (interactive "p")
+    (brust-by-five #'pdf-view-next-line-or-next-page args))
+  (defun brust-pdf-view-previous-line-or-previous-page-5 (args)
+    (interactive "p")
+    (brust-by-five #'pdf-view-previous-line-or-previous-page args))
 #+END_SRC
 
 *** Projectile
