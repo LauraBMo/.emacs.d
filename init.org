@@ -651,17 +651,17 @@
   (bind-keys
    ("s-h" . recenter-top-bottom)
    ("s-M-u" . backward-word)
-   ("s-M-i" . previous-line)
+   ("s-M-i" . backward-paragraph)
    ;; ("s-o" . forward-word)
    ("s-M-o" . forward-word)
    ;; ("s-S-O" . forward-word)
    ("s-M-j" . backward-char)
-   ("s-M-k" . next-line)
+   ("s-M-k" . forward-paragraph)
    ("s-M-l" . forward-char)
    ("s-l" . bln-forward-half)
    ("s-j" . bln-backward-half)
-   ("s-k" . bln-forward-half-v)
-   ("s-i" . bln-backward-half-v)
+   ("s-k" . next-line)
+   ("s-i" . previous-line)
    ;; ("s-o" . scroll-up-command)
    ("s-m" . scroll-up-command)
    ("s-u" . scroll-down-command)
@@ -1441,64 +1441,94 @@
     I've changed the code drastically.
 
 #+BEGIN_SRC elisp
-(defvar bln-beg-end '(-1 . -1))
-(defvar bln-functions-list '(bln-backward-half
-                             bln-forward-half))
-(defvar bln-beg-end-v '(-1 . -1))
-(defvar bln-functions-list-v '(bln-backward-half-v
-                               bln-forward-half-v))
-(defvar bln-column-v -1)
+  (defvar bln-beg-end '(-1 . -1))
+  (defvar bln-functions-list '(bln-backward-half
+                               bln-forward-half))
+  (defvar bln-beg-end-v '(-1 . -1))
+  (defvar bln-functions-list-v '(bln-backward-half-v
+                                 bln-forward-half-v))
+  (defvar bln-column-v -1)
 
-;;;###autoload
-(defun bln-backward-half ()
-  "This function is used in combination with `bln-forward-half' to provide binary line navigation (see `bln-mode')."
-  (interactive)
-  (setq bln-beg-end
-        (if (member last-command bln-functions-list)
-            `(,(car bln-beg-end) . ,(point))
-          `(,(line-beginning-position) . ,(point))))
-  (goto-char (/ (+ (car bln-beg-end) (cdr bln-beg-end)) 2)))
+  ;;;###autoload
+  (defun bln-backward-half ()
+    "This function is used in combination with `bln-forward-half' to provide binary line navigation (see `bln-mode')."
+    (interactive)
+    (setq bln-beg-end
+          (if (member last-command bln-functions-list)
+              `(,(car bln-beg-end) . ,(point))
+            `(,(save-excursion
+                 (beginning-of-visual-line)
+                 (point))
+              . ,(point))))
+    (goto-char (/ (+ (car bln-beg-end) (cdr bln-beg-end)) 2)))
 
-;;;###autoload
-(defun bln-forward-half ()
-  "This function is used in combination with `bln-backward-half' to provide binary line navigation (see `bln-mode')."
-  (interactive)
-  (setq bln-beg-end
-        (if (member last-command bln-functions-list)
-            ;; (/= (point) bln-prev-point))
-            `(,(point) . ,(cdr bln-beg-end))
-          `(,(point) . ,(line-end-position))))
-  (goto-char (/ (+ (car bln-beg-end) (cdr bln-beg-end)) 2)))
+  ;;;###autoload
+  (defun bln-forward-half ()
+    "This function is used in combination with `bln-backward-half' to provide binary line navigation (see `bln-mode')."
+    (interactive)
+    (setq bln-beg-end
+          (if (member last-command bln-functions-list)
+              ;; (/= (point) bln-prev-point))
+              `(,(point) . ,(cdr bln-beg-end))
+            `(,(point) . ,(save-excursion
+                            (end-of-visual-line)
+                            (1+ (point))))))
+    (goto-char (/ (+ (car bln-beg-end) (cdr bln-beg-end)) 2)))
 
-;;;###autoload
-(defun bln-backward-half-v ()
-  "This function is used in combination with `bln-forward-half' to provide binary line navigation (see `bln-mode')."
-  (interactive)
-  (if (member last-command bln-functions-list-v)
+  (defun bln--visual-line-borders (-which)
+    "When `which' is t (resp. nil), returns the position at the beginning (resp. end) of the current visual line."
+    (save-excursion
+      (if which
+          (beginning-of-visual-line)
+        (end-of-visual-line))
+      (point)))
+
+  (defun bln--window-visual-lines nil
+    (let ((p0 (point))
+          (i 1)
+          (j 1))
+      (save-excursion
+        (goto-char (window-start))
+        (while (< (point) p0)
+          (forward-line 1)
+          (setq i (1+ i)))
+        (setq j i)
+        (while (< (point) (window-end))
+          (forward-line 1)
+          (setq j (1+ j))))
+      (cons i j)))
+
+
+
+  ;;;###autoload
+  (defun bln-backward-half-v ()
+    "This function is used in combination with `bln-forward-half' to provide binary line navigation (see `bln-mode')."
+    (interactive)
+    (if (member last-command bln-functions-list-v)
+        (setq bln-beg-end-v
+              `(,(car bln-beg-end-v) . ,(line-number-at-pos (point))))
       (setq bln-beg-end-v
-            `(,(car bln-beg-end-v) . ,(line-number-at-pos (point))))
-    (setq bln-beg-end-v
-          `(,(line-number-at-pos (window-start)) . ,(line-number-at-pos (point)))
-          bln-column-v (- (point) (line-beginning-position))))
-  (forward-line (/ (- (car bln-beg-end-v) (cdr bln-beg-end-v)) 2))
-  (if (< bln-column-v (- (line-end-position) (line-beginning-position)))
-      (forward-char bln-column-v)
-    (move-end-of-line 1)))
+            `(,(line-number-at-pos (window-start)) . ,(line-number-at-pos (point)))
+            bln-column-v (- (point) (line-beginning-position))))
+    (forward-line (/ (- (car bln-beg-end-v) (cdr bln-beg-end-v)) 2))
+    (if (< bln-column-v (- (line-end-position) (line-beginning-position)))
+        (forward-char bln-column-v)
+      (move-end-of-line 1)))
 
-;;;###autoload
-(defun bln-forward-half-v ()
-  "This function is used in combination with `bln-backward-half' to provide binary line navigation (see `bln-mode')."
-  (interactive)
-  (if (member last-command bln-functions-list-v)
+  ;;;###autoload
+  (defun bln-forward-half-v ()
+    "This function is used in combination with `bln-backward-half' to provide binary line navigation (see `bln-mode')."
+    (interactive)
+    (if (member last-command bln-functions-list-v)
+        (setq bln-beg-end-v
+              `(,(line-number-at-pos (point)) . ,(cdr bln-beg-end-v)))
       (setq bln-beg-end-v
-            `(,(line-number-at-pos (point)) . ,(cdr bln-beg-end-v)))
-    (setq bln-beg-end-v
-          `(,(line-number-at-pos (point)) . ,(line-number-at-pos (window-end)))
-          bln-column-v (- (point) (line-beginning-position))))
-  (forward-line (/ (- (cdr bln-beg-end-v) (car bln-beg-end-v)) 2))
-  (if (< bln-column-v (- (line-end-position) (line-beginning-position)))
-      (forward-char bln-column-v)
-    (move-end-of-line 1)))
+            `(,(line-number-at-pos (point)) . ,(line-number-at-pos (window-end)))
+            bln-column-v (- (point) (line-beginning-position))))
+    (forward-line (/ (- (cdr bln-beg-end-v) (car bln-beg-end-v)) 2))
+    (if (< bln-column-v (- (line-end-position) (line-beginning-position)))
+        (forward-char bln-column-v)
+      (move-end-of-line 1)))
 #+END_SRC
 
 #+RESULTS:
