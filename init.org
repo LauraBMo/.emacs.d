@@ -3835,7 +3835,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;;   ;; ("/work"        . ?w)
           ;;   ("/Sent"        . ?s))
           mu4e-user-mail-address-list `(,user-mail-address
-                                        ;; "brust@mat.uab.cat"
+                                        "brust@mat.uab.cat"
                                         )
           ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
           mu4e-compose-context-policy 'always-ask
