@@ -3787,8 +3787,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (add-to-list 'mu4e-bookmarks
                  (make-mu4e-bookmark
                   :name "All Inboxes"
-                  :query "maildir:/Exchange/INBOX OR maildir:/Gmail/INBOX"
+                  :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox"
                   :key ?i))
+
+    (add-to-list 'mu4e-bookmarks
+                 (make-mu4e-bookmark
+                  :name "New mathuab"
+                  :query "flag:unread AND maildir:/mathuab/INBOX"
+                  :key ?m))
 
     (defun search-for-sender (msg)
       "Search for messages sent by the sender of the message at point."
@@ -3816,7 +3822,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; save attachment to my Downloads (this can also be a function)
           mu4e-attachment-dir (expand-file-name "~/Downloads/")
           ;; when search include related msg to the one matching the query.
-          mu4e-headers-include-related t
+          mu4e-headers-include-related nil
           ;; enable inline images
           mu4e-maildir (expand-file-name "~/Maildir")
           mu4e-mu-binary (expand-file-name "~/sources/mu/mu/mu")
