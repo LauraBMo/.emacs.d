@@ -45,6 +45,14 @@
 
 (setq hydra-is-helpful t)
 
+(defun words-brust-read-string (-query)
+  (let ((-maybe
+         (if (region-active-p)
+             (buffer-substring (region-beginning)
+                               (region-end))
+           (thing-at-point 'word))))
+    (ivy-read -query `(,-maybe ,(buffer-name) ,(file-name-base (buffer-file-name)) ,(buffer-file-name)))))
+
 ;; * Dictionary/thesaurus/grammar
 (defun words-dictionary ()
   "Look up word at point in an online dictionary."
@@ -52,8 +60,7 @@
   (browse-url
    (format
     "http://dictionary.reference.com/browse/%s?s=t"
-    (thing-at-point 'word))))
-
+    (words-brust-read-string "Search in Dictionary::"))))
 
 (defun words-thesaurus ()
   "Look up word at point in an online thesaurus."
@@ -61,7 +68,7 @@
   (browse-url
    (format
     "http://www.thesaurus.com/browse/%s"
-    (thing-at-point 'word))))
+    (words-brust-read-string "Search in Thesaurus::"))))
 
 
 (defun words-atd ()
@@ -112,22 +119,16 @@ Suggestions: %s
   (browse-url
    (format
     "http://www.google.com/search?q=%s"
-    (if (region-active-p)
-        (url-hexify-string (buffer-substring (region-beginning)
-                                             (region-end)))
-      (thing-at-point 'word)))))
+    (url-hexify-string (words-brust-read-string "Search in Google::")))))
 
 (defun words-singular-manual nil
   (interactive)
-  (let* ((-maybe (thing-at-point 'word))
-         (-str (concat "Singular Manual "
-                       (if (region-active-p)
-                           (url-hexify-string (buffer-substring (region-beginning)
-                                                                (region-end)))
-                         (read-string "Search in Singular manual for: " -maybe)))))
-    (browse-url
-     (format
-      "http://www.google.com/search?q=%s" -str))))
+  (browse-url
+   (format
+    "http://www.google.com/search?q=%s"
+    (url-hexify-string
+     (concat "Singular Manual "
+             (words-brust-read-string "Search in Singular Manual::"))))))
 
 (defun words-twitter ()
   "Search twitter for word at point or selection."
@@ -135,11 +136,7 @@ Suggestions: %s
   (browse-url
    (format
     "https://twitter.com/search?q=%s"
-    (if (region-active-p)
-        (url-hexify-string (buffer-substring (region-beginning)
-                                             (region-end)))
-      (thing-at-point 'word)))))
-
+    (url-hexify-string (words-brust-read-string "Search in Twitter::")))))
 
 ;; * Scientific search functions
 (defun words-google-scholar ()
@@ -148,11 +145,7 @@ Suggestions: %s
   (browse-url
    (format
     "http://scholar.google.com/scholar?q=%s"
-    (if (region-active-p)
-        (url-hexify-string (buffer-substring (region-beginning)
-                                             (region-end)))
-      (thing-at-point 'word)))))
-
+    (url-hexify-string (words-brust-read-string "Search in Google Scholar::")))))
 
 (defun words-wos ()
   "Open the word at point or selection in Web of Science."
@@ -186,12 +179,7 @@ Suggestions: %s
   (browse-url
    (format
     "http://search.crossref.org/?q=%s"
-    (if (use-region-p)
-        (url-hexify-string (buffer-substring
-                            (region-beginning)
-                            (region-end)))
-      (thing-at-point 'word)))))
-
+    (url-hexify-string (words-brust-read-string "Search in CrossRef::")))))
 
 (defun words-pubmed ()
   "Search region or word at point in pubmed."
@@ -212,11 +200,7 @@ Suggestions: %s
   (browse-url
    (format
     "http://arxiv.org/find/all/1/all:+AND+%s/0/1/0/all/0/1"
-    (if (use-region-p)
-        (url-hexify-string (buffer-substring
-                            (region-beginning)
-                            (region-end)))
-      (thing-at-point 'word)))))
+    (url-hexify-string (words-brust-read-string "Search in Arxiv::")))))
 
 
 (defun words-semantic-scholar ()
@@ -225,11 +209,7 @@ Suggestions: %s
   (browse-url
    (format
     "https://www.semanticscholar.org/search?q=%s"
-    (if (use-region-p)
-        (url-hexify-string (buffer-substring
-                            (region-beginning)
-                            (region-end)))
-      (thing-at-point 'word)))))
+    (url-hexify-string (words-brust-read-string "Search in Semanticscholar::")))))
 
 
 ;; ** Convenience functions for scientific queries
@@ -310,16 +290,14 @@ Assumes selected code is in English."
   (interactive
    (let ((-from (ivy-read
                  "From Language (%d): "
-                 (mapcar 'car words-languages))))
+                 (mapcar 'car words-languages)
+                 :preselect "Catalan")))
      (list -from
            (ivy-read
             "To Language (%d): "
-            (delete -from (mapcar 'car words-languages))))))
-  (let* ((text (if (use-region-p)
-                   (buffer-substring
-                    (region-beginning)
-                    (region-end))
-                 (thing-at-point 'word)))
+            (delete -from (mapcar 'car words-languages))
+            :preselect "English"))))
+  (let* ((text (words-brust-read-string "Word to translate?"))
          (url (format "http://mymemory.translated.net/api/get?q=%s&langpair=%s|%s"
                       text
                       (cdr (assoc from-language words-languages))
@@ -336,11 +314,7 @@ Assumes selected code is in English."
   "Search for file names matching word or selection at point using locate.
 Opens an org-buffer with links to results."
   (interactive)
-  (let ((query (if (use-region-p)
-                   (buffer-substring
-                    (region-beginning)
-                    (region-end))
-                 (thing-at-point 'word))))
+  (let ((query (words-brust-read-string "String to search for?")))
     (switch-to-buffer-other-window "*locate*")
     (erase-buffer)
     (insert
@@ -365,7 +339,6 @@ Opens an org-buffer with links to results."
                  (thing-at-point 'word))))
     (let ((ivy-initial-inputs-alist `((swiper-multi . ,query))))
       (swiper-all))))
-
 
 
 (defun words-finder ()
@@ -401,16 +374,15 @@ end tell")))
 
 (defhydra words-hydra (:color blue :hint nil)
   "
-words
-_d_: Dictionary  _g_: Google           _T_: Twitter _b_: Bibtex      _r_: Translate
-_t_: Thesaurus   _G_: Google Scholar   ^ ^          _w_: swiper-all
-_s_: Spell       _c_: Crossref         ^ ^          _M_: Unix locate
-^ ^              _S_: Scopus           _m_: Singular Manual
-^ ^              _W_: Web Of Science
-^ ^              _p_: Pubmed
-^ ^              _a_: Arxiv
-^ ^              _o_: Semantic Scholar
-_q_: quit
+::::::::::::::::  words  ::::::::::::::::
+_d_: Dictionary  _l_: Unix locate   _T_: Twitter
+_t_: Thesaurus   _w_: swiper-all    _S_: Scopus
+_s_: Spell       _b_: Bibtex        _p_: Pubmed
+_r_: Translate     ^  ^             _G_: Google Scholar
+_a_: Arxiv       ^  ^               _W_: Web Of Science
+_g_: Google       ^ ^               _o_: Semantic Scholar
+_c_: Crossref
+_m_: Singular Manual                 _q_: quit
 "
   ("d" words-dictionary "dictionary")
   ("t" words-thesaurus "thesaurus")
@@ -428,7 +400,7 @@ _q_: quit
   ("b" words-bibtex "bibtex")
   ;; ("f" words-finder "Mac Finder")
   ("w" words-swiper-all "swiper-all")
-  ("M" words-locate "unix-locate")
+  ("l" words-locate "unix-locate")
   ;; ("k" words-speak "Speak")
   ("r" words-translate "Translate")
   ("q" nil "cancel"))
