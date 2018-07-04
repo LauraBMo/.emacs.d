@@ -4426,13 +4426,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 *** Words
 #+BEGIN_SRC elisp
   (require 'words)
-  (setq words-languages  '(("German" . "de")
-                           ("Italian" . "it")
+  (setq words-languages  '(("German"    . "de")
+                           ("Italian"   . "it")
                            ;;("Chinese" . "zh")
-                           ("Spanish" . "es")
-                           ("Catalan" . "ca")
-                           ("English" . "en")
-                           ("Sweden"  . "sv")))
+                           ("Spanish"   . "es")
+                           ("Catalan"   . "ca")
+                           ("French"    . "fr")
+                           ("English"   . "en")
+                           ("Sweden"    . "sv")))
 #+END_SRC
 *** YaSnippet
 #+BEGIN_SRC elisp
