@@ -4141,7 +4141,39 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (defun brust-pdf-view-previous-line-or-previous-page-5 (args)
     (interactive "p")
     (brust-by-five #'pdf-view-previous-line-or-previous-page args))
+
+  ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
+  ;; https://github.com/politza/pdf-tools/issues/18
+  (defun brds/pdf-set-last-viewed-bookmark ()
+    (interactive)
+    (when (eq major-mode 'pdf-view-mode)
+      (bookmark-set (brds/pdf-generate-bookmark-name))))
+
+  (defun brds/pdf-jump-last-viewed-bookmark ()
+    (when
+        (brds/pdf-has-last-viewed-bookmark)
+      (bookmark-jump (brds/pdf-generate-bookmark-name))))
+
+  (defun brds/pdf-has-last-viewed-bookmark ()
+    (assoc
+     (brds/pdf-generate-bookmark-name) bookmark-alist))
+
+  (defun brds/pdf-generate-bookmark-name ()
+    (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
+
+  (defun brds/pdf-set-all-last-viewed-bookmarks ()
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (brds/pdf-set-last-viewed-bookmark))))
+
+  (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
+  (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
+  (unless noninteractive  ; as `save-place-mode' does
+    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))
 #+END_SRC
+
+#+RESULTS:
+| tex-delete-last-temp-files | company-clang-set-prefix | company-statistics--maybe-save | reftex-kill-emacs-hook | org-babel-remove-temporary-directory | smex-save-to-file | recentf-save-list | tramp-dump-connection-properties | brds/pdf-set-all-last-viewed-bookmarks | bookmark-exit-hook-internal | desktop-kill | keyfreq-mustsave--do | server-force-stop | savehist-autosave | save-place-kill-emacs-hook |
 
 *** Projectile
 #+BEGIN_SRC elisp
