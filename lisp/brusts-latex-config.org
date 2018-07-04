@@ -1,3 +1,7 @@
+#-*- mode: org -*-
+#+STARTUP: heads
+
+#+TITLE=Specific LaTeX configures
 
 * TODO init
 ** COMMENT To insert accents.
@@ -16,28 +20,30 @@
     (flyspell-mode 1)
     (outline-minor-mode 1)
     (flyspell-ignore-tex) ;; Now ispell knows it is working on a LaTeX file.
-    (TeX-interactive-mode 1)
+    ;; (TeX-interactive-mode 1)
     (yas-minor-mode -1)
-    (brust-er/add-latex-mode-expansions)
-    (LaTeX-mode-hook-company-setup)
+
     ;; mic-parent futures
     (paren-toggle-matching-paired-delimiter 1)
     (paren-toggle-matching-quoted-paren 1)
+    (electric-pair-local-mode 1)
+    (bratex-config)
+    ;; (add-hook 'TeX-update-style-hook #'rainbow-delimiters-mode-enable)
     (setq TeX-clean-confirm nil
-          LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
+          ;; LaTeX-electric-left-right-brace t
+          ;; LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
           LaTeX-clean-intermediate-suffixes
           (append LaTeX-clean-intermediate-suffixes
                   (list
-                   "-blx\\.bib"
+                   "-blx"
                    "\\.fdb_latexmk"
                    "\\.run\\.xml")))
-    ;; (paren-toggle-matching-quoted-paren)
-    ;; (paren-toggle-matching-paired-delimiter)
-    ;; (imenu-add-menubar-index)
-    ;; (TeX-fold-mode) ;; fold LaTeX macros
-    )
+    (LaTeX-mode-hook-company-setup))
 
-  (add-hook 'LaTeX-mode-hook #'brust-LaTeX-mode-hook)
+  ;; (imenu-add-menubar-index)
+  ;; (TeX-fold-mode) ;; fold LaTeX macros
+
+  (add-hook 'LaTeX-mode-hook #'brust-LaTeX-mode-hook t)
 
   ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
 
@@ -58,6 +64,9 @@
 
 #+END_SRC
 
+#+RESULTS:
+| y-sp | preview-mode-setup | er/add-latex-mode-expansions | visual-line-mode | org-ref-latex-cite-on | aggressive-indent-mode | brust-LaTeX-mode-hook |
+
 
 * config
 ** Save options
@@ -75,13 +84,6 @@
                 TeX-master 'dwin                 ;; AUCTeX will try to avoid querying
                 TeX-default-mode 'LaTeX-mode     ;; always use LaTeX-mode 
                 TeX-auto-local "~/.auctex-auto") ;; to not see the ./auto directory 
-#+END_SRC
-
-** Debug
-#+BEGIN_SRC elisp
-  (setq TeX-debug-bad-boxes t
-        TeX-debug-warnings t)
-
 #+END_SRC
 
 ** Clean LaTeX intermediate files
@@ -185,32 +187,28 @@ Defaults
 
 #+BEGIN_SRC elisp
   (setq LaTeX-section-list
-        '(("part" 0)
-          ("chapter" 1)
-          ("section" 2)
-          ("subsection" 3)
+        '(("part"          0)
+          ("chapter"       1)
+          ("section"       2)
+          ("subsection"    3)
           ("subsubsection" 4)
-          ("paragraph" 5)
-          ("subparagraph" 6)))
+          ("paragraph"     5)
+          ("subparagraph"  6)))
 #+END_SRC
 
 *** Outline extra
 #+BEGIN_SRC elisp
   (setq TeX-outline-extra
-        '(("\\\\begin\{definition\}" 4)
-          ("\\\\begin\{theorem\}" 4)
-          ("\\\\begin\{remark\}" 4)
+        '(("\\\\begin\{definition\}"  3)
+          ("\\\\begin\{theorem\}"     3)
+          ("\\\\begin\{remark\}"      4)
           ("\\\\begin\{proposition\}" 4)
-          ("\\\\begin\{lemma\}" 4)
-          ("\\\\begin\{notation\}" 4)
-          ("\\\\begin\{corollary\}" 4)
-          ("\\\\begin\{proof\}" 5)
-          ("\\\\begin\{frame\}" 2)
-          ("\\\\item" 6)
-          ;; ("\\\\\\[\\\\begin\{tikzcd\}" 4)
-          ;; ("\\\\begin\{tikzpicture\}" 5)
-          ;; ("\\\\begin\{equation\}" 5)
-          ;; ("\\\\begin\{proof\}" 4)
+          ("\\\\begin\{lemma\}"       4)
+          ("\\\\begin\{notation\}"    4)
+          ("\\\\begin\{corollary\}"   4)
+          ("\\\\begin\{proof\}"       5)
+          ("\\\\begin\{frame\}"       2)
+          ;; ("\\\\item"              6)
           ))
 #+END_SRC
 
@@ -221,7 +219,7 @@ Defaults
 #+END_SRC
 
 *** Unimportant math LaTeX face (by Endless)
-*** Deface
+**** Deface
 #+BEGIN_SRC elisp
 (defface endless/unimportant-latex-face
   '((t :height 0.7
@@ -230,27 +228,26 @@ Defaults
 
 #+END_SRC
 
-*** Add font lock to the keywords
+**** Add font lock to the keywords
 #+BEGIN_SRC elisp
-(font-lock-add-keywords
- 'latex-mode
- `((,(rx (or (and "\\" (or (any ",.!;")
-                           (and (or "left" "right"
-                                    "big" "Big")
-                                symbol-end)))
-             (any "_^")))
-    0 'endless/unimportant-latex-face prepend))
- 'end)
-
+  (font-lock-add-keywords
+   'latex-mode
+   `((,(rx (or (and "\\" (or (any ",.!;")
+                             (and (or "left" "right"
+                                      "big" "Big")
+                                  symbol-end)))
+               (any "_^")))
+      0 'endless/unimportant-latex-face prepend))
+   'end)
 #+END_SRC
 
-** Pdf interaction
+** Compilation
 *** Latexmk
 #+BEGIN_SRC elisp
-;;  (use-package auctex-latexmk
-;;    :config
-;;    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
-;;  (auctex-latexmk-setup)
+  ;;  (use-package auctex-latexmk
+  ;;    :config
+  ;;    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+  ;;  (auctex-latexmk-setup)
 
   (add-to-list 
    'TeX-expand-list
@@ -272,15 +269,79 @@ Defaults
   (add-to-list 'TeX-command-list '("Make" "make" TeX-run-compile nil t))
 
   (defun brust-LaTeX-save nil
-  (interactive)
-    (save-buffer)
-    (pdf-sync-forward-search)
-    (golden-ratio-mode -1)
-    (balance-windows)
-    (golden-ratio-mode 1))
+    (interactive)
+    (save-buffer))
+
+  (defun brust-LaTeX-next-error (args)
+    (interactive "p")
+    (if-let ((active-buffer (TeX-active-buffer)))
+        (if (< 15 args)
+            (TeX-error-overview)
+          (when (< 3 args)
+            (save-excursion
+              (set-buffer active-buffer)
+              (TeX-parse-all-errors)
+              (if TeX-error-list
+                  (message ":::: WARING :::: There are errors ::::")
+                (message ":::: Be happy, your LaTeX code has no errors ::::"))))
+          (call-interactively 'TeX-next-error))
+      (message "There is no active buffer")))
+
+
+  ;;(let ((TeX-save-query nil)
+  ;;      ;; (TeX-process-asynchronous nil)
+  ;;      (master-file (TeX-master-file)))
+  ;;  (TeX-save-document "")
+  ;;  ;; (TeX-command "my-LatexMk" 'TeX-master-file -1)
+  ;;  (TeX-run-TeX "latexmk" "latexmk -pdf" master-file) 
+  ;;  ;;-pvc optin (look above) means continue compiling 
+  ;;  ;; but, how do we rebuilt errors on "continues compliling"?
+  ;;  ;; It is easyer just to call latexmk every time we save,
+  ;;  ;; Which in practice is exactly the same.
+  ;;  (if (plist-get TeX-error-report-switches (intern master-file))
+  ;;      (message ":::: WARING :::: latexmk done with errors ::::")
+  ;;    (message "Be happy, latexmk done with no errors"))))
+  ;;   (when (get-buffer (concat (file-name-base (buffer-name)) ".pdf"))
+  ;;     (pdf-sync-forward-search)
+  ;;     (golden-ratio-mode -1)
+  ;;     (balance-windows)
+  ;;     (golden-ratio-mode 1)))
 
 #+END_SRC
 
+#+RESULTS:
+: brust-LaTeX-next-error
+
+*** Not show compiling buffer
+#+BEGIN_SRC elisp
+  (setq TeX-show-compilation nil)
+#+END_SRC
+
+#+RESULTS:
+
+*** Format errors be file-linenum-errors
+#+BEGIN_SRC elisp
+  (setq TeX-file-line-error t)
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** Show LaTeX help
+#+BEGIN_SRC elisp
+  (setq TeX-display-help t)
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** Debug
+#+BEGIN_SRC elisp
+  (setq TeX-debug-bad-boxes t
+        TeX-debug-warnings t)
+#+END_SRC
+
+** Pdf interaction
 *** To activate pdf/tex inverse/forward search
 #+BEGIN_SRC elisp
     (setq TeX-source-correlate-method 'synctex
@@ -397,7 +458,7 @@ Defaults
 *** Enviroment
 **** Function
 #+BEGIN_SRC elisp
-  (defun LaTeX-env-brust (&optional args)
+  (defun brust-LaTeX-env (&optional args)
     "Execute LaTex-environment or with argument:
 
   1. Change the environment with LaTeX-environment
@@ -421,6 +482,10 @@ Defaults
           (reftex-query-replace-document 
            (concat prefix-old ":" name) ;;str1
            (concat prefix-new ":" name))))))
+
+  (defun brust-LaTeX-env-change args
+    (interactive "P")
+    (brust-LaTeX-env (not args)))
 #+END_SRC
 
 **** Names envoirments
@@ -430,6 +495,30 @@ Defaults
       ("proposition" . "prop") ("remark" . "rmk")
       ("definition" . "def") ("theorem" . "thr")
       ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
+#+END_SRC
+
+*** Query replace only in math formlulas
+    From https://stackoverflow.com/questions/19845598/emacs-regex-replacing-a-string-inside-a-latex-equation 
+#+BEGIN_SRC elisp
+  (defun latex-replace-in-math (args)
+    "Call `query-replace' (or `query-replace-regexp' when called with argument) with `isearch-filter-predicate' set to filter out matches outside LaTeX math environments.
+  Searching candidates to replace is case sensitive."
+    (interactive "p")
+    (let ((isearch-filter-predicate
+           (lambda (BEG END)
+             (save-excursion (save-match-data (goto-char BEG) (texmathp)))))
+          (case-fold-search nil))
+      (call-interactively 'query-replace)))
+
+  (defun latex-replace-regexp-in-math (args)
+    "Call `query-replace' (or `query-replace-regexp' when called with argument) with `isearch-filter-predicate' set to filter out matches outside LaTeX math environments.
+  Searching candidates to replace is case sensitive."
+    (interactive "p")
+    (let ((isearch-filter-predicate
+           (lambda (BEG END)
+             (save-excursion (save-match-data (goto-char BEG) (texmathp)))))
+          (case-fold-search nil))
+      (call-interactively 'query-replace-regexp)))
 #+END_SRC
 
 *** COMMENT Iniciar un document LaTeX
@@ -517,39 +606,6 @@ Defaults
     (interactive) (insert "\\(?\\) ") (cdlatex-position-cursor))
   (defun brust-LaTeX-insert-math2 nil
     (interactive) (insert "\n\\[\n  ?\n\\] ") (cdlatex-position-cursor))
-#+END_SRC
-*** My er/mark-LaTeX
-#+BEGIN_SRC elisp
-  (defun er/mark-LaTeX-inside-math ()
-    "Mark inside current math environment"
-    (interactive)
-    (when (texmathp)
-      (let* ((string (car texmathp-why))
-             (N (length (car texmathp-why)))
-             (type (cadr (assoc string texmathp-tex-commands1))))
-        (er/mark-LaTeX-math)
-        (when (or (eq type 'sw-toggle) (eq type 'sw-on))
-          (forward-char N)
-          (exchange-point-and-mark)
-          (backward-char N)
-          (exchange-point-and-mark)))))
-
-  (defun brust-er/add-latex-mode-expansions ()
-    "Adds expansions for buffers in latex-mode"
-    (set (make-local-variable 'er/try-expand-list)
-         (mapc (lambda (xx) (setq er/try-expand-list
-                                  (delete xx er/try-expand-list)))
-               '(er/mark-outside-quotes
-                 er/mark-inside-quotes
-                 er/mark-url
-                 er/mark-email))
-         (append
-          er/try-expand-list
-          '(LaTeX-mark-environment
-            LaTeX-mark-section
-            er/mark-LaTeX-inside-environment
-            er/mark-LaTeX-inside-math
-            er/mark-LaTeX-math))))
 #+END_SRC
 *** TODO COMMENT Replace
 ****** Var
@@ -766,6 +822,27 @@ Defaults
 #+RESULTS:
 : ((part . 0) (chapter . 1) (section . 2) (beamersec . -2) (subsection . 3) (beamersubsec . -3) (subsubsection . 4) (beamersubsubsec . -4) (paragraph . 5) (subparagraph . 6) (frametitle . 7) (addchap . -1) (addsec . -2))
 
+*** Toc level funcions
+#+BEGIN_SRC elisp
+  (defun brust-reftex-toc-level-1 nil
+    (interactive)
+    (reftex-toc-max-level 1))
+  (defun brust-reftex-toc-level-2 nil
+    (interactive)
+    (reftex-toc-max-level 2))
+  (defun brust-reftex-toc-level-3 nil
+    (interactive)
+    (reftex-toc-max-level 3))
+  (defun brust-reftex-toc-level-4 nil
+    (interactive)
+    (reftex-toc-max-level 4))
+  (defun brust-reftex-toc-level-5 nil
+    (interactive)
+    (reftex-toc-max-level 5))
+  (defun brust-reftex-toc-level-6 nil
+    (interactive)
+    (reftex-toc-max-level 6))
+#+END_SRC
 *** Selection mode key-map
 #+BEGIN_SRC elisp
   (defun brust-reftex-set-select-label-mode-map nil
@@ -775,6 +852,12 @@ Defaults
 
   (defun brust-reftex-set-toc-mode-map nil
     (bind-keys :map reftex-toc-mode-map
+               ("1" . brust-reftex-toc-level-1)
+               ("2" . brust-reftex-toc-level-2)
+               ("3" . brust-reftex-toc-level-3)
+               ("4" . brust-reftex-toc-level-4)
+               ("5" . brust-reftex-toc-level-5)
+               ("6" . brust-reftex-toc-level-6)
                ("q" . reftex-toc-quit-and-kill)
                ("k" . reftex-toc-next)
                ("i" . reftex-toc-previous)
@@ -855,8 +938,8 @@ There are many defaults that I do not use, this is to clean a bit.
           #("eqnarray" 0 1 (idx 20))
           #("eqnarray*" 0 1 (idx 21))
           #("equation" 0 1 (idx 22))
-          #("figure" 0 1 (idx 23))
-          #("figure*" 0 1 (idx 24))
+          ;; #("figure" 0 1 (idx 23))
+          ;; #("figure*" 0 1 (idx 24))
           #("fussypar" 0 1 (idx 27))
           #("letter" 0 1 (idx 29))
           #("list" 0 1 (idx 30))
@@ -870,7 +953,7 @@ There are many defaults that I do not use, this is to clean a bit.
           #("tabular*" 0 1 (idx 40))
           #("thebibliography" 0 1 (idx 41))
           #("theindex" 0 1 (idx 42))
-          #("titlepage" 0 1 (idx 43))
+          ;; #("titlepage" 0 1 (idx 43))
           #("trivlist" 0 1 (idx 44))
           #("alignat" 0 1 (idx 50))
           #("alignat*" 0 1 (idx 51))
@@ -879,8 +962,8 @@ There are many defaults that I do not use, this is to clean a bit.
           #("xxalignat" 0 1 (idx 54))
           #("multline" 0 1 (idx 55))
           #("multline*" 0 1 (idx 56))
-          #("flalign" 0 1 (idx 57))
-          #("flalign*" 0 1 (idx 58))
+          ;; #("flalign" 0 1 (idx 57))
+          ;; #("flalign*" 0 1 (idx 58))
           #("gather" 0 1 (idx 59))
           #("gather*" 0 1 (idx 60))
           #("epsfigure" 0 1 (idx 61))
@@ -1061,6 +1144,17 @@ There are many defaults that I do not use, this is to clean a bit.
       nil nil)
      ("-"  "Insert \\item" "\\item" nil t nil)
      ("--" "Insert \\item[]" "\\item[?]" cdlatex-position-cursor t nil)
+                                 (forward-char 1)) t nil)
+     ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
+     ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
+     ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
+     ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
+     ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
+
+     ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
+     ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
+     ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+     ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
      )
    do (cl-pushnew xx cdlatex-command-alist))
 #+END_SRC
@@ -1148,6 +1242,7 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?I    "\\mathit"            "\\textit" t   nil nil )
         ( ?l    nil                   "\\textsl" t   nil nil )
         ( ?b    "\\mathbf"            "\\textbf" t   nil nil )
+        ( ?d    "\\mathbb"            "\\textbb" t   nil nil )
         ( ?E    "\\mathem"            "\\emph"   t   nil nil )
         ( ?e    "\\mathem"            "\\emph"   t   nil nil )
         ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
@@ -1158,6 +1253,43 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?3    "\\scriptscriptstyle" nil        nil nil nil )))
 
 #+END_SRC
+
+#+RESULTS:
+| 114 | \mathscr           | nil     | t   | nil | nil |
+| 116 | \overline          | nil     | t   | nil | nil |
+| 111 | \op                | nil     | t   | nil | nil |
+| 115 | \s                 | nil     | t   | nil | nil |
+|  46 | \dot               | nil     | t   | t   | nil |
+|  58 | \ddot              | nil     | t   | t   | nil |
+| 126 | \tilde             | nil     | t   | t   | nil |
+|  78 | \widetilde         | nil     | t   | t   | nil |
+|  94 | \hat               | nil     | t   | t   | nil |
+|  72 | \widehat           | nil     | t   | t   | nil |
+|  45 | \bar               | nil     | t   | t   | nil |
+|  84 | \overline          | nil     | t   | nil | nil |
+|  95 | \underline         | nil     | t   | nil | nil |
+| 123 | \overbrace         | nil     | t   | nil | nil |
+| 125 | \underbrace        | nil     | t   | nil | nil |
+|  62 | \vec               | nil     | t   | t   | nil |
+|  47 | \grave             | nil     | t   | t   | nil |
+|  92 | \acute             | nil     | t   | t   | nil |
+| 118 | \check             | nil     | t   | t   | nil |
+| 117 | \breve             | nil     | t   | t   | nil |
+| 109 | \mbox              | nil     | t   | nil | nil |
+|  99 | \mathcal           | nil     | t   | nil | nil |
+| 105 | \im                | \textit | t   | nil | nil |
+|  73 | \mathit            | \textit | t   | nil | nil |
+| 108 | nil                | \textsl | t   | nil | nil |
+|  98 | \mathbf            | \textbf | t   | nil | nil |
+| 100 | \mathbb            | \textbb | t   | nil | nil |
+|  69 | \mathem            | \emph   | t   | nil | nil |
+| 101 | \mathem            | \emph   | t   | nil | nil |
+| 121 | \mathtt            | \texttt | t   | nil | nil |
+| 102 | \mathfrak          | \textsf | t   | nil | nil |
+|  48 | \textstyle         | nil     | nil | nil | nil |
+|  49 | \displaystyle      | nil     | nil | nil | nil |
+|  50 | \scriptstyle       | nil     | nil | nil | nil |
+|  51 | \scriptscriptstyle | nil     | nil | nil | nil |
 
 ** Math symbol list =ñ=
 

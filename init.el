@@ -3,12 +3,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
- '(org-agenda-files (quote ("~/Dropbox/Org/")))
  '(package-selected-packages
    (quote
-    (dired+ magit-gh-pulls rainbow-delimiters session auctex-latexmk auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-math company-auctex color-theme chess cdlatex auto-compile ace-window)))
+    (vlf-setup vlf counsel-org-clock interleave dired+ magit-gh-pulls rainbow-delimiters session auctex-latexmk auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord golden-ratio use-package diminish pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords spinner smex smartparens smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-auctex color-theme chess cdlatex auto-compile ace-window)))
  '(safe-local-variable-values (quote ((eval brust-wc-save-words)))))
+ 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -25,9 +24,10 @@
  '(git-gutter+-added ((t (:background "gray16" :foreground "dark orange" :height 0.7))))
  '(git-gutter+-deleted ((t (:background "grey16" :foreground "firebrick" :height 0.9))))
  '(git-gutter+-modified ((t (:background "grey16" :foreground "dim gray" :height 0.9))))
+ '(hl-line ((t (:background "maroon"))))
  '(hydra-face-blue ((t (:foreground "turquoise" :weight bold))))
- '(hydra-face-red ((t (:foreground "firebrick1" :weight bold))))
  '(hydra-face-pink ((t (:foreground "hot pink" :weight bold))))
+ '(hydra-face-red ((t (:foreground "firebrick1" :weight bold))))
  '(lv-separator ((t (:background "white smoke"))))
  '(minibuffer-prompt ((t (:box (:line-width 1 :color "orange red" :style released-button) :foreground "#FDF4C1"))))
  '(org-block ((t (:inherit default))))
@@ -46,7 +46,18 @@
  '(swiper-match-face-1 ((t (:background "#615246"))))
  '(swiper-match-face-2 ((t (:background "#EC6E00"))))
  '(swiper-match-face-3 ((t (:background "#C69972"))))
- '(swiper-match-face-4 ((t (:background "#F15C79")))))
+ '(swiper-match-face-4 ((t (:background "#F15C79"))))
+ '(term ((t (:inherit default))))
+ '(term-color-black ((t (:foreground "#3F3F3F" :background "#2B2B2B"))))
+ '(term-color-blue ((t (:foreground "#7CB8BB" :background "#4C7073"))))
+ '(term-color-cyan ((t (:foreground "#93E0E3" :background "#8CD0D3"))))
+ '(term-color-green ((t (:foreground "#7F9F7F" :background "#9FC59F"))))
+ '(term-color-magenta ((t (:foreground "#DC8CC3" :background "#CC9393"))))
+ '(term-color-red ((t (:foreground "#AC7373" :background "#8C5353"))))
+ '(term-color-white ((t (:foreground "#DCDCCC" :background "#656555"))))
+ '(term-color-yellow ((t (:foreground "#DFAF8F" :background "#9FC59F"))))
+ '(term-default-bg-color ((t (:inherit term-color-black))))
+ '(term-default-fg-color ((t (:inherit term-color-white)))))
 
 
 ;;(add-to-list 'load-path "~/.emacs.d/lisp/benchmark-init-el-master/")
@@ -163,5 +174,5 @@ Subtrees under a COMMENTed header are not evaluated."
 (setq debug-on-error nil
       debug-init nil
       ;; Split windows a bit better (don't split horizontally, I have a widescreen :P)
-      split-height-threshold nil
-      split-width-threshold 180)
+      split-height-threshold 180
+      split-width-threshold nil)
