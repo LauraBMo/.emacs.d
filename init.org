@@ -3691,6 +3691,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+BEGIN_SRC elisp
   (use-package tex
     :ensure auctex
+    :defer t
     :mode ("\\.tex\\'"  . LaTeX-mode)
     :mode ("\\.sty\\'"  . LaTeX-mode)
     :mode ("\\.bib\\'"  . bibtex-mode)
@@ -3718,74 +3719,46 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       :ensure nil
       :config
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
-    :chords
-    (:map LaTeX-mode-map
-          ("cç" . org-ref-helm-insert-cite-link)
-          ("rç" . reftex-reference)
-          ;; ("eç" . brust-LaTeX-insert-up)
-          ;; ("wç" . brust-LaTeX-insert-down)
-          ;; ("qç" . brust-LaTeX-insert-backslash)
-          ("tç" . reftex-toc)
-          ("eç" . brust-LaTeX-env-change)
-          ;; ("q1" . latex/clean-fill-indent-environment)
-          ;; ("xç" . goto-last-change)
-          ;; ("w2" . LaTeX-env-brust)
-          )
     :bind
     (:map LaTeX-mode-map
-          ("ç"            . brust-LaTeX-insert-math1)
-          ("Ç"            . brust-LaTeX-insert-math2)
-          ("M-ç"          . brust-LaTeX-insert-ç)
-          ;; ("           ."              . brust-LaTeX-smart-period)
-          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ;; ("C-x C-s"      . brust-LaTeX-save)
-          ("C-c C-e"      . brust-LaTeX-env)
-          ("C-c n"        . TeX-next-error)
-          ("s-e"          . brust-LaTeX-next-error)
-          ;; ("C-c e"        . TeX-error-overview)
-          ("s-5"          . latex-replace-in-math)
-          ("s-C-5"        . latex-replace-regexp-in-math)
-          ;; ("C-c C-a"      . brust-compile-only)
-          ;; ("s-0"          . reftex-toc)
-          ("M-m"          . brust-LaTeX-insert-up)
-          ("M-n"          . brust-LaTeX-insert-down)
-          ;; ("s-ç"          . brust-LaTeX-smart-selection)
-          ("C-c C-q"      . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"  . brust-wc-save-words)
-          ;; ("C-c C-a"   . latex/compile-commands-until-done)
-          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"  . latex/up-section)
-          ;; ("<tab>"     . latex/hide-show)
-          ;; ("<backtab>" . latex/hide-show-all)
-          ;; (""          . latex/next-section)
-          ;; (""          . latex/next-section-same-level)
-          ;; (""          . latex/beginning-of-line)
-          ;; ("C-M-e"        . latex/end-of-environment)
-          ;; ("C-M-a"        . latex/beginning-of-environment)
-          ;; ("C-M-p"        . latex/backward-environment)
-          ;; ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . brust-cycle-texmath)
-          ))
+	  ("ç"            . brust-LaTeX-insert-math1)
+	  ("Ç"            . brust-LaTeX-insert-math2)
+	  ("M-ç"          . brust-LaTeX-insert-ç)
+	  ;; ("           ."              . brust-LaTeX-smart-period)
+	  ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+	  ;; ("C-x C-s"      . brust-LaTeX-save)
+	  ("C-c C-e"      . brust-LaTeX-env)
+	  ("C-c n"        . TeX-next-error)
+	  ("s-e"          . brust-LaTeX-next-error)
+	  ;; ("C-c e"        . TeX-error-overview)
+	  ("s-5"          . latex-replace-in-math)
+	  ("s-C-5"        . latex-replace-regexp-in-math)
+	  ;; ("C-c C-a"      . brust-compile-only)
+	  ;; ("s-0"          . reftex-toc)
+	  ("M-m"          . brust-LaTeX-insert-up)
+	  ("M-n"          . brust-LaTeX-insert-down)
+	  ;; ("s-ç"          . brust-LaTeX-smart-selection)
+	  ("C-c C-q"      . latex/clean-fill-indent-environment)
+	  ("C-c C-w C-s"  . brust-wc-save-words)
+	  ;; ("C-c C-a"   . latex/compile-commands-until-done)
+	  ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+			    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+	  ;; ("<M-S-up>"  . latex/up-section)
+	  ;; ("<tab>"     . latex/hide-show)
+	  ;; ("<backtab>" . latex/hide-show-all)
+	  ;; (""          . latex/next-section)
+	  ;; (""          . latex/next-section-same-level)
+	  ;; (""          . latex/beginning-of-line)
+	  ;; ("C-M-e"        . latex/end-of-environment)
+	  ;; ("C-M-a"        . latex/beginning-of-environment)
+	  ;; ("C-M-p"        . latex/backward-environment)
+	  ;; ("C-M-n"        . latex/forward-environment)
+	  ("s-9"          . brust-cycle-texmath)
+	  ))
 #+END_SRC
 
 #+RESULTS:
 : brust-cycle-texmath
-
-**** Bralatex
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
-
-#+RESULTS:
-: bratex
 
 *** TODO Magit
     For a git and github integration with emacs!

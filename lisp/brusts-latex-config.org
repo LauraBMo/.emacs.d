@@ -38,7 +38,8 @@
                    "-blx"
                    "\\.fdb_latexmk"
                    "\\.run\\.xml")))
-    (LaTeX-mode-hook-company-setup))
+    (LaTeX-mode-hook-company-setup)
+    (my-LaTeX-mode-chords))
 
   ;; (imenu-add-menubar-index)
   ;; (TeX-fold-mode) ;; fold LaTeX macros
@@ -65,8 +66,28 @@
 #+END_SRC
 
 #+RESULTS:
-| y-sp | preview-mode-setup | er/add-latex-mode-expansions | visual-line-mode | org-ref-latex-cite-on | aggressive-indent-mode | brust-LaTeX-mode-hook |
+| preview-mode-setup | er/add-latex-mode-expansions | aggressive-indent-mode | brust-LaTeX-mode-hook |
 
+
+** Define my chords
+#+BEGIN_SRC elisp
+  (defun my-LaTeX-mode-chords nil
+    (key-chord-define LaTeX-mode-map "cç" 'org-ref-helm-insert-cite-link)
+    (key-chord-define LaTeX-mode-map "rç" 'reftex-reference)
+    ;; (key-chord-define LaTeX-mode-map "eç" 'brust-LaTeX-insert-up)
+    ;; (key-chord-define LaTeX-mode-map "wç" 'brust-LaTeX-insert-down)
+    ;; (key-chord-define LaTeX-mode-map "qç" 'brust-LaTeX-insert-backslash)
+    (key-chord-define LaTeX-mode-map "tç" 'reftex-toc)
+    (key-chord-define LaTeX-mode-map "eç" 'brust-LaTeX-env-change)
+    ;; (key-chord-define LaTeX-mode-map "q1" 'latex/clean-fill-indent-environment)
+    ;; (key-chord-define LaTeX-mode-map "xç" 'goto-last-change)
+    ;; (key-chord-define LaTeX-mode-map "w2" 'LaTeX-env-brust)
+    )
+     
+#+END_SRC
+
+#+RESULTS:
+: my-LaTeX-mode-chords
 
 * config
 ** Save options
