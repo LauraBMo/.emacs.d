@@ -2484,12 +2484,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (company-abort)
       (if (fboundp 'cdlatex-tab)
           (cdlatex-tab)
-        (if (fboundp 'yas-expand)
+        (when (fboundp 'yas-expand)
             (yas-expand))))
+
     (defun brust-generic-company-setup (-ll)
       (make-local-variable 'company-backends)
       (cl-loop for -add-backend in (reverse -ll) do
                (add-to-list 'company-backends `,-add-backend)))
+
     (defun toggle-company-ispell nil
       (interactive)
       (cond
@@ -4508,6 +4510,17 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
           yas-wrap-around-region t)
     (yas-reload-all))
+
+  (use-package ivy-yasnippet
+    :config
+    (setq ivy-yasnippet-create-snippet-if-not-matched t)
+    :bind
+    ("C-c y" . ivy-yasnippet))
+
+
+  (use-package yasnippet-snippets
+    :after yasnippet
+    :config (yasnippet-snippets-initialize))
 #+END_SRC
 
 #+RESULTS:
