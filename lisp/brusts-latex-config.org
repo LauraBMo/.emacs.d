@@ -142,15 +142,15 @@
 
 ** TODO Bibtex
 #+BEGIN_SRC elisp
+  (require 'bibtex)
   (setq bibtex-maintain-sorted-entries t ;; to sort bibtex entries with C-c C-c
-        bibtex-align-at-equal-sign t ;; align entries to the equal sing
-        bibtex-entry-format
-        (append '(whitespace
-                  realign
-                  unify-case
-                  sort-fields)
-                bibtex-entry-format))
-
+	bibtex-align-at-equal-sign t ;; align entries to the equal sing
+	bibtex-entry-format
+	(append '(whitespace
+		  realign
+		  unify-case
+		  sort-fields)
+		bibtex-entry-format))
 #+END_SRC
 
 ** To get a full featured `LaTeX-section' command
@@ -1159,13 +1159,12 @@ There are many defaults that I do not use, this is to clean a bit.
 
      ("inc" "Insert \\includegraphics with file name"
       "\\includegraphics[]{?}" (lambda ()
-                                 (cdlatex-position-cursor)
-                                 (call-interactively 'cdlatex-insert-filename)
-                                 (forward-char 1))
+				 (cdlatex-position-cursor)
+				 (call-interactively 'cdlatex-insert-filename)
+				 (forward-char 1))
       nil nil)
      ("-"  "Insert \\item" "\\item" nil t nil)
      ("--" "Insert \\item[]" "\\item[?]" cdlatex-position-cursor t nil)
-                                 (forward-char 1)) t nil)
      ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
      ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
      ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
