@@ -275,7 +275,8 @@
 *** Use Caps as Super
 #+BEGIN_SRC elisp
   (shell-command "setxkbmap -option caps:super")
-  (shell-command "xmodmap ~/.Xmodmap")
+  ;; (shell-command "xmodmap ~/.Xmodmap")
+  (kill-buffer "*Shell Command Output*")
 #+END_SRC
 
 ** Package.el
