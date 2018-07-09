@@ -2511,6 +2511,22 @@ Return 'left, 'right, 'both or nil."
           beacon-size 25)
     (beacon-mode 1))
 #+END_SRC
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
+
 *** Company
 #+BEGIN_SRC elisp
   (use-package company
