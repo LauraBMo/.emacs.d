@@ -2511,6 +2511,12 @@ Return 'left, 'right, 'both or nil."
           beacon-size 25)
     (beacon-mode 1))
 #+END_SRC
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
 *** Bralatex
     Load before auctex ??2
 #+BEGIN_SRC elisp
