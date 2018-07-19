@@ -236,6 +236,25 @@
 
 #+END_SRC
 
+*** Delete bad timers
+#+BEGIN_SRC elisp
+  (run-with-idle-timer 5 nil #'brust-delete-bad-idle-timers)
+  ;; (run-with-idle-timer 5 nil #'brust-delete-bad-timers)
+
+  (defun brust-delete-bad-idle-timers nil
+    (setq timer-idle-list (cl-loop for -timer in timer-idle-list
+                                   when (ignore-errors (fboundp (timer--function -timer)))
+                                   collect -timer)))
+
+  (defun brust-delete-bad-timers nil
+    (setq timer-list (cl-loop for -timer in timer-list
+                              when (ignore-errors (fboundp (timer--function -timer)))
+                              collect -timer)))
+#+END_SRC
+
+#+RESULTS:
+: brust-delete-bad-timers
+
 *** Not edit the mini-buffer prompt
     Stop Cursor Going into mini-buffer prompt, from http://ergoemacs.org/emacs/emacs_stop_cursor_enter_prompt.html
 #+BEGIN_SRC elisp
