@@ -1,7 +1,7 @@
 #-*- mode: org -*-
 
 #+TITLE=Main config file
-#+STARTUP: overview
+#+STARTUP:overview
 
 (What the world needs (I think) is not
       (a Lisp (with fewer parentheses))
