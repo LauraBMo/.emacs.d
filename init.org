@@ -1933,10 +1933,10 @@ Single Capitals as you type."
                                            append xx)))))
       (find-file (cdr (assoc ξabbrevCode (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
                                                   append xx))))))
-
 #+END_SRC
 
-**** Direct functions
+**** Create and bind direct functions
+     Really useful working join with =which-key=.
 #+BEGIN_SRC elisp
   (let ((i 0))
     (cl-loop
