@@ -486,26 +486,52 @@
   (use-package smart-mode-line
     :init
     (setq sml/theme nil
-          ;; sml/theme 'smart-mode-line-powerline
-          ;; sml/theme 'light
-          ;; sml/theme 'respectful
-          sml/no-confirm-load-theme t
-          sml/replacer-regexp-list
-          '(
-            ;; ("^~/Dropbox/config/emacs/" ":con4e:")
-            (".*/[Tt]hesis/" ":Ths:")
-            ("^~/org/" ":Org:")
-            ("^~/\\.emacs\\.d/" ":E.D:")
-            ("^/sudo:.*:" ":SU:")
-            ("^~/Documents/" ":Doc:")
-            ("^~/Dropbox/" ":DB:")
-            ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
-            ("^~/[Gg]it/" ":Git:")
-            ("^~/[Gg]it[Hh]ub/" ":Git:")
-            ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:")))
+	  ;; sml/theme 'smart-mode-line-powerline
+	  ;; sml/theme 'light
+	  ;; sml/theme 'respectful
+	  sml/no-confirm-load-theme t
+	 ;; sml/replacer-regexp-list ;; now I use mode-line-buffer-identication
+	 ;; '(
+	 ;;   ;; ("^~/Dropbox/config/emacs/" ":con4e:")
+	 ;;   (".*/[Tt]hesis/" ":Ths:")
+	 ;;   ("^~/org/" ":Org:")
+	 ;;   ("^~/\\.emacs\\.d/" ":E.D:")
+	 ;;   ("^/sudo:.*:" ":SU:")
+	 ;;   ("^~/Documents/" ":Doc:")
+	 ;;   ("^~/Dropbox/" ":DB:")
+	 ;;   ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
+	 ;;   ("^~/[Gg]it/" ":Git:")
+	 ;;   ("^~/[Gg]it[Hh]ub/" ":Git:")
+	 ;;   ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:"))
+	 )
     ;; (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
     (sml/setup))
 #+END_SRC
+
+#+RESULTS:
+
+**** Mode-Line-Buffer-Identification:
+#+BEGIN_SRC elisp
+  (with-eval-after-load 'subr-x
+    (setq-default
+     mode-line-buffer-identification
+     '(:eval
+       (format-mode-line
+        (propertized-buffer-identification
+         (or
+          (when-let
+              ((buffer-file-truename buffer-file-truename)
+               (prj (cdr-safe (project-current)))
+               (prj-parent (file-name-directory
+                            (directory-file-name (expand-file-name prj)))))
+            (concat (file-relative-name
+                     (file-name-directory buffer-file-truename) prj-parent)
+                    (file-name-nondirectory buffer-file-truename)))
+          "%b"))))))
+#+END_SRC
+
+#+RESULTS:
+| :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
 
 **** My customization
 #+BEGIN_SRC elisp
