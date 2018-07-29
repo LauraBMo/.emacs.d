@@ -1,3 +1,6 @@
 [submodule "lisp/keyfreq"]
 	path = lisp/keyfreq
 	url = https://github.com/dacap/keyfreq.git
+[submodule "lisp/bibretrieve"]
+	path = lisp/bibretrieve
+	url = https://github.com/pzorin/bibretrieve.git

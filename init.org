@@ -1,7 +1,7 @@
 #-*- mode: org -*-
 
 #+TITLE=Main config file
-#+STARTUP: overview
+#+STARTUP:overview
 
 (What the world needs (I think) is not
       (a Lisp (with fewer parentheses))
@@ -236,6 +236,25 @@
 
 #+END_SRC
 
+*** Delete bad timers
+#+BEGIN_SRC elisp
+  (run-with-idle-timer 5 nil #'brust-delete-bad-idle-timers)
+  ;; (run-with-idle-timer 5 nil #'brust-delete-bad-timers)
+
+  (defun brust-delete-bad-idle-timers nil
+    (setq timer-idle-list (cl-loop for -timer in timer-idle-list
+                                   when (ignore-errors (fboundp (timer--function -timer)))
+                                   collect -timer)))
+
+  (defun brust-delete-bad-timers nil
+    (setq timer-list (cl-loop for -timer in timer-list
+                              when (ignore-errors (fboundp (timer--function -timer)))
+                              collect -timer)))
+#+END_SRC
+
+#+RESULTS:
+: brust-delete-bad-timers
+
 *** Not edit the mini-buffer prompt
     Stop Cursor Going into mini-buffer prompt, from http://ergoemacs.org/emacs/emacs_stop_cursor_enter_prompt.html
 #+BEGIN_SRC elisp
@@ -275,7 +294,8 @@
 *** Use Caps as Super
 #+BEGIN_SRC elisp
   (shell-command "setxkbmap -option caps:super")
-  (shell-command "xmodmap ~/.Xmodmap")
+  ;; (shell-command "xmodmap ~/.Xmodmap")
+  (kill-buffer "*Shell Command Output*")
 #+END_SRC
 
 ** Package.el
@@ -2269,6 +2289,63 @@ should be. After calling this function, call 'meeting-done' to reset the environ
   (global-set-key [remap beginning-of-buffer]
                   'brust-toggle-begin&end-of-buffer)
 #+END_SRC
+
+*** Smart yanking
+    From [[http://mbork.pl/2018-07-02_Smart_yanking]]
+    and [[https://gist.github.com/mbork/9ee1bd8216424e07342e88739fe65547][The code at github]]
+#+BEGIN_SRC elisp
+(defun has-space-at-boundary-p (string)
+  "Check whether STRING has any whitespace on the boundary.
+Return 'left, 'right, 'both or nil."
+  (let ((result nil))
+    (when (string-match-p "^[[:space:]]+" string)
+      (setq result 'left))
+    (when (string-match-p "[[:space:]]+$" string)
+      (if (eq result 'left)
+	  (setq result 'both)
+	(setq result 'right)))
+    result))
+
+(defun is-there-space-around-point-p ()
+  "Check whether there is whitespace around point.
+Return 'left, 'right, 'both or nil."
+  (let ((result nil))
+    (when (< (save-excursion
+               (skip-chars-backward "[:space:]"))
+             0)
+      (setq result 'left))
+    (when (> (save-excursion
+               (skip-chars-forward "[:space:]"))
+             0)
+      (if (eq result 'left)
+	  (setq result 'both)
+	(setq result 'right)))
+    result))
+
+(defun set-point-before-yanking (string)
+  "Put point in the appropriate place before yanking STRING."
+  (let ((space-in-yanked-string (has-space-at-boundary-p string))
+	(space-at-point (is-there-space-around-point-p)))
+    (cond ((and (eq space-in-yanked-string 'left)
+		(eq space-at-point 'left))
+	   (skip-chars-backward "[:space:]"))
+	  ((and (eq space-in-yanked-string 'right)
+		(eq space-at-point 'right))
+	   (skip-chars-forward "[:space:]")))))
+
+(defun set-point-before-yanking-if-in-text-mode (string)
+  "Invoke `set-point-before-yanking' in text modes."
+  (when (derived-mode-p 'text-mode)
+    (set-point-before-yanking string)))
+
+(advice-add
+ 'insert-for-yank
+ :before
+#'set-point-before-yanking-if-in-text-mode)
+#+END_SRC
+
+#+RESULTS:
+
 *** String start-p
 #+BEGIN_SRC elisp
   (defun string-starts-with-p (string prefix)
@@ -2479,6 +2556,28 @@ should be. After calling this function, call 'meeting-done' to reset the environ
           beacon-size 25)
     (beacon-mode 1))
 #+END_SRC
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
+
 *** Company
 #+BEGIN_SRC elisp
   (use-package company
@@ -2510,12 +2609,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (company-abort)
       (if (fboundp 'cdlatex-tab)
           (cdlatex-tab)
-        (if (fboundp 'yas-expand)
+        (when (fboundp 'yas-expand)
             (yas-expand))))
+
     (defun brust-generic-company-setup (-ll)
       (make-local-variable 'company-backends)
       (cl-loop for -add-backend in (reverse -ll) do
                (add-to-list 'company-backends `,-add-backend)))
+
     (defun toggle-company-ispell nil
       (interactive)
       (cond
@@ -3641,6 +3742,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+BEGIN_SRC elisp
   (use-package tex
     :ensure auctex
+    :defer t
     :mode ("\\.tex\\'"  . LaTeX-mode)
     :mode ("\\.sty\\'"  . LaTeX-mode)
     :mode ("\\.bib\\'"  . bibtex-mode)
@@ -3668,74 +3770,46 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       :ensure nil
       :config
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
-    :chords
-    (:map LaTeX-mode-map
-          ("cç" . org-ref-helm-insert-cite-link)
-          ("rç" . reftex-reference)
-          ;; ("eç" . brust-LaTeX-insert-up)
-          ;; ("wç" . brust-LaTeX-insert-down)
-          ;; ("qç" . brust-LaTeX-insert-backslash)
-          ("tç" . reftex-toc)
-          ("eç" . brust-LaTeX-env-change)
-          ;; ("q1" . latex/clean-fill-indent-environment)
-          ;; ("xç" . goto-last-change)
-          ;; ("w2" . LaTeX-env-brust)
-          )
     :bind
     (:map LaTeX-mode-map
-          ("ç"            . brust-LaTeX-insert-math1)
-          ("Ç"            . brust-LaTeX-insert-math2)
-          ("M-ç"          . brust-LaTeX-insert-ç)
-          ;; ("           ."              . brust-LaTeX-smart-period)
-          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ;; ("C-x C-s"      . brust-LaTeX-save)
-          ("C-c C-e"      . brust-LaTeX-env)
-          ("C-c n"        . TeX-next-error)
-          ("s-e"          . brust-LaTeX-next-error)
-          ;; ("C-c e"        . TeX-error-overview)
-          ("s-5"          . latex-replace-in-math)
-          ("s-C-5"        . latex-replace-regexp-in-math)
-          ;; ("C-c C-a"      . brust-compile-only)
-          ;; ("s-0"          . reftex-toc)
-          ("M-m"          . brust-LaTeX-insert-up)
-          ("M-n"          . brust-LaTeX-insert-down)
-          ;; ("s-ç"          . brust-LaTeX-smart-selection)
-          ("C-c C-q"      . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"  . brust-wc-save-words)
-          ;; ("C-c C-a"   . latex/compile-commands-until-done)
-          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"  . latex/up-section)
-          ;; ("<tab>"     . latex/hide-show)
-          ;; ("<backtab>" . latex/hide-show-all)
-          ;; (""          . latex/next-section)
-          ;; (""          . latex/next-section-same-level)
-          ;; (""          . latex/beginning-of-line)
-          ;; ("C-M-e"        . latex/end-of-environment)
-          ;; ("C-M-a"        . latex/beginning-of-environment)
-          ;; ("C-M-p"        . latex/backward-environment)
-          ;; ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . brust-cycle-texmath)
-          ))
+	  ("ç"            . brust-LaTeX-insert-math1)
+	  ("Ç"            . brust-LaTeX-insert-math2)
+	  ("M-ç"          . brust-LaTeX-insert-ç)
+	  ;; ("           ."              . brust-LaTeX-smart-period)
+	  ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+	  ;; ("C-x C-s"      . brust-LaTeX-save)
+	  ("C-c C-e"      . brust-LaTeX-env)
+	  ("C-c n"        . TeX-next-error)
+	  ("s-e"          . brust-LaTeX-next-error)
+	  ;; ("C-c e"        . TeX-error-overview)
+	  ("s-5"          . latex-replace-in-math)
+	  ("s-C-5"        . latex-replace-regexp-in-math)
+	  ;; ("C-c C-a"      . brust-compile-only)
+	  ;; ("s-0"          . reftex-toc)
+	  ("M-m"          . brust-LaTeX-insert-up)
+	  ("M-n"          . brust-LaTeX-insert-down)
+	  ;; ("s-ç"          . brust-LaTeX-smart-selection)
+	  ("C-c C-q"      . latex/clean-fill-indent-environment)
+	  ("C-c C-w C-s"  . brust-wc-save-words)
+	  ;; ("C-c C-a"   . latex/compile-commands-until-done)
+	  ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+			    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+	  ;; ("<M-S-up>"  . latex/up-section)
+	  ;; ("<tab>"     . latex/hide-show)
+	  ;; ("<backtab>" . latex/hide-show-all)
+	  ;; (""          . latex/next-section)
+	  ;; (""          . latex/next-section-same-level)
+	  ;; (""          . latex/beginning-of-line)
+	  ;; ("C-M-e"        . latex/end-of-environment)
+	  ;; ("C-M-a"        . latex/beginning-of-environment)
+	  ;; ("C-M-p"        . latex/backward-environment)
+	  ;; ("C-M-n"        . latex/forward-environment)
+	  ("s-9"          . brust-cycle-texmath)
+	  ))
 #+END_SRC
 
 #+RESULTS:
 : brust-cycle-texmath
-
-**** Bralatex
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
-
-#+RESULTS:
-: bratex
 
 *** TODO Magit
     For a git and github integration with emacs!
@@ -3801,123 +3875,158 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       - [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
       - [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
       -
-
+**** Add Path
 #+BEGIN_SRC elisp
-  (add-to-list 'load-path (expand-file-name "~/sources/mu/mu4e"))
-  (require 'mu4e)
-  (use-package mu4e
-    :ensure nil
-    :config
-    ;; Update mail using 'U' in main view:
-    ;; Include a bookmark to open all of my inboxes
-    (add-to-list 'mu4e-bookmarks
-                 (make-mu4e-bookmark
-                  :name "All Inboxes"
-                  :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox"
-                  :key ?i))
+   (add-to-list 'load-path (expand-file-name "~/sources/mu/mu4e"))
+   (require 'mu4e)
 
-    (add-to-list 'mu4e-bookmarks
-                 (make-mu4e-bookmark
-                  :name "New mathuab"
-                  :query "flag:unread AND maildir:/mathuab/INBOX"
-                  :key ?m))
+#+END_SRC
 
-    (defun search-for-sender (msg)
-      "Search for messages sent by the sender of the message at point."
-      (mu4e-headers-search
-       (concat "from:" (cdar (mu4e-message-field msg :from)))))
+**** Basic config
+  #+BEGIN_SRC elisp
+    (use-package mu4e
+      :ensure nil
+      :config
+      (defun search-for-sender (msg)
+        "Search for messages sent by the sender of the message at point."
+        (mu4e-headers-search
+         (concat "from:" (cdar (mu4e-message-field msg :from)))))
 
-    ;; define 'x' as the shortcut
-    (add-to-list 'mu4e-view-actions
-                 '("xsearch for sender" . search-for-sender) t)
-    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-    ;; Difine 'V' as the shortcut
-    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+      ;; define 'x' as the shortcut
+      (add-to-list 'mu4e-view-actions
+                   '("xsearch for sender" . search-for-sender) t)
+      (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+      ;; Difine 'V' as the shortcut
+      (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
-    ;; use imagemagick, if available
-    (when (fboundp 'imagemagick-register-types)
-      (imagemagick-register-types))
+      ;; use imagemagick, if available
+      (when (fboundp 'imagemagick-register-types)
+        (imagemagick-register-types))
 
-    (setq mu4e-get-mail-command "mbsync -Va"
-          mail-user-agent 'mu4e-user-agent
-          mu4e-view-show-addresses t
-          ;; use 'fancy' non-ascii characters in various places in mu4e
-          mu4e-use-fancy-chars t
-          ;; attempt to show images when viewing messages
-          mu4e-view-show-images t
-          ;; save attachment to my Downloads (this can also be a function)
-          mu4e-attachment-dir (expand-file-name "~/Downloads/")
-          ;; when search include related msg to the one matching the query.
-          mu4e-headers-include-related nil
-          ;; enable inline images
-          mu4e-maildir (expand-file-name "~/Maildir")
-          mu4e-mu-binary (expand-file-name "~/sources/mu/mu/mu")
-          ;; mu4e-mu-home
-          mu4e-html2text-command "w3m -T text/html"
-          ;; alternatively "textutil -stdin -format html -convert txt -stdout"
-          ;; mu4e-maildir-shortcuts
-          ;; '(;; ("/archive"     . ?a)
-          ;;   ("/Inbox"       . ?i)
-          ;;   ;; ("/work"        . ?w)
-          ;;   ("/Sent"        . ?s))
-          mu4e-user-mail-address-list `(,user-mail-address
-                                        "brust@mat.uab.cat"
-                                        )
-          ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
-          mu4e-compose-context-policy 'always-ask
-          ;; This allows me to use 'helm' to select mailboxes
-          mu4e-completing-read-function 'completing-read
-          ;; Why would I want to leave my message open after I've sent it?
-          message-kill-buffer-on-exit t
-          ;; Don't ask for a 'context' upon opening mu4e
-          mu4e-context-policy 'pick-first
-          ;; Don't ask to quit... why is this the default?
-          mu4e-confirm-quit nil
-          message-send-mail-function 'message-send-mail-with-sendmail
-          message-sendmail-extra-arguments '("--read-envelope-from")
-          message-sendmail-f-is-evil 't
-          sendmail-program "msmtp"
-          mu4e-contexts
-          (list
-           (make-mu4e-context
-            :name "gmail"
-            :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
-            :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches
-                             msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
-            :vars '((user-mail-address . "laurea987@gmail.com")
-                    (user-full-name . "Laura Brustenga")
-                    (mu4e-sent-folder . "/gmail/Sent")
-                    (mu4e-drafts-folder . "/gmail/Drafts")
-                    (mu4e-trash-folder . "/gmail/Trash")
-                    (mu4e-compose-signature . nil)
-                    (mu4e-compose-format-flowed . nil)))
-           (make-mu4e-context
-            :name "mathuab"
-            :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
-            :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches
-                             msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
-            :vars '((user-mail-address . "brust@mat.uab.cat")
-                    (user-full-name . "Laura Brustenga i Moncusí")
-                    (mu4e-sent-folder . "/mathuab/Sent")
-                    (mu4e-drafts-folder . "/mathuab/Drafts")
-                    (mu4e-trash-folder . "/mathuab/Trash")
-                    (mu4e-compose-signature . nil)
-                    (mu4e-compose-format-flowed . nil)))
+      (setq mu4e-get-mail-command "mbsync -Va"
+            mail-user-agent 'mu4e-user-agent
+            mu4e-view-show-addresses t
+            ;; use 'fancy' non-ascii characters in various places in mu4e
+            mu4e-use-fancy-chars t
+            ;; attempt to show images when viewing messages
+            mu4e-view-show-images t
+            ;; save attachment to my Downloads (this can also be a function)
+            mu4e-attachment-dir (expand-file-name "~/Downloads/")
+            ;; when search include related msg to the one matching the query.
+            mu4e-headers-include-related nil
+            ;; enable inline images
+            mu4e-maildir (expand-file-name "~/Maildir")
+            mu4e-mu-binary (expand-file-name "~/sources/mu/mu/mu")
+            ;; mu4e-mu-home
+            mu4e-html2text-command "w3m -T text/html"
+            ;; alternatively "textutil -stdin -format html -convert txt -stdout"
+            ;; mu4e-maildir-shortcuts
+            ;; '(;; ("/archive"     . ?a)
+            ;;   ("/Inbox"       . ?i)
+            ;;   ;; ("/work"        . ?w)
+            ;;   ("/Sent"        . ?s))
+            mu4e-user-mail-address-list `(,user-mail-address
+                                          "brust@mat.uab.cat"
+                                          )
+            ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
+            mu4e-compose-context-policy 'always-ask
+            ;; This allows me to use 'helm' to select mailboxes
+            mu4e-completing-read-function 'completing-read
+            ;; Why would I want to leave my message open after I've sent it?
+            message-kill-buffer-on-exit t
+            ;; Don't ask for a 'context' upon opening mu4e
+            mu4e-context-policy 'pick-first
+            ;; Don't ask to quit... why is this the default?
+            mu4e-confirm-quit nil
+            message-send-mail-function 'message-send-mail-with-sendmail
+            message-sendmail-extra-arguments '("--read-envelope-from")
+            message-sendmail-f-is-evil 't
+            sendmail-program "msmtp"
+            )
+      :bind
+      (:map mu4e-headers-mode-map
+            ("k" . mu4e-headers-next)
+            ("i" . mu4e-headers-prev)))
+  #+END_SRC
+
+  #+RESULTS:
+  : mu4e-headers-prev
+
+**** My Contexts
+#+BEGIN_SRC elisp
+  (setq mu4e-contexts
+        (list
+         (make-mu4e-context
+          :name "gmail"
+          :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+          :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
+          :vars '((user-mail-address . "laurea987@gmail.com")
+                  (user-full-name . "Laura Brustenga")
+                  (mu4e-sent-folder . "/gmail/Sent")
+                  (mu4e-drafts-folder . "/gmail/Drafts")
+                  (mu4e-trash-folder . "/gmail/Trash")
+                  (mu4e-compose-signature . nil)
+                  (mu4e-compose-format-flowed . nil)))
+         (make-mu4e-context
+          :name "mathuab"
+          :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
+          :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches
+                           msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+          :vars '((user-mail-address . "brust@mat.uab.cat")
+                  (user-full-name . "Laura Brustenga i Moncusí")
+                  (mu4e-sent-folder . "/mathuab/Sent")
+                  (mu4e-drafts-folder . "/mathuab/Drafts")
+                  (mu4e-trash-folder . "/mathuab/Trash")
+                  (mu4e-compose-signature . nil)
+                  (mu4e-compose-format-flowed . nil)))))
+
+#+END_SRC
+**** Bookmarkstr rr
+#+BEGIN_SRC elisp
+      ;; Update mail using 'U' in main view:
+      ;; Include a bookmark to open all of my inboxes
+      (add-to-list 'mu4e-bookmarks
+                   (make-mu4e-bookmark
+                    :name "All Inboxes"
+                    :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox"
+                    :key ?i))
+
+      (add-to-list 'mu4e-bookmarks
+                   (make-mu4e-bookmark
+                    :name "New mathuab"
+                    :query "flag:unread AND maildir:/mathuab/INBOX"
+                    :key ?m))
+#+END_SRC
+**** Alert
+#+BEGIN_SRC elisp
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e
+    :init
+    (setq mu4e-alert-interesting-mail-query
+          (concat
+           "flag:unread maildir:/mathuab/INBOX"
+           "OR"
+           "flag:unread maildir:/Gmail/Inbox"
            ))
-    :bind
-    (:map mu4e-headers-mode-map
-          ("k" . mu4e-headers-next)
-          ("i" . mu4e-headers-prev)))
+    (mu4e-alert-enable-mode-line-display)
+    (defun gjstein-refresh-mu4e-alert-mode-line ()
+      (interactive)
+      (mu4e~proc-kill)
+      (mu4e-alert-enable-mode-line-display)
+      )
+    (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
+    )
 #+END_SRC
 
 #+RESULTS:
-: mu4e-headers-prev
 
 *** Nyan
     Show the rainbow line.
@@ -4534,6 +4643,16 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ;; yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
           yas-wrap-around-region t)
     (yas-reload-all))
+
+  (use-package ivy-yasnippet
+    :config
+    (setq ivy-yasnippet-create-snippet-if-not-matched t)
+    :bind
+    ("C-c y" . ivy-yasnippet))
+
+  (use-package yasnippet-snippets
+    :after yasnippet
+    :config (yasnippet-snippets-initialize))
 #+END_SRC
 
 #+RESULTS:
