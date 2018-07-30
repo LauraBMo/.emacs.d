@@ -1613,31 +1613,28 @@
                    (insert closing)
                    (backward-char (* dir i)))))
       t)
-
 #+END_SRC
 
 **** By right
 #+BEGIN_SRC elisp
-  (defun close-quoted-open-paren-right (args)
+  (defun close-quoted-open-paren-right (&optional args)
     (interactive "P")
-    (or args (setq args 1))
-    (close-quoted-open-paren args 0))
+    (close-quoted-open-paren (if (numberp args) args 1) 0))
 
   (defun close-all-open-paren-right nil
     (interactive)
-    (while  (ignore-errors (close-quoted-open-paren-right 1))))
+    (while (ignore-errors (close-quoted-open-paren-right))))
 
 #+END_SRC
 **** By left
 #+BEGIN_SRC elisp
-  (defun close-quoted-open-paren-left (args)
+  (defun close-quoted-open-paren-left (&optional args)
     (interactive "P")
-    (or args (setq args 1))
-    (close-quoted-open-paren args 1))
+    (close-quoted-open-paren (if (numberp args) args 1) 1))
 
   (defun close-all-open-paren-left nil
     (interactive)
-    (while  (ignore-errors (close-quoted-open-paren-left 1))))
+    (while (ignore-errors (close-quoted-open-paren-left))))
 #+END_SRC
 **** By right or left
 #+BEGIN_SRC elisp
@@ -1651,21 +1648,54 @@
         (goto-char pnt)
         p)))
 
-  (defun close-quoted-open-paren-right-or-left (args)
+  (defun close-quoted-open-paren-right-or-left (&opitonal args)
     (interactive "P")
     (or args (setq args 1))
     (cl-loop repeat args do
              (if (and (fboundp 'texmathp)
                       (my-texmathp))
-                 (unless (and (ignore-errors (close-quoted-open-paren-right 1))
+                 (unless (and (ignore-errors (close-quoted-open-paren-right))
                               (if (my-texmathp) t (delete-char -2) nil))
-                   (unless (and (ignore-errors (close-quoted-open-paren-left 1))
+                   (unless (and (ignore-errors (close-quoted-open-paren-left))
                                 (if (my-texmathp) t (delete-char 2) nil))
                      (insert "(")))
-               (unless (ignore-errors (close-quoted-open-paren-right 1))
-                 (unless (ignore-errors (close-quoted-open-paren-left 1))
+               (unless (ignore-errors (close-quoted-open-paren-right))
+                 (unless (ignore-errors (close-quoted-open-paren-left))
                    (insert "("))))))
 #+END_SRC
+**** New paren
+#+BEGIN_SRC elisp
+
+  (defvar brust-open-paren-last 1 "Number corresponding to last inserted paren by `brust-open-paren-alist'")
+
+  (defvar brust-open-paren-alist '((1 . "(")
+                                   (2 . "[")
+                                   (3 . "{")
+                                   (4 . "<"))
+    "List with open paren to cycle through")
+
+  (defun brust-open-paren-insert (-paren)
+    (insert (cdr (assoc (setq brust-last-open-paren -paren)
+                        brust-open-paren-alist))))
+
+  (defun brust-open-paren-cycle (&optional args)
+    (interactive "P")
+    (delete-char -1)
+    (brust-open-paren-insert
+     (setq brust-open-paren-last
+           (if (< brust-open-paren-last (length brust-open-paren-alist))
+               (1+ brust-open-paren-last)
+             1))))
+
+  (defhydra brust-open-paren-hydra nil
+    "Open paren"
+    ("SPC" (brust-open-paren-insert brust-open-paren-last) "Insert")
+    ("TAB" (brust-open-paren-cycle)))
+
+#+END_SRC
+
+#+RESULTS:
+: brust-open-paren-hydra/body
 
 *** Copy file path to kill ring (by Xah Lee)
 **** Copy file path
