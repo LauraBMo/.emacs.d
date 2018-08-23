@@ -1499,7 +1499,8 @@
   the beginning and end of current buffer is you are already there."
     (interactive)
     (if (bobp) (goto-char (point-max))
-    (goto-char (point-min))))
+      (unless (eobp) (push-mark (point)))
+      (goto-char (point-min))))
 #+END_SRC
 
 #+RESULTS:
