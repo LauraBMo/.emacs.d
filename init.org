@@ -2477,7 +2477,8 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 #+RESULTS:
 
-**** COMMENT My own
+**** My own
+***** Auxiliary functions
 #+BEGIN_SRC elisp
   (defun brust--is-there-two-spaces-around-point-p nil
     (save-excursion
@@ -2488,7 +2489,10 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     (save-excursion
       (skip-chars-backward "[:space:]")
       (eq (skip-chars-forward "[:space:]") 1)))
+#+END_SRC
 
+***** COMMENT Main function
+#+BEGIN_SRC elisp
   (defun brust-set-point-before-yanking-text-mode (-string)
     (when (derived-mode-p 'text-mode)
       (skip-chars-backward "[:space:]")
@@ -2499,7 +2503,10 @@ should be. After calling this function, call 'meeting-done' to reset the environ
        ((brust--is-there-two-spaces-around-point-p)
         (forward-char 1)
         (setq -string (s-trim -string))))))
+#+END_SRC
 
+***** COMMENT Advice
+#+BEGIN_SRC elisp
   (advice-add
    'insert-for-yank
    :before
