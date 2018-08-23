@@ -68,6 +68,7 @@
                "~/Dropbox/Org/Doc.org"
                "~/Dropbox/Math/Pragmatics/Laura-TeX/finally-fainal-draft.tex"
                "~/Dropbox/bibliography/notes.org"
+               "~/Dropbox/Org/ledger-2018.dat"
                )
              do (when (file-exists-p xx)
                   (find-file xx))))
@@ -506,24 +507,24 @@
   (use-package smart-mode-line
     :init
     (setq sml/theme nil
-	  ;; sml/theme 'smart-mode-line-powerline
-	  ;; sml/theme 'light
-	  ;; sml/theme 'respectful
-	  sml/no-confirm-load-theme t
-	 ;; sml/replacer-regexp-list ;; now I use mode-line-buffer-identication
-	 ;; '(
-	 ;;   ;; ("^~/Dropbox/config/emacs/" ":con4e:")
-	 ;;   (".*/[Tt]hesis/" ":Ths:")
-	 ;;   ("^~/org/" ":Org:")
-	 ;;   ("^~/\\.emacs\\.d/" ":E.D:")
-	 ;;   ("^/sudo:.*:" ":SU:")
-	 ;;   ("^~/Documents/" ":Doc:")
-	 ;;   ("^~/Dropbox/" ":DB:")
-	 ;;   ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
-	 ;;   ("^~/[Gg]it/" ":Git:")
-	 ;;   ("^~/[Gg]it[Hh]ub/" ":Git:")
-	 ;;   ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:"))
-	 )
+          ;; sml/theme 'smart-mode-line-powerline
+          ;; sml/theme 'light
+          ;; sml/theme 'respectful
+          sml/no-confirm-load-theme t
+         ;; sml/replacer-regexp-list ;; now I use mode-line-buffer-identication
+         ;; '(
+         ;;   ;; ("^~/Dropbox/config/emacs/" ":con4e:")
+         ;;   (".*/[Tt]hesis/" ":Ths:")
+         ;;   ("^~/org/" ":Org:")
+         ;;   ("^~/\\.emacs\\.d/" ":E.D:")
+         ;;   ("^/sudo:.*:" ":SU:")
+         ;;   ("^~/Documents/" ":Doc:")
+         ;;   ("^~/Dropbox/" ":DB:")
+         ;;   ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
+         ;;   ("^~/[Gg]it/" ":Git:")
+         ;;   ("^~/[Gg]it[Hh]ub/" ":Git:")
+         ;;   ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:"))
+         )
     ;; (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
     (sml/setup))
 #+END_SRC
@@ -629,6 +630,7 @@
    ;; ("M-ç"        . hippie-expand)
    ;; ("C-9"        . close-quoted-open-paren-right)
    ("M-SPC"      . close-quoted-open-paren-right-or-left)
+   ("s-SPC"      . brust-open-paren-hydra/lambda-SPC)
    ;; ("C-)"        . close-all-open-paren-right)
    ;; ("C-8"        . close-quoted-open-paren-left)
    ;; ("C-("        . close-all-open-paren-left)
@@ -1225,6 +1227,7 @@
 : t
 
 *** Org mode
+**** Main congif
 #+BEGIN_SRC elisp
   (use-package org
     :ensure nil
@@ -1302,12 +1305,6 @@
                             (avy-with avy-goto-line
                               (avy--generic-jump "^\\*+" nil avy-style)))))
              do (push new-key org-speed-commands-user))
-    ;; use org-bullets-mode for utf8 symbols as org bullets
-    (use-package org-bullets
-      ;; make available "org-bullet-face" such that I can control the font size individually
-      :init
-      (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
-      (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
     ;; Org babel
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '(
@@ -1341,6 +1338,49 @@
           ("s-v" . org-text-italics)
           ("s-c" . org-text-code)
           ("<" . brust-org<)))
+#+END_SRC
+
+#+RESULTS:
+**** Org bullets
+     Use org-bullets-mode for utf8 symbols as org bullets
+#+BEGIN_SRC elisp
+  (use-package org-bullets
+    :after org
+    ;; make available "org-bullet-face" such that I can control the font size individually
+    :init
+    (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
+    (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
+#+END_SRC
+
+#+RESULTS:
+**** Org capture
+#+BEGIN_SRC elisp
+  (use-package org-capture
+    :ensure nil
+    :after org
+    :preface
+    (defvar my/org-ledger-card-template
+      "%(org-read-date) %^{Payee}
+      Expenses:%^{Account}  €%^{Amount}
+      Liabilities:DebidCard:Mediolanum"
+      "Template for devid card transaction with ledger.")
+
+    (defvar my/org-ledger-cash-template
+      "%(org-read-date) * %^{Payee}
+      Expenses:%^{Account}  €%^{Amount}
+      Assets:Cash:Wallet"
+      "Template for cash transaction with ledger.")
+    :custom
+    (org-capture-templates
+     `(("l" "Ledger")
+       ("lb" "Bank" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+        my/org-ledger-card-template
+        :empty-lines 1
+        :immediate-finish t)
+       ("lc" "Cash" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+        my/org-ledger-cash-template
+        :empty-lines 1
+        :immediate-finish t))))
 #+END_SRC
 
 #+RESULTS:
@@ -1464,7 +1504,37 @@
 
 #+RESULTS:
 : brust-toggle-begin&end-of-buffer
+*** Add blank pages to a pdf
+#+BEGIN_SRC elisp
 
+  (defun brust-pdf-add-blank-pages (-file init-page)
+    (interactive
+     (list  (read-file-name "Pdf to modify: ")
+            (read-number "Page to start adding blank pages: ")))
+    (let (-num -page (i init-page) -commstr)
+      (with-temp-buffer
+        (insert (shell-command-to-string (format "pdftk %s dump_data" -file)))
+        (goto-char (point-min))
+        (re-search-forward "NumberOfPages: \\([0-9]+\\)$" nil t)
+        (setq -num (- (string-to-number (match-string 1)) i))
+        (setq -page
+              (if (re-search-forward "PageMediaDimensions: \\([0-9]+\\) \\([0-9]+\\)$" nil t)
+                  (concat (match-string 1) "x" (match-string 2))
+                "a4")))
+      (setq -commstr
+            (concat (format "A1-%d " i)
+                    (cl-loop repeat -num
+                             do (setq i (1+ i))
+                             concat (format "B1 A%d " i))))
+      (let ((-blanche (concat (file-name-directory -file) "pageblanche.pdf"))
+            (-mod (concat (file-name-directory -file) "mod_" (file-name-base -file) ".pdf"))
+            (-out (concat (file-name-directory -file) "print_" (file-name-base -file) ".pdf")))
+        (shell-command (format "convert xc:none -page %s %s" -page -blanche))
+        (shell-command (format "pdftk A=%s B=%s cat %s output %s" -file -blanche -commstr -mod))
+        (shell-command (format "rm %s" -blanche)))))
+  ;; (shell-command (format "pdfnup %s --nup 2x1 --landscape --outfile %s" -mod -out))
+  ;; (shell-command (format "rm %s && rm %s" -mod -blanche)))))
+#+END_SRC
 *** Bounded min/maximum
 #+BEGIN_SRC elisp
   (defun list-util-bounded-max (nums bound)
@@ -1612,7 +1682,7 @@
                    (cl-loop repeat (- i dir) do (insert "\\"))
                    (insert closing)
                    (backward-char (* dir i)))))
-      t)
+                   t)
 #+END_SRC
 
 **** By right
@@ -1648,7 +1718,7 @@
         (goto-char pnt)
         p)))
 
-  (defun close-quoted-open-paren-right-or-left (&opitonal args)
+  (defun close-quoted-open-paren-right-or-left (&optional args)
     (interactive "P")
     (or args (setq args 1))
     (cl-loop repeat args do
@@ -1657,41 +1727,71 @@
                  (unless (and (ignore-errors (close-quoted-open-paren-right))
                               (if (my-texmathp) t (delete-char -2) nil))
                    (unless (and (ignore-errors (close-quoted-open-paren-left))
-                                (if (my-texmathp) t (delete-char 2) nil))
-                     (insert "(")))
+                                (if (my-texmathp) t (delete-char 2) nil))))
                (unless (ignore-errors (close-quoted-open-paren-right))
-                 (unless (ignore-errors (close-quoted-open-paren-left))
-                   (insert "("))))))
+                 (unless (ignore-errors (close-quoted-open-paren-left)))))))
 #+END_SRC
+
+#+RESULTS:
+: close-quoted-open-paren-right-or-left
+
 **** New paren
 #+BEGIN_SRC elisp
 
-  (defvar brust-open-paren-last 1 "Number corresponding to last inserted paren by `brust-open-paren-alist'")
+    (defvar brust-open-paren-last 1 "Number corresponding to last inserted paren by `brust-open-paren-alist'")
 
-  (defvar brust-open-paren-alist '((1 . "(")
-                                   (2 . "[")
-                                   (3 . "{")
-                                   (4 . "<"))
-    "List with open paren to cycle through")
+    (defvar brust-open-paren-alist '((1 . "(")
+                                     (2 . "[")
+                                     (3 . "{")
+                                     (4 . "<"))
+      "List with open paren to cycle through")
 
-  (defun brust-open-paren-insert (-paren)
-    (insert (cdr (assoc (setq brust-last-open-paren -paren)
-                        brust-open-paren-alist))))
+    (defun brust-open-paren-insert (-paren)
+      (insert (cdr (assoc (setq brust-last-open-paren -paren)
+                          brust-open-paren-alist))))
 
-  (defun brust-open-paren-cycle (&optional args)
-    (interactive "P")
+    (defun brust-open-paren-cycle (&optional args)
+      (interactive "P")
+      (if (string= (cdr (assoc brust-last-open-paren
+                               brust-open-paren-alist))
+                   (buffer-substring-no-properties (1- (point)) (point)))
+          (delete-char -1)
+        (setq brust-open-paren-last 0))
+      (brust-open-paren-insert
+       (setq brust-open-paren-last
+             (if (< brust-open-paren-last (length brust-open-paren-alist))
+                 (1+ brust-open-paren-last)
+               1))))
+
+    (defun brust-open-paren-add-more nil
+      "Copy previous char"
+      (interactive)
+      (insert (buffer-substring-no-properties (1- (point)) (point))))
+
+    (defun brust-open-paren-insert-backslash nil
+      "Insert backslash before previous char"
+      (interactive)
+      (save-excursion
+        (forward-char -1)
+        (insert "\\")))
+
+  (defun brust-open-paren-leave-just-backslash nil
+    (interactive)
     (delete-char -1)
-    (brust-open-paren-insert
-     (setq brust-open-paren-last
-           (if (< brust-open-paren-last (length brust-open-paren-alist))
-               (1+ brust-open-paren-last)
-             1))))
+    (insert "\\"))
+
+  (defun brust-open-paren-ordered-string-of-options nil
+    (cl-loop for xx in brust-open-paren-alist
+             concat (cdr xx)))
 
   (defhydra brust-open-paren-hydra nil
-    "Open paren"
-    ("SPC" (brust-open-paren-insert brust-open-paren-last) "Insert")
-    ("TAB" (brust-open-paren-cycle)))
+    "
 
+    ^ Open paren %(brust-open-paren-ordered-string-of-options): "
+    ("SPC" (brust-open-paren-cycle) "Cycle")
+    ("a" (brust-open-paren-add-more) "Add another")
+    ("b" (brust-open-paren-insert-backslash) "Add backslash")
+    ("q" (brust-open-paren-leave-just-backslash) "Just backslash"))
 #+END_SRC
 
 #+RESULTS:
@@ -1965,30 +2065,29 @@ Single Capitals as you type."
     This is an adaptation to my needs of [[http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html][Emacs: Hotkey to Open File Fast]] by Xah Lee.
 **** Lists
 #+BEGIN_SRC elisp
-  (defvar brust-file-list-list nil "List of association list of file/dir paths. Used by `xah-open-file-fast'. Key is a short abbrev string, Value is file path string.")
-
-  (setq
-   brust-file-list-list
-   '((xah-filelist . (
-                      ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
-                      ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
-                      ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
-                      ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-                      ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
-                      ))
-     (config-files . (
-                      ("Org-init"     . "~/.emacs.d/init.org")
-                      ("el-init"      . "~/.emacs.d/init.el")
-                      ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
-                      ("abbrevs-tbl"  . "~/Dropbox/config/abbrev-def.el")
-                      ))
-     (org-files    . (
-                      ("My-Org"   . "~/Dropbox/Org/my.org")
-                      ("Recetari" . "~/Dropbox/Org/recetari.org")
-                      ("Travels"  . "~/Dropbox/Org/travels.org")
-                      ("Media"    . "~/Dropbox/Org/MyMedia.org")
-                      ("Doctorat" . "~/Dropbox/Org/Doc.org")
-                      ))))
+  (defvar brust-file-list-list
+    '((xah-filelist . (
+                       ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
+                       ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
+                       ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
+                       ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
+                       ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
+                       ("MyFinances" . "~/Dropbox/Org/ledger-2018.dat")
+                       ))
+      (config-files . (
+                       ("Org-init"     . "~/.emacs.d/init.org")
+                       ("el-init"      . "~/.emacs.d/init.el")
+                       ("LaTeX-config" . "~/.emacs.d/lisp/brusts-latex-config.org")
+                       ("abbrevs-tbl"  . "~/Dropbox/config/abbrev-def.el")
+                       ))
+      (org-files    . (
+                       ("My-Org"   . "~/Dropbox/Org/my.org")
+                       ("Recetari" . "~/Dropbox/Org/recetari.org")
+                       ("Travels"  . "~/Dropbox/Org/travels.org")
+                       ("Media"    . "~/Dropbox/Org/MyMedia.org")
+                       ("Doctorat" . "~/Dropbox/Org/Doc.org")
+                       )))
+    "List of association list of file/dir paths. Used by `xah-open-file-fast'. Key is a short abbrev string, Value is file path string.")
 #+END_SRC
 
 #+RESULTS:
@@ -2321,57 +2420,90 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+END_SRC
 
 *** Smart yanking
+    Worng behavior: it yank two things.
+**** COMMENT Original idea
     From [[http://mbork.pl/2018-07-02_Smart_yanking]]
     and [[https://gist.github.com/mbork/9ee1bd8216424e07342e88739fe65547][The code at github]]
 #+BEGIN_SRC elisp
-(defun has-space-at-boundary-p (string)
-  "Check whether STRING has any whitespace on the boundary.
-Return 'left, 'right, 'both or nil."
-  (let ((result nil))
-    (when (string-match-p "^[[:space:]]+" string)
-      (setq result 'left))
-    (when (string-match-p "[[:space:]]+$" string)
-      (if (eq result 'left)
-	  (setq result 'both)
-	(setq result 'right)))
-    result))
+  (defun has-space-at-boundary-p (string)
+    "Check whether STRING has any whitespace on the boundary.
+  Return 'left, 'right, 'both or nil."
+    (let ((result nil))
+      (when (string-match-p "^[[:space:]]+" string)
+        (setq result 'left))
+      (when (string-match-p "[[:space:]]+$" string)
+        (if (eq result 'left)
+            (setq result 'both)
+          (setq result 'right)))
+      result))
 
-(defun is-there-space-around-point-p ()
-  "Check whether there is whitespace around point.
-Return 'left, 'right, 'both or nil."
-  (let ((result nil))
-    (when (< (save-excursion
-               (skip-chars-backward "[:space:]"))
-             0)
-      (setq result 'left))
-    (when (> (save-excursion
-               (skip-chars-forward "[:space:]"))
-             0)
-      (if (eq result 'left)
-	  (setq result 'both)
-	(setq result 'right)))
-    result))
+  (defun is-there-space-around-point-p ()
+    "Check whether there is whitespace around point.
+  Return 'left, 'right, 'both or nil."
+    (let ((result nil))
+      (when (< (save-excursion
+                 (skip-chars-backward "[:space:]")   )
+               0)
+        (setq result 'left))
+      (when (> (save-excursion
+                 (skip-chars-forward "[:space:]"))
+               0)
+        (if (eq result 'left)
+            (setq result 'both)
+          (setq result 'right)))
+      result))
 
-(defun set-point-before-yanking (string)
-  "Put point in the appropriate place before yanking STRING."
-  (let ((space-in-yanked-string (has-space-at-boundary-p string))
-	(space-at-point (is-there-space-around-point-p)))
-    (cond ((and (eq space-in-yanked-string 'left)
-		(eq space-at-point 'left))
-	   (skip-chars-backward "[:space:]"))
-	  ((and (eq space-in-yanked-string 'right)
-		(eq space-at-point 'right))
-	   (skip-chars-forward "[:space:]")))))
+  (defun set-point-before-yanking (string)
+    "Put point in the appropriate place before yanking STRING."
+    (let ((space-in-yanked-string (has-space-at-boundary-p string))
+          (space-at-point (is-there-space-around-point-p)))
+      (cond ((and (eq space-in-yanked-string 'left)
+                  (eq space-at-point 'left))
+             (skip-chars-backward "[:space:]"))
+            ((and (eq space-in-yanked-string 'right)
+                  (eq space-at-point 'right))
+             (skip-chars-forward "[:space:]")))))
 
-(defun set-point-before-yanking-if-in-text-mode (string)
-  "Invoke `set-point-before-yanking' in text modes."
-  (when (derived-mode-p 'text-mode)
-    (set-point-before-yanking string)))
+  (defun set-point-before-yanking-if-in-text-mode (string)
+    "Invoke `set-point-before-yanking' in text modes."
+    (when (derived-mode-p 'text-mode)
+      (set-point-before-yanking string)))
 
-(advice-add
- 'insert-for-yank
- :before
-#'set-point-before-yanking-if-in-text-mode)
+  (advice-add
+   'insert-for-yank
+   :before
+  #'set-point-before-yanking-if-in-text-mode)
+#+END_SRC
+
+#+RESULTS:
+
+**** COMMENT My own
+#+BEGIN_SRC elisp
+  (defun brust--is-there-two-spaces-around-point-p nil
+    (save-excursion
+      (skip-chars-backward "[:space:]")
+      (eq (skip-chars-forward "[:space:]") 2)))
+
+  (defun brust--is-there-one-space-around-point-p nil
+    (save-excursion
+      (skip-chars-backward "[:space:]")
+      (eq (skip-chars-forward "[:space:]") 1)))
+
+  (defun brust-set-point-before-yanking-text-mode (-string)
+    (when (derived-mode-p 'text-mode)
+      (skip-chars-backward "[:space:]")
+      (cond
+       ((brust--is-there-one-space-around-point-p)
+        (insert " ")
+        (setq -string (s-trim -string)))
+       ((brust--is-there-two-spaces-around-point-p)
+        (forward-char 1)
+        (setq -string (s-trim -string))))))
+
+  (advice-add
+   'insert-for-yank
+   :before
+   #'brust-set-point-before-yanking-text-mode)
 #+END_SRC
 
 #+RESULTS:
@@ -2609,6 +2741,7 @@ Return 'left, 'right, 'both or nil."
 : bratex-config
 
 *** Company
+**** General config.
 #+BEGIN_SRC elisp
   (use-package company
     :defer t
@@ -2617,7 +2750,8 @@ Return 'left, 'right, 'both or nil."
            company-lighter-base ""
            company-minimum-prefix-length 2
            company-auto-complete-chars (quote (32 95 40 41 119 46 62))
-           company-show-numbers t)
+           company-show-numbers t
+           company-tooltip-align-annotations t)
     (add-hook 'after-init-hook #'global-company-mode)
     :bind (:map company-active-map
                 ("<return>" . company-complete-selection)
@@ -2700,6 +2834,20 @@ Return 'left, 'right, 'both or nil."
             (number-sequence 0 9))))
 #+END_SRC
 
+#+RESULTS:
+: company-show-location
+
+**** COMMENT Company-box
+#+BEGIN_SRC elisp
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+#+END_SRC
+
+#+RESULTS:
+| company-box-mode | company-mode-set-explicitly |
+
 *** Easy kill
     * What can =M-w= copy and how
       - =M-w w=: save word at point
@@ -2756,12 +2904,15 @@ Return 'left, 'right, 'both or nil."
 **** Cut/kill
 #+BEGIN_SRC elisp
   (defun xah-cut-line-or-region (args)
-    "Cut current line, or text selection.
-    When `universal-argument' is called first, cut whole buffer (but respect `narrow-to-region')."
+    "Cut current line, or text selection. When `universal-argument' is called first, cut whole buffer (but respect `narrow-to-region')."
     (interactive "P")
     (kill-region (or (and args (point-min)) (line-beginning-position))
                  (or (and args (point-max)) (line-beginning-position 2))
-                 (use-region-p)))
+                 (use-region-p))
+    (when (and (derived-mode-p 'text-mode)
+               (brust--is-there-two-spaces-around-point-p))
+      (skip-chars-backward "[:space:]")
+      (delete-char 1)))
 
   (defun brust-cut-previous-line nil
     (interactive)
@@ -3802,44 +3953,114 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
     :bind
     (:map LaTeX-mode-map
-	  ("ç"            . brust-LaTeX-insert-math1)
-	  ("Ç"            . brust-LaTeX-insert-math2)
-	  ("M-ç"          . brust-LaTeX-insert-ç)
-	  ;; ("           ."              . brust-LaTeX-smart-period)
-	  ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-	  ;; ("C-x C-s"      . brust-LaTeX-save)
-	  ("C-c C-e"      . brust-LaTeX-env)
-	  ("C-c n"        . TeX-next-error)
-	  ("s-e"          . brust-LaTeX-next-error)
-	  ;; ("C-c e"        . TeX-error-overview)
-	  ("s-5"          . latex-replace-in-math)
-	  ("s-C-5"        . latex-replace-regexp-in-math)
-	  ;; ("C-c C-a"      . brust-compile-only)
-	  ;; ("s-0"          . reftex-toc)
-	  ("M-m"          . brust-LaTeX-insert-up)
-	  ("M-n"          . brust-LaTeX-insert-down)
-	  ;; ("s-ç"          . brust-LaTeX-smart-selection)
-	  ("C-c C-q"      . latex/clean-fill-indent-environment)
-	  ("C-c C-w C-s"  . brust-wc-save-words)
-	  ;; ("C-c C-a"   . latex/compile-commands-until-done)
-	  ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-			    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-	  ;; ("<M-S-up>"  . latex/up-section)
-	  ;; ("<tab>"     . latex/hide-show)
-	  ;; ("<backtab>" . latex/hide-show-all)
-	  ;; (""          . latex/next-section)
-	  ;; (""          . latex/next-section-same-level)
-	  ;; (""          . latex/beginning-of-line)
-	  ;; ("C-M-e"        . latex/end-of-environment)
-	  ;; ("C-M-a"        . latex/beginning-of-environment)
-	  ;; ("C-M-p"        . latex/backward-environment)
-	  ;; ("C-M-n"        . latex/forward-environment)
-	  ("s-9"          . brust-cycle-texmath)
-	  ))
+          ("ç"            . brust-LaTeX-insert-math1)
+          ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
+          ;; ("           ."              . brust-LaTeX-smart-period)
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("C-x C-s"      . brust-LaTeX-save)
+          ("C-c C-e"      . brust-LaTeX-env)
+          ("C-c n"        . TeX-next-error)
+          ("s-e"          . brust-LaTeX-next-error)
+          ;; ("C-c e"        . TeX-error-overview)
+          ("s-5"          . latex-replace-in-math)
+          ("s-C-5"        . latex-replace-regexp-in-math)
+          ;; ("C-c C-a"      . brust-compile-only)
+          ;; ("s-0"          . reftex-toc)
+          ("M-m"          . brust-LaTeX-insert-up)
+          ("M-n"          . brust-LaTeX-insert-down)
+          ;; ("s-ç"          . brust-LaTeX-smart-selection)
+          ("C-c C-q"      . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"  . brust-wc-save-words)
+          ;; ("C-c C-a"   . latex/compile-commands-until-done)
+          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+          ;; ("<M-S-up>"  . latex/up-section)
+          ;; ("<tab>"     . latex/hide-show)
+          ;; ("<backtab>" . latex/hide-show-all)
+          ;; (""          . latex/next-section)
+          ;; (""          . latex/next-section-same-level)
+          ;; (""          . latex/beginning-of-line)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
+          ("s-9"          . brust-cycle-texmath)
+          ))
 #+END_SRC
 
 #+RESULTS:
 : brust-cycle-texmath
+
+*** Ledgers
+    Mainly from [[https://www.reddit.com/r/emacs/comments/8x4xtt/tip_how_i_use_ledger_to_track_my_money/][Reddit discution]]
+**** Main config
+#+BEGIN_SRC elisp
+  (use-package ledger-mode
+    :mode ("\\.dat\\'"
+           "\\.ledger\\'")
+    :custom
+    (ledger-clear-whole-transactions t)
+    (add-hook 'ledger-mode-hook #'ledger-flymake-enable)
+    (add-hook 'ledger-mode-hook #'company-mode)
+    (ledger-post-auto-adjust-amounts t)
+    :bind
+    (:map ledger-mode-map
+          ("C-c C-a" . brust-ledger-add-transaction)))
+
+  (with-eval-after-load 'ledger-mode
+    (define-key ledger-mode-map [remap save-buffer] #'std::ledger::save))
+#+END_SRC
+
+#+RESULTS:
+: std::ledger::save
+
+**** MyFuns
+#+BEGIN_SRC elisp
+  (defun brust-ledger-add-transaction (&optional -date)
+    "Add new transaction using `org-read-date'"
+    (interactive)
+    (ledger-add-transaction
+     (or -date (org-read-date))
+     nil)
+    (insert "?\n    Assets:DebitCard")
+    (cdlatex-position-cursor))
+
+  (defun std::ledger::save nil
+    "First `ledger-mode-clean-buffer', then `save-buffer'."
+    (interactive)
+    (save-excursion
+      (when (buffer-modified-p)
+        (with-demoted-errors (ledger-mode-clean-buffer))
+        (save-buffer))))
+
+  (defun brust-ledger-copy-transaction-from-extract nil
+    "`-string' is a line of my bank extract in cvs format"
+    (interactive)
+    (let ((-entry
+           (split-string
+            (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+            "\,")))
+      (switch-to-buffer "ledger-2018.dat")
+      (brust-ledger-add-transaction
+       (brust-from-eur-ame-date (nth 0 -entry)))
+      (insert (capitalize (nth 1 -entry))
+              "\n    ?  €"
+              (nth 3 -entry))
+      (cdlatex-position-cursor)))
+
+
+  (defun brust-from-eur-ame-date (-date)
+    (let ((-new-date (split-string -date "/")))
+      (concat (nth 2 -new-date)
+              "-"
+              (nth 1 -new-date)
+              "-"
+              (nth 0 -new-date))))
+#+END_SRC
+
+#+RESULTS:
+: std::ledger::save
 
 *** TODO Magit
     For a git and github integration with emacs!

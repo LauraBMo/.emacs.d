@@ -815,33 +815,33 @@ Defaults
 #+BEGIN_SRC elisp
   (setq reftex-label-alist
         ;; reftex-label-alist '(AMSTeX)
-        '(("axiom"         ?a "axm:"   "~\\cref{%s}" t ("axiom"   "axm."))
-          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")    -4)
-          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.") -4)
-          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.") -6)
+        '(("axiom"         ?a "axm:"   "~\\cref{%s}" t   ("axiom"   "axm.")        )
+          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")      -4)
+          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.")   -4)
+          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       -6)
           ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") -5)
-          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.") -5)
-          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.") -6)
-          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.") -6)))
+          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")        -5)
+          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")     -6)
+          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")   -6)))
 
   (setq reftex-section-levels
         '(("part" . 0)
-          ("chapter" . 1)
-          ("section" . 2)
+          ("chapter" . 0)
+          ("section" . 1)
+          ("paragraph" . 2)
           ("beamersec" . -2)
-          ("subsection" . 3)
+          ("subsection" . 2)
           ("beamersubsec" . -3)
-          ("subsubsection" . 4)
+          ("subsubsection" . 3)
           ("beamersubsubsec" . -4)
-          ("paragraph" . 5)
-          ("subparagraph" . 6)
+          ("subparagraph" . 4)
           ("frametitle" . 7)
           ("addchap" . -1)
           ("addsec" . -2)))
 #+END_SRC
 
 #+RESULTS:
-: ((part . 0) (chapter . 1) (section . 2) (beamersec . -2) (subsection . 3) (beamersubsec . -3) (subsubsection . 4) (beamersubsubsec . -4) (paragraph . 5) (subparagraph . 6) (frametitle . 7) (addchap . -1) (addsec . -2))
+: ((part . 0) (chapter . 1) (section . 2) (paragraph . -3) (beamersec . -2) (subsection . -3) (beamersubsec . -3) (subsubsection . 4) (beamersubsubsec . -4) (subparagraph . 6) (frametitle . 7) (addchap . -1) (addsec . -2))
 
 *** Toc level funcions
 #+BEGIN_SRC elisp
@@ -2309,5 +2309,3 @@ is wrong).
   (add-to-list 'display-buffer-alist '("\\.pdf\\(<[^>]+>\\)?$" . (display-buffer-pop-up-window-pdf-split-horizontally)))
 
 #+END_SRC
-
-
