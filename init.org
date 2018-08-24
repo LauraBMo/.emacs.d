@@ -1999,7 +1999,9 @@ Single Capitals as you type."
              (recenter nil)))
           ((region-active-p)
            (narrow-to-region (region-beginning)
-                             (region-end)))
+                             (region-end))
+           (deactivate-mark)
+           (goto-char (point-min)))
           ((derived-mode-p 'org-mode)
            ;; `org-edit-src-code' is not a real narrowing
            ;; command. Remove this first conditional if
@@ -2015,6 +2017,9 @@ Single Capitals as you type."
           (t
            (brust-narrow-to-paragraph))))
 #+END_SRC
+
+#+RESULTS:
+: endless/narrow-or-widen-dwim
 
 *** By five
 #+BEGIN_SRC elisp
