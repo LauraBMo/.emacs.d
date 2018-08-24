@@ -5479,8 +5479,10 @@ _q_: quit
       (font-lock-mode 1)
       (set (make-local-variable 'singular-commands-alist) nil)
       (load "~/.emacs.d/lisp/Singular/cmd-cmpl")
-      ;; turn on aut-new line and hungry-delete
-      (c-toggle-auto-hungry-state 1)
+      ;; turn on aut-new line
+      (c-toggle-auto-newline 1)
+      ;; tunr off hungry-delete
+      (c-toggle-hungry-state -1)
       (company-mode -1)
       (local-set-key (kbd "<tab>") #'brust-singular-dynamic-complete)
       (local-set-key (kbd "C-a")   #'singular-beginning-of-line)
