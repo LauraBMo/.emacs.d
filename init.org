@@ -1525,8 +1525,7 @@
       (setq -commstr
             (concat (format "A1-%d " i)
                     (cl-loop repeat -num
-                             do (setq i (1+ i))
-                             concat (format "B1 A%d " i))))
+                             concat (format "B1 A%d " (setq i (1+ i))))))
       (let ((-blanche (concat (file-name-directory -file) "pageblanche.pdf"))
             (-mod (concat (file-name-directory -file) "mod_" (file-name-base -file) ".pdf"))
             (-out (concat (file-name-directory -file) "print_" (file-name-base -file) ".pdf")))
@@ -1536,6 +1535,10 @@
   ;; (shell-command (format "pdfnup %s --nup 2x1 --landscape --outfile %s" -mod -out))
   ;; (shell-command (format "rm %s && rm %s" -mod -blanche)))))
 #+END_SRC
+
+#+RESULTS:
+: brust-pdf-add-blank-pages
+
 *** Bounded min/maximum
 #+BEGIN_SRC elisp
   (defun list-util-bounded-max (nums bound)
