@@ -5784,6 +5784,29 @@ _q_: quit
 : brust-cycle-texmath
 
 
+** MyRegExp
+*** Create it
+#+BEGIN_SRC elisp
+  (defvar brust--myregexp-itself)
+  (setq brust--myregexp-itself
+        (regexp-opt
+         (cl-loop for -line in (with-temp-buffer
+                                 (insert-file-contents "~/.emacs.d/my-regexp.txt")
+                                 (split-string (buffer-string) "\n"))
+                  collect -line
+                  collect (downcase -line)
+                  collect (upcase-initials -line))))
+#+END_SRC
+
+#+RESULTS:
+: \(?:Hilber \(?:[Ss]cheme\)\|Oneto\|Quim\|Roé\|hilber scheme\|oneto\|quim\|roé\)?
+*** The function
+#+BEGIN_SRC elisp
+  (defun brust-myregexp nil
+    (interactive)
+    ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
+    (occur brust--myregexp-itself))
+#+END_SRC
 * Old stuff
 ** Tab and indentation
 **** Distance
