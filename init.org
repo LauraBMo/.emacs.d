@@ -61,20 +61,25 @@
 #+END_SRC
 *** StartUp files
 #+BEGIN_SRC elisp
+  (defvar brust--local-init-files "~/.init-files.el")
+  (defvar brust--init-files "~/.emacs.d/.init-files.el")
+
   (defun brust-init-files nil
-    (cl-loop for xx in
-             '("~/Dropbox/Org/my.org"
-               ;; "~/Dropbox/Math/Doctorat_Laura/crossBlowup/master.tex"
-               "~/Dropbox/Org/Doc.org"
-               "~/Dropbox/Math/Pragmatics/Laura-TeX/finally-fainal-draft.tex"
-               "~/Dropbox/bibliography/notes.org"
-               "~/Dropbox/Org/ledger-2018.dat"
-               )
-             do (when (file-exists-p xx)
-                  (find-file xx))))
+    (cl-loop for -file in (with-temp-buffer
+                            (insert-file-contents
+                             (if (file-exists-p brust--local-init-files)
+                                 brust--local-init-files
+                               brust--init-files))
+                            (delete-matching-lines ";;" (point-min) (point-max))
+                            (split-string (buffer-string)))
+             do (when (file-exists-p -file)
+                  (find-file -file))))
 
   (add-hook 'emacs-startup-hook #'brust-init-files)
 #+END_SRC
+
+#+RESULTS:
+| brust-init-files |
 
 *** Clipboard
      Save whatever in the current (system) clipboard before replacing it with the Emacs' text.
