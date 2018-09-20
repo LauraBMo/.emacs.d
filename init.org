@@ -4929,7 +4929,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (use-package counsel
       :diminish 'counsel-mode)
     (use-package ivy-rich)
-    (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
+    ;; (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
+    (ivy-rich-mode 1)
     (counsel-mode 1)
     :bind*
     ("s-s"      . counsel-grep-or-swiper)
