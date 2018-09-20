@@ -129,7 +129,7 @@ Subtrees under a COMMENTed header are not evaluated."
 	  (message "%s :: %d" pheader neblock)
 	  (setq neblock (1+ neblock))))
 	(forward-line))
-      (message "!! Be happy, everything is load !!"))))
+      (message "=========== !! Be happy, everything is load !! ==========="))))
 
 (defun brust-endless/org-eval-eblocks-delete-commented-subtrees nil
   (interactive)
