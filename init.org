@@ -1005,7 +1005,7 @@
     :init (use-package dired-async
             :ensure nil))
 
-  (use-package dired+)
+  ;; (use-package dired+)
 #+END_SRC
 
 #+RESULTS:
