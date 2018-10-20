@@ -485,38 +485,53 @@ Defaults
   1. Change the environment with LaTeX-environment
   2. Change the label tag (e.g. lem -> prop) (if there is one)"
     (interactive "P")
-    (save-excursion
-      (if (not args) (LaTeX-environment nil)
-        (LaTeX-environment t)
-        (let
-            ((prefix-new
-              (progn
-                (LaTeX-find-matching-begin)
-                (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" nil t)
-                (cdr (assoc (match-string 1) environment-prefix-list))))
-             (prefix-old
-              (progn
-                (LaTeX-find-matching-begin)
-                (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)?\}" nil t)
-                (match-string 1)))
-             (name (match-string 2)))
-          (reftex-query-replace-document 
-           (concat prefix-old ":" name) ;;str1
-           (concat prefix-new ":" name))))))
+    (let ((pnt (point)))
+      (save-window-excursion
+        (if (not args) (LaTeX-environment nil)
+          (LaTeX-environment t)
+          (let
+              ((prefix-new
+                (progn
+                  (LaTeX-find-matching-begin)
+                  (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" pnt t)
+                  (cdr (assoc (match-string 1) environment-prefix-list))))
+               (prefix-old
+                (progn
+                  (LaTeX-find-matching-begin)
+                  (re-search-forward "\\\\label\{\\([a-zA-Z]+\\):\\(.+\\)?\}" pnt t)
+                  (match-string 1)))
+               (name (match-string 2)))
+            (when (and prefix-old prefix-new name)
+              (reftex-query-replace-document 
+               (concat prefix-old ":" name) ;;str1
+               (concat prefix-new ":" name))))))
+      (goto-char pnt)))
 
   (defun brust-LaTeX-env-change args
     (interactive "P")
     (brust-LaTeX-env (not args)))
 #+END_SRC
 
+#+RESULTS:
+: brust-LaTeX-env-change
+
 **** Names envoirments
 #+BEGIN_SRC elisp
   (defconst environment-prefix-list
-    '(("corollary" . "coro") ("notation" . "not") ("lemma" . "lem")
-      ("proposition" . "prop") ("remark" . "rmk")
-      ("definition" . "def") ("theorem" . "thr")
-      ("axiom" . "axm") ("proof" . "prf") ("chapter" . "chap")))
+    '(("corollary"   . "coro") 
+      ("notation"    . "not")
+      ("lemma"       . "lem")
+      ("proposition" . "prop")
+      ("remark"      . "rmk")
+      ("definition"  . "def")
+      ("theorem"     . "thr")
+      ("axiom"       . "axm")
+      ("proof"       . "prf")
+      ("chapter"     . "chap")))
 #+END_SRC
+
+#+RESULTS:
+: environment-prefix-list
 
 *** Query replace only in math formlulas
     From https://stackoverflow.com/questions/19845598/emacs-regex-replacing-a-string-inside-a-latex-equation 
@@ -781,7 +796,7 @@ Defaults
         reftex-allow-automatic-rescan t
         reftex-enable-partial-scans t
         reftex-save-parse-info t
-        reftex-use-multiple-selection-buffers nil
+        reftex-use-multiple-selection-buffers t
         ;; reftex-bibpath-environment-variables  '("~/Articoli/BibInput/")
         ;; reftex-file-extensions '(("nw" "tex" ".tex" ".ltx") ("bib" ".bib"))
         ;; reftex-default-bibliography '("~/Dropbox/bibliography/my.bib"
@@ -808,7 +823,7 @@ Defaults
 #+END_SRC
 
 #+RESULTS:
-| bibliography | nobibliography | addbibresource |
+: t
 
 *** Label list 
     The numbers in both lists are *toc* levels, negative does not show the "section" number.
@@ -1062,8 +1077,10 @@ There are many defaults that I do not use, this is to clean a bit.
   ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
   ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
   ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
-  ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
-  ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
+  ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
+  ;; Move to abbrev's (here they do not work).
+  ;; ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
+  ;; ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
   ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
   ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
   ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
@@ -1208,11 +1225,11 @@ There are many defaults that I do not use, this is to clean a bit.
      ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil) 
      ("tik" "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
-     ("tikfrm" "Insert tikz envirment for beamer presentation"
-      "\\[\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]"
+     ("tikb" "Insert tikz envirment for beamer presentation"
+      "\\[\n\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]"
       cdlatex-position-cursor   nil t   nil)
-     ("tiklong" "Insert tikz envirment with basic options" 
-     "\\[\\begin{tikzcd}[column sep=2.7em, row sep=2.2em]\%(Defaults)\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
+     ("tika" "Insert tikz envirment with basic options" 
+     "\\[\n\\begin{oldtikzcd}[column sep=2em, row sep=.01ex]\%(Defaults)\n ? \\ :\\  \\\\\n  \\\\\n \\qquad  \\rar[mapsto]{} \\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
      ("caseeq"    "Insert a `f(x) = {...' construct"
       "\\left\\{\n\\begin{array}{l@{\\quad:\\quad}l}\n? & \\\\\n & \n\\end{array}\\right."
@@ -1221,6 +1238,8 @@ There are many defaults that I do not use, this is to clean a bit.
    do (cl-pushnew xx cdlatex-command-alist))
 
 #+END_SRC
+
+#+RESULTS:
     
 ** Modify keys ='=
 
@@ -1257,6 +1276,7 @@ There are many defaults that I do not use, this is to clean a bit.
         ( ?u    "\\breve"             nil        t   t   nil )
         ( ?m    "\\mbox"              nil        t   nil nil )
         ( ?c    "\\mathcal"           nil        t   nil nil )
+        ( ?a    "\\fcat"              nil        t   nil nil )
         ;; ( ?r    "\\mathrm"            "\\textrm" t   nil nil )
         ( ?i    "\\im"                "\\textit" t   nil nil )
         ( ?I    "\\mathit"            "\\textit" t   nil nil )
