@@ -1744,7 +1744,7 @@
 #+RESULTS:
 : close-quoted-open-paren-right-or-left
 
-**** New paren
+**** COMMENT New paren
 #+BEGIN_SRC elisp
 
     (defvar brust-open-paren-last 1 "Number corresponding to last inserted paren by `brust-open-paren-alist'")
