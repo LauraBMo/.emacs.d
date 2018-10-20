@@ -670,7 +670,7 @@
            '(("bg" . ivy-switch-buffer)
              ("bf" . brust-ace-window)
              ("ww" . zap-up-to-char)
-             ("sç" . save-buffer)
+             ;; ("sç" . save-buffer)
              (".a" . endless/ispell-word-then-abbrev)
              (".s" . flyspell-correct-previous-word-generic))
            do (key-chord-define-global (car -ch) (cdr -ch)))
@@ -2739,27 +2739,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
           beacon-size 25)
     (beacon-mode 1))
 #+END_SRC
-*** Bibretrive
-#+BEGIN_SRC elisp
-  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
-  (load "bibretrieve")
-  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
-#+END_SRC
-*** Bralatex
-    Load before auctex ??2
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
 
 #+RESULTS:
-: bratex-config
+|
 
 *** Company
 **** General config.
@@ -5717,6 +5699,7 @@ _q_: quit
 : brust-singular-dynamic-complete
 
 ** LaTeX-mode-config
+*** General
 #+BEGIN_SRC elisp
   (use-package tex
     :ensure auctex
@@ -5789,6 +5772,28 @@ _q_: quit
 #+RESULTS:
 : brust-cycle-texmath
 
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
+
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
 
 ** MyRegExp
 *** Create it
