@@ -167,16 +167,24 @@
 #+END_SRC
 
 *** Spelling
+I use the default personal dictionary for aspell "~/aspell.en.pws".
+A personal dictionary has a language assigned (look at the first line), so
+when one fix a personal personal dictionary there are problems when one changes the dictionary.
 #+BEGIN_SRC elisp
   (setq ispell-program-name "aspell"
         ispell-really-aspell t
         ispell-silently-savep t
         ispell-quietly t
-        ispell-personal-dictionary (file-truename "~/Dropbox/config/english-words.txt")) ;; "~/.emacs.d/myDictionary.pws"
+        ;; ispell-personal-dictionary (file-truename "~/Dropbox/config/english-words.txt")
+        ) ;; "~/.emacs.d/myDictionary.pws"
   (require 'flyspell)
 
   (setq flyspell-default-dictionary "en")
 #+END_SRC
+
+#+RESULTS:
+: brust-ispell-change-dictionary
+
  %%% ispell-local-dictionary: "british" or "catalan"
 
 *** Dialog
@@ -2756,6 +2764,22 @@ should be. After calling this function, call 'meeting-done' to reset the environ
            company-show-numbers t
            company-tooltip-align-annotations t)
     (add-hook 'after-init-hook #'global-company-mode)
+    ;; Look at Spell header to undersand the reason of the following code.
+    ;; It is used in company-ispell
+    (when (file-exists-p "~/Dropbox/config/english-words.txt")
+      (find-file "~/Dropbox/config/english-words.txt")
+      (erase-buffer)
+      (insert-file-contents "~/Dropbox/config/english-words-saved.txt")
+      (end-of-buffer)
+      (insert (if (file-exists-p "~/.aspell.en.pws")
+                  (with-temp-buffer
+                    (insert-file-contents "~/.aspell.en.pws")
+                    (delete-region (point) (1+ (point-at-eol)))
+                    (buffer-string))
+                ""))
+      (save-buffer)
+      (kill-buffer))
+
     :bind (:map company-active-map
                 ("<return>" . company-complete-selection)
                 ("TAB"      . brust-company-abort-cdlatex-or-yas)
@@ -2795,10 +2819,11 @@ should be. After calling this function, call 'meeting-done' to reset the environ
         (message "company-ispell enabled!"))))
 
     (defun text-mode-hook-company-setup nil
-      (brust-generic-company-setup '(company-ispell))
-      ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
-      ;;  but I prefer hard code the dictionary path. That's more portable.
-      (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt")))
+      (when (file-exists-p "~/Dropbox/config/english-words.txt")
+        (brust-generic-company-setup '(company-ispell))
+        ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
+        ;;  but I prefer hard code the dictionary path. That's more portable.
+        (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
     (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
 
     (use-package company-shell
