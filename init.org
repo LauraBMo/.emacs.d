@@ -3951,11 +3951,13 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 *** Key-frequency
 #+BEGIN_SRC elisp
-(require 'keyfreq)
-(keyfreq-mode 1)
-(keyfreq-autosave-mode 1)
-
+  (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
+    (require 'keyfreq)
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
 #+END_SRC
+
+#+RESULTS:
 
 *** Ledgers
     Mainly from [[https://www.reddit.com/r/emacs/comments/8x4xtt/tip_how_i_use_ledger_to_track_my_money/][Reddit discution]]
@@ -4071,7 +4073,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (remove-hook 'post-command-hook 'eldoc-schedule-timer))
 #+END_SRC
 
-*** TODO Mu4e
+*** COMMENT TODO Mu4e
     - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
     - TODOs [0/5]
       - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
@@ -4551,7 +4553,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     )
 
 #+END_SRC
-*** Rainbow delimiters
+*** COMMENT Rainbow delimiters
     I use it just to auto color unmatched parents.
 #+BEGIN_SRC elisp
   (use-package rainbow-delimiters
@@ -4712,7 +4714,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+RESULTS:
 
-*** View Large files
+*** COMMENT View Large files
 #+BEGIN_SRC elisp
   (use-package vlf
     ;; :diminish vlf-mode
@@ -4941,7 +4943,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;                  (counsel-git-grep-occur)
     ;;                  (ivy-wgrep-change-to-wgrep-mode)))
 
-    (use-package ivy-hydra)
+    ;; (use-package ivy-hydra)
     (use-package ivy-bibtex)
     (use-package counsel
       :diminish 'counsel-mode)
@@ -5807,7 +5809,7 @@ _q_: quit
 #+RESULTS:
 : brust-cycle-texmath
 
-*** Bibretrive
+*** COMMENT Bibretrive
 #+BEGIN_SRC elisp
   (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
   (load "bibretrieve")
