@@ -2703,6 +2703,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+RESULTS:
 |
 
+*** Anki Editor
+ The web [[https://github.com/louietan/anki-editor][Git Hub repository]]
+#+BEGIN_SRC elisp
+  (use-package anki-editor)
+#+END_SRC
+
+#+RESULTS:
+
 *** TODO Avy
     :TODO: Learn which =avy-goto-??= is my favorite!
     :TODO: Find easy type and remember =chords=
@@ -3243,6 +3251,23 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     ;; ("C->" . goto-last-change-reverse)
     )
 #+END_SRC
+
+*** Helpful
+#+BEGIN_SRC elisp
+  (use-package helpful
+    :after ivy
+    :init
+    (setq counsel-describe-function-function #'helpful-function
+          counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ("<f1> c" . helpful-command)
+    ("<f1> k" . helpful-key)
+    ("C-h c" . helpful-command)
+    ("C-h k" . helpful-key))
+#+END_SRC
+
+#+RESULTS:
+: helpful-key
 
 *** TODO Hydra
 **** General setting
