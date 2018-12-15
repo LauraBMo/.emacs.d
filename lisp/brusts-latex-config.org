@@ -1061,72 +1061,83 @@ There are many defaults that I do not use, this is to clean a bit.
   (cl-loop
    for xx in
    '(
-  ("Pic"  "Insert Pic_{}"        "\\Pic_{?}"        cdlatex-position-cursor nil nil t)
-  ("adm"  "Insert adm_{}"        "\\adm_{?}"        cdlatex-position-cursor nil nil t)
-  ("Div"  "Insert Div_{}"        "\\Div_{?}"       cdlatex-position-cursor nil nil t)
-  ("nil"  "Insert nil_{}"        "\\nil_{?}"       cdlatex-position-cursor nil nil t)
-  ("ass"  "Insert ass_{}"        "\\ass_{?}"       cdlatex-position-cursor nil nil t)
-  ("sym"  "Insert sym_{}"        "\\sym_{?}"       cdlatex-position-cursor nil nil t)
-  ("aut"  "Insert aut_{}"        "\\aut_{?}"       cdlatex-position-cursor nil nil t)
-  ("aaut" "Insert algaut_{}"     "\\algaut_{?}"    cdlatex-position-cursor nil nil t)
-  ("mod"  "Insert module_{}"     "\\module_{?}"    cdlatex-position-cursor nil nil t)
-  ("qch"  "Insert qch_{}"        "\\qch_{?}"       cdlatex-position-cursor nil nil t)
-  ("matx" "Insert matx_{}"       "\\matx_{?}"      cdlatex-position-cursor nil nil t)
-  ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
-  ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
-  ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
-  ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
-  ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
-  ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
-  ;; Move to abbrev's (here they do not work).
-  ;; ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
-  ;; ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
-  ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
-  ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
-  ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
-  ("lar"  "Insert lar{} in tikz" "\\lar{?}"        cdlatex-position-cursor nil nil t)
-  ("dars" "Insert dar[swap]{}"   "\\dar[swap]{?}"  cdlatex-position-cursor nil nil t)
-  ("uars" "Insert uar[swap]{}"   "\\uar[swap]{?}"  cdlatex-position-cursor nil nil t)
-  ("rars" "Insert rar[swap]{}"   "\\rar[swap]{?}"  cdlatex-position-cursor nil nil t)
-  ("lars" "Insert lar[swap]{}"   "\\lar[swap]{?}"  cdlatex-position-cursor nil nil t)
-  ("drar" "Insert drar{}"        "\\drar{?}"       cdlatex-position-cursor nil nil t)
-  ("urar" "Insert urar{}"        "\\urar{?}"       cdlatex-position-cursor nil nil t)
-  ("dlar" "Insert dlar{}"        "\\dlar{?}"       cdlatex-position-cursor nil nil t)
-  ("ular" "Insert ular{}"        "\\ular{?}"       cdlatex-position-cursor nil nil t)
-  ("drar" "Insert drar[swap]{}"  "\\drar[swap]{?}" cdlatex-position-cursor nil nil t)
-  ("urar" "Insert urar[swap]{}"  "\\urar[swap]{?}" cdlatex-position-cursor nil nil t)
-  ("dlar" "Insert dlar[swap]{}"  "\\dlar[swap]{?}" cdlatex-position-cursor nil nil t)
-  ("ular" "Insert ular[swap]{}"  "\\ular[swap]{?}" cdlatex-position-cursor nil nil t)
-  ("darh" "Insert dar[hook]{} in tikz" "\\dar[hook]{?}"        cdlatex-position-cursor nil nil t)
-  ("uarh"  "Insert uar[hook]{} in tikz" "\\uar[hook]{?}"        cdlatex-position-cursor nil nil t)
-  ("rarh"  "Insert rar[hook]{} in tikz" "\\rar[hook]{?}"        cdlatex-position-cursor nil nil t)
-  ("larh"  "Insert lar[hook]{} in tikz" "\\lar[hook]{?}"        cdlatex-position-cursor nil nil t)
-  ("darsh" "Insert dar[swap, hook]{}"   "\\dar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-  ("uarsh" "Insert uar[swap, hook]{}"   "\\uar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-  ("rarsh" "Insert rar[swap, hook]{}"   "\\rar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-  ("larsh" "Insert lar[swap, hook]{}"   "\\lar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-  ("drarh" "Insert drar[hook]{}"        "\\drar[hook]{?}"       cdlatex-position-cursor nil nil t)
-  ("urarh" "Insert urar[hook]{}"        "\\urar[hook]{?}"       cdlatex-position-cursor nil nil t)
-  ("dlarh" "Insert dlar[hook]{}"        "\\dlar[hook]{?}"       cdlatex-position-cursor nil nil t)
-  ("ularh" "Insert ular[hook]{}"        "\\ular[hook]{?}"       cdlatex-position-cursor nil nil t)
-  ("drarh" "Insert drar[swap, hook]{}"  "\\drar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-  ("urarh" "Insert urar[swap, hook]{}"  "\\urar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-  ("dlarh" "Insert dlar[swap, hook]{}"  "\\dlar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-  ("ularh" "Insert ular[swap, hook]{}"  "\\ular[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-  ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
-  ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
-  ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
-  ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
-  ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
-  
-  ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
-  ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
-  ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
-  ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+     ("clf" nil "\\clf^{r?}" cdlatex-position-cursor nil nil t)
+     ("cls" nil "\\cls^{r?}" cdlatex-position-cursor nil nil t)
+     ("clk" nil "\\clk^{r?}" cdlatex-position-cursor nil nil t)
+     ("clp" nil "\\clpi^{r?}_{}" cdlatex-position-cursor nil nil t)
+     ("clb" nil "\\clb^{r?}_{}" cdlatex-position-cursor nil nil t)
+     ("clx" nil "\\clx^{r?}_{}" cdlatex-position-cursor nil nil t)
+     ("cla" nil "\\clsec^{r?}_{}" cdlatex-position-cursor nil nil t)
+     ("clsk"nil "(\\cls^{r?},\\clk^{r})" cdlatex-position-cursor nil nil t)
+     ("Pic"  "Insert Pic_{}"        "\\Pic_{?}"       cdlatex-position-cursor nil nil t)
+     ("adm"  "Insert adm_{}"        "\\adm_{?}"       cdlatex-position-cursor nil nil t)
+     ("Div"  "Insert Div_{}"        "\\Div_{?}"       cdlatex-position-cursor nil nil t)
+     ("nil"  "Insert nil_{}"        "\\nil_{?}"       cdlatex-position-cursor nil nil t)
+     ("ass"  "Insert ass_{}"        "\\ass_{?}"       cdlatex-position-cursor nil nil t)
+     ("sym"  "Insert sym_{}"        "\\sym_{?}"       cdlatex-position-cursor nil nil t)
+     ("aut"  "Insert aut_{}"        "\\aut_{?}"       cdlatex-position-cursor nil nil t)
+     ("aaut" "Insert algaut_{}"     "\\algaut_{?}"    cdlatex-position-cursor nil nil t)
+     ("mod"  "Insert module_{}"     "\\module_{?}"    cdlatex-position-cursor nil nil t)
+     ("qch"  "Insert qch_{}"        "\\qch_{?}"       cdlatex-position-cursor nil nil t)
+     ("matx" "Insert matx_{}"       "\\matx_{?}"      cdlatex-position-cursor nil nil t)
+     ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
+     ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
+     ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
+     ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
+     ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
+     ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
+     ;; Move to abbrev's (here they do not work).
+     ;; ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
+     ;; ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
+     ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
+     ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
+     ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
+     ("lar"  "Insert lar{} in tikz" "\\lar{?}"        cdlatex-position-cursor nil nil t)
+     ("dars" "Insert dar[swap]{}"   "\\dar[swap]{?}"  cdlatex-position-cursor nil nil t)
+     ("uars" "Insert uar[swap]{}"   "\\uar[swap]{?}"  cdlatex-position-cursor nil nil t)
+     ("rars" "Insert rar[swap]{}"   "\\rar[swap]{?}"  cdlatex-position-cursor nil nil t)
+     ("lars" "Insert lar[swap]{}"   "\\lar[swap]{?}"  cdlatex-position-cursor nil nil t)
+     ("drar" "Insert drar{}"        "\\drar{?}"       cdlatex-position-cursor nil nil t)
+     ("urar" "Insert urar{}"        "\\urar{?}"       cdlatex-position-cursor nil nil t)
+     ("dlar" "Insert dlar{}"        "\\dlar{?}"       cdlatex-position-cursor nil nil t)
+     ("ular" "Insert ular{}"        "\\ular{?}"       cdlatex-position-cursor nil nil t)
+     ("drar" "Insert drar[swap]{}"  "\\drar[swap]{?}" cdlatex-position-cursor nil nil t)
+     ("urar" "Insert urar[swap]{}"  "\\urar[swap]{?}" cdlatex-position-cursor nil nil t)
+     ("dlar" "Insert dlar[swap]{}"  "\\dlar[swap]{?}" cdlatex-position-cursor nil nil t)
+     ("ular" "Insert ular[swap]{}"  "\\ular[swap]{?}" cdlatex-position-cursor nil nil t)
+     ("darh" "Insert dar[hook]{} in tikz" "\\dar[hook]{?}"        cdlatex-position-cursor nil nil t)
+     ("uarh"  "Insert uar[hook]{} in tikz" "\\uar[hook]{?}"        cdlatex-position-cursor nil nil t)
+     ("rarh"  "Insert rar[hook]{} in tikz" "\\rar[hook]{?}"        cdlatex-position-cursor nil nil t)
+     ("larh"  "Insert lar[hook]{} in tikz" "\\lar[hook]{?}"        cdlatex-position-cursor nil nil t)
+     ("darsh" "Insert dar[swap, hook]{}"   "\\dar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+     ("uarsh" "Insert uar[swap, hook]{}"   "\\uar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+     ("rarsh" "Insert rar[swap, hook]{}"   "\\rar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+     ("larsh" "Insert lar[swap, hook]{}"   "\\lar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+     ("drarh" "Insert drar[hook]{}"        "\\drar[hook]{?}"       cdlatex-position-cursor nil nil t)
+     ("urarh" "Insert urar[hook]{}"        "\\urar[hook]{?}"       cdlatex-position-cursor nil nil t)
+     ("dlarh" "Insert dlar[hook]{}"        "\\dlar[hook]{?}"       cdlatex-position-cursor nil nil t)
+     ("ularh" "Insert ular[hook]{}"        "\\ular[hook]{?}"       cdlatex-position-cursor nil nil t)
+     ("drarh" "Insert drar[swap, hook]{}"  "\\drar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+     ("urarh" "Insert urar[swap, hook]{}"  "\\urar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+     ("dlarh" "Insert dlar[swap, hook]{}"  "\\dlar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+     ("ularh" "Insert ular[swap, hook]{}"  "\\ular[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+     ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
+     ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
+     ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
+     ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
+     ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
+
+     ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
+     ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
+     ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+     ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
      )
    do (cl-pushnew xx cdlatex-command-alist))
 
 #+END_SRC
+
+#+RESULTS:
+
 *** Text mode
 #+BEGIN_SRC elisp
   (cl-loop
@@ -1222,7 +1233,8 @@ There are many defaults that I do not use, this is to clean a bit.
   (cl-loop
    for xx in
    '(
-     ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil) 
+     ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil)
+     ("clsk" nil "\\((\\cls^{r?},\\clk^{r})\\)" cdlatex-position-cursor nil t nil)
      ("tik" "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
       cdlatex-position-cursor   nil t   nil)
      ("tikb" "Insert tikz envirment for beamer presentation"
@@ -1254,39 +1266,40 @@ There are many defaults that I do not use, this is to clean a bit.
         ;;              nil if style (e.g. {\\cal a}).
         ;; 4. rmdot:    t   if the dot on i and j has to be removed.
         ;; 5. it        t   if italic correction is required."
-        ( ?r    "\\mathscr"           nil        t   nil nil )
-        ( ?t    "\\overline"          nil        t   nil nil )
-        ( ?o    "\\op"                nil        t   nil nil )
-        ( ?s    "\\s"                 nil        t   nil nil )
         ( ?\.   "\\dot"               nil        t   t   nil )
         ( ?\:   "\\ddot"              nil        t   t   nil )
         ( ?\~   "\\tilde"             nil        t   t   nil )
-        ( ?N    "\\widetilde"         nil        t   t   nil )
         ( ?^    "\\hat"               nil        t   t   nil )
-        ( ?H    "\\widehat"           nil        t   t   nil )
         ( ?\-   "\\bar"               nil        t   t   nil )
-        ( ?T    "\\overline"          nil        t   nil nil )
         ( ?\_   "\\underline"         nil        t   nil nil )
         ( ?\{   "\\overbrace"         nil        t   nil nil )
         ( ?\}   "\\underbrace"        nil        t   nil nil )
         ( ?\>   "\\vec"               nil        t   t   nil )
         ( ?/    "\\grave"             nil        t   t   nil )
         ( ?\\   "\\acute"             nil        t   t   nil )
-        ( ?v    "\\check"             nil        t   t   nil )
-        ( ?u    "\\breve"             nil        t   t   nil )
-        ( ?m    "\\mbox"              nil        t   nil nil )
-        ( ?c    "\\mathcal"           nil        t   nil nil )
         ( ?a    "\\fcat"              nil        t   nil nil )
-        ;; ( ?r    "\\mathrm"            "\\textrm" t   nil nil )
-        ( ?i    "\\im"                "\\textit" t   nil nil )
-        ( ?I    "\\mathit"            "\\textit" t   nil nil )
-        ( ?l    nil                   "\\textsl" t   nil nil )
         ( ?b    "\\mathbf"            "\\textbf" t   nil nil )
+        ( ?c    "\\mathcal"           nil        t   nil nil )
         ( ?d    "\\mathbb"            "\\textbb" t   nil nil )
-        ( ?E    "\\mathem"            "\\emph"   t   nil nil )
         ( ?e    "\\mathem"            "\\emph"   t   nil nil )
-        ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
         ( ?f    "\\mathfrak"          "\\textsf" t   nil nil )
+        ( ?i    "\\im"                "\\textit" t   nil nil )
+        ( ?l    nil                   "\\textsl" t   nil nil )
+        ( ?m    "\\mbox"              nil        t   nil nil )
+        ( ?o    "\\op"                nil        t   nil nil )
+        ( ?q    "\\funct"             nil        t   nil nil )
+        ( ?r    "\\mathscr"           nil        t   nil nil )
+        ;; ( ?r    "\\mathrm"            "\\textrm" t   nil nil )
+        ( ?s    "\\s"                 nil        t   nil nil )
+        ( ?t    "\\overline"          nil        t   nil nil )
+        ( ?u    "\\breve"             nil        t   t   nil )
+        ( ?v    "\\check"             nil        t   t   nil )
+        ( ?y    "\\mathtt"            "\\texttt" t   nil nil )
+        ( ?E    "\\mathem"            "\\emph"   t   nil nil )
+        ( ?H    "\\widehat"           nil        t   t   nil )
+        ( ?I    "\\mathit"            "\\textit" t   nil nil )
+        ( ?N    "\\widetilde"         nil        t   t   nil )
+        ( ?T    "\\overline"          nil        t   nil nil )
         ( ?0    "\\textstyle"         nil        nil nil nil )
         ( ?1    "\\displaystyle"      nil        nil nil nil )
         ( ?2    "\\scriptstyle"       nil        nil nil nil )
@@ -1295,37 +1308,39 @@ There are many defaults that I do not use, this is to clean a bit.
 #+END_SRC
 
 #+RESULTS:
-| 114 | \mathscr           | nil     | t   | nil | nil |
-| 116 | \overline          | nil     | t   | nil | nil |
-| 111 | \op                | nil     | t   | nil | nil |
-| 115 | \s                 | nil     | t   | nil | nil |
 |  46 | \dot               | nil     | t   | t   | nil |
 |  58 | \ddot              | nil     | t   | t   | nil |
 | 126 | \tilde             | nil     | t   | t   | nil |
-|  78 | \widetilde         | nil     | t   | t   | nil |
 |  94 | \hat               | nil     | t   | t   | nil |
-|  72 | \widehat           | nil     | t   | t   | nil |
 |  45 | \bar               | nil     | t   | t   | nil |
-|  84 | \overline          | nil     | t   | nil | nil |
 |  95 | \underline         | nil     | t   | nil | nil |
 | 123 | \overbrace         | nil     | t   | nil | nil |
 | 125 | \underbrace        | nil     | t   | nil | nil |
 |  62 | \vec               | nil     | t   | t   | nil |
 |  47 | \grave             | nil     | t   | t   | nil |
 |  92 | \acute             | nil     | t   | t   | nil |
-| 118 | \check             | nil     | t   | t   | nil |
-| 117 | \breve             | nil     | t   | t   | nil |
-| 109 | \mbox              | nil     | t   | nil | nil |
-|  99 | \mathcal           | nil     | t   | nil | nil |
-| 105 | \im                | \textit | t   | nil | nil |
-|  73 | \mathit            | \textit | t   | nil | nil |
-| 108 | nil                | \textsl | t   | nil | nil |
+|  97 | \fcat              | nil     | t   | nil | nil |
 |  98 | \mathbf            | \textbf | t   | nil | nil |
+|  99 | \mathcal           | nil     | t   | nil | nil |
 | 100 | \mathbb            | \textbb | t   | nil | nil |
-|  69 | \mathem            | \emph   | t   | nil | nil |
 | 101 | \mathem            | \emph   | t   | nil | nil |
-| 121 | \mathtt            | \texttt | t   | nil | nil |
 | 102 | \mathfrak          | \textsf | t   | nil | nil |
+| 105 | \im                | \textit | t   | nil | nil |
+| 108 | nil                | \textsl | t   | nil | nil |
+| 109 | \mbox              | nil     | t   | nil | nil |
+| 111 | \op                | nil     | t   | nil | nil |
+| 113 | \funct             | nil     | t   | nil | nil |
+| 114 | \mathscr           | nil     | t   | nil | nil |
+| 115 | \s                 | nil     | t   | nil | nil |
+| 116 | \overline          | nil     | t   | nil | nil |
+| 117 | \breve             | nil     | t   | t   | nil |
+| 118 | \check             | nil     | t   | t   | nil |
+| 121 | \mathtt            | \texttt | t   | nil | nil |
+|  69 | \mathem            | \emph   | t   | nil | nil |
+|  72 | \widehat           | nil     | t   | t   | nil |
+|  73 | \mathit            | \textit | t   | nil | nil |
+|  78 | \widetilde         | nil     | t   | t   | nil |
+|  84 | \overline          | nil     | t   | nil | nil |
 |  48 | \textstyle         | nil     | nil | nil | nil |
 |  49 | \displaystyle      | nil     | nil | nil | nil |
 |  50 | \scriptstyle       | nil     | nil | nil | nil |
@@ -1345,15 +1360,15 @@ There are many defaults that I do not use, this is to clean a bit.
           ( ?D  ( "\\Delta"         "\\nabla"))
           ( ?e  ( "\\varepsilon"    "\\epsilon"   "\\exp"))
           ( ?E  ( "\\exists"        ""            "\\ln"))
-          ( ?f  ( "\\varphi"        "\\phi"))
-          ( ?F  ( "\\field"                 ))
+          ( ?f  ( "\\varphi"        "\\field"     "\\phi"))
+          ( ?F  ( "\\Phi"                 ))
           ( ?g  ( "\\gamma"         "\\dim~"       "\\deg~"))
           ( ?G  ( "\\Gamma"))
           ( ?h  ( "\\eta"           "\\hbar"))
           ( ?H  ( ""                 ))
           ( ?i  ( "\\in"            "\\inte"       "i=1,\\dots,n"))
           ( ?I  ( "\\Im"))
-          ( ?j  ( "\\iota"          "\\jmath"))
+          ( ?j  ( "\\iota"          "j=1,\\dots,n" "j=0,\\dots,n"))
           ( ?J  ( ""                 ))
           ( ?k  ( "\\kappa"          ))
           ( ?K  ( ""                 ))
@@ -1371,7 +1386,7 @@ There are many defaults that I do not use, this is to clean a bit.
           ( ?Q  ( "\\Theta"         "\\rat"))
           ( ?r  ( "\\rho"           "\\reals"   "\\varrho"))
           ( ?R  ( ""                "\\Re"))
-          ( ?s  ( "\\sigma"         "\\sch"     "\\sin"))
+          ( ?s  ( "\\sigma"         "\\sch"     "\\set"))
           ( ?S  ( "\\Sigma"         ""          "\\arcsin"))
           ( ?t  ( "\\tau"           "\\set"     "\\tan"))
           ( ?T  ( ""                ""          "\\arctan"))
@@ -1390,11 +1405,11 @@ There are many defaults that I do not use, this is to clean a bit.
           ;; ( ?   ( "" ))
           ( ?0  ( "\\emptyset"       ))
           ( ?1  ( "^{-1}"           "^{*}"   "^{#}"))
-          ( ?2  ( "\\varrightarrow" "\\varleftarrow" ))
-          ( ?3  ( "\\bigcup"        "\\bigcap"))
-          ( ?4  ( ""))
-          ( ?5  ( ""))
-          ( ?6  ( ""))
+          ( ?2  ( "\\clf"))
+          ( ?3  ( "\\cls"))
+          ( ?4  ( "\\clk"))
+          ( ?5  ( "\\clpi"))
+          ( ?6  ( "\\clb"))
           ( ?7  ( "\\not"           "\\neq"))
           ( ?8  ( "\\infty"          ))
           ( ?9  ( ""                 ))
@@ -1406,13 +1421,13 @@ There are many defaults that I do not use, this is to clean a bit.
           ( ?^  ( "\\uparrow"        ))
           ( ?&  ( "\\wedge"          ))
           ( ?\? ( ""                 ))
-          ( ?_  ( "\\overto"        "\\underto"))
+          ( ?_  ( "\\overset"       "\\underto"))
           ( ?:  ( "\\vdots"         "\\ddots"))
           ( ?,  ( "\\from"          "\\bullet"  ""))
           ( ?.  ( "\\dots"          "\\cdots"   "\\cdot"))
           ( ?-  ( "\\to"            "\\tohook"  "\\tofunct"))
-          ( ?*  ( "\\otimes"        "\\cap" ))
-          ( ?+  ( "\\times"         "\\cup"  ))
+          ( ?*  ( "\\otimes"        "\\cap"     "\\bigcap"))
+          ( ?+  ( "\\times"         "\\cup"     "\\bigcup"))
           ( ?/  ( "\\not"           "\\neq"))
           ( ?|  ( "\\perp"          ""))
           ( ?º  ( "\\setminus"       ))
@@ -1435,47 +1450,45 @@ There are many defaults that I do not use, this is to clean a bit.
 #+END_SRC
 
 #+RESULTS:
-|  99 | (\circ \cdot \cos)                  |
-|  44 | (\!:\! \dots \bullet)               |
-|  46 | (\dots \bullet \cdot)               |
-|  97 | (\alpha \forall)                    |
+|  99 | (\circ \comp \cos)                  |
+|  97 | (\alpha \aff )                      |
 |  65 | (\Alpha \aleph)                     |
 |  98 | (\beta)                             |
 |  66 | (\Beta)                             |
-|  67 | (\complexes  \arccos)               |
+|  67 | (\lceil \rceil \arccos)             |
 | 100 | (\delta \partial)                   |
 |  68 | (\Delta \nabla)                     |
 | 101 | (\varepsilon \epsilon \exp)         |
 |  69 | (\exists  \ln)                      |
-| 102 | (\phi \varphi)                      |
-|  70 | ()                                  |
-| 103 | (\gamma  \lg)                       |
-|  71 | (\Gamma  10^{?})                    |
+| 102 | (\varphi \field \phi)               |
+|  70 | (\Phi)                              |
+| 103 | (\gamma \dim~ \deg~)                |
+|  71 | (\Gamma)                            |
 | 104 | (\eta \hbar)                        |
 |  72 | ()                                  |
-| 105 | (\in i=1,\dots,n)                   |
-|  73 | (\im \Im)                           |
-| 106 | (\iota \jmath)                      |
+| 105 | (\in \inte i=1,\dots,n)             |
+|  73 | (\Im)                               |
+| 106 | (\iota j=1,\dots,n j=0,\dots,n)     |
 |  74 | ()                                  |
 | 107 | (\kappa)                            |
 |  75 | ()                                  |
-| 108 | (\lambda \ell \ln)                  |
+| 108 | (\lambda  \ln)                      |
 |  76 | (\Lambda)                           |
-| 109 | (\mu)                               |
-|  77 | ()                                  |
-| 110 | (\nu \not \ln)                      |
-|  78 | (\nabla  \exp)                      |
+| 109 | (\mu \module \matx)                 |
+|  77 | ( \matx)                            |
+| 110 | (\nu \nat \ln)                      |
+|  78 | ()                                  |
 | 111 | (\omega)                            |
 |  79 | (\Omega \mho)                       |
-| 112 | (\pi \varpi)                        |
-|  80 | (\Pi \projective)                   |
-| 113 | (\theta \vartheta)                  |
-|  81 | (\Theta)                            |
-| 114 | (\rho \varrho)                      |
+| 112 | (\pi \proj \perp)                   |
+|  80 | (\Pi)                               |
+| 113 | (\theta \qch \vartheta)             |
+|  81 | (\Theta \rat)                       |
+| 114 | (\rho \reals \varrho)               |
 |  82 | ( \Re)                              |
-| 115 | (\sigma \varsigma \sin)             |
+| 115 | (\sigma \sch \set)                  |
 |  83 | (\Sigma  \arcsin)                   |
-| 116 | (\tau  \tan)                        |
+| 116 | (\tau \set \tan)                    |
 |  84 | (  \arctan)                         |
 | 117 | (\upsilon)                          |
 |  85 | (\Upsilon)                          |
@@ -1489,17 +1502,17 @@ There are many defaults that I do not use, this is to clean a bit.
 |  89 | (\Psi)                              |
 | 122 | (\zeta z_1,\dots,z_k z_0,\dots,z_k) |
 |  90 | ()                                  |
-|  32 | ()                                  |
 |  48 | (\emptyset)                         |
-|  49 | (^{-1} ^{*})                         |
-|  50 | (^{*})                               |
-|  51 | (\bigcup \bigcap)                   |
-|  53 | ()                                  |
-|  54 | ()                                  |
-|  55 | ()                                  |
+|  49 | (^{-1} ^{*} ^{#})                   |
+|  50 | (\clf)                              |
+|  51 | (\cls)                              |
+|  52 | (\clk)                              |
+|  53 | (\clpi)                             |
+|  54 | (\clb)                              |
+|  55 | (\not \neq)                         |
 |  56 | (\infty)                            |
 |  57 | ()                                  |
-|  33 | (\neg)                              |
+|  33 | ()                                  |
 |  64 | ()                                  |
 |  35 | ()                                  |
 |  36 | ()                                  |
@@ -1507,22 +1520,28 @@ There are many defaults that I do not use, this is to clean a bit.
 |  94 | (\uparrow)                          |
 |  38 | (\wedge)                            |
 |  63 | ()                                  |
-| 126 | (\approx \simeq)                    |
-|  95 | (\downarrow)                        |
-|  42 | (\cup \cap)                         |
-|  45 | (\varrightarrow \varleftarrow)      |
-|  43 | (\times \otimes)                    |
-|  47 | (\not)                              |
-| 124 | (\mapsto \longmapsto)               |
+|  95 | (\overset \underto)                 |
+|  58 | (\vdots \ddots)                     |
+|  44 | (\from \bullet )                    |
+|  46 | (\dots \cdots \cdot)                |
+|  45 | (\to \tohook \tofunct)              |
+|  42 | (\otimes \cap \bigcap)              |
+|  43 | (\times \cup \bigcup)               |
+|  47 | (\not \neq)                         |
+| 124 | (\perp )                            |
+| 186 | (\setminus)                         |
 |  92 | (\setminus)                         |
 |  34 | ()                                  |
-|  61 | (\cong \Longleftrightarrow)         |
+| 126 | (\approx \simeq \sim)               |
+|  61 | (\cong \equiv)                      |
 |  40 | (\langle)                           |
 |  41 | (\rangle)                           |
-|  91 | (\Leftarrow \Longleftarrow)         |
-|  93 | (\Rightarrow \Longrightarrow)       |
-| 123 | (\subseteq \subset)                 |
-| 125 | (\supseteq \supset)                 |
+|  91 | ( )                                 |
+|  93 | ( )                                 |
+| 231 | (\subseteq \subset)                 |
+| 180 | (\supseteq \supset)                 |
+| 123 | (\{?\})                             |
+| 125 | ()                                  |
 |  60 | (\le \min)                          |
 |  62 | (\ge \max)                          |
 |  96 | ()                                  |
@@ -1548,26 +1567,37 @@ There are many defaults that I do not use, this is to clean a bit.
     (let ((math-p1 (texmathp))
           (-my-texmathp-why texmathp-why)
           (math-p2 (save-excursion (forward-char 2) (texmathp))))
+      (when (and math-p1 (looking-at "}"))
+        (let ((-pt (point)) -str-s-trim)
+          (forward-char 1)
+          (sp-backward-sexp)
+          (forward-char -1)
+          (if (not (looking-at "[_^]")) (goto-char -pt)
+            (forward-char 2)
+            (setq -str-s-trim (s-trim (buffer-substring-no-properties (point) -pt)))
+            (delete-region (point) -pt)
+            (insert -str-s-trim))))
       ad-do-it
-      (and
-       (and math-p1 math-p2)
-       (string= "\\(" (car -my-texmathp-why))
-       (not (texmathp))
-       (backward-char 2))
-      (when (and math-p1 (not (texmathp)))
-        (let ((-pt (point)) -closed-p)
-          (narrow-to-region (+ (cdr -my-texmathp-why)
-                               (length (car -my-texmathp-why)))
-                            (- (point)
-                               (length (car -my-texmathp-why))))
-          (end-of-buffer)
-          (setq -closed-p (ignore-errors (close-quoted-open-paren-right nil)))
-          (widen)
-          (unless -closed-p (goto-char -pt))))))
+      (when (string= "\\(" (car -my-texmathp-why))
+        (when (and math-p1 math-p2 (not (texmathp)))
+          (backward-char 2))
+        (when (and math-p1 (not (texmathp)))
+          (let ((-pt (point)) -closed-p)
+            (narrow-to-region (+ (cdr -my-texmathp-why)
+                                 (length (car -my-texmathp-why)))
+                              (- (point)
+                                 (length (car -my-texmathp-why))))
+            (end-of-buffer)
+            (setq -closed-p (ignore-errors (close-quoted-open-paren-right nil)))
+            (widen)
+            (unless -closed-p (goto-char -pt)))))))
 
   (defadvice cdlatex-environment (after add-auto-indentation activate)
     (LaTeX-indent-line))
 #+END_SRC
+
+#+RESULTS:
+: cdlatex-environment
 
 
 
