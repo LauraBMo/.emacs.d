@@ -2373,42 +2373,47 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (let ((line-move-visual nil))
         (forward-line (1- arg))))
     ;; Use org functions in org headers
-    (if (and (string= major-mode 'org-mode)
-             (let* ((element (save-excursion (beginning-of-line)
-                                             (org-element-at-point)))
-                    (type (org-element-type element)))
-               (memq type '(headline inlinetask))))
-        (org-beginning-of-line)
-      (let ((pt (point))
-            (pnts `(,(point-at-bol)))
-            to-go)
-        ;; List of interesting points
-        (save-excursion
-          (move-beginning-of-line 1)
-          (skip-chars-forward " \t" (point-at-eol))
-          (cl-pushnew (point) pnts)
-          (when (re-search-forward
-                 (concat "\\([%;]\\|"
-                         (format "%s" comment-start-skip)
-                         "\\)")
-                 (point-at-eol) t)
-            (skip-chars-forward ";% \t" (point-at-eol))))
-        (when (bound-and-true-p visual-line-mode)
-          (save-excursion
-            (beginning-of-visual-line)
-            (unless (or (< (point) pt) (cdr pnts))
-              (backward-char 1)
-              (beginning-of-visual-line))
-            (push (point) pnts)))
-        ;; Where to go
-        (setq to-go (list-util-bounded-max pnts pt))
-        (if to-go (goto-char to-go)
-          (unless (= pt (point-at-eol))
-            (goto-char (list-util-bounded-max pnts (point-at-eol))))))))
+    (cond ((and (string= major-mode 'org-mode)
+                (let* ((element (save-excursion (beginning-of-line)
+                                                (org-element-at-point)))
+                       (type (org-element-type element)))
+                  (memq type '(headline inlinetask))))
+           (org-beginning-of-line))
+          ((and (string= major-mode 'latex-mode)
+                (texmathp)
+                (not (= (point) (+ (cdr texmathp-why) (length (car texmathp-why))))))
+           (goto-char (+ (cdr texmathp-why) (length (car texmathp-why)))))
+          (t 
+           (let ((pt (point))
+                 (pnts `(,(point-at-bol)))
+                 to-go)
+             ;; List of interesting points
+             (save-excursion
+               (move-beginning-of-line 1)
+               (skip-chars-forward " \t" (point-at-eol))
+               (cl-pushnew (point) pnts)
+               (when (re-search-forward
+                      (concat "\\([%;]\\|"
+                              (format "%s" comment-start-skip)
+                              "\\)")
+                      (point-at-eol) t)
+                 (skip-chars-forward ";% \t" (point-at-eol))))
+             (when (bound-and-true-p visual-line-mode)
+               (save-excursion
+                 (beginning-of-visual-line)
+                 (unless (or (< (point) pt) (cdr pnts))
+                   (backward-char 1)
+                   (beginning-of-visual-line))
+                 (push (point) pnts)))
+             ;; Where to go
+             (setq to-go (list-util-bounded-max pnts pt))
+             (if to-go (goto-char to-go)
+               (unless (= pt (point-at-eol))
+                 (goto-char (list-util-bounded-max pnts (point-at-eol)))))))))
 #+END_SRC
 
 #+RESULTS:
-: list-util-bounded-max
+: brust-smart-move-beginning-of-line
 
 **** to ends
 #+BEGIN_SRC elisp
