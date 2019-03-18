@@ -4626,6 +4626,20 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (run-with-timer 0 (* 30 60) 'recentf-save-list)
 
 #+END_SRC
+*** SASS files
+    For some reason turn-off aggressive-indent do not work :(
+#+BEGIN_SRC elisp
+  (use-package sass-mode
+    :config
+    (defun aggressive-indent-mode-off nil
+      (aggressive-indent-mode -1))
+    (setq scss-compile-at-save nil)
+    (add-hook 'sass-mode-hook #'aggressive-indent-mode-off))
+#+END_SRC
+
+#+RESULTS:
+: t
+
 *** Smartparents
 #+BEGIN_SRC elisp
   (use-package smartparens
