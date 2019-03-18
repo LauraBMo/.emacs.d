@@ -1493,7 +1493,8 @@ when one fix a personal personal dictionary there are problems when one changes 
           dired-shell-command-history
           ;; Info-history
           Info-search-history
-          pdf-occur-history)
+          ;; pdf-occur-history
+	  )
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
@@ -3962,7 +3963,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : t
 
-*** Interleave
+*** COMMENT Interleave
 #+BEGIN_SRC elisp
   (use-package interleave
     :config
@@ -4465,13 +4466,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 : brust-add-notes-entry-from-pdf
 
 *** Pdf tools
+**** Main
 #+BEGIN_SRC elisp
   (use-package pdf-tools
     :init
     (pdf-tools-install)
-    (pdf-occur-global-minor-mode 0)
-    (add-hook 'dired-load-hook #'pdf-occur-dired-minor-mode)
-    (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode)
+    ;; (pdf-occur-global-minor-mode 0)
+    ;; (add-hook 'dired-load-hook #'pdf-occur-dired-minor-mode)
+    ;; (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode)
     ;; open pdfs scaled to fit page
     (setq-default pdf-view-display-size 'fit-page)
     ;; automatically annotate highlights
@@ -4524,9 +4526,16 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (defun brust-pdf-view-previous-line-or-previous-page-5 (args)
     (interactive "p")
     (brust-by-five #'pdf-view-previous-line-or-previous-page args))
+#+END_SRC
 
-  ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
+#+RESULTS:
+: brust-pdf-view-previous-line-or-previous-page-5
+
+**** COMMENT save place
+ workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18
+
+#+BEGIN_SRC elisp
   (defun brds/pdf-set-last-viewed-bookmark ()
     (interactive)
     (when (eq major-mode 'pdf-view-mode)
