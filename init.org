@@ -1578,6 +1578,14 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 : brust-pdf-add-blank-pages
+*** COMMENT PDF From MR to pdf
+commands to work with MangaRock comics
+#+BEGIN_SRC bash
+  cd "~/Dropbox/files/26897765-1546816941953/"
+  parallel convert '{} {.}.pdf' ::: * && pdftk `ls | grep "pdf" | sort -n` cat output Vol-2.pdf
+#+END_SRC
+
+#+RESULTS:
 
 *** Bounded min/maximum
 #+BEGIN_SRC elisp
