@@ -87,19 +87,18 @@
 
 #+BEGIN_SRC elisp
   (defun brust-create-english-word-file nil
-    (when (file-exists-p "~/Dropbox/config/english-words.txt")
-      (find-file "~/Dropbox/config/english-words.txt")
-      (erase-buffer)
-      (insert-file-contents "~/Dropbox/config/english-words-saved.txt")
-      (end-of-buffer)
-      (insert (if (file-exists-p "~/.aspell.en.pws")
-		  (with-temp-buffer
-		    (insert-file-contents "~/.aspell.en.pws")
-		    (delete-region (point) (1+ (point-at-eol)))
-		    (buffer-string))
-		""))
-      (save-buffer)
-      (kill-buffer)))
+    (let ((p nil))
+      (with-temp-buffer
+        (when (file-exists-p "~/Dropbox/config/english-words-saved.txt")
+          (insert-file-contents "~/Dropbox/config/english-words-saved.txt")
+          (end-of-buffer)
+          (setq p t))
+        (when (file-exists-p "~/Dropbox/config/personal-words.txt")
+          (insert-file-contents "~/Dropbox/config/personal-words.txt")
+          (end-of-buffer)
+          (setq p t))
+        (when p
+          (write-file "~/.emacs.d/english-words.txt")))))
 
   (add-hook 'emacs-startup-hook #'brust-create-english-word-file)
 #+END_SRC
@@ -143,11 +142,26 @@
 #+END_SRC
 *** Killing Emacs
 #+BEGIN_SRC elisp
-(setq confirm-kill-emacs nil)
-(require 'cl)
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-           (flet ((process-list ())) ad-do-it))
+  (setq confirm-kill-emacs nil)
+  (require 'cl)
+  (defun brust-update-personal-words nil
+    (when (and (file-exists-p "~/.aspell.en.pws")
+               (file-exists-p "~/Dropbox/config/personal-words.txt"))
+      (with-temp-buffer
+        (insert-file-contents "~/.aspell.en.pws")
+        (delete-region (point) (1 (point-at-eol)))
+        (insert-file-contents "~/Dropbox/config/personal-words.txt")
+        (delete-duplicate-lines (point-min) (point-max))
+        (write-file "~/Dropbox/config/personal-words.txt"))))
+
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    (cl-flet ((process-list ()))
+      (brust-update-personal-words)
+      ad-do-it))
 #+END_SRC
+
+#+RESULTS:
+: save-buffers-kill-emacs
 
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
