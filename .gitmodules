@@ -4,3 +4,6 @@
 [submodule "lisp/bibretrieve"]
 	path = lisp/bibretrieve
 	url = https://github.com/pzorin/bibretrieve.git
+[submodule "lisp/julia-emacs"]
+	path = lisp/julia-emacs
+	url = https://github.com/JuliaEditorSupport/julia-emacs.git

@@ -4002,6 +4002,16 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : interleave-add-note
 
+*** Julia mode
+#+BEGIN_SRC elisp
+  (when (file-exists-p "~/.emacs.d/lisp/julia-emacs/julia-mode.el")
+    (require 'julia-mode))
+
+#+END_SRC
+
+#+RESULTS:
+
+
 *** Key-frequency
 #+BEGIN_SRC elisp
   (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
