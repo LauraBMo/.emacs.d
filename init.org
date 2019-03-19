@@ -1508,7 +1508,7 @@ when one fix a personal personal dictionary there are problems when one changes 
           ;; Info-history
           Info-search-history
           ;; pdf-occur-history
-	  )
+          )
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
@@ -2406,7 +2406,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                 (texmathp)
                 (not (= (point) (+ (cdr texmathp-why) (length (car texmathp-why))))))
            (goto-char (+ (cdr texmathp-why) (length (car texmathp-why)))))
-          (t 
+          (t
            (let ((pt (point))
                  (pnts `(,(point-at-bol)))
                  to-go)
@@ -2820,62 +2820,62 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     :defer t
     :init
     (setq  company-idle-delay 0.1
-	   company-lighter-base ""
-	   company-minimum-prefix-length 2
-	   company-auto-complete-chars (quote (32 95 40 41 119 46 62))
-	   company-show-numbers t
-	   company-tooltip-align-annotations t)
-    (add-hook 'after-init-hook #'global-company-mode) 
+           company-lighter-base ""
+           company-minimum-prefix-length 2
+           company-auto-complete-chars (quote (32 95 40 41 119 46 62))
+           company-show-numbers t
+           company-tooltip-align-annotations t)
+    (add-hook 'after-init-hook #'global-company-mode)
     :bind (:map company-active-map
-		("<return>" . company-complete-selection)
-		("TAB"      . brust-company-abort-cdlatex-or-yas)
-		("<tab>"    . brust-company-abort-cdlatex-or-yas)
-		("s-l"      . company-complete-common)
-		("s-i"      . company-select-previous)
-		("s-k"      . company-select-next)
-		("s-o"      . company-complete-selection)
-		("s-g"      . company-abort)
-		("<f1>"     . company-show-doc-buffer)
-		("C-h"      . company-show-doc-buffer)
-		("s-h"      . company-show-doc-buffer)
-		("s-j"      . company-show-location)
-		("C-l"      . company-show-location))
+                ("<return>" . company-complete-selection)
+                ("TAB"      . brust-company-abort-cdlatex-or-yas)
+                ("<tab>"    . brust-company-abort-cdlatex-or-yas)
+                ("s-l"      . company-complete-common)
+                ("s-i"      . company-select-previous)
+                ("s-k"      . company-select-next)
+                ("s-o"      . company-complete-selection)
+                ("s-g"      . company-abort)
+                ("<f1>"     . company-show-doc-buffer)
+                ("C-h"      . company-show-doc-buffer)
+                ("s-h"      . company-show-doc-buffer)
+                ("s-j"      . company-show-location)
+                ("C-l"      . company-show-location))
     :config
     (defun brust-company-abort-cdlatex-or-yas nil
       (interactive)
       (company-abort)
       (if (fboundp 'cdlatex-tab)
-	  (cdlatex-tab)
-	(when (fboundp 'yas-expand)
-	  (yas-expand))))
+          (cdlatex-tab)
+        (when (fboundp 'yas-expand)
+          (yas-expand))))
 
     (defun brust-generic-company-setup (-ll)
       (make-local-variable 'company-backends)
       (cl-loop for -add-backend in (reverse -ll) do
-	       (add-to-list 'company-backends `,-add-backend)))
+               (add-to-list 'company-backends `,-add-backend)))
 
     (defun toggle-company-ispell nil
       (interactive)
       (cond
        ((memq 'company-ispell company-backends)
-	(setq company-backends (delete 'company-ispell company-backends))
-	(message "company-ispell disabled"))
+        (setq company-backends (delete 'company-ispell company-backends))
+        (message "company-ispell disabled"))
        (t
-	(add-to-list 'company-backends 'company-ispell t)
-	(message "company-ispell enabled!"))))
+        (add-to-list 'company-backends 'company-ispell t)
+        (message "company-ispell enabled!"))))
 
     (defun text-mode-hook-company-setup nil
       (when (file-exists-p "~/Dropbox/config/english-words.txt")
-	(brust-generic-company-setup '(company-ispell))
-	;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
-	;;  but I prefer hard code the dictionary path. That's more portable.
-	(setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
+        (brust-generic-company-setup '(company-ispell))
+        ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
+        ;;  but I prefer hard code the dictionary path. That's more portable.
+        (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
     (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
 
     (use-package company-shell
       :init
       (defun shell-mode-hook-company-setup nil
-	(brust-generic-company-setup '((company-shell company-fish-shell))))
+        (brust-generic-company-setup '((company-shell company-fish-shell))))
       (add-hook 'shell-mode-hook #'shell-mode-hook-company-setup))
 
     (use-package company-statistics
@@ -5953,6 +5953,8 @@ _q_: quit
     ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
     (occur brust--myregexp-itself))
 #+END_SRC
+
+
 * Old stuff
 ** Tab and indentation
 **** Distance
