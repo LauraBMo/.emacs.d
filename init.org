@@ -3564,10 +3564,10 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (defun hot-expand (str &optional mod header)
     "Expand org block template.
 
-  STR is a structure template string recognised by org like <s. MOD is a
-  string with additional parameters to add the begin line of the
-  structure element. HEADER string includes more parameters that are
-  prepended to the element after the #+HEADERS: tag."
+    STR is a structure template string recognised by org like <s. MOD is a
+    string with additional parameters to add the begin line of the
+    structure element. HEADER string includes more parameters that are
+    prepended to the element after the #+HEADERS: tag."
     (let (text)
       (when (region-active-p)
         (setq text (buffer-substring (region-beginning) (region-end)))
@@ -3575,19 +3575,26 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
         (deactivate-mark))
       (when header (insert "#+HEADERS: " header))
       (insert str)
-      (org-try-structure-completion)
+      (org-tempo-complete-tag)
       (when mod (insert mod) (forward-line))
       (when text (insert text))))
 
+  (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
+  (require 'org-tempo) ; Required from org 9 onwards for old template expansion
+  ;; Reset the org-template expnsion system, this is need after upgrading to org 9 for some reason
+
   (defun brust-org< nil
     "Self insert command or expand hydra of org block templates
-at the beginning of a line
-or with region active."
+  at the beginning of a line
+  or with region active."
     (interactive)
     (if (or (region-active-p) (looking-back "^"))
         (hydra-org-block-template/body)
       (self-insert-command 1)))
 #+END_SRC
+
+#+RESULTS:
+: brust-org<
 
 **** Ibuffer
 #+BEGIN_SRC elisp
