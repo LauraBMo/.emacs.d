@@ -149,7 +149,7 @@
                (file-exists-p "~/Dropbox/config/personal-words.txt"))
       (with-temp-buffer
         (insert-file-contents "~/.aspell.en.pws")
-        (delete-region (point) (+1 (point-at-eol)))
+        (delete-region (point) (1+ (point-at-eol)))
         (insert-file-contents "~/Dropbox/config/personal-words.txt")
         (delete-duplicate-lines (point-min) (point-max))
         (write-file "~/Dropbox/config/personal-words.txt"))))
