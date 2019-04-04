@@ -87,19 +87,18 @@
 
 #+BEGIN_SRC elisp
   (defun brust-create-english-word-file nil
-    (when (file-exists-p "~/Dropbox/config/english-words.txt")
-      (find-file "~/Dropbox/config/english-words.txt")
-      (erase-buffer)
-      (insert-file-contents "~/Dropbox/config/english-words-saved.txt")
-      (end-of-buffer)
-      (insert (if (file-exists-p "~/.aspell.en.pws")
-		  (with-temp-buffer
-		    (insert-file-contents "~/.aspell.en.pws")
-		    (delete-region (point) (1+ (point-at-eol)))
-		    (buffer-string))
-		""))
-      (save-buffer)
-      (kill-buffer)))
+    (let ((p nil))
+      (with-temp-buffer
+        (when (file-exists-p "~/Dropbox/config/english-words-saved.txt")
+          (insert-file-contents "~/Dropbox/config/english-words-saved.txt")
+          (end-of-buffer)
+          (setq p t))
+        (when (file-exists-p "~/Dropbox/config/personal-words.txt")
+          (insert-file-contents "~/Dropbox/config/personal-words.txt")
+          (end-of-buffer)
+          (setq p t))
+        (when p
+          (write-file "~/.emacs.d/english-words.txt")))))
 
   (add-hook 'emacs-startup-hook #'brust-create-english-word-file)
 #+END_SRC
@@ -143,11 +142,26 @@
 #+END_SRC
 *** Killing Emacs
 #+BEGIN_SRC elisp
-(setq confirm-kill-emacs nil)
-(require 'cl)
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-           (flet ((process-list ())) ad-do-it))
+  (setq confirm-kill-emacs nil)
+  (require 'cl)
+  (defun brust-update-personal-words nil
+    (when (and (file-exists-p "~/.aspell.en.pws")
+               (file-exists-p "~/Dropbox/config/personal-words.txt"))
+      (with-temp-buffer
+        (insert-file-contents "~/.aspell.en.pws")
+        (delete-region (point) (1+ (point-at-eol)))
+        (insert-file-contents "~/Dropbox/config/personal-words.txt")
+        (delete-duplicate-lines (point-min) (point-max))
+        (write-file "~/Dropbox/config/personal-words.txt"))))
+
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    (cl-flet ((process-list ()))
+      (brust-update-personal-words)
+      ad-do-it))
 #+END_SRC
+
+#+RESULTS:
+: save-buffers-kill-emacs
 
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
@@ -1494,7 +1508,7 @@ when one fix a personal personal dictionary there are problems when one changes 
           ;; Info-history
           Info-search-history
           ;; pdf-occur-history
-	  )
+          )
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
@@ -2392,7 +2406,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                 (texmathp)
                 (not (= (point) (+ (cdr texmathp-why) (length (car texmathp-why))))))
            (goto-char (+ (cdr texmathp-why) (length (car texmathp-why)))))
-          (t 
+          (t
            (let ((pt (point))
                  (pnts `(,(point-at-bol)))
                  to-go)
@@ -2806,62 +2820,63 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     :defer t
     :init
     (setq  company-idle-delay 0.1
-	   company-lighter-base ""
-	   company-minimum-prefix-length 2
-	   company-auto-complete-chars (quote (32 95 40 41 119 46 62))
-	   company-show-numbers t
-	   company-tooltip-align-annotations t)
-    (add-hook 'after-init-hook #'global-company-mode) 
+           company-lighter-base ""
+           company-minimum-prefix-length 2
+           company-auto-complete-chars (quote (32 95 40 41 119 46 62))
+           company-show-numbers t
+           company-tooltip-align-annotations t)
+    (add-hook 'after-init-hook #'global-company-mode)
     :bind (:map company-active-map
-		("<return>" . company-complete-selection)
-		("TAB"      . brust-company-abort-cdlatex-or-yas)
-		("<tab>"    . brust-company-abort-cdlatex-or-yas)
-		("s-l"      . company-complete-common)
-		("s-i"      . company-select-previous)
-		("s-k"      . company-select-next)
-		("s-o"      . company-complete-selection)
-		("s-g"      . company-abort)
-		("<f1>"     . company-show-doc-buffer)
-		("C-h"      . company-show-doc-buffer)
-		("s-h"      . company-show-doc-buffer)
-		("s-j"      . company-show-location)
-		("C-l"      . company-show-location))
+                ("<return>" . company-complete-selection)
+                ("TAB"      . brust-company-abort-cdlatex-or-yas)
+                ("<tab>"    . brust-company-abort-cdlatex-or-yas)
+                ("s-l"      . company-complete-common)
+                ("s-i"      . company-select-previous)
+                ("s-k"      . company-select-next)
+                ("s-o"      . company-complete-selection)
+                ("s-g"      . company-abort)
+                ("<f1>"     . company-show-doc-buffer)
+                ("C-h"      . company-show-doc-buffer)
+                ("s-h"      . company-show-doc-buffer)
+                ("s-j"      . company-show-location)
+                ("C-l"      . company-show-location))
     :config
     (defun brust-company-abort-cdlatex-or-yas nil
       (interactive)
       (company-abort)
       (if (fboundp 'cdlatex-tab)
-	  (cdlatex-tab)
-	(when (fboundp 'yas-expand)
-	  (yas-expand))))
+          (cdlatex-tab)
+        (when (fboundp 'yas-expand)
+          (yas-expand))))
 
     (defun brust-generic-company-setup (-ll)
       (make-local-variable 'company-backends)
       (cl-loop for -add-backend in (reverse -ll) do
-	       (add-to-list 'company-backends `,-add-backend)))
+               (add-to-list 'company-backends `,-add-backend)))
 
     (defun toggle-company-ispell nil
       (interactive)
       (cond
        ((memq 'company-ispell company-backends)
-	(setq company-backends (delete 'company-ispell company-backends))
-	(message "company-ispell disabled"))
+        (setq company-backends (delete 'company-ispell company-backends))
+        (message "company-ispell disabled"))
        (t
-	(add-to-list 'company-backends 'company-ispell t)
-	(message "company-ispell enabled!"))))
+        (add-to-list 'company-backends 'company-ispell t)
+        (message "company-ispell enabled!"))))
 
     (defun text-mode-hook-company-setup nil
+      (brust-generic-company-setup '(company-ispell))
+      ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
+      ;;  but I prefer hard code the dictionary path. That's more portable.
       (when (file-exists-p "~/Dropbox/config/english-words.txt")
-	(brust-generic-company-setup '(company-ispell))
-	;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
-	;;  but I prefer hard code the dictionary path. That's more portable.
-	(setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
+        (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
+
     (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
 
     (use-package company-shell
       :init
       (defun shell-mode-hook-company-setup nil
-	(brust-generic-company-setup '((company-shell company-fish-shell))))
+        (brust-generic-company-setup '((company-shell company-fish-shell))))
       (add-hook 'shell-mode-hook #'shell-mode-hook-company-setup))
 
     (use-package company-statistics
@@ -3550,10 +3565,10 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (defun hot-expand (str &optional mod header)
     "Expand org block template.
 
-  STR is a structure template string recognised by org like <s. MOD is a
-  string with additional parameters to add the begin line of the
-  structure element. HEADER string includes more parameters that are
-  prepended to the element after the #+HEADERS: tag."
+    STR is a structure template string recognised by org like <s. MOD is a
+    string with additional parameters to add the begin line of the
+    structure element. HEADER string includes more parameters that are
+    prepended to the element after the #+HEADERS: tag."
     (let (text)
       (when (region-active-p)
         (setq text (buffer-substring (region-beginning) (region-end)))
@@ -3561,19 +3576,26 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
         (deactivate-mark))
       (when header (insert "#+HEADERS: " header))
       (insert str)
-      (org-try-structure-completion)
+      (org-tempo-complete-tag)
       (when mod (insert mod) (forward-line))
       (when text (insert text))))
 
+  (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
+  (require 'org-tempo) ; Required from org 9 onwards for old template expansion
+  ;; Reset the org-template expnsion system, this is need after upgrading to org 9 for some reason
+
   (defun brust-org< nil
     "Self insert command or expand hydra of org block templates
-at the beginning of a line
-or with region active."
+  at the beginning of a line
+  or with region active."
     (interactive)
     (if (or (region-active-p) (looking-back "^"))
         (hydra-org-block-template/body)
       (self-insert-command 1)))
 #+END_SRC
+
+#+RESULTS:
+: brust-org<
 
 **** Ibuffer
 #+BEGIN_SRC elisp
@@ -3987,6 +4009,16 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+RESULTS:
 : interleave-add-note
+
+*** Julia mode
+#+BEGIN_SRC elisp
+  (when (file-exists-p "~/.emacs.d/lisp/julia-emacs/julia-mode.el")
+    (require 'julia-mode))
+
+#+END_SRC
+
+#+RESULTS:
+
 
 *** Key-frequency
 #+BEGIN_SRC elisp
@@ -5940,6 +5972,8 @@ _q_: quit
     ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
     (occur brust--myregexp-itself))
 #+END_SRC
+
+
 * Old stuff
 ** Tab and indentation
 **** Distance
