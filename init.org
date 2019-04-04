@@ -4020,8 +4020,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+END_SRC
 
 #+RESULTS:
-
-
 *** Key-frequency
 #+BEGIN_SRC elisp
   (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
@@ -4234,6 +4232,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             message-sendmail-extra-arguments '("--read-envelope-from")
             message-sendmail-f-is-evil 't
             sendmail-program "msmtp"
+            mu4e-update-interval 300    ;; update every 5 minutes
+            ;; to speed-up indexing
+            mu4e-index-cleanup nil      ;; don't do a full cleanup check
+            mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
             )
       :bind
       (:map mu4e-headers-mode-map
