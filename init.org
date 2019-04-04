@@ -2138,12 +2138,14 @@ Single Capitals as you type."
 #+BEGIN_SRC elisp
   (defvar brust-file-list-list
     '((xah-filelist . (
-                       ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
+                       ;; ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
                        ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
                        ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
-                       ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-                       ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
+                       ;; ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
+                       ;; ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
                        ("MyFinances" . "~/Dropbox/Org/ledger-2018.dat")
+                       ("WebPage"    . "~/Dropbox/WebPage/LauraBMo.github.io/index.html")
+                       ("MyBib"      . "~/Dropbox/bibliography/my.bib")
                        ))
       (config-files . (
                        ("Org-init"     . "~/.emacs.d/init.org")
