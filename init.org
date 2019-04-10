@@ -2138,12 +2138,14 @@ Single Capitals as you type."
 #+BEGIN_SRC elisp
   (defvar brust-file-list-list
     '((xah-filelist . (
-                       ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
+                       ;; ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
                        ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
                        ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
-                       ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
-                       ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
+                       ;; ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
+                       ;; ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
                        ("MyFinances" . "~/Dropbox/Org/ledger-2018.dat")
+                       ("WebPage"    . "~/Dropbox/WebPage/LauraBMo.github.io/index.html")
+                       ("MyBib"      . "~/Dropbox/bibliography/my.bib")
                        ))
       (config-files . (
                        ("Org-init"     . "~/.emacs.d/init.org")
@@ -4018,8 +4020,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+END_SRC
 
 #+RESULTS:
-
-
 *** Key-frequency
 #+BEGIN_SRC elisp
   (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
@@ -4144,7 +4144,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (remove-hook 'post-command-hook 'eldoc-schedule-timer))
 #+END_SRC
 
-*** COMMENT TODO Mu4e
+*** TODO Mu4e
     - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
     - TODOs [0/5]
       - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
@@ -4227,10 +4227,15 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             mu4e-context-policy 'pick-first
             ;; Don't ask to quit... why is this the default?
             mu4e-confirm-quit nil
+            mu4e-change-filenames-when-moving t
             message-send-mail-function 'message-send-mail-with-sendmail
             message-sendmail-extra-arguments '("--read-envelope-from")
             message-sendmail-f-is-evil 't
             sendmail-program "msmtp"
+            mu4e-update-interval 300    ;; update every 5 minutes
+            ;; to speed-up indexing
+            mu4e-index-cleanup nil      ;; don't do a full cleanup check
+            mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
             )
       :bind
       (:map mu4e-headers-mode-map
