@@ -4111,7 +4111,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
      magit-set-upstream-on-push 'dontask
      magit-completing-read-function 'ivy-completing-read
      magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1
-     magit-save-repository-buffers 'dontask)
+     magit-save-repository-buffers 'dontask
+     magit-diff-paint-whitespace t
+     magit-diff-refine-ignore-whitespace nil
+     magit-diff-refine-hunk t)
 
     :config
     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
