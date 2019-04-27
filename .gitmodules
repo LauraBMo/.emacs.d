@@ -10,3 +10,6 @@
 [submodule "lisp/julia-repl"]
 	path = lisp/julia-repl
 	url = https://github.com/tpapp/julia-repl.git
+[submodule "lisp/ob-julia"]
+	path = lisp/ob-julia
+	url = https://github.com/gjkerns/ob-julia.git

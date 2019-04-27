@@ -1339,6 +1339,9 @@ when one fix a personal personal dictionary there are problems when one changes 
           org-agenda-skip-deadline-if-done 1
           org-agenda-skip-deadline-if-done 1)
 
+    (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+    (add-hook 'org-mode-hook 'org-display-inline-images)
+
     ;; org-mode my agenda view
     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
     (setq org-agenda-custom-commands
@@ -1386,6 +1389,7 @@ when one fix a personal personal dictionary there are problems when one changes 
                                    ;; (sh . t)
                                    ;; (lisp . t)
                                    (shell . t)
+                                   (julia . t) ;; see https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0
                                    ))
 
     (font-lock-add-keywords            ;; A bit silly but my headers are now
