@@ -1190,7 +1190,7 @@ There are many defaults that I do not use, this is to clean a bit.
 				 (cdlatex-position-cursor)
 				 (call-interactively 'cdlatex-insert-filename)
 				 (forward-char 1))
-      nil nil)
+      nil t nil)
      ("-"  "Insert \\item" "\\item" nil t nil)
      ("--" "Insert \\item[]" "\\item[?]" cdlatex-position-cursor t nil)
      ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
