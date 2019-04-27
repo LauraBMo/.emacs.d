@@ -3623,46 +3623,37 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
 : hydra-outline/body
 
 **** Org block template
-***** Org block template alist
-#+BEGIN_SRC elisp
-  (eval-after-load "org"
-    '(cl-pushnew
-      '("not" "#+BEGIN_NOTES\n?\n#+END_NOTES")
-      org-structure-template-alist))
-#+END_SRC
-
-#+RESULTS:
-| not | #+BEGIN_NOTES |
-
+     https://github.com/abo-abo/hydra/wiki/Org-mode-block-templates
 ***** Hydra
 #+BEGIN_SRC elisp
   (defhydra hydra-org-block-template (:color blue :hint nil)
     "
      _c_enter  _q_uote     _e_macs-lisp    _L_aTeX:
-     _l_atex   _E_xample   _p_erl          _i_ndex:
+     _l_atex   _E_xample   _j_ulia         _i_ndex:
      _a_scii   _v_erse     _P_erl tangled  _I_NCLUDE:
-     _s_rc     _n_ote      plant_u_ml      _H_TML:
-     _h_tml    _b_ash      ^ ^             _A_SCII:
+     _s_rc     _n_ote      _p_erl          _H_TML:
+     _h_tml    _b_ash      plant_u_ml      _A_SCII:
     "
-    ("s" (hot-expand "<s"))
-    ("E" (hot-expand "<e"))
-    ("q" (hot-expand "<q"))
+    ("s" (hot-expand "src"))
+    ("E" (hot-expand "example"))
+    ("q" (hot-expand "quote"))
     ("v" (hot-expand "<v"))
-    ("n" (hot-expand "<not"))
-    ("c" (hot-expand "<c"))
-    ("l" (hot-expand "<l"))
-    ("h" (hot-expand "<h"))
-    ("a" (hot-expand "<a"))
-    ("L" (hot-expand "<L"))
-    ("i" (hot-expand "<i"))
-    ("e" (hot-expand "<s" "elisp"))
-    ("b" (hot-expand "<s" "bash"))
-    ("p" (hot-expand "<s" "perl"))
-    ("u" (hot-expand "<s" "plantuml :file CHANGE.png"))
-    ("P" (hot-expand "<s" "perl" ":results output :exports both :shebang \"#!/usr/bin/env perl\"\n"))
-    ("I" (hot-expand "<I"))
-    ("H" (hot-expand "<H"))
-    ("A" (hot-expand "<A"))
+    ("n" (hot-expand "note"))
+    ("c" (hot-expand "center"))
+    ("l" (hot-expand "export latex"))
+    ("h" (hot-expand "export html"))
+    ("a" (hot-expand "export ascii"))
+    ("L" (hot-expand "LaTeX"))
+    ("i" (hot-expand "index"))
+    ("e" (hot-expand "src" "elisp"))
+    ("j" (hot-expand "src" "julia"))
+    ("b" (hot-expand "src" "bash"))
+    ("p" (hot-expand "src" "perl"))
+    ("u" (hot-expand "src" "plantuml :file CHANGE.png"))
+    ("P" (hot-expand "src" "perl" ":results output :exports both :shebang \"#!/usr/bin/env perl\""))
+    ("I" (hot-expand "INCLUDE"))
+    ("H" (hot-expand "HTML"))
+    ("A" (hot-expand "ASCII"))
     ("<" self-insert-command "ins")
     ("o" nil "quit"))
 #+END_SRC
@@ -3679,19 +3670,24 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
     string with additional parameters to add the begin line of the
     structure element. HEADER string includes more parameters that are
     prepended to the element after the #+HEADERS: tag."
-    (let (text)
-      (when (region-active-p)
-        (setq text (buffer-substring (region-beginning) (region-end)))
-        (delete-region (region-beginning) (region-end))
-        (deactivate-mark))
-      (when header (insert "#+HEADERS: " header))
-      (insert str)
-      (org-tempo-complete-tag)
-      (when mod (insert mod) (forward-line))
-      (when text (insert text))))
+    (let ((-str (if mod (concat str " " mod) str)))
+      (if (region-active-p)
+          (let ((-str-region (buffer-substring (region-beginning) (region-end))))
+            (when header
+              (delete-region (region-beginning) (region-end))
+              (deactivate-mark)
+              (insert "#+HEADERS: " header "\n")
+              (push-mark)
+              (activate-mark t)
+              (insert -str-region))
+            (org-insert-structure-template -str))
+        (when header (insert "#+HEADERS: " header "\n"))
+        (org-insert-structure-template -str)
+        (insert "\n")
+        (backward-char 1))))
 
-  (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
-  (require 'org-tempo) ; Required from org 9 onwards for old template expansion
+  ;; (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
+  ;; (require 'org-tempo) ; Required from org 9 onwards for old template expansion
   ;; Reset the org-template expnsion system, this is need after upgrading to org 9 for some reason
 
   (defun brust-org< nil
