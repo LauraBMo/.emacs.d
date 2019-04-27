@@ -4168,19 +4168,21 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 *** Julia mode
 #+BEGIN_SRC elisp
   (when (file-exists-p "~/.emacs.d/lisp/julia-emacs/julia-mode.el")
-    (require 'julia-mode)
-    (when (file-exists-p "~/sources/julia/julia")
-      (setq julia-program "~/sources/julia/julia"))
-    (when (file-exists-p "~/.emacs.d/lisp/julia-repl/julia-repl.el")
-      (require 'julia-repl)
-      (add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
-      (setq julia-repl-executable-records
-            '((compiled "/home/lazycat/sources/julia/julia")))                 ;; compiled from the repository
-      (add-hook 'julia-repl-hook #'julia-repl-use-emacsclient)))
+    (require 'julia-mode))
+  ;;    (when (file-exists-p "~/sources/julia/julia")
+  ;;      ;; (setq julia-program "~/sources/julia/julia")
+  ;;      (setq julia-program "~/sources/julia-1.0.3/bin/julia")
+  ;;      )
+  ;; (when (file-exists-p "~/.emacs.d/lisp/julia-repl/julia-repl.el")
+  ;;   (require 'julia-repl)
+  ;;   (add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
+  ;;   (setq julia-repl-executable-records
+  ;;         '((compiled "/home/lazycat/sources/julia-1.0.3/bin/julia")))                 ;; compiled from the repository
+  ;;   (add-hook 'julia-repl-hook #'julia-repl-use-emacsclient))
 #+END_SRC
 
 #+RESULTS:
-| julia-repl-use-emacsclient |
+: ~/sources/julia-1.0.3/bin/julia
 *** Key-frequency
 #+BEGIN_SRC elisp
   (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
