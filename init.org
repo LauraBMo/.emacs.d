@@ -4416,7 +4416,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
                     :query "flag:unread AND maildir:/mathuab/INBOX"
                     :key ?m))
 #+END_SRC
-**** Alert
+**** COMMENT Alert
 #+BEGIN_SRC elisp
   (use-package mu4e-alert
     :ensure t
@@ -4439,7 +4439,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+END_SRC
 
 #+RESULTS:
-
+**** My functions
+***** Org caputre mail
+ #+begin_src elisp
+ (defun my/org-capture-mu4e ()
+   (interactive)
+   "Capture a TODO item via email."
+   (org-capture nil "o"))
+ #+end_src
 *** Nyan
     Show the rainbow line.
 #+BEGIN_SRC elisp
