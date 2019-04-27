@@ -1177,6 +1177,23 @@ when one fix a personal personal dictionary there are problems when one changes 
   (add-hook 'emacs-lisp-mode-hook
             #'brust-elisp-sentence-end-double-sapce-t)
 #+END_SRC
+
+*** ESS (julia interaction)
+**** COMMENT To install it
+     - It need Emacs Speaks Statistics (ess)
+ #+begin_src bash
+ sudo apt install ess -y
+ #+end_src
+**** Load it
+     - To be load before org-mode (we need this varibale setted to load ob-julia).
+     - ob-julia.el does not work properly see [[https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0][StackOverflow disscution]]
+ #+begin_src elisp
+   (require 'ess-site)
+   (setq inferior-julia-program-name "~/sources/julia/julia")
+   (bind-keys :map ess-mode-map
+              ("C-c C-c" . ess-eval-region-or-line-and-step)
+              ("C <RET>" . ess-eval-region-or-function-or-paragraph-and-step))
+ #+end_src
 *** Font lock.
 #+BEGIN_SRC elisp
 (setq font-lock-maximum-decoration t)
