@@ -3800,6 +3800,51 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
   ("b" hydra-ibuffer-main/body "back" :color blue))
 #+END_SRC
 
+**** PdfTools
+#+begin_src elisp
+(defhydra hydra-pdftools (:color blue :hint nil)
+        "
+   ╭────────────┐
+   │ PDF Tools │^ ^    ^ ^  ^ ^  Annotations  Search/Link   Do
+   ╭────────────────────────────────────────────────────────────┐
+    History:  ↑ _B_ ↓ _N_ ^ ^    [_al_] list    [_s_] search    [_u_] revert buffer
+    Go to page: [_e_] ^ ^ ^ ^    [_am_] markup  [_o_] outline   [_i_] info
+    Scale reset: [_0_] ^ ^ ^ ^   [_at_] text    [_F_] link      [_d_] dark mode
+    Fit: [_P_], _H_ight, _W_idth [_ad_] delete  [_f_] search link
+
+   --------------------------------------------------------------------------------
+        "
+        ;; ("\\" hydra-master/body "back")
+        ;; ("<ESC>" nil "quit")
+        ("al" pdf-annot-list-annotations)
+        ("ad" pdf-annot-delete)
+        ;; ("aa" pdf-annot-attachment-dired)
+        ("am" pdf-annot-add-markup-annotation)
+        ("at" pdf-annot-add-text-annotation)
+        ;; ("y"  pdf-view-kill-ring-save)
+        ("0" pdf-view-scale-reset)
+        ("H" pdf-view-fit-height-to-window)
+        ("W" pdf-view-fit-width-to-window)
+        ("P" pdf-view-fit-page-to-window)
+        ("d" pdf-view-dark-minor-mode)
+        ;; ("b" pdf-view-set-slice-from-bounding-box)
+        ;; ("r" pdf-view-reset-slice)
+        ("e" pdf-view-goto-page)
+        ("o" pdf-outline)
+        ("s" pdf-occur)
+        ("i" pdf-misc-display-metadata)
+        ("u" pdf-view-revert-buffer)
+        ("F" pdf-links-action-perfom)
+        ("f" pdf-links-isearch-link)
+        ("B" pdf-history-backward :color red)
+        ("N" pdf-history-forward :color red)
+        ("l" image-forward-hscroll :color red)
+        ("h" image-backward-hscroll :color red))
+#+end_src
+
+#+RESULTS:
+: hydra-pdftools/body
+
 **** Projectile
 #+BEGIN_SRC elisp
 (defhydra hydra-projectile (:color teal
@@ -4679,7 +4724,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           ("C-<mouse-5>" . pdf-view-next-page-command)
           ("C-<mouse-4>" . pdf-view-previous-page-command)
           ("s-<mouse-5>" . pdf-view-next-line-or-next-page)
-          ("s-<mouse-4>" . pdf-view-previous-line-or-previous-page)))
+          ("s-<mouse-4>" . pdf-view-previous-line-or-previous-page)
+          ("."           . hydra-pdftools/body)))
 
   (eval-after-load 'interleave
     (add-hook 'pdf-view-mode-hook #'brust-pdf-tools-hook t))
