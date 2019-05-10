@@ -3365,6 +3365,318 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 : helpful-key
 
 *** TODO Hydra
+**** General setting
+#+BEGIN_SRC elisp
+  (use-package hydra
+    :config
+    (setq lv-use-separator t)
+    :chords
+    ("jj" . brust-hydra-expand/body)
+    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
+    :bind
+    ("s-w" . words-hydra/body))
+
+
+  ;; (bind-keys*
+  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
+  ;;("M-y" . hydra-yank-pop/yank-pop)
+
+  ;;  (eval-after-load "buff-menu"
+  ;;    '(bind-keys :map ibuffer-mode-map
+  ;;		("." . hydra-ibuffer-main/body)))
+  ;;
+  ;; (eval-after-load "org"
+  ;; '(bind-keys :map org-mode-map
+  ;;   ("<" . brust-org<)))
+
+  ;; (bind-keys :map dired-mode-map
+  ;; ("y" . hydra-dired/body))
+
+  ;; :chords
+  ;; ("oo" . hydra-outline/body)
+  ;; ("jf" . hydra-motion/body)
+#+END_SRC
+
+#+RESULTS:
+: words-hydra/body
+
+**** Dired
+#+BEGIN_SRC elisp
+  (defhydra hydra-dired (:color pink :columns 3 :hint nil)
+    "
+  ^Mark^‗‗‗‗‗‗‗^Flag^‗‗‗‗‗‗‗‗^Emacs Op^‗‗‗‗‗‗^‗^‗‗‗‗‗‗‗‗‗‗‗‗‗^^File Op^^‗‗(_e_dit)
+  _*_: marks   _#_: temp     _Q_uery replace _F_ind marked   _!_shell_&_ _S_ymlink
+  _%_: regexp  _~_: backup   _A_: grep       _L_oad          ^^_C_opy    _H_ardlink
+  _u_n/_m_ark    _d_: this     _B_yte compile  kill li_n_e     ^^_D_elete  ch_M_od
+  _t_oggle     _x_: delete   _v_iew          _w_: file name  ^^_R_ename  ch_O_wn
+  _U_nmark all _<_ _>_:dirline _o_ther window  redisp_l_ay     ^^_T_ouch   ch_G_rp
+  "
+    ("SPC" nil)
+    ("RET" dired-find-alternate-file :exit t)
+    ("q" quit-window :exit t)
+    ("e" wdired-change-to-wdired-mode)
+    ("!" dired-do-shell-command)
+    ("m" dired-mark)
+    ("u" dired-unmark)
+    ("#" dired-flag-auto-save-files)
+    ("$" dired-hide-subdir "hide subdir")
+    ("%" hydra-dired-regexp/body :exit t)
+    ("&" dired-do-async-shell-command)
+    ("(" dired-hide-details-mode "hide details")
+    ("*" hydra-dired-mark/body :exit t)
+    ("+" dired-create-directory "create dir")
+    ("." dired-clean-directory "clean dir")
+    ("<" dired-prev-dirline)
+    ("=" ora-ediff-files "diff 2 files")
+    ;; ("=" dired-diff "diff")
+    (">" dired-next-dirline)
+    ("A" dired-do-find-regexp)
+    ("B" dired-do-byte-compile)
+    ("C" dired-do-copy)
+    ("D" dired-do-delete)
+    ("F" dired-do-find-marked-files :exit t)
+    ("G" dired-do-chgrp)
+    ("H" dired-do-hardlink)
+    ("L" dired-do-load)
+    ("M" dired-do-chmod)
+    ("O" dired-do-chown)
+    ("P" dired-do-print "print")
+    ("Q" dired-do-find-regexp-and-replace)
+    ("R" dired-do-rename)
+    ("S" dired-do-symlink)
+    ("T" dired-do-touch)
+    ("U" dired-unmark-all-marks)
+    ("Z" dired-do-compress "compress")
+    ("ç" ora-dired-up-directory "up-directory")
+    ;; ("^" dired-up-directory "up-directory")
+    ("a" dired-find-alternate-file "open folder")
+    ("c" dired-do-compress-to "compress-to")
+    ("d" dired-flag-file-deletion)
+    ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
+    ("j" dired-goto-file "goto-file")
+    ("n" dired-do-kill-lines) ;; was "k"
+    ("l" dired-do-redisplay)
+    ;; ("o" dired-find-file-other-window)
+    ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
+    ("t" dired-toggle-marks)
+    ("v" dired-view-file)
+    ("w" dired-copy-filename-as-kill)
+    ("x" dired-do-flagged-delete)
+    ("y" dired-show-file-type "show-file-type")
+    ("o" dired-omit-mode "toggle show hide files")
+    ("~" dired-flag-backup-files))
+
+  (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
+                                     :after-exit
+                                     (if (eq major-mode 'dired-mode)
+                                         (hydra-dired/body)))
+    "Mark"
+    ("SPC" nil)
+    ("!" dired-unmark-all-marks  "unmark all")
+    ("%" dired-mark-files-regexp "regexp")
+    ("(" dired-mark-sexp         "sexp")
+    ("*" dired-mark-executables  "executables")
+    ("." dired-mark-extension    "extension")
+    ("/" dired-mark-directories  "directories")
+    ("?" dired-unmark-all-files  "unmark markchar")
+    ("@" dired-mark-symlinks     "symlinks")
+    ("O" dired-mark-omitted      "omitted")
+    ("c" dired-change-marks      "change")
+    ("s" dired-mark-subdir-files "subdir-files"))
+
+  (defhydra hydra-dired-regexp (:color teal :columns 3 :hint nil
+                                       :after-exit
+                                       (if (eq major-mode 'dired-mode)
+                                           (hydra-dired/body)))
+    "Regexp"
+    ("SPC" nil)
+    ("&" dired-flag-garbage-files "flag-garbage-files")
+    ("C" dired-do-copy-regexp "copy")
+    ("H" dired-do-hardlink-regexp "hardlink")
+    ("R" dired-do-rename-regexp "rename")
+    ("S" dired-do-symlink-regexp "symlink")
+    ("Y" dired-do-relsymlink-regexp "relsymlink")
+    ("d" dired-flag-files-regexp "flag-files")
+    ("g" dired-mark-files-containing-regexp "mark-containing")
+    ("l" dired-downcase "downcase")
+    ("m" dired-mark-files-regexp "mark")
+    ("r" dired-do-rename-regexp "rename")
+    ("u" dired-upcase "upcase"))
+#+END_SRC
+
+#+RESULTS:
+: hydra-dired-regexp/body
+
+**** er/expand
+#+BEGIN_SRC elisp
+  (defhydra brust-hydra-expand (:body-pre (call-interactively 'er/expand-region) :hint nil)
+    "
+   _n_: ins math   _m_: out math _e_: environment
+   _o_: ins pairs  _p_: out pairs
+   _j_/_-_ more/less   _q_: quit
+   "
+    ("n" er/mark-LaTeX-inside-math)
+    ("m" er/mark-LaTeX-math)
+    ("e" er/mark-LaTeX-inside-environment)
+    ("o" er/mark-inside-pairs)
+    ("p" er/mark-outside-pairs)
+    ("j" er/expand-region)
+    ("-" er/contract-region)
+    ;; ("j" er/expand-region :color red)
+    ;; ("-" er/contract-region :color red)
+    ("q" nil :color blue))
+
+#+END_SRC
+
+#+RESULTS:
+: brust-hydra-expand/body
+***** COMMENT Second expand
+#+BEGIN_SRC elisp
+  (defhydra hydra-mark (:body-pre (progn
+                                    (call-interactively 'set-mark-command)
+                                    (call-interactively 'er/expand-region)
+                                    (setq hydra-is-helpful t))
+                                  :post (setq hydra-is-helpful nil)
+                                  :exit t
+                                  :color blue)
+    "hydra for mark commands"
+    ;; ("" er/expand-region)
+    ("a"  brust-smart-move-beginning-of-line)
+    ("e"  brust-smart-move-end-of-line)
+    ("<"  brust-toggle-begin&end-of-buffer)
+    ("u"  backward-word)
+    ("i"  previous-line)
+    ("o"  forward-word)
+    ("h"  recenter-top-bottom)
+    ;;("s-h" . )
+    ("j"  backward-char)
+    ("k"  next-line)
+    ("l"  forward-char)
+    ("b"  sp-backward-sexp)
+    ("f"  sp-forward-sexp)
+    ("SPC" er/expand-region)
+    ("n" er/mark-LaTeX-inside-math)
+    ("m" er/mark-LaTeX-math)
+    ("e" er/mark-LaTeX-inside-environment)
+    ("p" er/mark-inside-pairs)
+    ("vp" er/mark-outside-pairs)
+    ;; ("j" er/expand-region)
+    ;; ("-" er/contract-region)
+    ;; ("ip" er/mark-inside-pairs)
+    ("q" er/mark-inside-quotes)
+    ("vq" er/mark-outside-quotes)
+    ("d" er/mark-defun)
+    ("c" er/mark-comment)
+    ("." er/mark-text-sentence)
+    ("h" er/mark-text-paragraph)
+    ;; ("u" er/mark-url)
+    ;; ("e" er/mark-email)
+    ("s" er/mark-symbol)
+    ;; ("j" (funcall 'set-mark-command '(4)) :exit nil)
+    ;; ("k" (call-interactively 'pop-global-mark) :exit nil)
+    ("gc" avy-goto-char-timer "goto word 1")
+    ;; ("W" avy-goto-word-2 "goto word 2")
+    ("gl" avy-goto-line "goto line"))
+
+     (define-key global-map (kbd "C-SPC") #'hydra-mark/body)
+#+END_SRC
+
+#+RESULTS:
+: hydra-mark/body
+
+**** Ibuffer
+#+BEGIN_SRC elisp
+(defhydra hydra-ibuffer-main (:color pink :hint nil)
+  "
+ ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+-^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  _i_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+ _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+  _k_:    v   | _*_: specific | _a_: all actions | _/_: filter
+-^----------^-+-^----^--------+-^-------^--------+-^----^-------
+"
+  ("k" ibuffer-forward-line)
+  ("RET" ibuffer-visit-buffer :color blue)
+  ("i" ibuffer-backward-line)
+
+  ("m" ibuffer-mark-forward)
+  ("u" ibuffer-unmark-forward)
+  ("*" hydra-ibuffer-mark/body :color blue)
+
+  ("D" ibuffer-do-delete)
+  ("S" ibuffer-do-save)
+  ("a" hydra-ibuffer-action/body :color blue)
+
+  ("g" ibuffer-update)
+  ("s" hydra-ibuffer-sort/body :color blue)
+  ("/" hydra-ibuffer-filter/body :color blue)
+
+  ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
+  ("q" ibuffer-quit "quit ibuffer" :color blue)
+  ("." nil "toggle hydra" :color blue))
+
+(defhydra hydra-ibuffer-mark (:color teal :columns 5
+                              :after-exit (hydra-ibuffer-main/body))
+  "Mark"
+  ("*" ibuffer-unmark-all "unmark all")
+  ("M" ibuffer-mark-by-mode "mode")
+  ("m" ibuffer-mark-modified-buffers "modified")
+  ("u" ibuffer-mark-unsaved-buffers "unsaved")
+  ("s" ibuffer-mark-special-buffers "special")
+  ("r" ibuffer-mark-read-only-buffers "read-only")
+  ("/" ibuffer-mark-dired-buffers "dired")
+  ("e" ibuffer-mark-dissociated-buffers "dissociated")
+  ("h" ibuffer-mark-help-buffers "help")
+  ("z" ibuffer-mark-compressed-file-buffers "compressed")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+
+(defhydra hydra-ibuffer-action (:color teal :columns 4
+                                :after-exit
+                                (if (eq major-mode 'ibuffer-mode)
+                                    (hydra-ibuffer-main/body)))
+  "Action"
+  ("A" ibuffer-do-view "view")
+  ("E" ibuffer-do-eval "eval")
+  ("F" ibuffer-do-shell-command-file "shell-command-file")
+  ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+  ("H" ibuffer-do-view-other-frame "view-other-frame")
+  ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+  ("M" ibuffer-do-toggle-modified "toggle-modified")
+  ("O" ibuffer-do-occur "occur")
+  ("P" ibuffer-do-print "print")
+  ("Q" ibuffer-do-query-replace "query-replace")
+  ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+  ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+  ("U" ibuffer-do-replace-regexp "replace-regexp")
+  ("V" ibuffer-do-revert "revert")
+  ("W" ibuffer-do-view-and-eval "view-and-eval")
+  ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+  ("b" nil "back"))
+
+(defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+  "Sort"
+  ("i" ibuffer-invert-sorting "invert")
+  ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+  ("v" ibuffer-do-sort-by-recency "recently used")
+  ("s" ibuffer-do-sort-by-size "size")
+  ("f" ibuffer-do-sort-by-filename/process "filename")
+  ("m" ibuffer-do-sort-by-major-mode "mode")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+
+(defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+  "Filter"
+  ("m" ibuffer-filter-by-used-mode "mode")
+  ("M" ibuffer-filter-by-derived-mode "derived mode")
+  ("n" ibuffer-filter-by-name "name")
+  ("c" ibuffer-filter-by-content "content")
+  ("e" ibuffer-filter-by-predicate "predicate")
+  ("f" ibuffer-filter-by-filename "filename")
+  (">" ibuffer-filter-by-size-gt "size")
+  ("<" ibuffer-filter-by-size-lt "size")
+  ("/" ibuffer-filter-disable "disable")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+#+END_SRC
+
 **** mu4e
 #+begin_src elisp
 (defhydra hydra-mu4e-headers (:color blue :hint nil)
@@ -3446,61 +3758,6 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
 
 #+RESULTS:
 : hydra-mu4e-headers/body
-
-**** General setting
-#+BEGIN_SRC elisp
-  (use-package hydra
-    :config
-    (setq lv-use-separator t)
-    :chords
-    ("jj" . brust-hydra-expand/body)
-    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
-    :bind
-    ("s-w" . words-hydra/body))
-
-
-  ;; (bind-keys*
-  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
-  ;;("M-y" . hydra-yank-pop/yank-pop)
-
-  ;;  (eval-after-load "buff-menu"
-  ;;    '(bind-keys :map ibuffer-mode-map
-  ;;		("." . hydra-ibuffer-main/body)))
-  ;;
-  ;; (eval-after-load "org"
-  ;; '(bind-keys :map org-mode-map
-  ;;   ("<" . brust-org<)))
-
-  ;; (bind-keys :map dired-mode-map
-  ;; ("y" . hydra-dired/body))
-
-  ;; :chords
-  ;; ("oo" . hydra-outline/body)
-  ;; ("jf" . hydra-motion/body)
-#+END_SRC
-
-#+RESULTS:
-: words-hydra/body
-
-**** Yank hydra
-#+BEGIN_SRC elisp
-  (defhydra hydra-yank-pop ()
-    "yank"
-    ("C-y" brust-org-yank-or-yank nil)
-    ("M-y" yank-pop nil)
-    ("y" (yank-pop 1) "prev")
-    ("u" (yank-pop -1) "next")
-    ("t" helm-show-kill-ring "list" :color blue))
-
-  (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
-#+END_SRC
-
-***** org-yank or yank
-#+BEGIN_SRC elisp
-  (defun brust-org-yank-or-yank nil
-    (interactive)
-    (if (string= major-mode "org-mode") (org-yank) (yank)))
-#+END_SRC
 
 **** Outline
 ***** Functions
@@ -3706,99 +3963,6 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
 #+RESULTS:
 : brust-org<
 
-**** Ibuffer
-#+BEGIN_SRC elisp
-(defhydra hydra-ibuffer-main (:color pink :hint nil)
-  "
- ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
--^----------^-+-^----^--------+-^-------^--------+-^----^-------
-  _i_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
- _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-  _k_:    v   | _*_: specific | _a_: all actions | _/_: filter
--^----------^-+-^----^--------+-^-------^--------+-^----^-------
-"
-  ("k" ibuffer-forward-line)
-  ("RET" ibuffer-visit-buffer :color blue)
-  ("i" ibuffer-backward-line)
-
-  ("m" ibuffer-mark-forward)
-  ("u" ibuffer-unmark-forward)
-  ("*" hydra-ibuffer-mark/body :color blue)
-
-  ("D" ibuffer-do-delete)
-  ("S" ibuffer-do-save)
-  ("a" hydra-ibuffer-action/body :color blue)
-
-  ("g" ibuffer-update)
-  ("s" hydra-ibuffer-sort/body :color blue)
-  ("/" hydra-ibuffer-filter/body :color blue)
-
-  ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
-  ("q" ibuffer-quit "quit ibuffer" :color blue)
-  ("." nil "toggle hydra" :color blue))
-
-(defhydra hydra-ibuffer-mark (:color teal :columns 5
-                              :after-exit (hydra-ibuffer-main/body))
-  "Mark"
-  ("*" ibuffer-unmark-all "unmark all")
-  ("M" ibuffer-mark-by-mode "mode")
-  ("m" ibuffer-mark-modified-buffers "modified")
-  ("u" ibuffer-mark-unsaved-buffers "unsaved")
-  ("s" ibuffer-mark-special-buffers "special")
-  ("r" ibuffer-mark-read-only-buffers "read-only")
-  ("/" ibuffer-mark-dired-buffers "dired")
-  ("e" ibuffer-mark-dissociated-buffers "dissociated")
-  ("h" ibuffer-mark-help-buffers "help")
-  ("z" ibuffer-mark-compressed-file-buffers "compressed")
-  ("b" hydra-ibuffer-main/body "back" :color blue))
-
-(defhydra hydra-ibuffer-action (:color teal :columns 4
-                                :after-exit
-                                (if (eq major-mode 'ibuffer-mode)
-                                    (hydra-ibuffer-main/body)))
-  "Action"
-  ("A" ibuffer-do-view "view")
-  ("E" ibuffer-do-eval "eval")
-  ("F" ibuffer-do-shell-command-file "shell-command-file")
-  ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-  ("H" ibuffer-do-view-other-frame "view-other-frame")
-  ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-  ("M" ibuffer-do-toggle-modified "toggle-modified")
-  ("O" ibuffer-do-occur "occur")
-  ("P" ibuffer-do-print "print")
-  ("Q" ibuffer-do-query-replace "query-replace")
-  ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-  ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-  ("U" ibuffer-do-replace-regexp "replace-regexp")
-  ("V" ibuffer-do-revert "revert")
-  ("W" ibuffer-do-view-and-eval "view-and-eval")
-  ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-  ("b" nil "back"))
-
-(defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-  "Sort"
-  ("i" ibuffer-invert-sorting "invert")
-  ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-  ("v" ibuffer-do-sort-by-recency "recently used")
-  ("s" ibuffer-do-sort-by-size "size")
-  ("f" ibuffer-do-sort-by-filename/process "filename")
-  ("m" ibuffer-do-sort-by-major-mode "mode")
-  ("b" hydra-ibuffer-main/body "back" :color blue))
-
-(defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-  "Filter"
-  ("m" ibuffer-filter-by-used-mode "mode")
-  ("M" ibuffer-filter-by-derived-mode "derived mode")
-  ("n" ibuffer-filter-by-name "name")
-  ("c" ibuffer-filter-by-content "content")
-  ("e" ibuffer-filter-by-predicate "predicate")
-  ("f" ibuffer-filter-by-filename "filename")
-  (">" ibuffer-filter-by-size-gt "size")
-  ("<" ibuffer-filter-by-size-lt "size")
-  ("/" ibuffer-filter-disable "disable")
-  ("b" hydra-ibuffer-main/body "back" :color blue))
-#+END_SRC
-
 **** PdfTools
 #+begin_src elisp
 (defhydra hydra-pdftools (:color blue :hint nil)
@@ -3885,189 +4049,87 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   ("q"   nil "cancel" :color blue))
 #+END_SRC
 
-**** Dired
-#+BEGIN_SRC elisp
-  (defhydra hydra-dired (:color pink :columns 3 :hint nil)
-    "
-  ^Mark^‗‗‗‗‗‗‗^Flag^‗‗‗‗‗‗‗‗^Emacs Op^‗‗‗‗‗‗^‗^‗‗‗‗‗‗‗‗‗‗‗‗‗^^File Op^^‗‗(_e_dit)
-  _*_: marks   _#_: temp     _Q_uery replace _F_ind marked   _!_shell_&_ _S_ymlink
-  _%_: regexp  _~_: backup   _A_: grep       _L_oad          ^^_C_opy    _H_ardlink
-  _u_n/_m_ark    _d_: this     _B_yte compile  kill li_n_e     ^^_D_elete  ch_M_od
-  _t_oggle     _x_: delete   _v_iew          _w_: file name  ^^_R_ename  ch_O_wn
-  _U_nmark all _<_ _>_:dirline _o_ther window  redisp_l_ay     ^^_T_ouch   ch_G_rp
-  "
-    ("SPC" nil)
-    ("RET" dired-find-alternate-file :exit t)
-    ("q" quit-window :exit t)
-    ("e" wdired-change-to-wdired-mode)
-    ("!" dired-do-shell-command)
-    ("m" dired-mark)
-    ("u" dired-unmark)
-    ("#" dired-flag-auto-save-files)
-    ("$" dired-hide-subdir "hide subdir")
-    ("%" hydra-dired-regexp/body :exit t)
-    ("&" dired-do-async-shell-command)
-    ("(" dired-hide-details-mode "hide details")
-    ("*" hydra-dired-mark/body :exit t)
-    ("+" dired-create-directory "create dir")
-    ("." dired-clean-directory "clean dir")
-    ("<" dired-prev-dirline)
-    ("=" ora-ediff-files "diff 2 files")
-    ;; ("=" dired-diff "diff")
-    (">" dired-next-dirline)
-    ("A" dired-do-find-regexp)
-    ("B" dired-do-byte-compile)
-    ("C" dired-do-copy)
-    ("D" dired-do-delete)
-    ("F" dired-do-find-marked-files :exit t)
-    ("G" dired-do-chgrp)
-    ("H" dired-do-hardlink)
-    ("L" dired-do-load)
-    ("M" dired-do-chmod)
-    ("O" dired-do-chown)
-    ("P" dired-do-print "print")
-    ("Q" dired-do-find-regexp-and-replace)
-    ("R" dired-do-rename)
-    ("S" dired-do-symlink)
-    ("T" dired-do-touch)
-    ("U" dired-unmark-all-marks)
-    ("Z" dired-do-compress "compress")
-    ("ç" ora-dired-up-directory "up-directory")
-    ;; ("^" dired-up-directory "up-directory")
-    ("a" dired-find-alternate-file "open folder")
-    ("c" dired-do-compress-to "compress-to")
-    ("d" dired-flag-file-deletion)
-    ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
-    ("j" dired-goto-file "goto-file")
-    ("n" dired-do-kill-lines) ;; was "k"
-    ("l" dired-do-redisplay)
-    ;; ("o" dired-find-file-other-window)
-    ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
-    ("t" dired-toggle-marks)
-    ("v" dired-view-file)
-    ("w" dired-copy-filename-as-kill)
-    ("x" dired-do-flagged-delete)
-    ("y" dired-show-file-type "show-file-type")
-    ("o" dired-omit-mode "toggle show hide files")
-    ("~" dired-flag-backup-files))
-
-  (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
-                                     :after-exit
-                                     (if (eq major-mode 'dired-mode)
-                                         (hydra-dired/body)))
-    "Mark"
-    ("SPC" nil)
-    ("!" dired-unmark-all-marks  "unmark all")
-    ("%" dired-mark-files-regexp "regexp")
-    ("(" dired-mark-sexp         "sexp")
-    ("*" dired-mark-executables  "executables")
-    ("." dired-mark-extension    "extension")
-    ("/" dired-mark-directories  "directories")
-    ("?" dired-unmark-all-files  "unmark markchar")
-    ("@" dired-mark-symlinks     "symlinks")
-    ("O" dired-mark-omitted      "omitted")
-    ("c" dired-change-marks      "change")
-    ("s" dired-mark-subdir-files "subdir-files"))
-
-  (defhydra hydra-dired-regexp (:color teal :columns 3 :hint nil
-                                       :after-exit
-                                       (if (eq major-mode 'dired-mode)
-                                           (hydra-dired/body)))
-    "Regexp"
-    ("SPC" nil)
-    ("&" dired-flag-garbage-files "flag-garbage-files")
-    ("C" dired-do-copy-regexp "copy")
-    ("H" dired-do-hardlink-regexp "hardlink")
-    ("R" dired-do-rename-regexp "rename")
-    ("S" dired-do-symlink-regexp "symlink")
-    ("Y" dired-do-relsymlink-regexp "relsymlink")
-    ("d" dired-flag-files-regexp "flag-files")
-    ("g" dired-mark-files-containing-regexp "mark-containing")
-    ("l" dired-downcase "downcase")
-    ("m" dired-mark-files-regexp "mark")
-    ("r" dired-do-rename-regexp "rename")
-    ("u" dired-upcase "upcase"))
-#+END_SRC
+**** Tweeter
+#+begin_src elisp
+(defhydra hydra-twittering (:color blue :hint nil)
+        "
+                                                                    ╭────────────┐
+     Tweets                User                        Timeline     │ Twittering │
+  ╭─────────────────────────────────────────────────────────────────┴────────────╯
+    _k_  [_t_] post tweet      _p_  [_f_] follow                  ^_g_^      [_u_] update
+    ^↑^  [_X_] delete tweet    ^↑^  [_F_] unfollow              ^_S-SPC_^    [_._] new
+    ^ ^  [_r_] retweet         ^ ^  [_d_] direct message          ^^↑^^      [^@^] current user
+    ^↓^  [_R_] retweet & edit  ^↓^  [_i_] profile (browser)   _h_ ←   → _l_  [_a_] toggle
+    _j_  [_b_] favorite        _n_   ^ ^                          ^^↓^^
+    ^ ^  [_B_] unfavorite      ^ ^   ^ ^                         ^_SPC_^
+    ^ ^  [_RET_] reply         ^ ^   ^ ^                          ^_G_^
+    ^ ^  [_T_] show Thread
+    ^ ^  [_y_] yank url          Items                     Do
+    ^ ^  [_Y_] yank tweet     ╭───────────────────────────────────────────────────────
+    ^ ^  [_e_] edit mode        _<backtab>_ ← _o_pen → _<tab>_    [_q_] exit
+    ^ ^   ^ ^                   ^         ^   ^ ^      ^     ^    [_/_] search
+  --------------------------------------------------------------------------------
+       "
+       ("\\" hydra-master/body "back")
+       ("<ESC>" nil "quit")
+       ("q"          twittering-kill-buffer)
+       ("e"          twittering-edit-mode)
+       ("j"          twittering-goto-next-status :color red)
+       ("k"          twittering-goto-previous-status :color red)
+       ("h"          twittering-switch-to-next-timeline :color red)
+       ("l"          twittering-switch-to-previous-timeline :color red)
+       ("g"          beginning-of-buffer)
+       ("G"          end-of-buffer)
+       ("t"          twittering-update-status-interactive)
+       ("X"          twittering-delete-status)
+       ("RET"        twittering-reply-to-user)
+       ("r"          twittering-native-retweet)
+       ("R"          twittering-organic-retweet)
+       ("d"          twittering-direct-message)
+       ("u"          twittering-current-timeline)
+       ("b"          twittering-favorite)
+       ("B"          twittering-unfavorite)
+       ("f"          twittering-follow)
+       ("F"          twittering-unfollow)
+       ("i"          twittering-view-user-page)
+       ("/"          twittering-search)
+       ("."          twittering-visit-timeline)
+       ("@"          twittering-other-user-timeline)
+       ("T"          twittering-toggle-or-retrieve-replied-statuses)
+       ("o"          twittering-click)
+       ("<tab>"        twittering-goto-next-thing :color red)
+       ("<backtab>"  twittering-goto-previous-thing :color red)
+       ("n"          twittering-goto-next-status-of-user :color red)
+       ("p"          twittering-goto-previous-status-of-user :color red)
+       ("SPC"        twittering-scroll-up :color red)
+       ("S-SPC"      twittering-scroll-down :color red)
+       ("y"          twittering-push-uri-onto-kill-ring)
+       ("Y"          twittering-push-tweet-onto-kill-ring)
+       ("a"          twittering-toggle-activate-buffer))
+#+end_src
 
 #+RESULTS:
-: hydra-dired-regexp/body
+: hydra-twittering/body
 
-**** er/expand
+**** Yank hydra
 #+BEGIN_SRC elisp
-  (defhydra brust-hydra-expand (:body-pre (call-interactively 'er/expand-region) :hint nil)
-    "
-   _n_: ins math   _m_: out math _e_: environment
-   _o_: ins pairs  _p_: out pairs
-   _j_/_-_ more/less   _q_: quit
-   "
-    ("n" er/mark-LaTeX-inside-math)
-    ("m" er/mark-LaTeX-math)
-    ("e" er/mark-LaTeX-inside-environment)
-    ("o" er/mark-inside-pairs)
-    ("p" er/mark-outside-pairs)
-    ("j" er/expand-region)
-    ("-" er/contract-region)
-    ;; ("j" er/expand-region :color red)
-    ;; ("-" er/contract-region :color red)
-    ("q" nil :color blue))
+  (defhydra hydra-yank-pop ()
+    "yank"
+    ("C-y" brust-org-yank-or-yank nil)
+    ("M-y" yank-pop nil)
+    ("y" (yank-pop 1) "prev")
+    ("u" (yank-pop -1) "next")
+    ("t" helm-show-kill-ring "list" :color blue))
 
+  (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
 #+END_SRC
 
-#+RESULTS:
-: brust-hydra-expand/body
-***** COMMENT Second expand
+***** org-yank or yank
 #+BEGIN_SRC elisp
-  (defhydra hydra-mark (:body-pre (progn
-                                    (call-interactively 'set-mark-command)
-                                    (call-interactively 'er/expand-region)
-                                    (setq hydra-is-helpful t))
-                                  :post (setq hydra-is-helpful nil)
-                                  :exit t
-                                  :color blue)
-    "hydra for mark commands"
-    ;; ("" er/expand-region)
-    ("a"  brust-smart-move-beginning-of-line)
-    ("e"  brust-smart-move-end-of-line)
-    ("<"  brust-toggle-begin&end-of-buffer)
-    ("u"  backward-word)
-    ("i"  previous-line)
-    ("o"  forward-word)
-    ("h"  recenter-top-bottom)
-    ;;("s-h" . )
-    ("j"  backward-char)
-    ("k"  next-line)
-    ("l"  forward-char)
-    ("b"  sp-backward-sexp)
-    ("f"  sp-forward-sexp)
-    ("SPC" er/expand-region)
-    ("n" er/mark-LaTeX-inside-math)
-    ("m" er/mark-LaTeX-math)
-    ("e" er/mark-LaTeX-inside-environment)
-    ("p" er/mark-inside-pairs)
-    ("vp" er/mark-outside-pairs)
-    ;; ("j" er/expand-region)
-    ;; ("-" er/contract-region)
-    ;; ("ip" er/mark-inside-pairs)
-    ("q" er/mark-inside-quotes)
-    ("vq" er/mark-outside-quotes)
-    ("d" er/mark-defun)
-    ("c" er/mark-comment)
-    ("." er/mark-text-sentence)
-    ("h" er/mark-text-paragraph)
-    ;; ("u" er/mark-url)
-    ;; ("e" er/mark-email)
-    ("s" er/mark-symbol)
-    ;; ("j" (funcall 'set-mark-command '(4)) :exit nil)
-    ;; ("k" (call-interactively 'pop-global-mark) :exit nil)
-    ("gc" avy-goto-char-timer "goto word 1")
-    ;; ("W" avy-goto-word-2 "goto word 2")
-    ("gl" avy-goto-line "goto line"))
-
-     (define-key global-map (kbd "C-SPC") #'hydra-mark/body)
+  (defun brust-org-yank-or-yank nil
+    (interactive)
+    (if (string= major-mode "org-mode") (org-yank) (yank)))
 #+END_SRC
-
-#+RESULTS:
-: hydra-mark/body
 
 *** Ibuffer
 #+BEGIN_SRC elisp
