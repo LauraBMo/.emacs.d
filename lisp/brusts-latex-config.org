@@ -1159,7 +1159,7 @@ There are many defaults that I do not use, this is to clean a bit.
      ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
      ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
      ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
-     ("id"   "Insert Id_{}"         "\\Id_{?}"        cdlatex-position-cursor nil nil t)
+     ("id"   "Insert Id_{}"         "\\id_{?}"        cdlatex-position-cursor nil nil t)
      ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
      ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
      ;; Move to abbrev's (here they do not work).
