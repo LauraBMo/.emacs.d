@@ -1201,8 +1201,16 @@ when one fix a personal personal dictionary there are problems when one changes 
  #+end_src
 *** Font lock.
 #+BEGIN_SRC elisp
-(setq font-lock-maximum-decoration t)
-(global-font-lock-mode t)
+  (setq font-lock-support-mode nil);; 'jit-lock-mode)
+  (setq font-lock-maximum-decoration t
+        font-lock-maximum-size nil
+        ;; fast-lock-cache-directories '("~/.emacs-flc")
+        ;; jit-lock-stealth-time 16
+        ;; jit-lock-defer-contextually t
+        ;; jit-lock-stealth-nice 0.5
+        )
+  (setq-default font-lock-multiline t)
+  (global-font-lock-mode t)
 #+END_SRC
 *** Hippie Expand
 #+BEGIN_SRC elisp
