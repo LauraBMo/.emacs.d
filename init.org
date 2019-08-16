@@ -3273,6 +3273,19 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
          ;; Capitalize -> UPPER
 (put this-command 'next-state "UPPER")))))
 #+END_SRC
+*** GAP modes
+#+BEGIN_SRC elisp
+  ;; gap mode
+  (autoload 'gap-mode "gap-mode" "Gap editing mode" t)
+  (setq auto-mode-alist (append (list '("\\.g\\'" . gap-mode)
+                                      '("\\.gap\\'" . gap-mode))
+                                auto-mode-alist))
+  (autoload 'gap "gap-process" "Run GAP in emacs buffer" t)
+  (setq gap-executable "~/scr/gap-4.10.2/bin/gap.sh")
+  (setq gap-start-options (list "-l" "-m" "2m"))
+
+#+END_SRC
+
 
 *** Git gutter fringe+
 #+BEGIN_SRC elisp
