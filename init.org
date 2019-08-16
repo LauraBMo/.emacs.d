@@ -4786,6 +4786,17 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : brust-add-notes-entry-from-pdf
 
+**** Helm config
+
+#+BEGIN_SRC elisp
+  (bind-keys :map helm-map
+             ("s-k" . helm-next-line)
+             ("s-i" . helm-previous-line))
+#+END_SRC
+
+#+RESULTS:
+: helm-previous-line
+
 *** Pdf tools
 **** Main
 #+BEGIN_SRC elisp
