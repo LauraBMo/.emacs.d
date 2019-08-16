@@ -817,16 +817,26 @@ Defaults
         reftex-toc-follow-mode nil
         ;; reftex-cite-prompt-optional-args nil
         ;; reftex-cite-cleanup-optional-args t
+        reftex-guess-label-type nil
+        reftex-ref-style-default-list (quote ("Cleveref"))
+
         ;; So that RefTeX also recognizes \addbibresource. Note that you
         ;; can't use $HOME in path for \addbibresource but "~".
         ;; reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")
         ;; reftex-refstyle "\\Cref" ;; set the defult refstyle...
         ;; reftex-ref-style-default-list (append (quote ("Cleveref")) reftex-ref-style-default-list)
+        ;; reftex-cite-format
+        ;;  '((?\C-m . "\\cite[]{%l}")
+        ;;    (?f . "\\footcite[][]{%l}")
+        ;;    (?t . "\\textcite[]{%l}")
+        ;;    (?p . "\\parencite[]{%l}")
+        ;;    (?o . "\\citepr[]{%l}")
+        ;;    (?n . "\\nocite{%l}"))
         )
 #+END_SRC
 
 #+RESULTS:
-: t
+| Cleveref |
 
 *** Label list 
     The numbers in both lists are *toc* levels, negative does not show the "section" number.
@@ -911,6 +921,69 @@ Defaults
   (add-hook 'reftex-toc-mode-hook #'brust-reftex-set-toc-mode-map)
   (add-hook 'reftex-select-label-mode-hook #'brust-reftex-set-select-label-mode-map)
 #+END_SRC
+*** Bibtex-completion citation function
+=org-ref= calls =helm-bibtex= which uses =bibtex-completion= to insert citations.
+Here it is my custom function based on theirs.
+Do not ask for post-optional aragument and it only uses =cite= as cite-command.
+See Org-ref in init.el :)
+#+BEGIN_SRC elisp
+  ;; Defined in ~/.emacs.d/elpa/ivy-bibtex-20190708.909/bibtex-completion.el
+  (defun brust-bibtex-completion-format-citation-cite (keys)
+    "Formatter for LaTeX citation commands. Prompts for the command
+    and for arguments if the commands can take any. If point is
+    inside or just after a citation command, only adds KEYS to it."
+    (let (macro)
+      (cond
+       ((and (require 'reftex-parse nil t)
+             (setq macro (reftex-what-macro 1))
+             (stringp (car macro))
+             (string-match "\\`\\\\cite\\|cite\\'" (car macro)))
+        ;; We are inside a cite macro. Insert key at point, with appropriate delimiters.
+        (delete-horizontal-space)
+        (concat (pcase (preceding-char)
+                  (?\{ "")
+                  (?, " ")
+                  (_ ", "))
+                (s-join ", " keys)
+                (if (member (following-char) '(?\} ?,))
+                    ""
+                  ", ")))
+       ((and (equal (preceding-char) ?\})
+             (require 'reftex-parse nil t)
+             (save-excursion
+               (forward-char -1)
+               (setq macro (reftex-what-macro 1)))
+             (stringp (car macro))
+             (string-match "\\`\\\\cite\\|cite\\'" (car macro)))
+        ;; We are right after a cite macro. Append key and leave point at the end.
+        (delete-char -1)
+        (delete-horizontal-space t)
+        (concat (pcase (preceding-char)
+                  (?\{ "")
+                  (?, " ")
+                  (_ ", "))
+                (s-join ", " keys)
+                "}"))
+       (t
+        ;; We are not inside or right after a cite macro. Insert a full citation.
+        (let* ((initial (when bibtex-completion-cite-default-as-initial-input
+                          bibtex-completion-cite-default-command))
+               (default (unless bibtex-completion-cite-default-as-initial-input
+                          bibtex-completion-cite-default-command))
+               (default-info (if default (format " (default \"%s\")" default) ""))
+               (cite-command "cite"))
+          (let ((prenote (if bibtex-completion-cite-prompt-for-optional-arguments
+                             (read-from-minibuffer "Prenote: ")
+                           "")))
+            (if (string= "" prenote)
+                (format "\\%s{%s}" cite-command (s-join ", " keys))
+              (format "\\%s[%s]{%s}" cite-command prenote (s-join ", " keys)))))))))
+
+  ;; (helm-bibtex-helmify-action brust-bibtex-completion-insert-citation brust-helm-bibtex-insert-citation)
+#+END_SRC
+
+#+RESULTS:
+: brust-bibtex-completion-format-citation-cite
 
 * cdLaTeX
 ** Initial config
