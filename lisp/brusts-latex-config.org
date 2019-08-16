@@ -273,19 +273,19 @@ Defaults
   ;;    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
   ;;  (auctex-latexmk-setup)
 
-  (add-to-list 
-   'TeX-expand-list
-   '("%(-PDF)"
-     (lambda ()
-       (if
-           (and
-            (not TeX-Omega-mode)
-            (or TeX-PDF-mode TeX-DVI-via-PDFTeX))
-           "-pdf -pvc -pdflatex=\" --shell-escape -interaction=nonstopmode -file-line-error --synctex=1\" "
-         "-dvi -latex=\"latex -interaction=nonstopmode\" "))))
+  ;; (add-to-list 
+  ;;  'TeX-expand-list
+  ;;  '("%(-PDF)"
+  ;;    (lambda ()
+  ;;      (if
+  ;;          (and
+  ;;           (not TeX-Omega-mode)
+  ;;           (or TeX-PDF-mode TeX-DVI-via-PDFTeX))
+  ;;          "-pdf -pvc -pdflatex=\" --shell-escape -interaction=nonstopmode -file-line-error --synctex=1\" "
+  ;;        "-dvi -latex=\"latex -interaction=nonstopmode\" "))))
 
   (add-to-list 'TeX-command-list
-               '("my-LatexMk" "latexmk -pdf -pvc %s"
+               '("LaTeX-mk" "latexmk -pdf -pvc -pdflatex=\"pdflatex --shell-escape -interaction=nonstopmode -file-line-error --synctex=1\"  %s"
                  TeX-run-TeX nil t
                  :help "Run Latexmk on file to build everything.")
                t)
@@ -298,19 +298,23 @@ Defaults
 
   (defun brust-LaTeX-next-error (args)
     (interactive "p")
-    (if-let ((active-buffer (TeX-active-buffer)))
-        (if (< 15 args)
-            (TeX-error-overview)
-          (when (< 3 args)
-            (save-excursion
-              (set-buffer active-buffer)
-              (TeX-parse-all-errors)
+    (if (< 15 args)
+        (TeX-error-overview)
+      (if (< 3 args)
+          (let ((buffer (TeX-active-buffer)))
+            (if buffer
+                (with-current-buffer (TeX-active-buffer)
+                  ;; (bury-buffer buffer)
+                  (goto-char (point-max))
+                  (when (re-search-backward "^Run number 1 of rule '\\(pdf\\|lua\\|xe\\)?latex'" nil t)
+                    (delete-region (point) (point-min)))
+                  (TeX-parse-all-errors))
+              ;; (TeX-pop-to-buffer old-buffer nil t)))
               (if TeX-error-list
                   (message ":::: WARING :::: There are errors ::::")
-                (message ":::: Be happy, your LaTeX code has no errors ::::"))))
-          (call-interactively 'TeX-next-error))
-      (message "There is no active buffer")))
-
+                (message ":::: Be happy, your LaTeX code has no errors ::::")))
+            (message "No process for this document."))
+        (call-interactively 'TeX-next-error))))
 
   ;;(let ((TeX-save-query nil)
   ;;      ;; (TeX-process-asynchronous nil)
@@ -330,7 +334,6 @@ Defaults
   ;;     (golden-ratio-mode -1)
   ;;     (balance-windows)
   ;;     (golden-ratio-mode 1)))
-
 #+END_SRC
 
 #+RESULTS:
