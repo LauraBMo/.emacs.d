@@ -3299,8 +3299,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
   (setq gap-start-options (list "-l" "-m" "2m"))
 
 #+END_SRC
-
-
 *** Git gutter fringe+
 #+BEGIN_SRC elisp
   (use-package git-gutter-fringe+
