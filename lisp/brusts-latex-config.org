@@ -814,7 +814,7 @@ Defaults
         ;; reftex-toc-auto-recenter-timer 1
         ;; reftex-toc-include-context t
         reftex-toc-confirm-promotion nil
-        reftex-toc-follow-mode t
+        reftex-toc-follow-mode nil
         ;; reftex-cite-prompt-optional-args nil
         ;; reftex-cite-cleanup-optional-args t
         ;; So that RefTeX also recognizes \addbibresource. Note that you
