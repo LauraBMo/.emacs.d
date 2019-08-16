@@ -345,7 +345,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-*** Use Caps as Super
+*** COMMENT Use Caps as Super
 #+BEGIN_SRC elisp
   (shell-command "setxkbmap -option caps:super")
   ;; (shell-command "xmodmap ~/.Xmodmap")
