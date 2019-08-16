@@ -2929,7 +2929,8 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (company-statistics-mode))
 
     ;; (use-package company-math)
-    (use-package company-auctex)
+    (use-package company-auctex
+      :after auctex)
     ;; local configuration for TeX modes
     (defun LaTeX-mode-hook-company-setup nil
       ;; (require 'dabbrev)
