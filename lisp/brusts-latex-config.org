@@ -37,7 +37,10 @@
                   (list
                    "-blx"
                    "\\.fdb_latexmk"
-                   "\\.run\\.xml")))
+                   "\\.run\\.xml"
+                   "\\.aux.bak"
+                   "\\.fls")))
+
     (LaTeX-mode-hook-company-setup)
     (my-LaTeX-mode-chords))
 
