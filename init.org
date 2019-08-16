@@ -4641,14 +4641,19 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;                                (require 'org-ref)
     ;;                                (require 'org-ref-latex)))
 
-
     (setq org-ref-note-title-format
           "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
 
     :config
     ;; (require 'org-ref-ivy)
-    (require 'org-ref-latex)
+    ;; (require 'org-ref-latex) ;; convert cite ref into clicable links
     (require 'org-ref-bibtex)
+    (setq bibtex-completion-format-citation-functions
+          '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+            (latex-mode    . brust-bibtex-completion-format-citation-cite)
+            (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+            (default       . bibtex-completion-format-citation-default)))
+
     (require 'org-ref-pdf)
     (require 'org-ref-arxiv)
     ;; (key-chord-define-global "kk" 'org-ref-cite-hydra/body)
