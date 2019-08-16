@@ -3373,6 +3373,20 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     )
 #+END_SRC
 
+#+RESULTS:
+: goto-last-change
+
+*** COMMENT Grab and drop
+#+BEGIN_SRC elisp
+(require 'grab-and-drag)
+(grab-and-drag-mode 1)
+
+(setq grab-and-drag-pointer-shape nil)
+#+END_SRC
+
+#+RESULTS:
+: t
+
 *** Helpful
 #+BEGIN_SRC elisp
   (use-package helpful
