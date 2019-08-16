@@ -4637,6 +4637,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
           bibtex-autokey-titlewords-stretch 1
           bibtex-autokey-titleword-length 5)
 
+    ;;     (defadvice org-ref-next-latex-cite (around add-font-lock-support-mode activate)
+    ;;       (let ((font-lock-support-mode #'jit-lock-mode))
+    ;;         ad-do-it))
+
     ;;   (add-hook 'LaTeX-mode-hook (lambda nil
     ;;                                (require 'org-ref)
     ;;                                (require 'org-ref-latex)))
