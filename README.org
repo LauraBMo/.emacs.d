@@ -2,13 +2,16 @@
 
 Laura's Emacs config. It is oriented to the use of Emacs as a LaTeX editor.
 
+I use =org-mode= to mantain my init file, I follow the ideas from [[http://endlessparentheses.com/init-org-Without-org-mode.html][Endless init-org-Without-org-mode]].
+The actual init file is [[file:init.el][init.el]]. It definies small functions which call the file [[file:init.org][init.org]] with my big configurations.
+
 The specific packages used in a LaTeX file are:
  * [[https://www.gnu.org/software/auctex/][AucTeX]] ([[https://www.emacswiki.org/emacs/AUCTeX][EmacsWiki AUCTeX]]) : Basic package to work with LaTeX files.
  * [[https://www.gnu.org/software/auctex/reftex.html][RefTeX]] : to make \label's and \ref's
  * [[https://github.com/jkitchin/org-ref][Org-ref]] (The amazing package of John Kitchin (a reference in Emacs world)) : to make \cite's and edit .bib files (in a while to make \label's and \ref's also!)
  * [[https://github.com/cdominik/cdlatex][CDLaTeX]] : A perfect complement. To improve =TAB=, math symbols insertion, LaTeX modifications (like \mathcal{S}...)...
 
-There are also a lot of other packages, take a look at [[file:init.el][init.el]] and [[file:init.org][init.org]] (recall that the configuration for LaTeX-mode is in [[file:lisp/brusts-latex-config.org][brust-latex-config.org]]).
+There are also a lot of other packages, take a look at [[file:init.el][init.el]] and [[file:init.org][init.org]] (the particular configuration for LaTeX-mode is in [[file:lisp/brusts-latex-config.org][brust-latex-config.org]]).
 
 If you are looking for useful functions, you should take look at the following list.
  * Functions from other places (there are some references, but I forget many):
