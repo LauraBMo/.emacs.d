@@ -6409,14 +6409,16 @@ _q_: quit
 #+END_SRC
 
 #+RESULTS:
-: brust-cycle-texmath
 
-*** COMMENT Bibretrive
+*** Bibretrive
 #+BEGIN_SRC elisp
   (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
   (load "bibretrieve")
   (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
 #+END_SRC
+
+#+RESULTS:
+: ((msn . 10) (arxiv . 5))
 
 *** Bralatex
     Load before auctex ??2
