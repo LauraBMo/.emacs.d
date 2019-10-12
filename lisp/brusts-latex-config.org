@@ -39,7 +39,8 @@
                    "\\.fdb_latexmk"
                    "\\.run\\.xml"
                    "\\.aux.bak"
-                   "\\.fls")))
+                   "\\.fls"
+                   "\\.toc")))
 
     (LaTeX-mode-hook-company-setup)
     (my-LaTeX-mode-chords))
