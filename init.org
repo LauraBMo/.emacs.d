@@ -492,8 +492,8 @@ when one fix a personal personal dictionary there are problems when one changes 
 
   (set-face-attribute
    'mode-line-top-line-number nil
-   :foreground "gray80"
-   :height 0.6)
+   :foreground "gray60"
+   :height 0.85)
   (set-face-attribute
    'mode-line-bars-face nil
    :inherit 'sml/col-number
@@ -502,13 +502,13 @@ when one fix a personal personal dictionary there are problems when one changes 
    'mode-line-read-only-face nil
    :inherit 'mode-line-face
    :foreground "#4271ae"
-   :box '(:line-width 2 :color "#4271ae"))
+   :box '(:line-width 1 :color "#4271ae"))
   (set-face-attribute
    'mode-line-modified-face nil
    :inherit 'mode-line-face
    :foreground "#c82829"
    :background "#ffffff"
-   :box '(:line-width 2 :color "#c82829"))
+   :box '(:line-width 1 :color "#c82829"))
   (set-face-attribute
    'mode-line-folder-face nil
    :inherit 'mode-line-face
@@ -565,7 +565,21 @@ when one fix a personal personal dictionary there are problems when one changes 
     map))
 
 #+END_SRC
-**** Smart-mode-line
+**** Smart-mode-line colors
+#+BEGIN_SRC elisp
+  (defface sml/global '((t :inverse-video nil)) "" :group 'smart-mode-line-faces)
+  (defface sml/modes '((t :inherit sml/global)) "" :group 'smart-mode-line-faces)
+  (defface sml/line-number '((t :inherit sml/modes :weight bold)) "" :group 'smart-mode-line-faces)
+  (defface sml/col-number '((t :inherit sml/global)) "" :group 'smart-mode-line-faces)
+
+  (custom-set-faces
+   '(sml/global ((t :foreground "gray50" :inverse-video nil)))
+   '(sml/modes ((t :inherit sml/global :foreground "White"))))
+#+END_SRC
+
+#+RESULTS:
+
+**** COMMENT Old smart mode line
 #+BEGIN_SRC elisp
   (use-package smart-mode-line
     :init
@@ -590,8 +604,6 @@ when one fix a personal personal dictionary there are problems when one changes 
          )
     ;; (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
     (sml/setup))
-#+END_SRC
-
 #+RESULTS:
 
 **** Mode-Line-Buffer-Identification:
@@ -626,8 +638,18 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;   mode-line-client
      ;; Position, including warning for 80 columns
      ;; (:propertize " --[" face mode-line-bars-face)
-     (:propertize "|| " face mode-line-bars-face)
-     mode-line-misc-info
+     (:propertize "||  " face mode-line-bars-face)
+     (:propertize display-time-string face sml/line-number)
+     ;;mode-line-misc-info
+     (:propertize " || " face mode-line-bars-face)
+     (:eval
+      (cond (buffer-read-only
+             (propertize " RO " 'face 'mode-line-read-only-face))
+            ((buffer-modified-p)
+             (propertize " ** " 'face 'mode-line-modified-face))))
+     (:eval (if (or buffer-read-only (buffer-modified-p))
+                (propertize " " 'face 'mode-line-bars-face)
+              "      "))
      (:propertize "|\[" face mode-line-bars-face)
      (:propertize "%l" face sml/line-number)
      (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "/%l")) 'face 'mode-line-top-line-number))
@@ -640,36 +662,30 @@ when one fix a personal personal dictionary there are problems when one changes 
      (:eval (propertize (format "/%s" (- (line-end-position) (line-beginning-position))) 'face 'mode-line-top-line-number))
      (:propertize "\]|" face mode-line-bars-face)
      ;; (:propertize "|| " face mode-line-bars-face)
-     (:eval
-      (cond (buffer-read-only
-             (propertize " RO " 'face 'mode-line-read-only-face))
-            ((buffer-modified-p)
-             (propertize " ** " 'face 'mode-line-modified-face))))
-     (:eval (if (or buffer-read-only (buffer-modified-p))
-                (propertize "| " 'face 'mode-line-bars-face)
-              " "))
      ;; mode-line-front-space
      ;;      (vc-mode vc-mode)
      ;; sml/pre-modes-separator
      mode-line-frame-identification
      mode-line-buffer-identification
-     (:propertize "|| " face mode-line-bars-face)
-     mode-line-modes
-     (:propertize "| " face mode-line-bars-face)
-     (vc-mode vc-mode)
-     (vc-mode vc-status)
-     (:propertize "||" face mode-line-bars-face)
+     (:propertize "  |[  " face mode-line-bars-face)
+     (:propertize ("" "%[" mode-name "%]") face sml/modes)
+     ;; mode-line-modes
+     ;;(:propertize "| " face mode-line-bars-face)
+     ;; (vc-mode vc-mode)
+     ;; (vc-mode vc-status)
+     (:propertize "  ]|  ||" face mode-line-bars-face)
      ;; nyan-create
-     '(:eval '(nyan-create))
+     (:eval (nyan-create))
      ;;(:eval (list (nyan-create)))
      ;;(:propertize "||" face mode-line-bars-face)
-     mode-line-position
+     ;;mode-line-percent-position
+     ;; mode-line-position
      (:propertize "||%-" face mode-line-bars-face)
      mode-line-end-spaces))
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | mode-line-misc-info | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line %l)) (quote face) (quote mode-line-top-line-number)) (:propertize : face sml/line-number) (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) (:propertize ] | face mode-line-bars-face) (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize | (quote face) (quote mode-line-bars-face))  )) mode-line-frame-identification mode-line-buffer-identification (:propertize |   | face mode-line-bars-face) mode-line-modes (:propertize | face mode-line-bars-face) (vc-mode vc-mode) (vc-mode vc-status) (:propertize |   | face mode-line-bars-face) (quote (:eval (quote (nyan-create)))) mode-line-position (:propertize |   | %- face mode-line-bars-face) mode-line-end-spaces) |
+| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) | (:propertize |   | face mode-line-bars-face) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) | (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize   (quote face) (quote mode-line-bars-face))       )) | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) | (:propertize ] | face mode-line-bars-face) | mode-line-frame-identification | mode-line-buffer-identification | (:propertize | [   face mode-line-bars-face) | (:propertize ( %[ mode-name %]) face sml/modes) | (:propertize   ] |   |   | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
 
 ** My key binding
 *** Global and genric
