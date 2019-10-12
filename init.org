@@ -6460,10 +6460,14 @@ _q_: quit
 *** The function
 #+BEGIN_SRC elisp
   (defun brust-myregexp nil
+  "Do occur in the current buffer with my regexpresion build from the files bla bla bla" 
     (interactive)
     ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
     (occur brust--myregexp-itself))
 #+END_SRC
+
+#+RESULTS:
+: brust-myregexp
 
 
 * Old stuff
