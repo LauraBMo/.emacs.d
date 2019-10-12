@@ -4443,30 +4443,61 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 *** TODO Mu4e
     - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
-    - TODOs [0/5]
+    - TODOs [0/6]
       - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
       - [ ] Improve keybinding
       - [ ] Show links
       - [ ] Show images
       - [ ] Check autopudate (related to point one).
       - [ ] Improve contact completion with ivy :) [[http://pragmaticemacs.com/emacs/even-better-email-contact-completion-in-mu4e/]]
-    - Helpful places
-      - [[https://webgefrickel.de/blog/a-modern-mutt-setup][A modern mutt setup with neomutt, mbsync, msmtp and mu]] (blog - interesting not just emacs)
-      - [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][A Complete Guide to Email in Emacs using Mu and Mu4e]] (blog interesting by itself - really fancy emacs stuff)
-      - [[https://www.djcbsoftware.nl/code/mu/mu4e/Example-configurations.html#Example-configurations][Example config (from mu4e the manual)]]
-      - [[http://xenodium.com/#trying-out-mu4e-and-offlineimap][Albaro]] & [[http://xenodium.com/#trying-out-mu4e-with-mbsync][Albaro2]] (here there are many nice links) (blog - interesting not just emacs).
-      - [[https://stackoverflow.com/questions/50199837/mu4e-with-msmtp-does-not-store-mail-sent-directory-after-sending-mails][How to config mu4e to send mail using msmtp]]
-      - [[https://blog.programster.org/ubuntu-install-gpg-2][Install gpg2 (much better)]] to encript your mail password (echo password | gpg2 -c) then delete the corresponding line on bash history ;)
-      - [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
-      - [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
-      - [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
-      -
+    - Helpful places [5/9]
+      - [X] [[https://webgefrickel.de/blog/a-modern-mutt-setup][A modern mutt setup with neomutt, mbsync, msmtp and mu]] (blog - interesting not just emacs)
+      - [ ] [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][A Complete Guide to Email in Emacs using Mu and Mu4e]] (blog interesting by itself - really fancy emacs stuff)
+      - [ ] [[https://www.djcbsoftware.nl/code/mu/mu4e/Example-configurations.html#Example-configurations][Example config (from mu4e the manual)]]
+      - [ ] [[http://xenodium.com/#trying-out-mu4e-and-offlineimap][Albaro]] & [[http://xenodium.com/#trying-out-mu4e-with-mbsync][Albaro2]] (here there are many nice links) (blog - interesting not just emacs).
+      - [X] [[https://stackoverflow.com/questions/50199837/mu4e-with-msmtp-does-not-store-mail-sent-directory-after-sending-mails][How to config mu4e to send mail using msmtp]]
+      - [X] [[https://blog.programster.org/ubuntu-install-gpg-2][Install gpg2 (much better)]] to encript your mail password (echo password | gpg2 -c) then delete the corresponding line on bash history ;)
+      - [ ] [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
+      - [X] [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
+      - [X] [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
+      - 
+**** COMMENT Install
+Just in case to generate a certificate:
+# openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
+
+#+BEGIN_SRC bash
+  # Install things
+  sudo apt install msmtp-gnome msmtp-mta isync gnupg2
+  cd src
+  git clone https://github.com/djcb/mu.git
+  ./autogen.sh
+  make
+
+  # Paswords
+  ## UAB
+  cd
+  echo PASSWORD > .mathuab
+  gpg2 -c .mathuab
+  rm .mathuab
+  ## Gmail
+  echo PASSWORD > .gmailpass
+  gpg2 -c .gmailpass
+  rm .gmailpass
+  # Delete corresponding lines of .bash_history
+
+  mkdir Maildir
+  # Copy from Dropbox/config/Maildir
+#+END_SRC
+
+#+RESULTS:
 **** Add Path
 #+BEGIN_SRC elisp
-   (add-to-list 'load-path (expand-file-name "~/sources/mu/mu4e"))
-   (require 'mu4e)
-
+  (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
+  (require 'mu4e)
 #+END_SRC
+
+#+RESULTS:
+: mu4e
 
 **** Basic config
   #+BEGIN_SRC elisp
@@ -4502,7 +4533,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             mu4e-headers-include-related nil
             ;; enable inline images
             mu4e-maildir (expand-file-name "~/Maildir")
-            mu4e-mu-binary (expand-file-name "~/sources/mu/mu/mu")
+            mu4e-mu-binary (expand-file-name "~/scr/mu/mu/mu")
             ;; mu4e-mu-home
             mu4e-html2text-command "w3m -T text/html"
             ;; alternatively "textutil -stdin -format html -convert txt -stdout"
@@ -4518,7 +4549,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             mu4e-compose-context-policy 'always-ask
             ;; This allows me to use 'helm' to select mailboxes
             mu4e-completing-read-function 'completing-read
-            ;; Why would I want to leave my message open after I've sent it?
+             ;; Why would I want to leave my message open after I've sent it?
             message-kill-buffer-on-exit t
             ;; Don't ask for a 'context' upon opening mu4e
             mu4e-context-policy 'pick-first
@@ -4581,6 +4612,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
                   (mu4e-compose-format-flowed . nil)))))
 
 #+END_SRC
+
+#+RESULTS:
+| #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
+
 **** Bookmarkstr rr
 #+BEGIN_SRC elisp
       ;; Update mail using 'U' in main view:
@@ -4597,6 +4632,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
                     :query "flag:unread AND maildir:/mathuab/INBOX"
                     :key ?m))
 #+END_SRC
+
+#+RESULTS:
+| #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | (flag:unread AND NOT flag:trashed Unread messages 117) | (date:today..now Today's messages 116) | (date:7d..now Last 7 days 119) | (mime:image/* Messages with images 112) |
+
 **** COMMENT Alert
 #+BEGIN_SRC elisp
   (use-package mu4e-alert
@@ -4628,6 +4667,10 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
    "Capture a TODO item via email."
    (org-capture nil "o"))
  #+end_src
+
+ #+RESULTS:
+ : my/org-capture-mu4e
+
 *** Nyan
     Show the rainbow line.
 #+BEGIN_SRC elisp
