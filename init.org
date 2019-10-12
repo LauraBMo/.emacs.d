@@ -8046,3 +8046,11 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 #+RESULTS:
 : brust-call-niu-insert-mark
+
+
+* To Improve
+** Smart naviagtion inside line
+[[*Smarter navigation inside a line][Smarter navigation inside a line]]
+
+Comment charts hard coded :(
+** Close open parents: more smart
