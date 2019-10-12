@@ -99,6 +99,11 @@
    "\\([^\000]*?\n\\)??[ \t]*#\\+end_src")
   "Regexp used to identify code blocks.")
 
+(defvar brust-endless/org-eblocks-lang
+  '("elisp"
+    "emacs-lisp")
+  "List of strings for Elisp language")
+
 (defun brust-endless/org-eval-eblocks (µcode &optional µinit µfile-p µheader-depth µmessage-depth)
   "Eval the SRC blocks of elisp code in µcode which is the name of a file or a string where are the blocks.
 µfile-p has to be t if µcode is a file and nil otherwise.
@@ -123,12 +128,15 @@ Subtrees under a COMMENTed header are not evaluated."
 		 µmessage-depth)
 	      (message "%s" (match-string 0))))
 	 ((looking-at brust-endless/org-babel-src-block-regexp)
-	  (goto-char (match-end 5))
-	  (eval-region (match-beginning 5)
-		       (match-end 5))
-	  (message "%s :: %d" pheader neblock)
-	  (setq neblock (1+ neblock))))
+          (if (memq (match-string 2) brust-endless/org-eblocks-lang) 
+	      (goto-char (match-end 5))
+	    (eval-region (match-beginning 5)
+		         (match-end 5))
+	    (message "%s :: %d" pheader neblock)
+	    (setq neblock (1+ neblock)))))
 	(forward-line))
+      (message "=========== ================================== ===========")
+      (message "=========== ================================== ===========")
       (message "=========== !! Be happy, everything is load !! ==========="))))
 
 (defun brust-endless/org-eval-eblocks-delete-commented-subtrees nil
