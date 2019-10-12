@@ -328,7 +328,7 @@ value is non-nil."
     (with-temp-buffer
       (call-process-shell-command
        (concat "texcount -opt="
-               (expand-file-name "~/.emacs.d/TeXcount-emacs.txt")
+               (expand-file-name "~/.emacs.d/config/TeXcount-emacs.txt")
                " -dir="
                (file-name-directory project-master)
                " "
@@ -357,33 +357,33 @@ value is non-nil."
 
 (defun brust-wc-read-last-count nil
   (find-file "~/Dropbox/Doctorat_Laura/Thesis/wc-statistics.txt")
-  (goto-char (point-max))
-  
+  (goto-char (point-max)))
 
-  
-  (defun brust-wc-last-date (data)
-    (with-temp-buffer
-      (insert-file-contents data)
-      (goto-char (point-min))
-      (s-trim (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
 
-  ;;(defun mp-insert-date ()
-  ;;  (interactive)
-  ;;  (insert (format-time-string "%x")))
-  ;;
 
-  (defun brust-dates<= (date1 date2)
-    "Return t if 'date1' < 'date2', nil if 'date1' > 'date2' and the string = otherwise (date format 'dd/mm/yy'"
-    (interactive)
-    (let ((-d1 (cl-loop for xx in (reverse (split-string date1 "/"))
-                        collect (string-to-number xx)))
-          (-d2 (cl-loop for xx in (reverse (split-string date2 "/"))
-                        collect (string-to-number xx))))
-      (cond
-       ((< (car -d1) (car -d2)) t)
-       ((> (car -d1) (car -d2)) nil)
-       ((< (cadr -d1) (cadr -d2)) t)
-       ((> (cadr -d1) (cadr -d2)) nil)
-       ((> (car (last -d1)) (car (last -d2))) nil)
-       ((< (car (last -d1)) (car (last -d2))) t)
-       (t "="))))
+(defun brust-wc-last-date (data)
+  (with-temp-buffer
+    (insert-file-contents data)
+    (goto-char (point-min))
+    (s-trim (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
+
+;;(defun mp-insert-date ()
+;;  (interactive)
+;;  (insert (format-time-string "%x")))
+;;
+
+(defun brust-dates<= (date1 date2)
+  "Return t if 'date1' < 'date2', nil if 'date1' > 'date2' and the string = otherwise (date format 'dd/mm/yy'"
+  (interactive)
+  (let ((-d1 (cl-loop for xx in (reverse (split-string date1 "/"))
+                      collect (string-to-number xx)))
+        (-d2 (cl-loop for xx in (reverse (split-string date2 "/"))
+                      collect (string-to-number xx))))
+    (cond
+     ((< (car -d1) (car -d2)) t)
+     ((> (car -d1) (car -d2)) nil)
+     ((< (cadr -d1) (cadr -d2)) t)
+     ((> (cadr -d1) (cadr -d2)) nil)
+     ((> (car (last -d1)) (car (last -d2))) nil)
+     ((< (car (last -d1)) (car (last -d2))) t)
+     (t "="))))
