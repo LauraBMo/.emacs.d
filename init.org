@@ -4772,6 +4772,13 @@ Just in case to generate a certificate:
 
   (defun brust-org-ref-bibtex-open-notes (-header)
     "It assume that you are at the beginning of a bibtex entry in a .bib file"
+    (interactive
+     (list (ivy-read
+            "Header: "
+            (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+            :require-match t
+            :sort t
+            :preselect "Index")))
     (let ((-abstract
            (cdr (assoc "abstract" (bibtex-parse-entry t))))
           (-entry))
@@ -4945,7 +4952,7 @@ Just in case to generate a certificate:
 #+RESULTS:
 : brust-pdf-view-previous-line-or-previous-page-5
 
-**** COMMENT save place
+**** save place
  workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18
 
@@ -4961,8 +4968,7 @@ Just in case to generate a certificate:
       (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
   (defun brds/pdf-has-last-viewed-bookmark ()
-    (assoc
-     (brds/pdf-generate-bookmark-name) bookmark-alist))
+    (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
 
   (defun brds/pdf-generate-bookmark-name ()
     (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
@@ -4975,7 +4981,7 @@ Just in case to generate a certificate:
   (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
   (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
   (unless noninteractive  ; as `save-place-mode' does
-    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))
+    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks)))
 #+END_SRC
 
 #+RESULTS:
