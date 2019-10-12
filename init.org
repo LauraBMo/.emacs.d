@@ -2698,7 +2698,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (with-temp-buffer
         (call-process-shell-command
          (concat "texcount -opt="
-                 (expand-file-name "~/Dropbox/LaTeX/TeXcount-emacs.txt")
+                 (expand-file-name "~/Dropbox/config/TeXcount-emacs.txt")
                  " -dir="
                  (file-name-directory project-master)
                  " "
