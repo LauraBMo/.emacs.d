@@ -6317,20 +6317,21 @@ _q_: quit
 #+BEGIN_SRC elisp
   (defun brust-singular-dynamic-complete ()
     "Dynamic complete word before point.
-    Performs completion of Singular commands."
+      Performs completion of Singular commands."
     (interactive)
-    (let ((end (point))
-          (beg
-           (save-excursion
-             (skip-chars-backward "a-zA-Z0-9")
-             (point))))
-      (if singular-commands-alist
-          (singular-completion-do (buffer-substring beg end)
-                                  beg
-                                  end
-                                  singular-commands-alist)
-        (message "Completion of Singular commands disabled.")
-        (ding))))
+    (let* ((end (point))
+           (beg
+            (save-excursion
+              (skip-chars-backward "a-zA-Z0-9")
+              (point)))
+           (str (buffer-substring-no-properties beg end)))
+      (if (string= str "")
+          (indent-region (point-at-bol) (point-at-eol))
+        ;; (call-interactively 'indent-region)
+        (if singular-commands-alist
+            (singular-completion-do str beg end singular-commands-alist)
+          (message "Completion of Singular commands disabled.")
+          (ding)))))
 #+END_SRC
 
 #+RESULTS:
