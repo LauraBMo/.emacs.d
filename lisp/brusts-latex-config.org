@@ -71,7 +71,52 @@
 
 #+RESULTS:
 | preview-mode-setup | er/add-latex-mode-expansions | aggressive-indent-mode | brust-LaTeX-mode-hook |
+** My list of prefixes for sections
 
+   When modify this list check compatibility in
+       - [[*To get a full featured `LaTeX-section' command][To get a full featured `LaTeX-section' command]]
+       - Reftex [[*Label list][Label list]]
+       - cdlatex [[*Environment definitons][Environment definitons]]
+       - cdlatex [[*Snippets =TAB=][Snippets =TAB=]] (all sections)
+
+#+BEGIN_SRC elisp
+  ;; Headers
+  (defvar brust-LaTeX-headers 
+    '(("part"          . "part")
+      ("chapter"       . "chap")
+      ("section"       . "sec")
+      ("paragraph"     . "prf")
+      ("subsection"    . "ssec")
+      ("subsubsection" . "sssec"))
+    "Variable with cons of (header . prefix) for labeling")
+
+  ;; Environments
+  (defvar brust-LaTeX-environments
+    '(("theorem"     . "thr")
+      ("definition"  . "def")
+      ("remark"      . "rmk")
+      ("proposition" . "prop")
+      ("lemma"       . "lem")
+      ("notation"    . "not")
+      ("corollary"   . "coro")
+      ("example"     . "exmp")
+      ("situation"   . "sit")
+      ;; ("diagram"     . "dia") 
+      ;; For numbered diagrams, use equation environment with \label[diagram]{dia:..}.
+      ;; To insert such an environment use cdlatex snipped 'dia'
+      ;; To refer to a diagram use 'reftex-reference', which will detect it as equation environment 'e' key.
+      ;; For Cleverref, use \crefname{diagram}{Diagram}{Diagrams} join with \label[diagram]{...}
+      ("equation"    . "eq"))
+    "Variable with cons of (environment . prefix) for labeling")
+
+  (defun brust-list-with-colon (list)
+    (cl-loop for xx in list collect `(,(car xx) . ,(concat (cdr xx) ":"))))
+
+  ;; (brust-list-with-colon brust-LaTeX-environments)
+#+END_SRC
+
+#+RESULTS:
+: brust-list-with-colon
 
 ** Define my chords
 #+BEGIN_SRC elisp
@@ -158,24 +203,27 @@
 #+END_SRC
 
 ** To get a full featured `LaTeX-section' command
+=LaTeX-section= command runs the hook =LaTeX-section-hook=, which is a list of function which actually generate the header.
+The last function =LaTeX-section-label= creates the label for the header.
+It is a warparound of =LaTeX-label=, which calls (when it is fbounded) =LaTeX-label-function=, which is seted to =reftex-lable= by RefTeX package (I do not know which option config sets it).
+So, when you call =LaTeX-section= in fact, it is =reftex-label= who generates the proposed/automatic label for this header.
+So, I do not know how important it is the list =LaTeX-section-label=, the really important list is =reftex-section-prefixes= (see RefTeX, Label list)
+ 
 #+BEGIN_SRC elisp
+  ;; Hook with the list of funtions to run to create a header.
   (setq LaTeX-section-hook '(;; LaTeX-section-heading  
                              LaTeX-section-title
                              ;; LaTeX-section-toc
                              LaTeX-section-section
                              LaTeX-section-label))
 
-  (setq LaTeX-section-label 
-        '(("part" . "part:")
-          ("chapter" . "chap:")
-          ("section" . "sec:")
-          ("subsection" . "ssec:")
-          ("subsubsection" . "sssec:")))
-
+  ;; List of prefixes identifing each header.
+  (setq LaTeX-section-label
+        `,(brust-list-with-colon brust-LaTeX-headers))
 #+END_SRC
 
 #+RESULTS:
-: ((part . part:) (chapter . chap:) (section . sec:) (subsection . ssec:) (subsubsection . sssec:))
+: ((part . (brust-add-colon brust-LaTeX-part-prefix)) (chapter . chp:) (section . sec:) (subsection . ssec:) (subsubsection . sssec:))
 
 ** Ispell TeX skip regexp list 
 #+BEGIN_SRC elisp
@@ -211,15 +259,24 @@ Defaults
  ("subparagraph" 6))
 
 #+BEGIN_SRC elisp
-  (setq LaTeX-section-list
+  (setq LaTeX-section-list ;; Levels used to insert new headers by LaTeX-section, which is used by cdlatex. 
         '(("part"          0)
           ("chapter"       1)
           ("section"       2)
-          ("subsection"    3)
-          ("subsubsection" 4)
-          ("paragraph"     5)
+          ("paragraph"     3)
+          ("subsection"    4)
+          ("subsubsection" 5)
           ("subparagraph"  6)))
 #+END_SRC
+
+#+RESULTS:
+| part          | 0 |
+| chapter       | 1 |
+| section       | 2 |
+| subsection    | 3 |
+| paragraph     | 3 |
+| subsubsection | 4 |
+| subparagraph  | 6 |
 
 *** Outline extra
 #+BEGIN_SRC elisp
@@ -304,17 +361,17 @@ Defaults
       (if (< 3 args)
           (let ((buffer (TeX-active-buffer)))
             (if buffer
-                (with-current-buffer (TeX-active-buffer)
+                (with-current-buffer buffer
                   ;; (bury-buffer buffer)
                   (goto-char (point-max))
                   (when (re-search-backward "^Run number 1 of rule '\\(pdf\\|lua\\|xe\\)?latex'" nil t)
                     (delete-region (point) (point-min)))
-                  (TeX-parse-all-errors))
-              ;; (TeX-pop-to-buffer old-buffer nil t)))
-              (if TeX-error-list
-                  (message ":::: WARING :::: There are errors ::::")
-                (message ":::: Be happy, your LaTeX code has no errors ::::")))
-            (message "No process for this document."))
+                  (TeX-parse-all-errors)
+                  ;; (TeX-pop-to-buffer old-buffer nil t)))
+                  (if TeX-error-list
+                      (message ":::: WARING :::: There are errors ::::")
+                    (message ":::: Be happy, your LaTeX code has no errors ::::")))
+              (message "No process for this document. %s" buffer)))
         (call-interactively 'TeX-next-error))))
 
   ;;(let ((TeX-save-query nil)
@@ -393,7 +450,7 @@ Defaults
 #+END_SRC
 
 ** LaTeX Brust defuns
-*** Compile only
+*** COMMENT Compile only
 #+BEGIN_SRC elisp
 
   (defun brust-compile-only-get-rel-path-to-file (-file)
@@ -407,7 +464,7 @@ Defaults
     (insert -string))
 
   (defun brust-compile-only (arg)
-    "Can Compile the master file with an \includeonly{buffer-from-called}.
+    "Can Compile the master file with an \\includeonly{buffer-from-called}.
        +If it is called from the master file (or 3 times C-u) all include's are compiled.
        +The reference to the master file can be an absolute path or ../master.
       TODO: +Make a save copy of the complet compiled .pdf if the current file have no save copy
@@ -491,7 +548,7 @@ Defaults
 
   1. Change the environment with LaTeX-environment
   2. Change the label tag (e.g. lem -> prop) (if there is one)"
-    (interactive "P")
+    (interactive "p")
     (let ((pnt (point)))
       (save-window-excursion
         (if (not args) (LaTeX-environment nil)
@@ -501,7 +558,7 @@ Defaults
                 (progn
                   (LaTeX-find-matching-begin)
                   (re-search-forward "\\\\begin\{\\([a-zA-Z]*\\)\}" pnt t)
-                  (cdr (assoc (match-string 1) environment-prefix-list))))
+                  (cdr (assoc (match-string 1) brust-LaTeX-environments))))
                (prefix-old
                 (progn
                   (LaTeX-find-matching-begin)
@@ -514,31 +571,13 @@ Defaults
                (concat prefix-new ":" name))))))
       (goto-char pnt)))
 
-  (defun brust-LaTeX-env-change args
-    (interactive "P")
+  (defun brust-LaTeX-env-change (args)
+    (interactive "p")
     (brust-LaTeX-env (not args)))
 #+END_SRC
 
 #+RESULTS:
 : brust-LaTeX-env-change
-
-**** Names envoirments
-#+BEGIN_SRC elisp
-  (defconst environment-prefix-list
-    '(("corollary"   . "coro") 
-      ("notation"    . "not")
-      ("lemma"       . "lem")
-      ("proposition" . "prop")
-      ("remark"      . "rmk")
-      ("definition"  . "def")
-      ("theorem"     . "thr")
-      ("axiom"       . "axm")
-      ("proof"       . "prf")
-      ("chapter"     . "chap")))
-#+END_SRC
-
-#+RESULTS:
-: environment-prefix-list
 
 *** Query replace only in math formlulas
     From https://stackoverflow.com/questions/19845598/emacs-regex-replacing-a-string-inside-a-latex-equation 
@@ -766,7 +805,7 @@ Defaults
 #+RESULTS:
 : brust-LaTeX-mathp-end
 
-*** Smart period
+*** COMMENT Smart period
 #+BEGIN_SRC elisp
   (defun brust-LaTeX-smart-period nil
     "Smart \".\" key: insert \".  \n\".
@@ -823,6 +862,8 @@ Defaults
         ;; reftex-cite-cleanup-optional-args t
         reftex-guess-label-type nil
         reftex-ref-style-default-list (quote ("Cleveref"))
+        reftex-refstyle "\\cref" ;; binding the command for references. No styles and other shits. Much faster executatoin.
+        ;; Problem with diagrams: make an environment form then, so cleveref will produce right names :)
 
         ;; So that RefTeX also recognizes \addbibresource. Note that you
         ;; can't use $HOME in path for \addbibresource but "~".
@@ -840,23 +881,16 @@ Defaults
 #+END_SRC
 
 #+RESULTS:
-| Cleveref |
+: \cref
 
 *** Label list 
     The numbers in both lists are *toc* levels, negative does not show the "section" number.
 #+BEGIN_SRC elisp
   (setq reftex-label-alist
-        ;; reftex-label-alist '(AMSTeX)
-        '(("axiom"         ?a "axm:"   "~\\cref{%s}" t   ("axiom"   "axm.")        )
-          ("theorem"       ?t "thr:"   "~\\cref{%s}" t   ("theorem" "thr.")      -4)
-          ("definition"    ?d "def:"   "~\\cref{%s}" t   ("definition" "def.")   -4)
-          ("remark"        ?r "rmk:"   "~\\cref{%s}" t   ("remark" "rmk.")       -6)
-          ("proposition"   ?p "prop:"  "~\\cref{%s}" t   ("proposition" "prop.") -5)
-          ("lemma"         ?l "lem:"   "~\\cref{%s}" t   ("lemma" "lem.")        -5)
-          ("notation"      ?n "not:"   "~\\cref{%s}" t   ("notation" "not.")     -6)
-          ("corollary"     ?c "coro:"  "~\\cref{%s}" t   ("corollary" "coro.")   -6)))
+        (cl-loop for xx in brust-LaTeX-environments collect
+                 `(,(car xx) ,(string-to-char (car xx)) ,(concat (cdr xx) ":") "~\\cref{%s}" t nil 3)))
 
-  (setq reftex-section-levels
+  (setq reftex-section-levels ;; levels used in reftex toc and for promoting and demoting (not used for cdlatex to insert new headers). 
         '(("part" . 0)
           ("chapter" . 0)
           ("section" . 1)
@@ -870,6 +904,17 @@ Defaults
           ("frametitle" . 7)
           ("addchap" . -1)
           ("addsec" . -2)))
+
+  (setq reftex-section-prefixes LaTeX-section-label)
+
+  ;; ("paragraph" . 2)
+  ;; ("beamersec" . -2)
+  ;; ("beamersubsec" . -3)
+  ;; ("beamersubsubsec" . -4)
+  ;; ("subparagraph" . 4)
+  ;; ("frametitle" . 7)
+  ;; ("addchap" . -1)
+  ;; ("addsec" . -2)))
 #+END_SRC
 
 #+RESULTS:
@@ -1013,24 +1058,39 @@ I do not use Yasnippets anymore in LaTeX documents, cdlatex is enough. But I kee
 
 #+END_SRC
 ** Envirments definition
-*** Alist (mines)
+*** Environment definitons
 #+BEGIN_SRC elisp
-  (mapc (lambda (xx) (cl-pushnew xx cdlatex-env-alist))
 
-        '(("axiom"        "\\begin{axiom}\\label{axm:?}\n\n\\end{axiom}\n"            nil)
-          ("theorem"      "\\begin{theorem}\\label{thr:?}\n\n\\end{theorem}\n"        nil)
-          ("proof"        "\\begin{proof}\n?\n\\end{proof}"                           nil)
-          ("lemma"        "\\begin{lemma}\\label{lem:?}\n\n\\end{lemma}"              nil)
-          ("proposition"  "\\begin{proposition}\\label{prop:?}\n\n\\end{proposition}" nil)
-          ("remark"       "\\begin{remark}\\label{rmk:?}\n\n\\end{remark}"            nil)
-          ("notation"     "\\begin{notation}\\label{not:?}\n\n\\end{notation}"        nil)
-          ("definition"   "\\begin{definition}\\label{def:?}\n\n\\end{definition}"    nil)
-          ("frame"        "\\begin{frame}\n\\frametitle{?}\n\n\\end{frame}"           nil)
-          ("block"        "\\begin{block}{?}\n\n\\end{block}"                         nil)
-          ("corollary"    "\\begin{corollary}\\label{coro:?}\n\n\\end{corollary}"     nil)
-          ("array"        "\\begin{array}{?}\n  \\\\\n\\end{array}"                   "&")))
+  (defun brust-cdlatex-new-environment (env)
+    (concat "\\begin{" (car env) "}\\label{" (cdr env) ":?}\n\n\\end{" (car env) "}"))
+
+  (setq cdlatex-env-alist
+        (append (cl-loop for xx in brust-LaTeX-environments collect
+                         `(,(car xx)
+                           ,(brust-cdlatex-new-environment xx)
+                           nil))
+                '(("diagram" "\\begin{equation}\\label[diagram]{dia:?}\n\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\end{equation}\\ncd" "&")
+                  ("diagram*" "\\[\n\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd" "&")
+                  ("proof"   "\\begin{proof}\n?\n\\end{proof}"                           nil)
+                  ("frame"   "\\begin{frame}\n\\frametitle{?}\n\n\\end{frame}"           nil)
+                  ("block"   "\\begin{block}{?}\n\n\\end{block}"                         nil)
+                  ("array"   "\\begin{array}{?}\n  \\\\\n\\end{array}"                   "&")
+                  ("tikz"    "\\[\n\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd" "&")
+                  ("tikzbeamer" "\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]" "&")
+                  ("tikzextended" 
+                   "\\[\n\\begin{tikzcd}[column sep=2em, row sep=.01ex]\%(Defaults)\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd" "&"))
+                cdlatex-env-alist)) ;;
+  ;; cdlatex-environment uses 'assoc' which
+  ;; "Return non-nil if KEY is equal to the car of an element of LIST.
+  ;; The value is actually the first element of LIST whose car equals KEY."
+  ;; Add cdlatex-env-alist at the end: so I have acces to their environments, but for duplicates mines are used. 
+
 
 #+END_SRC
+
+#+RESULTS:
+| array | \begin{array}{?} |
+
 *** Delete defaults
 There are many defaults that I do not use, this is to clean a bit.
 **** Deleteing function =car=
@@ -1138,201 +1198,199 @@ There are many defaults that I do not use, this is to clean a bit.
    `C-c ?' (`cdlatex-command-help').
 *** Math mode
 #+BEGIN_SRC elisp
-  (cl-loop
-   for xx in
-   '(
-     ("clf" nil "\\clf^{r?}" cdlatex-position-cursor nil nil t)
-     ("cls" nil "\\cls^{r?}" cdlatex-position-cursor nil nil t)
-     ("clk" nil "\\clk^{r?}" cdlatex-position-cursor nil nil t)
-     ("clp" nil "\\clpi^{r?}_{}" cdlatex-position-cursor nil nil t)
-     ("clb" nil "\\clb^{r?}_{}" cdlatex-position-cursor nil nil t)
-     ("clx" nil "\\clx^{r?}_{}" cdlatex-position-cursor nil nil t)
-     ("cla" nil "\\clsec^{r?}_{}" cdlatex-position-cursor nil nil t)
-     ("clsk"nil "(\\cls^{r?},\\clk^{r})" cdlatex-position-cursor nil nil t)
-     ("Pic"  "Insert Pic_{}"        "\\Pic_{?}"       cdlatex-position-cursor nil nil t)
-     ("adm"  "Insert adm_{}"        "\\adm_{?}"       cdlatex-position-cursor nil nil t)
-     ("Div"  "Insert Div_{}"        "\\Div_{?}"       cdlatex-position-cursor nil nil t)
-     ("nil"  "Insert nil_{}"        "\\nil_{?}"       cdlatex-position-cursor nil nil t)
-     ("ass"  "Insert ass_{}"        "\\ass_{?}"       cdlatex-position-cursor nil nil t)
-     ("sym"  "Insert sym_{}"        "\\sym_{?}"       cdlatex-position-cursor nil nil t)
-     ("aut"  "Insert aut_{}"        "\\aut_{?}"       cdlatex-position-cursor nil nil t)
-     ("aaut" "Insert algaut_{}"     "\\algaut_{?}"    cdlatex-position-cursor nil nil t)
-     ("mod"  "Insert module_{}"     "\\module_{?}"    cdlatex-position-cursor nil nil t)
-     ("qch"  "Insert qch_{}"        "\\qch_{?}"       cdlatex-position-cursor nil nil t)
-     ("matx" "Insert matx_{}"       "\\matx_{?}"      cdlatex-position-cursor nil nil t)
-     ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
-     ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
-     ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
-     ("id"   "Insert Id_{}"         "\\id_{?}"        cdlatex-position-cursor nil nil t)
-     ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
-     ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
-     ;; Move to abbrev's (here they do not work).
-     ;; ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
-     ;; ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
-     ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
-     ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
-     ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
-     ("lar"  "Insert lar{} in tikz" "\\lar{?}"        cdlatex-position-cursor nil nil t)
-     ("dars" "Insert dar[swap]{}"   "\\dar[swap]{?}"  cdlatex-position-cursor nil nil t)
-     ("uars" "Insert uar[swap]{}"   "\\uar[swap]{?}"  cdlatex-position-cursor nil nil t)
-     ("rars" "Insert rar[swap]{}"   "\\rar[swap]{?}"  cdlatex-position-cursor nil nil t)
-     ("lars" "Insert lar[swap]{}"   "\\lar[swap]{?}"  cdlatex-position-cursor nil nil t)
-     ("drar" "Insert drar{}"        "\\drar{?}"       cdlatex-position-cursor nil nil t)
-     ("urar" "Insert urar{}"        "\\urar{?}"       cdlatex-position-cursor nil nil t)
-     ("dlar" "Insert dlar{}"        "\\dlar{?}"       cdlatex-position-cursor nil nil t)
-     ("ular" "Insert ular{}"        "\\ular{?}"       cdlatex-position-cursor nil nil t)
-     ("drar" "Insert drar[swap]{}"  "\\drar[swap]{?}" cdlatex-position-cursor nil nil t)
-     ("urar" "Insert urar[swap]{}"  "\\urar[swap]{?}" cdlatex-position-cursor nil nil t)
-     ("dlar" "Insert dlar[swap]{}"  "\\dlar[swap]{?}" cdlatex-position-cursor nil nil t)
-     ("ular" "Insert ular[swap]{}"  "\\ular[swap]{?}" cdlatex-position-cursor nil nil t)
-     ("darh" "Insert dar[hook]{} in tikz" "\\dar[hook]{?}"        cdlatex-position-cursor nil nil t)
-     ("uarh"  "Insert uar[hook]{} in tikz" "\\uar[hook]{?}"        cdlatex-position-cursor nil nil t)
-     ("rarh"  "Insert rar[hook]{} in tikz" "\\rar[hook]{?}"        cdlatex-position-cursor nil nil t)
-     ("larh"  "Insert lar[hook]{} in tikz" "\\lar[hook]{?}"        cdlatex-position-cursor nil nil t)
-     ("darsh" "Insert dar[swap, hook]{}"   "\\dar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-     ("uarsh" "Insert uar[swap, hook]{}"   "\\uar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-     ("rarsh" "Insert rar[swap, hook]{}"   "\\rar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-     ("larsh" "Insert lar[swap, hook]{}"   "\\lar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
-     ("drarh" "Insert drar[hook]{}"        "\\drar[hook]{?}"       cdlatex-position-cursor nil nil t)
-     ("urarh" "Insert urar[hook]{}"        "\\urar[hook]{?}"       cdlatex-position-cursor nil nil t)
-     ("dlarh" "Insert dlar[hook]{}"        "\\dlar[hook]{?}"       cdlatex-position-cursor nil nil t)
-     ("ularh" "Insert ular[hook]{}"        "\\ular[hook]{?}"       cdlatex-position-cursor nil nil t)
-     ("drarh" "Insert drar[swap, hook]{}"  "\\drar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-     ("urarh" "Insert urar[swap, hook]{}"  "\\urar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-     ("dlarh" "Insert dlar[swap, hook]{}"  "\\dlar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-     ("ularh" "Insert ular[swap, hook]{}"  "\\ular[swap, hook]{?}" cdlatex-position-cursor nil nil t)
-     ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
-     ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
-     ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
-     ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
-     ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
+  (defvar brust-cdlatex-math-mode-snippets
+    '(
+      ("clf" nil "\\clf^{r?}" cdlatex-position-cursor nil nil t)
+      ("cls" nil "\\cls^{r?}" cdlatex-position-cursor nil nil t)
+      ("clk" nil "\\clk^{r?}" cdlatex-position-cursor nil nil t)
+      ("clp" nil "\\clpi^{r?}_{}" cdlatex-position-cursor nil nil t)
+      ("clb" nil "\\clb^{r?}_{}" cdlatex-position-cursor nil nil t)
+      ("clx" nil "\\clx^{r?}_{}" cdlatex-position-cursor nil nil t)
+      ("cla" nil "\\clsec^{r?}_{}" cdlatex-position-cursor nil nil t)
+      ("clsk"nil "(\\cls^{r?},\\clk^{r})" cdlatex-position-cursor nil nil t)
+      ("Pic"  "Insert Pic_{}"        "\\Pic_{?}"       cdlatex-position-cursor nil nil t)
+      ("adm"  "Insert adm_{}"        "\\adm_{?}"       cdlatex-position-cursor nil nil t)
+      ("Div"  "Insert Div_{}"        "\\Div_{?}"       cdlatex-position-cursor nil nil t)
+      ("nil"  "Insert nil_{}"        "\\nil_{?}"       cdlatex-position-cursor nil nil t)
+      ("ass"  "Insert ass_{}"        "\\ass_{?}"       cdlatex-position-cursor nil nil t)
+      ("sym"  "Insert sym_{}"        "\\sym_{?}"       cdlatex-position-cursor nil nil t)
+      ("aut"  "Insert aut_{}"        "\\aut_{?}"       cdlatex-position-cursor nil nil t)
+      ("aaut" "Insert algaut_{}"     "\\algaut_{?}"    cdlatex-position-cursor nil nil t)
+      ("mod"  "Insert module_{}"     "\\module_{?}"    cdlatex-position-cursor nil nil t)
+      ("qch"  "Insert qch_{}"        "\\qch_{?}"       cdlatex-position-cursor nil nil t)
+      ("matx" "Insert matx_{}"       "\\matx_{?}"      cdlatex-position-cursor nil nil t)
+      ("bl"   "Insert bl_{}"         "\\bl_{?}"        cdlatex-position-cursor nil nil t)
+      ("Bl"   "Insert Bl_{}()"       "\\Bl_{?}()"      cdlatex-position-cursor nil nil t)
+      ("hom"  "Insert Hom_{}()"      "\\hm_{?}()"      cdlatex-position-cursor nil nil t)
+      ("id"   "Insert Id_{}"         "\\id_{?}"        cdlatex-position-cursor nil nil t)
+      ;; ("im"   "Insert im_{}"         "\\im_{?}"        cdlatex-position-cursor nil nil t)
+      ("h"    "Insert h_{}"          "\\h_{?}"         cdlatex-position-cursor nil nil t)
+      ;; Move to abbrev's (here they do not work).
+      ;; ("sch"  "Insert sch"           "\\sch"           cdlatex-position-cursor nil nil t)
+      ;; ("set"  "Insert set"           "\\set"           cdlatex-position-cursor nil nil t)
+      ("dar"  "Insert dar{} in tikz" "\\dar{?}"        cdlatex-position-cursor nil nil t)
+      ("uar"  "Insert uar{} in tikz" "\\uar{?}"        cdlatex-position-cursor nil nil t)
+      ("rar"  "Insert rar{} in tikz" "\\rar{?}"        cdlatex-position-cursor nil nil t)
+      ("lar"  "Insert lar{} in tikz" "\\lar{?}"        cdlatex-position-cursor nil nil t)
+      ("dars" "Insert dar[swap]{}"   "\\dar[swap]{?}"  cdlatex-position-cursor nil nil t)
+      ("uars" "Insert uar[swap]{}"   "\\uar[swap]{?}"  cdlatex-position-cursor nil nil t)
+      ("rars" "Insert rar[swap]{}"   "\\rar[swap]{?}"  cdlatex-position-cursor nil nil t)
+      ("lars" "Insert lar[swap]{}"   "\\lar[swap]{?}"  cdlatex-position-cursor nil nil t)
+      ("drar" "Insert drar{}"        "\\drar{?}"       cdlatex-position-cursor nil nil t)
+      ("urar" "Insert urar{}"        "\\urar{?}"       cdlatex-position-cursor nil nil t)
+      ("dlar" "Insert dlar{}"        "\\dlar{?}"       cdlatex-position-cursor nil nil t)
+      ("ular" "Insert ular{}"        "\\ular{?}"       cdlatex-position-cursor nil nil t)
+      ("drar" "Insert drar[swap]{}"  "\\drar[swap]{?}" cdlatex-position-cursor nil nil t)
+      ("urar" "Insert urar[swap]{}"  "\\urar[swap]{?}" cdlatex-position-cursor nil nil t)
+      ("dlar" "Insert dlar[swap]{}"  "\\dlar[swap]{?}" cdlatex-position-cursor nil nil t)
+      ("ular" "Insert ular[swap]{}"  "\\ular[swap]{?}" cdlatex-position-cursor nil nil t)
+      ("darh" "Insert dar[hook]{} in tikz" "\\dar[hook]{?}"        cdlatex-position-cursor nil nil t)
+      ("uarh"  "Insert uar[hook]{} in tikz" "\\uar[hook]{?}"        cdlatex-position-cursor nil nil t)
+      ("rarh"  "Insert rar[hook]{} in tikz" "\\rar[hook]{?}"        cdlatex-position-cursor nil nil t)
+      ("larh"  "Insert lar[hook]{} in tikz" "\\lar[hook]{?}"        cdlatex-position-cursor nil nil t)
+      ("darsh" "Insert dar[swap, hook]{}"   "\\dar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+      ("uarsh" "Insert uar[swap, hook]{}"   "\\uar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+      ("rarsh" "Insert rar[swap, hook]{}"   "\\rar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+      ("larsh" "Insert lar[swap, hook]{}"   "\\lar[swap, hook]{?}"  cdlatex-position-cursor nil nil t)
+      ("drarh" "Insert drar[hook]{}"        "\\drar[hook]{?}"       cdlatex-position-cursor nil nil t)
+      ("urarh" "Insert urar[hook]{}"        "\\urar[hook]{?}"       cdlatex-position-cursor nil nil t)
+      ("dlarh" "Insert dlar[hook]{}"        "\\dlar[hook]{?}"       cdlatex-position-cursor nil nil t)
+      ("ularh" "Insert ular[hook]{}"        "\\ular[hook]{?}"       cdlatex-position-cursor nil nil t)
+      ("drarh" "Insert drar[swap, hook]{}"  "\\drar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+      ("urarh" "Insert urar[swap, hook]{}"  "\\urar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+      ("dlarh" "Insert dlar[swap, hook]{}"  "\\dlar[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+      ("ularh" "Insert ular[swap, hook]{}"  "\\ular[swap, hook]{?}" cdlatex-position-cursor nil nil t)
+      ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
+      ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
+      ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
+      ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
+      ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
 
-     ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
-     ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
-     ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
-     ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
-     )
-   do (cl-pushnew xx cdlatex-command-alist))
-
+      ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
+      ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
+      ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+      ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
+      ("caseeq"    "Insert a `f(x) = {...' construct"
+       "\\left\\{\n\\begin{array}{l@{\\quad:\\quad}l}\n? & \\\\\n & \n\\end{array}\\right."
+       cdlatex-position-cursor nil nil t)
+      )
+    "List of cdlatex snippets used in math mode")
 #+END_SRC
 
 #+RESULTS:
+: brust-cdlatex-math-mode-snippets
 
 *** Text mode
 #+BEGIN_SRC elisp
-  (cl-loop
-   for xx in
-   '(;; ("ci" "Insert citation" "" org-ref-helm-insert-cite-link nil t nil)
-     ;; ("pref"  "Make page reference"                      "" reftex-reference     nil    t  nil)
-     ;; ("ref"   "Make reference"                           "" reftex-reference     nil    t  nil)
-     ("lbl"   "Insert  label"                            "" reftex-label         nil    t  t)
-     ;; ("it"    "New item in current environment"          "" cdlatex-item         nil    t  t)
+  (defun brust-cdlatex-new-header (header)
+    (let ((name (car header))
+          (prefix (cdr header)))
+      `(,prefix ,(concat "Insert a \\" name "{} header") "" LaTeX-section ,(cdr (assoc name LaTeX-section-list)) t nil)))
 
-     ("beg"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
-     ("env"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
-     ("ite"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
-     ("itm"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
-     ("enu"   "Insert an ENUMERATE environment template" "" cdlatex-environment ("enumerate")  t   nil)
-     ("eq"    "Insert an EQUATION environment template"  "" cdlatex-environment ("equation")   t   nil)
-     ("eqn"   "Insert an EQUATION environment template"  "" cdlatex-environment ("eqnarray")   t   nil)
-     ("ali"   "Insert an ALIGN environment template"     "" cdlatex-environment ("align")          t  nil)
-     ("ali*"  "Insert an ALIGN* environment template"    "" cdlatex-environment ("align*")      t  nil)
-     ;; ("alit"  "Insert an ALIGNAT environment template"   "" cdlatex-environment ("alignat")     t  nil)
-     ;; ("alit*" "Insert an ALIGNAT* environment template"  "" cdlatex-environment ("alignat*")    t  nil)
-     ;; ("xal"   "Insert a XALIGNAT environment template"   "" cdlatex-environment ("xalignat")    t  nil)
-     ;; ("xal*"  "Insert a XALIGNAT* environment template"  "" cdlatex-environment ("xalignat*")   t  nil)
-     ;; ("xxa"   "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
-     ;; ("xxa*"  "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
-     ;; ("mul"   "Insert a MULTINE environment template"    "" cdlatex-environment ("multline")    t  nil)
-     ;; ("mul*"  "Insert a MULTINE* environment template"   "" cdlatex-environment ("multline*")   t  nil)
-     ;; ("gat"   "Insert a GATHER environment template"     "" cdlatex-environment ("gather")      t  nil)
-     ;; ("gat*"  "Insert a GATHER* environment template"    "" cdlatex-environment ("gather*")     t  nil)
-     ;; ("fla"   "Insert a FLALIGN environment template"    "" cdlatex-environment ("flalign")     t  nil)
-     ;; ("fla*"  "Insert a FLALIGN* environment template"   "" cdlatex-environment ("flalign*")    t  nil)
-     ("fg"    "Insert a FIGURE environment template"     "" cdlatex-environment ("figure")      t  nil)
+  (defvar brust-cdlatex-text-mode-snippets
+    (append
+     (cl-loop for xx in brust-LaTeX-headers collect
+              `,(brust-cdlatex-new-header xx))
+     '(;; ("ci" "Insert citation" "" org-ref-helm-insert-cite-link nil t nil)
+       ;; ("pref"  "Make page reference" "" reftex-reference nil    t  nil)
+       ;; ("ref"   "Make reference" "" reftex-reference nil    t  nil)
+       ("lbl"   "Insert  label" "" reftex-label         nil    t  t)
+       ;; ("it"    "New item in current environment"          "" cdlatex-item         nil    t  t)
+       ("fn"         "Make a footnote"                "\\footnote{?}"         cdlatex-position-cursor nil t   nil)
+       ("cl"         "Insert \\centerline"            "\\centerline{?}"       cdlatex-position-cursor nil t   nil)
+       ;; ("nonum"      "Insert \\nonumber\\\\"          "\\nonumber\\\\\n"      nil nil nil t)
+       ;; ("qq"         "Insert \\quad"                  "\\quad"                nil nil t t)
+       ;; ("qqq"        "Insert \\qquad"                 "\\qquad"               nil nil t t)
 
-     ("chap"  "Insert a \\chapter{} statement"           "" LaTeX-section (1)  t   nil)
-     ("sec"   "Insert a \\section{} statement"           "" LaTeX-section (2)  t   nil)
-     ("ssec"  "Insert a \\subsection{} statement"        "" LaTeX-section (3)  t   nil)
-     ("sssec" "Insert a \\subsubsection{} statement"     "" LaTeX-section (4)  t   nil)
-     ("pf"    "Insert a \\paragraph{} statement"         "" LaTeX-section (5)  t   nil)
-     ("sp"    "Insert a \\subparagraph{} statement"      "" LaTeX-section (6)  t   nil)
-
-     ("fn"         "Make a footnote"                "\\footnote{?}"         cdlatex-position-cursor nil t   nil)
-     ("cl"         "Insert \\centerline"            "\\centerline{?}"       cdlatex-position-cursor nil t   nil)
-
-     ;; ("nonum"      "Insert \\nonumber\\\\"          "\\nonumber\\\\\n"      nil nil nil t)
-     ;; ("qq"         "Insert \\quad"                  "\\quad"                nil nil t t)
-     ;; ("qqq"        "Insert \\qquad"                 "\\qquad"               nil nil t t)
-
-     ("inc" "Insert \\includegraphics with file name"
-      "\\includegraphics[]{?}" (lambda ()
-				 (cdlatex-position-cursor)
-				 (call-interactively 'cdlatex-insert-filename)
-				 (forward-char 1))
-      nil t nil)
-     ("-"  "Insert \\item" "\\item" nil t nil)
-     ("--" "Insert \\item[]" "\\item[?]" cdlatex-position-cursor t nil)
-     ("lr(" "Insert a \\left( \\right) pair"                "(" cdlatex-lr-pair  nil  nil  t)
-     ("lr[" "Insert a \\left[ \\right] pair"                "[" cdlatex-lr-pair  nil  nil  t)
-     ("lr{" "Insert a \\left{ \\right} pair"                "{" cdlatex-lr-pair  nil  nil  t)
-     ("lr<" "Insert a \\left\\langle \\right\\rangle pair"  "<" cdlatex-lr-pair  nil  nil  t)
-     ("lr|" "Insert a \\left| \\right| pair"                "|" cdlatex-lr-pair  nil  nil  t)
-
-     ("fr"    "Insert \\frac{}{}"           "\\frac{?}{}"           cdlatex-position-cursor nil nil t)
-     ("sq"    "Insert \\sqrt{}"             "\\sqrt{?}"             cdlatex-position-cursor nil nil t)
-     ("intl"  "Insert \\int\\limits_{}^{}"  "\\int\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
-     ("suml"  "Insert \\sum\\limits_{}^{}"  "\\sum\\limits_{?}^{}"  cdlatex-position-cursor nil nil t)
-     )
-   do (cl-pushnew xx cdlatex-command-alist))
+       ("inc" "Insert \\includegraphics with file name"
+        "\\includegraphics[]{?}" (lambda ()
+                                   (cdlatex-position-cursor)
+                                   (call-interactively 'cdlatex-insert-filename)
+                                   (forward-char 1))
+        nil t nil)
+       ("-"  "Insert \\item" "\\item" nil t nil)
+       ("--" "Insert \\item[]" "\\item[?]" cdlatex-position-cursor t nil)
+       ))
+    "List of cdlatex snippets used in text mode")
 #+END_SRC
 
 #+RESULTS:
+: brust-cdlatex-text-mode-snippets
 
 *** Envirments
 #+BEGIN_SRC elisp
-  (cl-loop 
-   for xx in 
-   '(
-     ("axm"   "Insert axiom env"       ""   cdlatex-environment ("axiom")         t nil)
-     ("thr"   "Insert theorem env"     ""   cdlatex-environment ("theorem")       t nil)
-     ("prf"   "Insert proof env"       ""   cdlatex-environment ("proof")         t nil)
-     ("lem"   "Insert lemma env"       ""   cdlatex-environment ("lemma")         t nil)
-     ("prop"  "Insert proposition env" ""   cdlatex-environment ("proposition")   t nil)
-     ("rmk"   "Insert remark env"      ""   cdlatex-environment ("remark")        t nil)
-     ("not"   "Insert notation env"    ""   cdlatex-environment ("notation")      t nil)
-     ("def"   "Insert definition env"  ""   cdlatex-environment ("definition")    t nil)
-     ("coro"  "Insert corollary env"   ""   cdlatex-environment ("corollary")     t nil)
-     )
-   do (cl-pushnew xx cdlatex-command-alist))
+  (defun brust-cdlatex-new-environment-set (header)
+    (let ((name (car header))
+          (prefix (cdr header)))
+      `(,prefix ,(concat "Insert " name " environment") "" cdlatex-environment (,name) t nil)))
 
-#+END_SRC
-
-*** From text mode to math mode
-#+BEGIN_SRC elisp
-  (cl-loop
-   for xx in
-   '(
-     ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil)
-     ("clsk" nil "\\((\\cls^{r?},\\clk^{r})\\)" cdlatex-position-cursor nil t nil)
-     ("tik" "Insert tikz envirment" "\\[\\begin{tikzcd}\n ? \\\\\n  \\\\\n\\end{tikzcd}\n\\]\\ncd"
-      cdlatex-position-cursor   nil t   nil)
-     ("tikb" "Insert tikz envirment for beamer presentation"
-      "\\[\n\\begin{flushleft}\\begin{tikzcd}[ampersand replacement=\\&]\n ? \\\\\n  \\\\\n\\end{tikzcd}\\end{flushleft}\n\\]"
-      cdlatex-position-cursor   nil t   nil)
-     ("tika" "Insert tikz envirment with basic options" 
-     "\\[\n\\begin{oldtikzcd}[column sep=2em, row sep=.01ex]\%(Defaults)\n ? \\ :\\  \\\\\n  \\\\\n \\qquad  \\rar[mapsto]{} \\end{tikzcd}\n\\]\\ncd"
-      cdlatex-position-cursor   nil t   nil)
-     ("caseeq"    "Insert a `f(x) = {...' construct"
-      "\\left\\{\n\\begin{array}{l@{\\quad:\\quad}l}\n? & \\\\\n & \n\\end{array}\\right."
-      cdlatex-position-cursor nil nil t)
-     )
-   do (cl-pushnew xx cdlatex-command-alist))
+  (defvar brust-cdlatex-enviroments-snippets
+    (append
+     (cl-loop for xx in brust-LaTeX-environments collect
+              (brust-cdlatex-new-environment-set xx))
+   
+     '(
+       ("fig" "Insert a FIGURE environment" "" cdlatex-environment ("figure") t  nil)
+       ("beg"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
+       ;; ("env"   "Complete an env. insert template"         "" cdlatex-environment  nil    t  t)
+       ("ite"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
+       ("itm"   "Insert an ITEMIZE environment template"   "" cdlatex-environment ("itemize")    t   nil)
+       ("enu"   "Insert an ENUMERATE environment template" "" cdlatex-environment ("enumerate")  t   nil)
+       ("alg"   "Insert an ALIGN environment template"     "" cdlatex-environment ("align")          t  nil)
+       ("alg*"  "Insert an ALIGN* environment template"    "" cdlatex-environment ("align*")      t  nil)
+       ;; ("alit"  "Insert an ALIGNAT environment template"   "" cdlatex-environment ("alignat")     t  nil)
+       ;; ("alit*" "Insert an ALIGNAT* environment template"  "" cdlatex-environment ("alignat*")    t  nil)
+       ;; ("xal"   "Insert a XALIGNAT environment template"   "" cdlatex-environment ("xalignat")    t  nil)
+       ;; ("xal*"  "Insert a XALIGNAT* environment template"  "" cdlatex-environment ("xalignat*")   t  nil)
+       ;; ("xxa"   "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+       ;; ("xxa*"  "Insert a XXALIGNAT environment template"  "" cdlatex-environment ("xxalignat")   t  nil)
+       ;; ("mul"   "Insert a MULTINE environment template"    "" cdlatex-environment ("multline")    t  nil)
+       ;; ("mul*"  "Insert a MULTINE* environment template"   "" cdlatex-environment ("multline*")   t  nil)
+       ;; ("gat"   "Insert a GATHER environment template"     "" cdlatex-environment ("gather")      t  nil)
+       ;; ("gat*"  "Insert a GATHER* environment template"    "" cdlatex-environment ("gather*")     t  nil)
+       ;; ("fla"   "Insert a FLALIGN environment template"    "" cdlatex-environment ("flalign")     t  nil)
+       ;; ("fla*"  "Insert a FLALIGN* environment template"   "" cdlatex-environment ("flalign*")    t  nil)
+       ("dia"  "Insert diagram environment"  "" cdlatex-environment ("diagram")      t nil)
+       ("dia*" "Insert diagram* environment" "" cdlatex-environment ("diagram*")     t nil)
+       ("prf"  "Insert proof environment"    "" cdlatex-environment ("proof")        t nil)
+       ("frm"  "Insert frame environment"    "" cdlatex-environment ("frame")        t nil)
+       ("blk"  "Insert block environment"    "" cdlatex-environment ("block")        t nil)
+       ("ary"  "Insert array environment"    "" cdlatex-environment ("array")        t nil)
+       ("tik"  "Insert tikz envirment"       "" cdlatex-environment ("tikz")         t nil)
+       ("tikb" "Insert tikz envirment"       "" cdlatex-environment ("tikzbeamer")   t nil)
+       ("tike" "Insert tikz envirment"       "" cdlatex-environment ("tikzextended") t nil)
+       ))
+    "List of cdlatex snippets for environment")
 
 #+END_SRC
 
 #+RESULTS:
+: brust-cdlatex-enviroments-snippets
+
+*** From text mode to math mode
+#+BEGIN_SRC elisp
+  (defvar brust-LaTeX-from-text-to-math-snippets
+    '(
+      ("apl" "Insert complete apltication" "\\(? \\from \\to \\)" cdlatex-position-cursor nil t nil)
+      ("clsk" nil "\\((\\cls^{r?},\\clk^{r})\\)" cdlatex-position-cursor nil t nil)
+      )
+    "List of cdlatex snippets initiating math-mode")
+#+END_SRC
+
+#+RESULTS:
+: brust-LaTeX-from-text-to-math-snippets
     
+*** Set snippets alist
+#+BEGIN_SRC elisp
+  (setq cdlatex-command-alist
+        (append
+         brust-cdlatex-math-mode-snippets
+         brust-cdlatex-text-mode-snippets
+         brust-cdlatex-enviroments-snippets
+         brust-LaTeX-from-text-to-math-snippets
+         cdlatex-command-alist))
+#+END_SRC
+
 ** Modify keys ='=
 
 #+BEGIN_SRC elisp
