@@ -422,7 +422,12 @@ when one fix a personal personal dictionary there are problems when one changes 
       (let ((key1 (logand 255 (aref keys 0)))
             (key2 (logand 255 (aref keys 1))))
         (unless (eq key1 key2)
-          (define-key keymap (vector 'key-chord key2 key1) nil)))))
+          (define-key keymap (vector 'key-chord key2 key1) nil))))
+    (defun disable-key-chord-mode ()
+      "Disable key chords locally"
+      (set (make-local-variable 'input-method-function) nil))
+    ;; Disable key-chors in minibuffer
+    (add-hook 'minibuffer-setup-hook #'disable-key-chord-mode))
   (use-package use-package-chords
     :config
     (defmacro bind-chord (chord command &optional keymap)
