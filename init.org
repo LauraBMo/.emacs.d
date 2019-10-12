@@ -4566,6 +4566,7 @@ Just in case to generate a certificate:
             mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
             )
       :bind
+      ("<f9>" . mu4e)
       (:map mu4e-headers-mode-map
             ("k" . mu4e-headers-next)
             ("i" . mu4e-headers-prev)
