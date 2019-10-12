@@ -1632,7 +1632,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 : brust-toggle-begin&end-of-buffer
 *** Add blank pages to a pdf
 #+BEGIN_SRC elisp
-
   (defun brust-pdf-add-blank-pages (-file init-page)
     (interactive
      (list  (read-file-name "Pdf to modify: ")
@@ -1663,6 +1662,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 : brust-pdf-add-blank-pages
+
 *** COMMENT PDF From MR to pdf
 commands to work with MangaRock comics
 #+BEGIN_SRC bash
@@ -2729,9 +2729,8 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     (interactive)
     (find-file "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
     (brust-wc-save-words))
-
-
 #+END_SRC
+
 *** Whitespace cycle
     :PROPERTIES:
     :ID:       d7f7cfc9-9da0-4eb6-b8a9-2cd69279a0d2
@@ -4714,7 +4713,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 **** Functions
 #+BEGIN_SRC elisp
-
   (defun brust-arxiv-get-number-from-web (arxiv-web)
     (with-temp-buffer
       (insert arxiv-web)
@@ -5430,7 +5428,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 #+RESULTS:
 : t
-
 ** TODO To still clean
 *** Ivy
 **** General ivy
