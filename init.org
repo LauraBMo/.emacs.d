@@ -1215,11 +1215,15 @@ when one fix a personal personal dictionary there are problems when one changes 
      - ob-julia.el does not work properly see [[https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0][StackOverflow disscution]]
  #+begin_src elisp
    (require 'ess-site)
-   (setq inferior-julia-program-name "~/sources/julia/julia")
+   (setq inferior-julia-program-name "~/scr/julia-1.2.0/bin/julia")
    (bind-keys :map ess-mode-map
               ("C-c C-c" . ess-eval-region-or-line-and-step)
               ("C <RET>" . ess-eval-region-or-function-or-paragraph-and-step))
  #+end_src
+
+ #+RESULTS:
+ : ess-eval-region-or-function-or-paragraph-and-step
+
 *** Font lock.
 #+BEGIN_SRC elisp
   (setq font-lock-support-mode nil);; 'jit-lock-mode)
