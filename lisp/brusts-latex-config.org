@@ -117,6 +117,26 @@
 
 #+RESULTS:
 : brust-list-with-colon
+** Snipped Yasnippet Headers
+#+begin_src elisp
+  (defun brust-LaTeX-set-header (-header)
+    (interactive
+     (list (ivy-read "Header: "
+                     (cl-loop for xx in brust-LaTeX-headers collect
+                              (car xx)))))
+    (let ((title (read-string (format "%s's title: " (capitalize -header)))))
+      (if (string= title "")
+          (message "No title, no header")
+        (let ((label (read-string (format "%s's label: " -header) (replace-regexp-in-string "[ ]" "-" (downcase title)))))
+          (insert (format "\\%s{%s}" -header title)
+                  (if (string= label "") "\n"
+                    (format "\\label{%s:%s}\n"
+                            (cdr (assoc -header brust-LaTeX-headers))
+                            label)))))))
+#+end_src
+
+#+RESULTS:
+: brust-LaTeX-set-header
 
 ** Define my chords
 #+BEGIN_SRC elisp
@@ -886,9 +906,17 @@ Defaults
 *** Label list 
     The numbers in both lists are *toc* levels, negative does not show the "section" number.
 #+BEGIN_SRC elisp
+  (defun brust-LaTeX-environment-avoid-s (-string)
+    (let* ((n 1)
+           (char (substring -string (1- n) n)))
+      (while (string= char "s")
+        (setq n (1+ n)
+              char (substring -string (1- n) n)))
+      char))
+
   (setq reftex-label-alist
         (cl-loop for xx in brust-LaTeX-environments collect
-                 `(,(car xx) ,(string-to-char (car xx)) ,(concat (cdr xx) ":") "~\\cref{%s}" t nil 3)))
+                 `(,(car xx) ,(string-to-char (brust-LaTeX-environment-avoid-s (car xx))) ,(concat (cdr xx) ":") "~\\cref{%s}" t nil 3)))
 
   (setq reftex-section-levels ;; levels used in reftex toc and for promoting and demoting (not used for cdlatex to insert new headers). 
         '(("part" . 0)
@@ -918,7 +946,7 @@ Defaults
 #+END_SRC
 
 #+RESULTS:
-: ((part . 0) (chapter . 1) (section . 2) (paragraph . -3) (beamersec . -2) (subsection . -3) (beamersubsec . -3) (subsubsection . 4) (beamersubsubsec . -4) (subparagraph . 6) (frametitle . 7) (addchap . -1) (addsec . -2))
+: brust-LaTeX-environment-avoid-s
 
 *** Toc level funcions
 #+BEGIN_SRC elisp
@@ -1285,7 +1313,7 @@ There are many defaults that I do not use, this is to clean a bit.
   (defun brust-cdlatex-new-header (header)
     (let ((name (car header))
           (prefix (cdr header)))
-      `(,prefix ,(concat "Insert a \\" name "{} header") "" LaTeX-section ,(cdr (assoc name LaTeX-section-list)) t nil)))
+      `(,prefix ,(concat "Insert a \\" name "{} header") "" brust-LaTeX-set-header (,name) t nil)))
 
   (defvar brust-cdlatex-text-mode-snippets
     (append
