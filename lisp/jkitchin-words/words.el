@@ -42,8 +42,15 @@
 (require 'hydra)
 (require 'url)
 (require 'xml)
+(require 'seq)
 
 (setq hydra-is-helpful t)
+
+(defun brust-words-useful-list (-maybe)
+  (seq-filter 'stringp
+              (append `(,-maybe ,(buffer-name))
+                      (when (buffer-file-name)
+                        `(,(file-name-base (buffer-file-name)) ,(buffer-file-name))))))
 
 (defun words-brust-read-string (-query)
   (let ((-maybe
@@ -51,7 +58,7 @@
              (buffer-substring (region-beginning)
                                (region-end))
            (thing-at-point 'word))))
-    (ivy-read -query `(,-maybe ,(buffer-name) ,(file-name-base (buffer-file-name)) ,(buffer-file-name)))))
+    (ivy-read -query (brust-words-useful-list -maybe))))
 
 ;; * Dictionary/thesaurus/grammar
 (defun words-dictionary ()
