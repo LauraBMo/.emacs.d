@@ -2815,2619 +2815,2619 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+END_SRC
 
 ** External modes
-**** Ace window
-    With one "universal-argument" swap the selected and current window.
-    With two "universal-argument" delete the selected window.
-    there is "ace-window-display-mode" (I don't know...)
- #+BEGIN_SRC elisp
-   (use-package ace-window
-     :init
-     (setq aw-keys '(?q ?w ?e ?r))
-     ;;aw-dispatch-always t ;; This work together!! :(
-     ;;aw-dispatch-alist
-     ;;'((?d aw-delete-window     "Ace - Delete Window")
-     ;;  (?s aw-swap-window       "Ace - Swap Window")
-     ;;  (?\' aw-flip-window)
-     ;;  (?v aw-split-window-vert "Ace - Split Vert Window")
-     ;;  (?h aw-split-window-horz "Ace - Split Horz Window")
-     ;;  (?x delete-other-windows "Ace - Maximize Window")
-     ;;  (?\, delete-other-windows)
-     ;;  (?b balance-windows "Balance")
-     ;;  (?u winner-undo)
-     ;;  (?y winner-redo)))
-     (defun brust-ace-window (&optional args)
-       (interactive "p")
-       (if (< 1 (count-windows)) (ace-window args)
-         (mode-line-other-buffer)))
-     :bind
-     ("<f12>" . brust-ace-window)
-     ("C-n" . brust-ace-window))
+*** Ace window
+   With one "universal-argument" swap the selected and current window.
+   With two "universal-argument" delete the selected window.
+   there is "ace-window-display-mode" (I don't know...)
+#+BEGIN_SRC elisp
+  (use-package ace-window
+    :init
+    (setq aw-keys '(?q ?w ?e ?r))
+    ;;aw-dispatch-always t ;; This work together!! :(
+    ;;aw-dispatch-alist
+    ;;'((?d aw-delete-window     "Ace - Delete Window")
+    ;;  (?s aw-swap-window       "Ace - Swap Window")
+    ;;  (?\' aw-flip-window)
+    ;;  (?v aw-split-window-vert "Ace - Split Vert Window")
+    ;;  (?h aw-split-window-horz "Ace - Split Horz Window")
+    ;;  (?x delete-other-windows "Ace - Maximize Window")
+    ;;  (?\, delete-other-windows)
+    ;;  (?b balance-windows "Balance")
+    ;;  (?u winner-undo)
+    ;;  (?y winner-redo)))
+    (defun brust-ace-window (&optional args)
+      (interactive "p")
+      (if (< 1 (count-windows)) (ace-window args)
+        (mode-line-other-buffer)))
+    :bind
+    ("<f12>" . brust-ace-window)
+    ("C-n" . brust-ace-window))
 
- #+END_SRC
+#+END_SRC
 
-**** Aggressive indent
- #+BEGIN_SRC elisp
-   (use-package aggressive-indent
-     :diminish aggressive-indent-mode
-     :init
-     (global-aggressive-indent-mode)
-     ;; (add-hook 'org-mode-hook #'aggressive-indent-mode)
-     (add-hook 'LaTeX-mode-hook #'aggressive-indent-mode))
- #+END_SRC
+*** Aggressive indent
+#+BEGIN_SRC elisp
+  (use-package aggressive-indent
+    :diminish aggressive-indent-mode
+    :init
+    (global-aggressive-indent-mode)
+    ;; (add-hook 'org-mode-hook #'aggressive-indent-mode)
+    (add-hook 'LaTeX-mode-hook #'aggressive-indent-mode))
+#+END_SRC
 
- #+RESULTS:
- |
+#+RESULTS:
+|
 
-**** COMMENT Anki Editor
-  The web [[https://github.com/louietan/anki-editor][Git Hub repository]]
- #+BEGIN_SRC elisp
-   (use-package anki-editor)
- #+END_SRC
+*** COMMENT Anki Editor
+ The web [[https://github.com/louietan/anki-editor][Git Hub repository]]
+#+BEGIN_SRC elisp
+  (use-package anki-editor)
+#+END_SRC
 
- #+RESULTS:
+#+RESULTS:
 
-**** TODO Avy
-     :TODO: Learn which =avy-goto-??= is my favorite!
-     :TODO: Find easy type and remember =chords=
- #+BEGIN_SRC elisp
-   (use-package avy
-     :chords
-     ("qq" . avy-goto-char-timer)
-     ;; ("gg" . avy-goto-word-2)
-     ;; ("qq" . avy-goto-word-2)
-     :bind
-     ("M-g g"   . avy-goto-line)
-     ("s-."     . avy-goto-char-timer)
-     ;; ("M-SPC" . avy-goto-char)
-     :config
-     (set-face-attribute 'avy-lead-face nil :foreground "deep sky blue" :weight 'bold :height 1.0)
-     (setq avy-background t
-           avy-timeout-seconds 0.16)
-     ;; (setq avy-styles-alist '((avy-goto-word-or-subword-1 . de-brujin)))
-     ;; (bind-key "s-." 'avy-goto-word-or-subword-1)
-     )
- #+END_SRC
-**** Beacon mode
-     Beacon, iluminació del cursor.
- #+BEGIN_SRC elisp
-   (use-package beacon
-     :diminish 'beacon-mode
-     :init
-     (setq beacon-push-mark 35
-           beacon-blink-delay 0.3
-           beacon-blink-duration 0.3
-           beacon-blink-when-buffer-changes t
-           beacon-blink-when-point-moves-vertically 15
-           beacon-color "#66999D"
-           beacon-size 25)
-     (beacon-mode 1))
- #+END_SRC
+*** TODO Avy
+    :TODO: Learn which =avy-goto-??= is my favorite!
+    :TODO: Find easy type and remember =chords=
+#+BEGIN_SRC elisp
+  (use-package avy
+    :chords
+    ("qq" . avy-goto-char-timer)
+    ;; ("gg" . avy-goto-word-2)
+    ;; ("qq" . avy-goto-word-2)
+    :bind
+    ("M-g g"   . avy-goto-line)
+    ("s-."     . avy-goto-char-timer)
+    ;; ("M-SPC" . avy-goto-char)
+    :config
+    (set-face-attribute 'avy-lead-face nil :foreground "deep sky blue" :weight 'bold :height 1.0)
+    (setq avy-background t
+          avy-timeout-seconds 0.16)
+    ;; (setq avy-styles-alist '((avy-goto-word-or-subword-1 . de-brujin)))
+    ;; (bind-key "s-." 'avy-goto-word-or-subword-1)
+    )
+#+END_SRC
+*** Beacon mode
+    Beacon, iluminació del cursor.
+#+BEGIN_SRC elisp
+  (use-package beacon
+    :diminish 'beacon-mode
+    :init
+    (setq beacon-push-mark 35
+          beacon-blink-delay 0.3
+          beacon-blink-duration 0.3
+          beacon-blink-when-buffer-changes t
+          beacon-blink-when-point-moves-vertically 15
+          beacon-color "#66999D"
+          beacon-size 25)
+    (beacon-mode 1))
+#+END_SRC
 
- #+RESULTS:
- |
+#+RESULTS:
+|
 
-**** Company
-***** General config.
- #+BEGIN_SRC elisp
-   (use-package company
-     :defer t
-     :init
-     (setq  company-idle-delay 0.1
-            company-lighter-base ""
-            company-minimum-prefix-length 2
-            company-auto-complete-chars (quote (32 95 40 41 119 46 62))
-            company-show-numbers t
-            company-tooltip-align-annotations t)
-     (add-hook 'after-init-hook #'global-company-mode)
-     :bind (:map company-active-map
-                 ("<return>" . company-complete-selection)
-                 ("TAB"      . brust-company-abort-cdlatex-or-yas)
-                 ("<tab>"    . brust-company-abort-cdlatex-or-yas)
-                 ("s-l"      . company-complete-common)
-                 ("s-i"      . company-select-previous)
-                 ("s-k"      . company-select-next)
-                 ("s-o"      . company-complete-selection)
-                 ("s-g"      . company-abort)
-                 ("<f1>"     . company-show-doc-buffer)
-                 ("C-h"      . company-show-doc-buffer)
-                 ("s-h"      . company-show-doc-buffer)
-                 ("s-j"      . company-show-location)
-                 ("C-l"      . company-show-location))
-     :config
-     (defun brust-company-abort-cdlatex-or-yas nil
-       (interactive)
-       (company-abort)
-       (if (fboundp 'cdlatex-tab)
-           (cdlatex-tab)
-         (when (fboundp 'yas-expand)
-           (yas-expand))))
+*** Company
+**** General config.
+#+BEGIN_SRC elisp
+  (use-package company
+    :defer t
+    :init
+    (setq  company-idle-delay 0.1
+           company-lighter-base ""
+           company-minimum-prefix-length 2
+           company-auto-complete-chars (quote (32 95 40 41 119 46 62))
+           company-show-numbers t
+           company-tooltip-align-annotations t)
+    (add-hook 'after-init-hook #'global-company-mode)
+    :bind (:map company-active-map
+                ("<return>" . company-complete-selection)
+                ("TAB"      . brust-company-abort-cdlatex-or-yas)
+                ("<tab>"    . brust-company-abort-cdlatex-or-yas)
+                ("s-l"      . company-complete-common)
+                ("s-i"      . company-select-previous)
+                ("s-k"      . company-select-next)
+                ("s-o"      . company-complete-selection)
+                ("s-g"      . company-abort)
+                ("<f1>"     . company-show-doc-buffer)
+                ("C-h"      . company-show-doc-buffer)
+                ("s-h"      . company-show-doc-buffer)
+                ("s-j"      . company-show-location)
+                ("C-l"      . company-show-location))
+    :config
+    (defun brust-company-abort-cdlatex-or-yas nil
+      (interactive)
+      (company-abort)
+      (if (fboundp 'cdlatex-tab)
+          (cdlatex-tab)
+        (when (fboundp 'yas-expand)
+          (yas-expand))))
 
-     (defun brust-generic-company-setup (-ll)
-       (make-local-variable 'company-backends)
-       (cl-loop for -add-backend in (reverse -ll) do
-                (add-to-list 'company-backends `,-add-backend)))
+    (defun brust-generic-company-setup (-ll)
+      (make-local-variable 'company-backends)
+      (cl-loop for -add-backend in (reverse -ll) do
+               (add-to-list 'company-backends `,-add-backend)))
 
-     (defun toggle-company-ispell nil
-       (interactive)
-       (cond
-        ((memq 'company-ispell company-backends)
-         (setq company-backends (delete 'company-ispell company-backends))
-         (message "company-ispell disabled"))
-        (t
-         (add-to-list 'company-backends 'company-ispell t)
-         (message "company-ispell enabled!"))))
+    (defun toggle-company-ispell nil
+      (interactive)
+      (cond
+       ((memq 'company-ispell company-backends)
+        (setq company-backends (delete 'company-ispell company-backends))
+        (message "company-ispell disabled"))
+       (t
+        (add-to-list 'company-backends 'company-ispell t)
+        (message "company-ispell enabled!"))))
 
-     (defun text-mode-hook-company-setup nil
-       (brust-generic-company-setup '(company-ispell))
-       ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
-       ;;  but I prefer hard code the dictionary path. That's more portable.
-       (when (file-exists-p "~/Dropbox/config/english-words.txt")
-         (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
+    (defun text-mode-hook-company-setup nil
+      (brust-generic-company-setup '(company-ispell))
+      ;; OPTIONAL, if `company-ispell-dictionary' is nil, `ispell-complete-word-dict' is used
+      ;;  but I prefer hard code the dictionary path. That's more portable.
+      (when (file-exists-p "~/Dropbox/config/english-words.txt")
+        (setq company-ispell-dictionary (file-truename "~/Dropbox/config/english-words.txt"))))
 
-     (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
+    (add-hook 'text-mode-hook #'text-mode-hook-company-setup)
 
-     (use-package company-shell
-       :init
-       (defun shell-mode-hook-company-setup nil
-         (brust-generic-company-setup '((company-shell company-fish-shell))))
-       (add-hook 'shell-mode-hook #'shell-mode-hook-company-setup))
+    (use-package company-shell
+      :init
+      (defun shell-mode-hook-company-setup nil
+        (brust-generic-company-setup '((company-shell company-fish-shell))))
+      (add-hook 'shell-mode-hook #'shell-mode-hook-company-setup))
 
-     (use-package company-statistics
-       :init
-       (setq company-statistics-file "~/.emacs.d/backups/company-statistics-cache.el")
-       (company-statistics-mode))
+    (use-package company-statistics
+      :init
+      (setq company-statistics-file "~/.emacs.d/backups/company-statistics-cache.el")
+      (company-statistics-mode))
 
-     ;; (use-package company-math)
-     (use-package company-auctex
-       :after auctex)
-     ;; local configuration for TeX modes
-     (defun LaTeX-mode-hook-company-setup nil
-       ;; (require 'dabbrev)
-       (make-local-variable 'company-backends)
-       (setq company-backends '(company-semantic company-files company-dabbrev-code company-dabbrev company-ispell))
-       (company-auctex-init))
+    ;; (use-package company-math)
+    (use-package company-auctex
+      :after auctex)
+    ;; local configuration for TeX modes
+    (defun LaTeX-mode-hook-company-setup nil
+      ;; (require 'dabbrev)
+      (make-local-variable 'company-backends)
+      (setq company-backends '(company-semantic company-files company-dabbrev-code company-dabbrev company-ispell))
+      (company-auctex-init))
 
-     ;;    (brust-generic-company-setup
-     ;;     '(;; company-auctex-labels
-     ;;       ;; company-auctex-bibs
-     ;;       (company-auctex-macros
-     ;;        company-auctex-symbols
-     ;;        company-auctex-environments
-     ;;        ;; company-math-symbols-latex
-     ;;        company-latex-commands))))
+    ;;    (brust-generic-company-setup
+    ;;     '(;; company-auctex-labels
+    ;;       ;; company-auctex-bibs
+    ;;       (company-auctex-macros
+    ;;        company-auctex-symbols
+    ;;        company-auctex-environments
+    ;;        ;; company-math-symbols-latex
+    ;;        company-latex-commands))))
 
-     ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
-     (let ((map company-active-map))
-       (mapc (lambda (x) (define-key map (format "%d" x)
-                           `(lambda nil (interactive) (company-complete-number ,x))))
-             (number-sequence 0 9))))
- #+END_SRC
+    ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
+    (let ((map company-active-map))
+      (mapc (lambda (x) (define-key map (format "%d" x)
+                          `(lambda nil (interactive) (company-complete-number ,x))))
+            (number-sequence 0 9))))
+#+END_SRC
 
- #+RESULTS:
- : company-show-location
+#+RESULTS:
+: company-show-location
 
-***** COMMENT Company-box
- #+BEGIN_SRC elisp
- (use-package company-box
-   :after company
-   :diminish
-   :hook (company-mode . company-box-mode))
- #+END_SRC
+**** COMMENT Company-box
+#+BEGIN_SRC elisp
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+#+END_SRC
 
- #+RESULTS:
- | company-box-mode | company-mode-set-explicitly |
+#+RESULTS:
+| company-box-mode | company-mode-set-explicitly |
 
-**** Easy kill
-     * What can =M-w= copy and how
-       - =M-w w=: save word at point
-       - =M-w s=: save sexp at point
-       - =M-w l=: save list at point (enclosing sexp)
-       - =M-w d=: save defun at point
-       - =M-w D=: save current defun name
-       - =M-w f=: save file at point
-       - =M-w b=: save buffer-file-name or default-directory. - changes the kill to the directory name, + to full name and 0 to basename.
-     * The following keys modify the selection:
-       - =@=: append selection to previous kill and exit.
-       - =C-w=: kill selection and exit
-       - =+=, =-= and =1..9=: expand/shrink selection
-       - =0= shrink the selection to the initial size i.e. before any expansion
-       - =C-SPC=: turn selection into an active region
-       - =C-g=: abort
-       - =?=: show this help
- #+BEGIN_SRC elisp
-   (use-package easy-kill
-     :init
-     (global-set-key [remap kill-ring-save] 'easy-kill)
-     ;;(global-set-key [remap mark-word] #'easy-mark-word)
-     ;;(global-set-key [remap zap-to-char] 'easy-mark-to-char)
-     ;;(global-set-key [remap mark-sexp] #'easy-mark)
-     ;;(global-set-key [remap ] 'easy-kill)
-     :bind
-     ("C-S-k"  . kill-backward-line-or-append)
-     ("C-k"    . kill-forward-line-or-append)
-     ("C-w"    . xah-cut-line-or-region) ; cut
-     ;; ("M-w"  . xah-copy-line-or-region) ; copy
-     ("C-S-w"  . brust-cut-previous-line))
- #+END_SRC
+*** Easy kill
+    * What can =M-w= copy and how
+      - =M-w w=: save word at point
+      - =M-w s=: save sexp at point
+      - =M-w l=: save list at point (enclosing sexp)
+      - =M-w d=: save defun at point
+      - =M-w D=: save current defun name
+      - =M-w f=: save file at point
+      - =M-w b=: save buffer-file-name or default-directory. - changes the kill to the directory name, + to full name and 0 to basename.
+    * The following keys modify the selection:
+      - =@=: append selection to previous kill and exit.
+      - =C-w=: kill selection and exit
+      - =+=, =-= and =1..9=: expand/shrink selection
+      - =0= shrink the selection to the initial size i.e. before any expansion
+      - =C-SPC=: turn selection into an active region
+      - =C-g=: abort
+      - =?=: show this help
+#+BEGIN_SRC elisp
+  (use-package easy-kill
+    :init
+    (global-set-key [remap kill-ring-save] 'easy-kill)
+    ;;(global-set-key [remap mark-word] #'easy-mark-word)
+    ;;(global-set-key [remap zap-to-char] 'easy-mark-to-char)
+    ;;(global-set-key [remap mark-sexp] #'easy-mark)
+    ;;(global-set-key [remap ] 'easy-kill)
+    :bind
+    ("C-S-k"  . kill-backward-line-or-append)
+    ("C-k"    . kill-forward-line-or-append)
+    ("C-w"    . xah-cut-line-or-region) ; cut
+    ;; ("M-w"  . xah-copy-line-or-region) ; copy
+    ("C-S-w"  . brust-cut-previous-line))
+#+END_SRC
 
- #+RESULTS:
+#+RESULTS:
 
-***** COMMENT Copy
-       I don't use it, I use =easy-kill= enstead.
- #+BEGIN_SRC elisp
-   (defun xah-copy-line-or-region nil
-     "Copy current line, or text selection.
-     When `universal-argument' is called first, copy whole buffer (but respect `narrow-to-region')."
-     (interactive)
-     (if (null current-prefix-arg)
-         (progn (if (use-region-p)
-                    (progn (setq p1 (region-beginning))
-                           (setq p2 (region-end)))
-                  (progn (setq p1 (line-beginning-position))
-                         (setq p2 (line-beginning-position 2)))))
-       (progn (setq p1 (point-min))
-              (setq p2 (point-max))))
-     (kill-ring-save p1 p2))
- #+END_SRC
+**** COMMENT Copy
+      I don't use it, I use =easy-kill= enstead.
+#+BEGIN_SRC elisp
+  (defun xah-copy-line-or-region nil
+    "Copy current line, or text selection.
+    When `universal-argument' is called first, copy whole buffer (but respect `narrow-to-region')."
+    (interactive)
+    (if (null current-prefix-arg)
+        (progn (if (use-region-p)
+                   (progn (setq p1 (region-beginning))
+                          (setq p2 (region-end)))
+                 (progn (setq p1 (line-beginning-position))
+                        (setq p2 (line-beginning-position 2)))))
+      (progn (setq p1 (point-min))
+             (setq p2 (point-max))))
+    (kill-ring-save p1 p2))
+#+END_SRC
 
-***** Cut/kill
- #+BEGIN_SRC elisp
-   (defun xah-cut-line-or-region (args)
-     "Cut current line, or text selection. When `universal-argument' is called first, cut whole buffer (but respect `narrow-to-region')."
-     (interactive "P")
-     (kill-region (or (and args (point-min)) (line-beginning-position))
-                  (or (and args (point-max)) (line-beginning-position 2))
-                  (use-region-p))
-     (when (and (derived-mode-p 'text-mode)
-                (brust--is-there-two-spaces-around-point-p))
-       (skip-chars-backward "[:space:]")
-       (delete-char 1)))
+**** Cut/kill
+#+BEGIN_SRC elisp
+  (defun xah-cut-line-or-region (args)
+    "Cut current line, or text selection. When `universal-argument' is called first, cut whole buffer (but respect `narrow-to-region')."
+    (interactive "P")
+    (kill-region (or (and args (point-min)) (line-beginning-position))
+                 (or (and args (point-max)) (line-beginning-position 2))
+                 (use-region-p))
+    (when (and (derived-mode-p 'text-mode)
+               (brust--is-there-two-spaces-around-point-p))
+      (skip-chars-backward "[:space:]")
+      (delete-char 1)))
 
-   (defun brust-cut-previous-line nil
-     (interactive)
-     (previous-line) (kill-whole-line))
- #+END_SRC
+  (defun brust-cut-previous-line nil
+    (interactive)
+    (previous-line) (kill-whole-line))
+#+END_SRC
 
-***** Kil beginning/end of line
- #+BEGIN_SRC elisp
-     (defun kill-backward-line-or-append nil
-       "Cut from begin of line to point"
-       (interactive)
-       (if (< (line-beginning-position) (point))
-           (kill-region (line-beginning-position) (point))
-         (delete-indentation)))
+**** Kil beginning/end of line
+#+BEGIN_SRC elisp
+    (defun kill-backward-line-or-append nil
+      "Cut from begin of line to point"
+      (interactive)
+      (if (< (line-beginning-position) (point))
+          (kill-region (line-beginning-position) (point))
+        (delete-indentation)))
 
-   (defun kill-forward-line-or-append nil
-       "Cut from begin of line to point"
-       (interactive)
-       (if (< (point) (line-end-position))
-           (kill-region (point) (line-end-position))
-         (delete-indentation t)))
- #+END_SRC
-**** Expand region
+  (defun kill-forward-line-or-append nil
+      "Cut from begin of line to point"
+      (interactive)
+      (if (< (point) (line-end-position))
+          (kill-region (point) (line-end-position))
+        (delete-indentation t)))
+#+END_SRC
+*** Expand region
 
- #+BEGIN_SRC elisp
-   (use-package expand-region)
-     ;;:bind
-     ;;("s-ç" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
-     ;; :init (setq-default er/try-expand-list
-     ;;                    '(er/mark-word
-     ;;                      er/mark-symbol
-     ;;                      ;; er/mark-symbol-with-prefix
-     ;;                      ;; er/mark-next-accessor
-     ;;                      ;; er/mark-method-call
-     ;;                      er/mark-inside-quotes
-     ;;                      er/mark-outside-quotes
-     ;;                      er/mark-inside-pairs
-     ;;                      er/mark-outside-pairs
-     ;;                      er/mark-comment
-     ;;                      er/mark-url
-     ;;                      er/mark-email
-     ;;                      ;; er/mark-defun
-     ;;                      ))
-     ;; :chords
-     ;; ("xx" . er/expand-region)
-     ;; ("<-" . er/expand-region)
-     ;; ("jj" . er/expand-region)
-     ;; ("<." . goto-last-change)
-     ;; ("<," . brust-toggle-begin&end-of-buffer)
- #+END_SRC
+#+BEGIN_SRC elisp
+  (use-package expand-region)
+    ;;:bind
+    ;;("s-ç" . er/mark-LaTeX-math) ;; was (quoted-insert ARG)
+    ;; :init (setq-default er/try-expand-list
+    ;;                    '(er/mark-word
+    ;;                      er/mark-symbol
+    ;;                      ;; er/mark-symbol-with-prefix
+    ;;                      ;; er/mark-next-accessor
+    ;;                      ;; er/mark-method-call
+    ;;                      er/mark-inside-quotes
+    ;;                      er/mark-outside-quotes
+    ;;                      er/mark-inside-pairs
+    ;;                      er/mark-outside-pairs
+    ;;                      er/mark-comment
+    ;;                      er/mark-url
+    ;;                      er/mark-email
+    ;;                      ;; er/mark-defun
+    ;;                      ))
+    ;; :chords
+    ;; ("xx" . er/expand-region)
+    ;; ("<-" . er/expand-region)
+    ;; ("jj" . er/expand-region)
+    ;; ("<." . goto-last-change)
+    ;; ("<," . brust-toggle-begin&end-of-buffer)
+#+END_SRC
 
- #+RESULTS:
- : brust-toggle-begin&end-of-buffer
+#+RESULTS:
+: brust-toggle-begin&end-of-buffer
 
-**** COMMENT Evil mode
- #+BEGIN_SRC elisp
- (use-package evil
-   :config
-   (evil-mode 1))
+*** COMMENT Evil mode
+#+BEGIN_SRC elisp
+(use-package evil
+  :config
+  (evil-mode 1))
 
- ;; Make magit and evil play nice
- (use-package evil-magit)
- #+END_SRC
-**** TODO Fix word - Capitalize
-***** Eneble subword
-      It is needed
- #+BEGIN_SRC elisp
- (subword-mode 1)
+;; Make magit and evil play nice
+(use-package evil-magit)
+#+END_SRC
+*** TODO Fix word - Capitalize
+**** Eneble subword
+     It is needed
+#+BEGIN_SRC elisp
+(subword-mode 1)
 
- #+END_SRC
+#+END_SRC
 
-***** COMMENT TODO Smart capitalize from Endless
-      From Endless!!
-      Given:: Languages are fleeting. But Emacs is forever.
-      ;;;;;;; With the cursor on 'B' type M-l ;;;;;;;
-      Gets:: Languages are fleeting, but Emacs is forever.
+**** COMMENT TODO Smart capitalize from Endless
+     From Endless!!
+     Given:: Languages are fleeting. But Emacs is forever.
+     ;;;;;;; With the cursor on 'B' type M-l ;;;;;;;
+     Gets:: Languages are fleeting, but Emacs is forever.
 
-      - Functions Originals from Endless::
-****** COMMENT TODO Convert punctuation
- #+BEGIN_SRC elisp
-  (defun endless/convert-punctuation (rg rp)
-    "Look for regexp RG around point, and replace with RP.
+     - Functions Originals from Endless::
+***** COMMENT TODO Convert punctuation
+#+BEGIN_SRC elisp
+ (defun endless/convert-punctuation (rg rp)
+   "Look for regexp RG around point, and replace with RP.
+ Only applies to text-mode."
+   (let ((f "\\(%s\\)\\(%s\\)")
+         (space "?:[[:blank:]\n\r]*"))
+     ;; We obviously don't want to do this in prog-mode.
+     (if (and (derived-mode-p 'text-mode)
+              (or (looking-at (format f space rg))
+                  (looking-back (format f rg space))))
+         (replace-match rp nil nil nil 1))))
+
+#+END_SRC
+
+***** COMMENT Capitalize
+#+BEGIN_SRC elisp
+(defun endless/capitalize nil
+  "Capitalize region or word.
+Also converts commas to full stops, and kills
+extraneous space at beginning of line."
+  (interactive)
+  (endless/convert-punctuation "," ".")
+  (if (use-region-p)
+      (call-interactively 'capitalize-region)
+    ;; A single space at the start of a line:
+    (when (looking-at "^\\s-\\b")
+      ;; get rid of it!
+      (delete-char 1))
+    (call-interactively 'subword-capitalize)))
+
+
+#+END_SRC
+
+***** COMMENT Downcase
+#+BEGIN_SRC elisp
+(defun endless/downcase nil
+  "Downcase region or word.
+Also converts full stops to commas."
+  (interactive)
+  (endless/convert-punctuation "\\." ",")
+  (if (use-region-p)
+      (call-interactively 'downcase-region)
+    (call-interactively 'subword-downcase)))
+
+
+#+END_SRC
+
+***** COMMENT Upcase
+#+BEGIN_SRC elisp
+(defun endless/upcase nil
+  "Upcase region or word."
+  (interactive)
+  (if (use-region-p)
+      (call-interactively 'upcase-region)
+    (call-interactively 'subword-upcase)))
+#+END_SRC
+
+**** Brust-Endless
+***** Convert punctuation
+#+BEGIN_SRC elisp
+  (defun brust-endless/convert-punctuation (rg rp)
+    "Look for regexp RG at the end of the previous word, and replace with RP.
   Only applies to text-mode."
-    (let ((f "\\(%s\\)\\(%s\\)")
-          (space "?:[[:blank:]\n\r]*"))
-      ;; We obviously don't want to do this in prog-mode.
-      (if (and (derived-mode-p 'text-mode)
-               (or (looking-at (format f space rg))
-                   (looking-back (format f rg space))))
-          (replace-match rp nil nil nil 1))))
+    ;; We obviously don't want to do this in prog-mode.
+    (unless (looking-back "\\b")
+      (backward-word))
+    (save-excursion
+      (let ((f (format "\\([%s]\\)" rg)))
+        (when (and (derived-mode-p 'text-mode)
+                   (progn (backward-word) (forward-word) (looking-at f)))
+          (replace-match rp nil nil nil 1)))))
 
- #+END_SRC
+#+END_SRC
 
-****** COMMENT Capitalize
- #+BEGIN_SRC elisp
- (defun endless/capitalize nil
-   "Capitalize region or word.
- Also converts commas to full stops, and kills
- extraneous space at beginning of line."
-   (interactive)
-   (endless/convert-punctuation "," ".")
+***** Capitalize
+#+BEGIN_SRC elisp
+  (defun brust-endless/capitalize nil
+    "Capitalize word or region.
+  Also converts commas to full stops."
+    (interactive)
    (if (use-region-p)
        (call-interactively 'capitalize-region)
-     ;; A single space at the start of a line:
-     (when (looking-at "^\\s-\\b")
-       ;; get rid of it!
-       (delete-char 1))
-     (call-interactively 'subword-capitalize)))
+     (brust-endless/convert-punctuation "," ".")
+     (call-interactively 'subword-capitalize)
+     (forward-word) (backward-word)))
 
-
- #+END_SRC
-
-****** COMMENT Downcase
- #+BEGIN_SRC elisp
- (defun endless/downcase nil
-   "Downcase region or word.
- Also converts full stops to commas."
-   (interactive)
-   (endless/convert-punctuation "\\." ",")
-   (if (use-region-p)
-       (call-interactively 'downcase-region)
-     (call-interactively 'subword-downcase)))
-
-
- #+END_SRC
-
-****** COMMENT Upcase
- #+BEGIN_SRC elisp
- (defun endless/upcase nil
-   "Upcase region or word."
-   (interactive)
-   (if (use-region-p)
-       (call-interactively 'upcase-region)
-     (call-interactively 'subword-upcase)))
- #+END_SRC
-
-***** Brust-Endless
-****** Convert punctuation
- #+BEGIN_SRC elisp
-   (defun brust-endless/convert-punctuation (rg rp)
-     "Look for regexp RG at the end of the previous word, and replace with RP.
-   Only applies to text-mode."
-     ;; We obviously don't want to do this in prog-mode.
-     (unless (looking-back "\\b")
-       (backward-word))
-     (save-excursion
-       (let ((f (format "\\([%s]\\)" rg)))
-         (when (and (derived-mode-p 'text-mode)
-                    (progn (backward-word) (forward-word) (looking-at f)))
-           (replace-match rp nil nil nil 1)))))
-
- #+END_SRC
-
-****** Capitalize
- #+BEGIN_SRC elisp
-   (defun brust-endless/capitalize nil
-     "Capitalize word or region.
-   Also converts commas to full stops."
-     (interactive)
+#+END_SRC
+***** Downcase
+#+BEGIN_SRC elisp
+  (defun brust-endless/downcase nil
+    "Downcase word.
+  Also converts commas to full stops, and kills
+  extraneous space at beginning of line."
+    (interactive)
     (if (use-region-p)
-        (call-interactively 'capitalize-region)
-      (brust-endless/convert-punctuation "," ".")
-      (call-interactively 'subword-capitalize)
+        (call-interactively 'downcase-region)
+      (brust-endless/convert-punctuation "." ",")
+      (call-interactively 'subword-downcase)
       (forward-word) (backward-word)))
 
- #+END_SRC
-****** Downcase
- #+BEGIN_SRC elisp
-   (defun brust-endless/downcase nil
-     "Downcase word.
-   Also converts commas to full stops, and kills
-   extraneous space at beginning of line."
-     (interactive)
-     (if (use-region-p)
-         (call-interactively 'downcase-region)
-       (brust-endless/convert-punctuation "." ",")
-       (call-interactively 'subword-downcase)
-       (forward-word) (backward-word)))
+#+END_SRC
 
- #+END_SRC
+***** Upcase
+#+BEGIN_SRC elisp
+(defun endless/upcase nil
+  "Upcase region or word."
+  (interactive)
+  (if (use-region-p)
+      (call-interactively 'upcase-region)
+    (call-interactively 'subword-upcase)))
 
-****** Upcase
- #+BEGIN_SRC elisp
- (defun endless/upcase nil
-   "Upcase region or word."
-   (interactive)
-   (if (use-region-p)
-       (call-interactively 'upcase-region)
-     (call-interactively 'subword-upcase)))
+#+END_SRC
 
- #+END_SRC
+**** COMMENT Fix word
+     The most interesting is =fix-word-define-command=
+     Define `fix-word'-based command named NAME.
+     FNC is the processing function and DOC is documentation string.
+#+BEGIN_SRC elisp
+(use-package fix-word
+  :config
+  (fix-word-define-command fix-word-brust-endless/capitalize #'brust-endless/capitalize)
+  (fix-word-define-command fix-word-brust-endless/downcase   #'brust-endless/downcase)
+  ;;(fix-word-define-command fix-word-endless/upcase     #'endless/upcase)
 
-***** COMMENT Fix word
-      The most interesting is =fix-word-define-command=
-      Define `fix-word'-based command named NAME.
-      FNC is the processing function and DOC is documentation string.
- #+BEGIN_SRC elisp
- (use-package fix-word
-   :config
-   (fix-word-define-command fix-word-brust-endless/capitalize #'brust-endless/capitalize)
-   (fix-word-define-command fix-word-brust-endless/downcase   #'brust-endless/downcase)
-   ;;(fix-word-define-command fix-word-endless/upcase     #'endless/upcase)
+  (global-set-key (kbd "M-u") #'fix-word-upcase)
+  (global-set-key (kbd "M-l") #'fix-word-brust-endless/downcase)
+  (global-set-key (kbd "M-c") #'fix-word-brust-endless/capitalize))
+#+END_SRC
+**** COMMENT Xah cicle
+#+BEGIN_SRC elisp
+;;; Cycle Letter Case
+;; http://ergoemacs.org/emacs/modernization_upcase-word.html
+(defun xah-cycle-letter-case (arg)
+  "Cycle the letter case of the selected region or the current word.
+Cycles from 'lower' -> 'Capitalize' -> 'UPPER' -> 'lower' -> ..
+        C-u M-x xah-cycle-letter-case -> Force convert to upper case.
+    C-u C-u M-x xah-cycle-letter-case -> Force convert to lower case.
+C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
+  (interactive "p")
+  (let (p1 p2
+           (deactivate-mark nil)
+           (case-fold-search nil))
+    (if (use-region-p)
+        (setq p1 (region-beginning)
+              p2 (region-end))
+      (let ((bds (bounds-of-thing-at-point 'word)))
+        (setq p1 (car bds)
+              p2 (cdr bds))))
 
-   (global-set-key (kbd "M-u") #'fix-word-upcase)
-   (global-set-key (kbd "M-l") #'fix-word-brust-endless/downcase)
-   (global-set-key (kbd "M-c") #'fix-word-brust-endless/capitalize))
- #+END_SRC
-***** COMMENT Xah cicle
- #+BEGIN_SRC elisp
- ;;; Cycle Letter Case
- ;; http://ergoemacs.org/emacs/modernization_upcase-word.html
- (defun xah-cycle-letter-case (arg)
-   "Cycle the letter case of the selected region or the current word.
- Cycles from 'lower' -> 'Capitalize' -> 'UPPER' -> 'lower' -> ..
-         C-u M-x xah-cycle-letter-case -> Force convert to upper case.
-     C-u C-u M-x xah-cycle-letter-case -> Force convert to lower case.
- C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
-   (interactive "p")
-   (let (p1 p2
-            (deactivate-mark nil)
-            (case-fold-search nil))
-     (if (use-region-p)
-         (setq p1 (region-beginning)
-               p2 (region-end))
-       (let ((bds (bounds-of-thing-at-point 'word)))
-         (setq p1 (car bds)
-               p2 (cdr bds))))
+    (cl-case arg
+      (4  (put this-command 'next-state "UPPER"))      ; Force convert to upper case
+      (16 (put this-command 'next-state "lower"))      ; Force convert to lower case
+      (64 (put this-command 'next-state "Capitalize")) ; Force capitalize
+      (t (when (not (eq last-command this-command))
+           (save-excursion
+             (goto-char p1)
+             (cond
+              ;; lower -> Capitalize
+              ((looking-at "[[:lower:]]")            (put this-command 'next-state "Capitalize"))
+              ;; Capitalize -> UPPER
+              ((looking-at "[[:upper:]][[:lower:]]") (put this-command 'next-state "UPPER"))
+              ;; Default: UPPER -> lower
+              (t                                     (put this-command 'next-state "lower")))))))
 
-     (cl-case arg
-       (4  (put this-command 'next-state "UPPER"))      ; Force convert to upper case
-       (16 (put this-command 'next-state "lower"))      ; Force convert to lower case
-       (64 (put this-command 'next-state "Capitalize")) ; Force capitalize
-       (t (when (not (eq last-command this-command))
-            (save-excursion
-              (goto-char p1)
-              (cond
-               ;; lower -> Capitalize
-               ((looking-at "[[:lower:]]")            (put this-command 'next-state "Capitalize"))
-               ;; Capitalize -> UPPER
-               ((looking-at "[[:upper:]][[:lower:]]") (put this-command 'next-state "UPPER"))
-               ;; Default: UPPER -> lower
-               (t                                     (put this-command 'next-state "lower")))))))
+    (cl-case (string-to-char (get this-command 'next-state)) ; `string-to-char' returns first character in string
+      (?U (upcase-region p1 p2)
+          ;; UPPER -> lower
+          (put this-command 'next-state "lower"))
+      (?l (downcase-region p1 p2)
+          ;; lower -> Capitalize
+          (put this-command 'next-state "Capitalize"))
+      (t (upcase-initials-region p1 p2)
+         ;; Capitalize -> UPPER
+(put this-command 'next-state "UPPER")))))
+#+END_SRC
+*** COMMENT GAP modes
+#+BEGIN_SRC elisp
+  ;; gap mode
+  (autoload 'gap-mode "gap-mode" "Gap editing mode" t)
+  (setq auto-mode-alist (append (list '("\\.g\\'" . gap-mode)
+                                      '("\\.gap\\'" . gap-mode))
+                                auto-mode-alist))
+  (autoload 'gap "gap-process" "Run GAP in emacs buffer" t)
+  (setq gap-executable "~/scr/gap-4.10.2/bin/gap.sh")
+  (setq gap-start-options (list "-l" "-m" "2m"))
 
-     (cl-case (string-to-char (get this-command 'next-state)) ; `string-to-char' returns first character in string
-       (?U (upcase-region p1 p2)
-           ;; UPPER -> lower
-           (put this-command 'next-state "lower"))
-       (?l (downcase-region p1 p2)
-           ;; lower -> Capitalize
-           (put this-command 'next-state "Capitalize"))
-       (t (upcase-initials-region p1 p2)
-          ;; Capitalize -> UPPER
- (put this-command 'next-state "UPPER")))))
- #+END_SRC
-**** COMMENT GAP modes
- #+BEGIN_SRC elisp
-   ;; gap mode
-   (autoload 'gap-mode "gap-mode" "Gap editing mode" t)
-   (setq auto-mode-alist (append (list '("\\.g\\'" . gap-mode)
-                                       '("\\.gap\\'" . gap-mode))
-                                 auto-mode-alist))
-   (autoload 'gap "gap-process" "Run GAP in emacs buffer" t)
-   (setq gap-executable "~/scr/gap-4.10.2/bin/gap.sh")
-   (setq gap-start-options (list "-l" "-m" "2m"))
+#+END_SRC
+*** Git gutter fringe+
+#+BEGIN_SRC elisp
+  (use-package git-gutter-fringe+
+    ;; :diminish (global-git-gutter+-mode . "")
+    :init
+    ;; Please adjust fringe width if your own sign is too big.
+    (setq-default left-fringe-width 10)
+    (setq git-gutter-window-width 1
+          git-gutter+-lighter ""
+          git-gutter+-modified-sign "⚑"
+          git-gutter+-added-sign "☀"
+          git-gutter+-deleted-sign "✘")
 
- #+END_SRC
-**** Git gutter fringe+
- #+BEGIN_SRC elisp
-   (use-package git-gutter-fringe+
-     ;; :diminish (global-git-gutter+-mode . "")
-     :init
-     ;; Please adjust fringe width if your own sign is too big.
-     (setq-default left-fringe-width 10)
-     (setq git-gutter-window-width 1
-           git-gutter+-lighter ""
-           git-gutter+-modified-sign "⚑"
-           git-gutter+-added-sign "☀"
-           git-gutter+-deleted-sign "✘")
+    (add-hook 'after-init-hook #'global-git-gutter+-mode)
+    :bind
+    (:map git-gutter+-mode-map
+          ("C-x v p" . git-gutter+-previous-hunk)
+          ("C-x v n" . git-gutter+-next-hunk)
+          ("C-x v =" . git-gutter+-show-hunk)
+          ;; ("C-x r" . git-gutter+-revert-hunks)
+          ;; ("C-x t" . git-gutter+-stage-hunks)
+          ;; ("C-x c" . git-gutter+-commit)
+          ("C-x v C" . git-gutter+-stage-and-commit)
+          ;; ("C-x U" . git-gutter+-unstage-whole-buffer)
+          ("C-x v C-y" . git-gutter+-stage-and-commit-whole-buffer)))
+#+END_SRC
 
-     (add-hook 'after-init-hook #'global-git-gutter+-mode)
-     :bind
-     (:map git-gutter+-mode-map
-           ("C-x v p" . git-gutter+-previous-hunk)
-           ("C-x v n" . git-gutter+-next-hunk)
-           ("C-x v =" . git-gutter+-show-hunk)
-           ;; ("C-x r" . git-gutter+-revert-hunks)
-           ;; ("C-x t" . git-gutter+-stage-hunks)
-           ;; ("C-x c" . git-gutter+-commit)
-           ("C-x v C" . git-gutter+-stage-and-commit)
-           ;; ("C-x U" . git-gutter+-unstage-whole-buffer)
-           ("C-x v C-y" . git-gutter+-stage-and-commit-whole-buffer)))
- #+END_SRC
+#+RESULTS:
 
- #+RESULTS:
+*** Golden ratio
+#+BEGIN_SRC elisp
+  (use-package golden-ratio
+    :diminish 'golden-ratio-mode
+    :init
+    (setq golden-ratio-auto-scale t
+          split-width-threshold 1000
+          golden-ratio-exclude-modes
+          '("dired-mode"
+            "ediff-mode"
+            ;; "eshell-mode"
+            "neotree-mode"
+            "sr-speedbar-mode"))
+    (golden-ratio-mode 1)
+    :config
+    ;; Make a nice interaction with ediff
+    (add-hook 'ediff-before-setup-hook
+              (lambda nil
+                (golden-ratio-mode -1)
+                (balance-windows)))
+    (add-hook 'ediff-cleanup-hook (lambda nil (golden-ratio-mode 1)))
 
-**** Golden ratio
- #+BEGIN_SRC elisp
-   (use-package golden-ratio
-     :diminish 'golden-ratio-mode
-     :init
-     (setq golden-ratio-auto-scale t
-           split-width-threshold 1000
-           golden-ratio-exclude-modes
-           '("dired-mode"
-             "ediff-mode"
-             ;; "eshell-mode"
-             "neotree-mode"
-             "sr-speedbar-mode"))
-     (golden-ratio-mode 1)
-     :config
-     ;; Make a nice interaction with ediff
-     (add-hook 'ediff-before-setup-hook
-               (lambda nil
-                 (golden-ratio-mode -1)
-                 (balance-windows)))
-     (add-hook 'ediff-cleanup-hook (lambda nil (golden-ratio-mode 1)))
+    (add-to-list 'golden-ratio-extra-commands #'brust-ace-window)
+    (add-to-list 'golden-ratio-extra-commands #'avy-goto-char-timer)
+    (add-to-list 'golden-ratio-extra-commands #'avy-goto-word-1)
+    ;; (add-to-list 'golden-ratio-exclude-buffer-names "")
+    ;; (add-to-list 'golden-ratio-inhibit-functions #'brust-not-resize-on-mouse)
+    (add-to-list 'golden-ratio-exclude-buffer-regexp "^\\*magit: +.*")
+    (remove-hook 'mouse-leave-buffer-hook #'golden-ratio--mouse-leave-buffer-hook))
+#+END_SRC
 
-     (add-to-list 'golden-ratio-extra-commands #'brust-ace-window)
-     (add-to-list 'golden-ratio-extra-commands #'avy-goto-char-timer)
-     (add-to-list 'golden-ratio-extra-commands #'avy-goto-word-1)
-     ;; (add-to-list 'golden-ratio-exclude-buffer-names "")
-     ;; (add-to-list 'golden-ratio-inhibit-functions #'brust-not-resize-on-mouse)
-     (add-to-list 'golden-ratio-exclude-buffer-regexp "^\\*magit: +.*")
-     (remove-hook 'mouse-leave-buffer-hook #'golden-ratio--mouse-leave-buffer-hook))
- #+END_SRC
+#+RESULTS:
+: t
 
- #+RESULTS:
- : t
+*** Go to last change
+#+BEGIN_SRC elisp
+  (use-package goto-chg
+    :bind*
+    ("s-ñ" . goto-last-change)
+    ;; ("C-<" . goto-last-change)
+    ;; ("C->" . goto-last-change-reverse)
+    )
+#+END_SRC
 
-**** Go to last change
- #+BEGIN_SRC elisp
-   (use-package goto-chg
-     :bind*
-     ("s-ñ" . goto-last-change)
-     ;; ("C-<" . goto-last-change)
-     ;; ("C->" . goto-last-change-reverse)
-     )
- #+END_SRC
+#+RESULTS:
+: goto-last-change
 
- #+RESULTS:
- : goto-last-change
+*** COMMENT Grab and drop
+#+BEGIN_SRC elisp
+(require 'grab-and-drag)
+(grab-and-drag-mode 1)
 
-**** COMMENT Grab and drop
- #+BEGIN_SRC elisp
- (require 'grab-and-drag)
- (grab-and-drag-mode 1)
+(setq grab-and-drag-pointer-shape nil)
+#+END_SRC
 
- (setq grab-and-drag-pointer-shape nil)
- #+END_SRC
+#+RESULTS:
+: t
 
- #+RESULTS:
- : t
+*** Helpful
+#+BEGIN_SRC elisp
+  (use-package helpful
+    :after ivy
+    :init
+    (setq counsel-describe-function-function #'helpful-function
+          counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ("<f1> c" . helpful-command)
+    ("<f1> k" . helpful-key)
+    ("C-h c" . helpful-command)
+    ("C-h k" . helpful-key))
+#+END_SRC
 
-**** Helpful
- #+BEGIN_SRC elisp
-   (use-package helpful
-     :after ivy
-     :init
-     (setq counsel-describe-function-function #'helpful-function
-           counsel-describe-variable-function #'helpful-variable)
-     :bind
-     ("<f1> c" . helpful-command)
-     ("<f1> k" . helpful-key)
-     ("C-h c" . helpful-command)
-     ("C-h k" . helpful-key))
- #+END_SRC
+#+RESULTS:
+: helpful-key
 
- #+RESULTS:
- : helpful-key
-
-**** TODO Hydra
-***** General setting
- #+BEGIN_SRC elisp
-   (use-package hydra
-     :config
-     (setq lv-use-separator t)
-     :chords
-     ("jj" . brust-hydra-expand/body)
-     ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
-     :bind
-     ("s-w" . words-hydra/body))
+*** TODO Hydra
+**** General setting
+#+BEGIN_SRC elisp
+  (use-package hydra
+    :config
+    (setq lv-use-separator t)
+    :chords
+    ("jj" . brust-hydra-expand/body)
+    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
+    :bind
+    ("s-w" . words-hydra/body))
 
 
-   ;; (bind-keys*
-   ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
-   ;;("M-y" . hydra-yank-pop/yank-pop)
+  ;; (bind-keys*
+  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
+  ;;("M-y" . hydra-yank-pop/yank-pop)
 
-   ;;  (eval-after-load "buff-menu"
-   ;;    '(bind-keys :map ibuffer-mode-map
-   ;;		("." . hydra-ibuffer-main/body)))
-   ;;
-   ;; (eval-after-load "org"
-   ;; '(bind-keys :map org-mode-map
-   ;;   ("<" . brust-org<)))
+  ;;  (eval-after-load "buff-menu"
+  ;;    '(bind-keys :map ibuffer-mode-map
+  ;;		("." . hydra-ibuffer-main/body)))
+  ;;
+  ;; (eval-after-load "org"
+  ;; '(bind-keys :map org-mode-map
+  ;;   ("<" . brust-org<)))
 
-   ;; (bind-keys :map dired-mode-map
-   ;; ("y" . hydra-dired/body))
+  ;; (bind-keys :map dired-mode-map
+  ;; ("y" . hydra-dired/body))
 
-   ;; :chords
-   ;; ("oo" . hydra-outline/body)
-   ;; ("jf" . hydra-motion/body)
- #+END_SRC
+  ;; :chords
+  ;; ("oo" . hydra-outline/body)
+  ;; ("jf" . hydra-motion/body)
+#+END_SRC
 
- #+RESULTS:
- : words-hydra/body
+#+RESULTS:
+: words-hydra/body
 
-***** Dired
- #+BEGIN_SRC elisp
-   (defhydra hydra-dired (:color pink :columns 3 :hint nil)
-     "
-   ^Mark^‗‗‗‗‗‗‗^Flag^‗‗‗‗‗‗‗‗^Emacs Op^‗‗‗‗‗‗^‗^‗‗‗‗‗‗‗‗‗‗‗‗‗^^File Op^^‗‗(_e_dit)
-   _*_: marks   _#_: temp     _Q_uery replace _F_ind marked   _!_shell_&_ _S_ymlink
-   _%_: regexp  _~_: backup   _A_: grep       _L_oad          ^^_C_opy    _H_ardlink
-   _u_n/_m_ark    _d_: this     _B_yte compile  kill li_n_e     ^^_D_elete  ch_M_od
-   _t_oggle     _x_: delete   _v_iew          _w_: file name  ^^_R_ename  ch_O_wn
-   _U_nmark all _<_ _>_:dirline _o_ther window  redisp_l_ay     ^^_T_ouch   ch_G_rp
-   "
-     ("SPC" nil)
-     ("RET" dired-find-alternate-file :exit t)
-     ("q" quit-window :exit t)
-     ("e" wdired-change-to-wdired-mode)
-     ("!" dired-do-shell-command)
-     ("m" dired-mark)
-     ("u" dired-unmark)
-     ("#" dired-flag-auto-save-files)
-     ("$" dired-hide-subdir "hide subdir")
-     ("%" hydra-dired-regexp/body :exit t)
-     ("&" dired-do-async-shell-command)
-     ("(" dired-hide-details-mode "hide details")
-     ("*" hydra-dired-mark/body :exit t)
-     ("+" dired-create-directory "create dir")
-     ("." dired-clean-directory "clean dir")
-     ("<" dired-prev-dirline)
-     ("=" ora-ediff-files "diff 2 files")
-     ;; ("=" dired-diff "diff")
-     (">" dired-next-dirline)
-     ("A" dired-do-find-regexp)
-     ("B" dired-do-byte-compile)
-     ("C" dired-do-copy)
-     ("D" dired-do-delete)
-     ("F" dired-do-find-marked-files :exit t)
-     ("G" dired-do-chgrp)
-     ("H" dired-do-hardlink)
-     ("L" dired-do-load)
-     ("M" dired-do-chmod)
-     ("O" dired-do-chown)
-     ("P" dired-do-print "print")
-     ("Q" dired-do-find-regexp-and-replace)
-     ("R" dired-do-rename)
-     ("S" dired-do-symlink)
-     ("T" dired-do-touch)
-     ("U" dired-unmark-all-marks)
-     ("Z" dired-do-compress "compress")
-     ("ç" ora-dired-up-directory "up-directory")
-     ;; ("^" dired-up-directory "up-directory")
-     ("a" dired-find-alternate-file "open folder")
-     ("c" dired-do-compress-to "compress-to")
-     ("d" dired-flag-file-deletion)
-     ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
-     ("j" dired-goto-file "goto-file")
-     ("n" dired-do-kill-lines) ;; was "k"
-     ("l" dired-do-redisplay)
-     ;; ("o" dired-find-file-other-window)
-     ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
-     ("t" dired-toggle-marks)
-     ("v" dired-view-file)
-     ("w" dired-copy-filename-as-kill)
-     ("x" dired-do-flagged-delete)
-     ("y" dired-show-file-type "show-file-type")
-     ("o" dired-omit-mode "toggle show hide files")
-     ("~" dired-flag-backup-files))
-
-   (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
-                                      :after-exit
-                                      (if (eq major-mode 'dired-mode)
-                                          (hydra-dired/body)))
-     "Mark"
-     ("SPC" nil)
-     ("!" dired-unmark-all-marks  "unmark all")
-     ("%" dired-mark-files-regexp "regexp")
-     ("(" dired-mark-sexp         "sexp")
-     ("*" dired-mark-executables  "executables")
-     ("." dired-mark-extension    "extension")
-     ("/" dired-mark-directories  "directories")
-     ("?" dired-unmark-all-files  "unmark markchar")
-     ("@" dired-mark-symlinks     "symlinks")
-     ("O" dired-mark-omitted      "omitted")
-     ("c" dired-change-marks      "change")
-     ("s" dired-mark-subdir-files "subdir-files"))
-
-   (defhydra hydra-dired-regexp (:color teal :columns 3 :hint nil
-                                        :after-exit
-                                        (if (eq major-mode 'dired-mode)
-                                            (hydra-dired/body)))
-     "Regexp"
-     ("SPC" nil)
-     ("&" dired-flag-garbage-files "flag-garbage-files")
-     ("C" dired-do-copy-regexp "copy")
-     ("H" dired-do-hardlink-regexp "hardlink")
-     ("R" dired-do-rename-regexp "rename")
-     ("S" dired-do-symlink-regexp "symlink")
-     ("Y" dired-do-relsymlink-regexp "relsymlink")
-     ("d" dired-flag-files-regexp "flag-files")
-     ("g" dired-mark-files-containing-regexp "mark-containing")
-     ("l" dired-downcase "downcase")
-     ("m" dired-mark-files-regexp "mark")
-     ("r" dired-do-rename-regexp "rename")
-     ("u" dired-upcase "upcase"))
- #+END_SRC
-
- #+RESULTS:
- : hydra-dired-regexp/body
-
-***** er/expand
- #+BEGIN_SRC elisp
-   (defhydra brust-hydra-expand (:body-pre (call-interactively 'er/expand-region) :hint nil)
-     "
-    _n_: ins math   _m_: out math _e_: environment
-    _o_: ins pairs  _p_: out pairs
-    _j_/_-_ more/less   _q_: quit
+**** Dired
+#+BEGIN_SRC elisp
+  (defhydra hydra-dired (:color pink :columns 3 :hint nil)
     "
-     ("n" er/mark-LaTeX-inside-math)
-     ("m" er/mark-LaTeX-math)
-     ("e" er/mark-LaTeX-inside-environment)
-     ("o" er/mark-inside-pairs)
-     ("p" er/mark-outside-pairs)
-     ("j" er/expand-region)
-     ("-" er/contract-region)
-     ;; ("j" er/expand-region :color red)
-     ;; ("-" er/contract-region :color red)
-     ("q" nil :color blue))
+  ^Mark^‗‗‗‗‗‗‗^Flag^‗‗‗‗‗‗‗‗^Emacs Op^‗‗‗‗‗‗^‗^‗‗‗‗‗‗‗‗‗‗‗‗‗^^File Op^^‗‗(_e_dit)
+  _*_: marks   _#_: temp     _Q_uery replace _F_ind marked   _!_shell_&_ _S_ymlink
+  _%_: regexp  _~_: backup   _A_: grep       _L_oad          ^^_C_opy    _H_ardlink
+  _u_n/_m_ark    _d_: this     _B_yte compile  kill li_n_e     ^^_D_elete  ch_M_od
+  _t_oggle     _x_: delete   _v_iew          _w_: file name  ^^_R_ename  ch_O_wn
+  _U_nmark all _<_ _>_:dirline _o_ther window  redisp_l_ay     ^^_T_ouch   ch_G_rp
+  "
+    ("SPC" nil)
+    ("RET" dired-find-alternate-file :exit t)
+    ("q" quit-window :exit t)
+    ("e" wdired-change-to-wdired-mode)
+    ("!" dired-do-shell-command)
+    ("m" dired-mark)
+    ("u" dired-unmark)
+    ("#" dired-flag-auto-save-files)
+    ("$" dired-hide-subdir "hide subdir")
+    ("%" hydra-dired-regexp/body :exit t)
+    ("&" dired-do-async-shell-command)
+    ("(" dired-hide-details-mode "hide details")
+    ("*" hydra-dired-mark/body :exit t)
+    ("+" dired-create-directory "create dir")
+    ("." dired-clean-directory "clean dir")
+    ("<" dired-prev-dirline)
+    ("=" ora-ediff-files "diff 2 files")
+    ;; ("=" dired-diff "diff")
+    (">" dired-next-dirline)
+    ("A" dired-do-find-regexp)
+    ("B" dired-do-byte-compile)
+    ("C" dired-do-copy)
+    ("D" dired-do-delete)
+    ("F" dired-do-find-marked-files :exit t)
+    ("G" dired-do-chgrp)
+    ("H" dired-do-hardlink)
+    ("L" dired-do-load)
+    ("M" dired-do-chmod)
+    ("O" dired-do-chown)
+    ("P" dired-do-print "print")
+    ("Q" dired-do-find-regexp-and-replace)
+    ("R" dired-do-rename)
+    ("S" dired-do-symlink)
+    ("T" dired-do-touch)
+    ("U" dired-unmark-all-marks)
+    ("Z" dired-do-compress "compress")
+    ("ç" ora-dired-up-directory "up-directory")
+    ;; ("^" dired-up-directory "up-directory")
+    ("a" dired-find-alternate-file "open folder")
+    ("c" dired-do-compress-to "compress-to")
+    ("d" dired-flag-file-deletion)
+    ("p" dired-maybe-insert-subdir "maybe-insert-subdir") ;; was "i"
+    ("j" dired-goto-file "goto-file")
+    ("n" dired-do-kill-lines) ;; was "k"
+    ("l" dired-do-redisplay)
+    ;; ("o" dired-find-file-other-window)
+    ("s" dired-sort-toggle-or-edit "sort-toggle-or-edit")
+    ("t" dired-toggle-marks)
+    ("v" dired-view-file)
+    ("w" dired-copy-filename-as-kill)
+    ("x" dired-do-flagged-delete)
+    ("y" dired-show-file-type "show-file-type")
+    ("o" dired-omit-mode "toggle show hide files")
+    ("~" dired-flag-backup-files))
 
- #+END_SRC
+  (defhydra hydra-dired-mark (:color teal :columns 3 :hint nil
+                                     :after-exit
+                                     (if (eq major-mode 'dired-mode)
+                                         (hydra-dired/body)))
+    "Mark"
+    ("SPC" nil)
+    ("!" dired-unmark-all-marks  "unmark all")
+    ("%" dired-mark-files-regexp "regexp")
+    ("(" dired-mark-sexp         "sexp")
+    ("*" dired-mark-executables  "executables")
+    ("." dired-mark-extension    "extension")
+    ("/" dired-mark-directories  "directories")
+    ("?" dired-unmark-all-files  "unmark markchar")
+    ("@" dired-mark-symlinks     "symlinks")
+    ("O" dired-mark-omitted      "omitted")
+    ("c" dired-change-marks      "change")
+    ("s" dired-mark-subdir-files "subdir-files"))
 
- #+RESULTS:
- : brust-hydra-expand/body
-****** COMMENT Second expand
- #+BEGIN_SRC elisp
-   (defhydra hydra-mark (:body-pre (progn
-                                     (call-interactively 'set-mark-command)
-                                     (call-interactively 'er/expand-region)
-                                     (setq hydra-is-helpful t))
-                                   :post (setq hydra-is-helpful nil)
-                                   :exit t
-                                   :color blue)
-     "hydra for mark commands"
-     ;; ("" er/expand-region)
-     ("a"  brust-smart-move-beginning-of-line)
-     ("e"  brust-smart-move-end-of-line)
-     ("<"  brust-toggle-begin&end-of-buffer)
-     ("u"  backward-word)
-     ("i"  previous-line)
-     ("o"  forward-word)
-     ("h"  recenter-top-bottom)
-     ;;("s-h" . )
-     ("j"  backward-char)
-     ("k"  next-line)
-     ("l"  forward-char)
-     ("b"  sp-backward-sexp)
-     ("f"  sp-forward-sexp)
-     ("SPC" er/expand-region)
-     ("n" er/mark-LaTeX-inside-math)
-     ("m" er/mark-LaTeX-math)
-     ("e" er/mark-LaTeX-inside-environment)
-     ("p" er/mark-inside-pairs)
-     ("vp" er/mark-outside-pairs)
-     ;; ("j" er/expand-region)
-     ;; ("-" er/contract-region)
-     ;; ("ip" er/mark-inside-pairs)
-     ("q" er/mark-inside-quotes)
-     ("vq" er/mark-outside-quotes)
-     ("d" er/mark-defun)
-     ("c" er/mark-comment)
-     ("." er/mark-text-sentence)
-     ("h" er/mark-text-paragraph)
-     ;; ("u" er/mark-url)
-     ;; ("e" er/mark-email)
-     ("s" er/mark-symbol)
-     ;; ("j" (funcall 'set-mark-command '(4)) :exit nil)
-     ;; ("k" (call-interactively 'pop-global-mark) :exit nil)
-     ("gc" avy-goto-char-timer "goto word 1")
-     ;; ("W" avy-goto-word-2 "goto word 2")
-     ("gl" avy-goto-line "goto line"))
+  (defhydra hydra-dired-regexp (:color teal :columns 3 :hint nil
+                                       :after-exit
+                                       (if (eq major-mode 'dired-mode)
+                                           (hydra-dired/body)))
+    "Regexp"
+    ("SPC" nil)
+    ("&" dired-flag-garbage-files "flag-garbage-files")
+    ("C" dired-do-copy-regexp "copy")
+    ("H" dired-do-hardlink-regexp "hardlink")
+    ("R" dired-do-rename-regexp "rename")
+    ("S" dired-do-symlink-regexp "symlink")
+    ("Y" dired-do-relsymlink-regexp "relsymlink")
+    ("d" dired-flag-files-regexp "flag-files")
+    ("g" dired-mark-files-containing-regexp "mark-containing")
+    ("l" dired-downcase "downcase")
+    ("m" dired-mark-files-regexp "mark")
+    ("r" dired-do-rename-regexp "rename")
+    ("u" dired-upcase "upcase"))
+#+END_SRC
 
-      (define-key global-map (kbd "C-SPC") #'hydra-mark/body)
- #+END_SRC
+#+RESULTS:
+: hydra-dired-regexp/body
 
- #+RESULTS:
- : hydra-mark/body
-
-***** Ibuffer
- #+BEGIN_SRC elisp
- (defhydra hydra-ibuffer-main (:color pink :hint nil)
+**** er/expand
+#+BEGIN_SRC elisp
+  (defhydra brust-hydra-expand (:body-pre (call-interactively 'er/expand-region) :hint nil)
+    "
+   _n_: ins math   _m_: out math _e_: environment
+   _o_: ins pairs  _p_: out pairs
+   _j_/_-_ more/less   _q_: quit
    "
-  ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
- -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-   _i_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
-  _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-   _k_:    v   | _*_: specific | _a_: all actions | _/_: filter
- -^----------^-+-^----^--------+-^-------^--------+-^----^-------
- "
-   ("k" ibuffer-forward-line)
-   ("RET" ibuffer-visit-buffer :color blue)
-   ("i" ibuffer-backward-line)
+    ("n" er/mark-LaTeX-inside-math)
+    ("m" er/mark-LaTeX-math)
+    ("e" er/mark-LaTeX-inside-environment)
+    ("o" er/mark-inside-pairs)
+    ("p" er/mark-outside-pairs)
+    ("j" er/expand-region)
+    ("-" er/contract-region)
+    ;; ("j" er/expand-region :color red)
+    ;; ("-" er/contract-region :color red)
+    ("q" nil :color blue))
 
-   ("m" ibuffer-mark-forward)
-   ("u" ibuffer-unmark-forward)
-   ("*" hydra-ibuffer-mark/body :color blue)
+#+END_SRC
 
-   ("D" ibuffer-do-delete)
-   ("S" ibuffer-do-save)
-   ("a" hydra-ibuffer-action/body :color blue)
+#+RESULTS:
+: brust-hydra-expand/body
+***** COMMENT Second expand
+#+BEGIN_SRC elisp
+  (defhydra hydra-mark (:body-pre (progn
+                                    (call-interactively 'set-mark-command)
+                                    (call-interactively 'er/expand-region)
+                                    (setq hydra-is-helpful t))
+                                  :post (setq hydra-is-helpful nil)
+                                  :exit t
+                                  :color blue)
+    "hydra for mark commands"
+    ;; ("" er/expand-region)
+    ("a"  brust-smart-move-beginning-of-line)
+    ("e"  brust-smart-move-end-of-line)
+    ("<"  brust-toggle-begin&end-of-buffer)
+    ("u"  backward-word)
+    ("i"  previous-line)
+    ("o"  forward-word)
+    ("h"  recenter-top-bottom)
+    ;;("s-h" . )
+    ("j"  backward-char)
+    ("k"  next-line)
+    ("l"  forward-char)
+    ("b"  sp-backward-sexp)
+    ("f"  sp-forward-sexp)
+    ("SPC" er/expand-region)
+    ("n" er/mark-LaTeX-inside-math)
+    ("m" er/mark-LaTeX-math)
+    ("e" er/mark-LaTeX-inside-environment)
+    ("p" er/mark-inside-pairs)
+    ("vp" er/mark-outside-pairs)
+    ;; ("j" er/expand-region)
+    ;; ("-" er/contract-region)
+    ;; ("ip" er/mark-inside-pairs)
+    ("q" er/mark-inside-quotes)
+    ("vq" er/mark-outside-quotes)
+    ("d" er/mark-defun)
+    ("c" er/mark-comment)
+    ("." er/mark-text-sentence)
+    ("h" er/mark-text-paragraph)
+    ;; ("u" er/mark-url)
+    ;; ("e" er/mark-email)
+    ("s" er/mark-symbol)
+    ;; ("j" (funcall 'set-mark-command '(4)) :exit nil)
+    ;; ("k" (call-interactively 'pop-global-mark) :exit nil)
+    ("gc" avy-goto-char-timer "goto word 1")
+    ;; ("W" avy-goto-word-2 "goto word 2")
+    ("gl" avy-goto-line "goto line"))
 
-   ("g" ibuffer-update)
-   ("s" hydra-ibuffer-sort/body :color blue)
-   ("/" hydra-ibuffer-filter/body :color blue)
+     (define-key global-map (kbd "C-SPC") #'hydra-mark/body)
+#+END_SRC
 
-   ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
-   ("q" ibuffer-quit "quit ibuffer" :color blue)
-   ("." nil "toggle hydra" :color blue))
-
- (defhydra hydra-ibuffer-mark (:color teal :columns 5
-                               :after-exit (hydra-ibuffer-main/body))
-   "Mark"
-   ("*" ibuffer-unmark-all "unmark all")
-   ("M" ibuffer-mark-by-mode "mode")
-   ("m" ibuffer-mark-modified-buffers "modified")
-   ("u" ibuffer-mark-unsaved-buffers "unsaved")
-   ("s" ibuffer-mark-special-buffers "special")
-   ("r" ibuffer-mark-read-only-buffers "read-only")
-   ("/" ibuffer-mark-dired-buffers "dired")
-   ("e" ibuffer-mark-dissociated-buffers "dissociated")
-   ("h" ibuffer-mark-help-buffers "help")
-   ("z" ibuffer-mark-compressed-file-buffers "compressed")
-   ("b" hydra-ibuffer-main/body "back" :color blue))
-
- (defhydra hydra-ibuffer-action (:color teal :columns 4
-                                 :after-exit
-                                 (if (eq major-mode 'ibuffer-mode)
-                                     (hydra-ibuffer-main/body)))
-   "Action"
-   ("A" ibuffer-do-view "view")
-   ("E" ibuffer-do-eval "eval")
-   ("F" ibuffer-do-shell-command-file "shell-command-file")
-   ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-   ("H" ibuffer-do-view-other-frame "view-other-frame")
-   ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-   ("M" ibuffer-do-toggle-modified "toggle-modified")
-   ("O" ibuffer-do-occur "occur")
-   ("P" ibuffer-do-print "print")
-   ("Q" ibuffer-do-query-replace "query-replace")
-   ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-   ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-   ("U" ibuffer-do-replace-regexp "replace-regexp")
-   ("V" ibuffer-do-revert "revert")
-   ("W" ibuffer-do-view-and-eval "view-and-eval")
-   ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-   ("b" nil "back"))
-
- (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-   "Sort"
-   ("i" ibuffer-invert-sorting "invert")
-   ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-   ("v" ibuffer-do-sort-by-recency "recently used")
-   ("s" ibuffer-do-sort-by-size "size")
-   ("f" ibuffer-do-sort-by-filename/process "filename")
-   ("m" ibuffer-do-sort-by-major-mode "mode")
-   ("b" hydra-ibuffer-main/body "back" :color blue))
-
- (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-   "Filter"
-   ("m" ibuffer-filter-by-used-mode "mode")
-   ("M" ibuffer-filter-by-derived-mode "derived mode")
-   ("n" ibuffer-filter-by-name "name")
-   ("c" ibuffer-filter-by-content "content")
-   ("e" ibuffer-filter-by-predicate "predicate")
-   ("f" ibuffer-filter-by-filename "filename")
-   (">" ibuffer-filter-by-size-gt "size")
-   ("<" ibuffer-filter-by-size-lt "size")
-   ("/" ibuffer-filter-disable "disable")
-   ("b" hydra-ibuffer-main/body "back" :color blue))
- #+END_SRC
-
-***** mu4e
- #+begin_src elisp
- (defhydra hydra-mu4e-headers (:color blue :hint nil)
-   "
-  ^General^   | ^Search^           | _!_: read    | _#_: deferred  | ^Switches^
- -^^----------+-^^-----------------| _?_: unread  | _%_: pattern   |-^^------------------
- _n_: next    | _s_: search        | _r_: refile  | _&_: custom    | _O_: sorting
- _p_: prev    | _S_: edit prev qry | _u_: unmk    | _+_: flag      | _P_: threading
- _]_: n unred | _/_: narrow search | _U_: unmk *  | _-_: unflag    | _Q_: full-search
- _[_: p unred | _b_: search bkmk   | _d_: trash   | _T_: thr       | _V_: skip dups
- _y_: sw view | _B_: edit bkmk     | _D_: delete  | _t_: subthr    | _W_: include-related
- _R_: reply   | _{_: previous qry  | _m_: move    |-^^-------------+-^^------------------
- _C_: compose | _}_: next query    | _a_: action  | _|_: thru shl  | _`_: update, reindex
- _F_: forward | _C-+_: show more   | _A_: mk4actn | _H_: help      | _;_: context-switch
- _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2maildir "
-
-   ;; general
-   ("n" mu4e-headers-next)
-   ("p" mu4e-headers-previous)
-   ("[" mu4e-select-next-unread)
-   ("]" mu4e-select-previous-unread)
-   ("y" mu4e-select-other-view)
-   ("R" mu4e-compose-reply)
-   ("C" mu4e-compose-new)
-   ("F" mu4e-compose-forward)
-   ("o" my/org-capture-mu4e)                  ; differs from built-in
-
-   ;; search
-   ("s" mu4e-headers-search)
-   ("S" mu4e-headers-search-edit)
-   ("/" mu4e-headers-search-narrow)
-   ("b" mu4e-headers-search-bookmark)
-   ("B" mu4e-headers-search-bookmark-edit)
-   ("{" mu4e-headers-query-prev)              ; differs from built-in
-   ("}" mu4e-headers-query-next)              ; differs from built-in
-   ("C-+" mu4e-headers-split-view-grow)
-   ("C--" mu4e-headers-split-view-shrink)
-
-   ;; mark stuff
-   ("!" mu4e-headers-mark-for-read)
-   ("?" mu4e-headers-mark-for-unread)
-   ("r" mu4e-headers-mark-for-refile)
-   ("u" mu4e-headers-mark-for-unmark)
-   ("U" mu4e-mark-unmark-all)
-   ("d" mu4e-headers-mark-for-trash)
-   ("D" mu4e-headers-mark-for-delete)
-   ("m" mu4e-headers-mark-for-move)
-   ("a" mu4e-headers-action)                  ; not really a mark per-se
-   ("A" mu4e-headers-mark-for-action)         ; differs from built-in
-   ("*" mu4e-headers-mark-for-something)
-
-   ("#" mu4e-mark-resolve-deferred-marks)
-   ("%" mu4e-headers-mark-pattern)
-   ("&" mu4e-headers-mark-custom)
-   ("+" mu4e-headers-mark-for-flag)
-   ("-" mu4e-headers-mark-for-unflag)
-   ("t" mu4e-headers-mark-subthread)
-   ("T" mu4e-headers-mark-thread)
-
-   ;; miscellany
-   ("q" mu4e~headers-quit-buffer)
-   ("H" mu4e-display-manual)
-   ("|" mu4e-view-pipe)                       ; does not seem built-in any longer
-
-   ;; switches
-   ("O" mu4e-headers-change-sorting)
-   ("P" mu4e-headers-toggle-threading)
-   ("Q" mu4e-headers-toggle-full-search)
-   ("V" mu4e-headers-toggle-skip-duplicates)
-   ("W" mu4e-headers-toggle-include-related)
-
-   ;; more miscellany
-   ("`" mu4e-update-mail-and-index)           ; differs from built-in
-   (";" mu4e-context-switch)
-   ("j" mu4e~headers-jump-to-maildir)
-
-   ("." nil))
- #+end_src
-
- #+RESULTS:
- : hydra-mu4e-headers/body
-
-***** Outline
-****** Functions
-******* COMMENT tab for org-mode and latex
- #+BEGIN_SRC elisp
-   (defun hydra-outline-tab-key nil
-     (interactive)
-     (or (and (string= major-mode "org-mode")
-              (org-cycle))
-         (and (save-excursion (describe-mode)
-                              (search-forward "Cdlatex" nil t))
-              (cl-member "cdlatex-mode" minor-mode-list)
-              (cdlatex-tab))))
- #+END_SRC
-
- #+RESULTS:
- : hydra-outline-tab-key
-
-******* Auxiliar
- #+BEGIN_SRC elisp
- (defun outline-body-p nil
-   (save-excursion
-     (outline-back-to-heading)
-     (outline-end-of-heading)
-     (and (not (eobp))
-          (progn (forward-char 1)
-                 (not (outline-on-heading-p))))))
-
- (defun outline-body-visible-p nil
-   (save-excursion
-     (outline-back-to-heading)
-     (outline-end-of-heading)
-     (not (outline-invisible-p))))
-
-
- (defun outline-subheadings-p nil
-   (save-excursion
-     (outline-back-to-heading)
-     (let ((level (funcall outline-level)))
-       (outline-next-heading)
-       (and (not (eobp))
-            (< level (funcall outline-level))))))
-
- (defun outline-subheadings-visible-p nil
-   (interactive)
-   (save-excursion
-     (outline-next-heading)
-     (not (outline-invisible-p))))
-
- #+END_SRC
-
-******* Hide more
- #+BEGIN_SRC elisp
-
- (defun outline-hide-more nil
-   (interactive)
-   (when (outline-on-heading-p)
-     (cond ((and (outline-body-p)
-                 (outline-body-visible-p))
-            (outline-hide-entry)
-            (outline-hide-leaves))
-           (t
-            (outline-hide-subtree)))))
-
-
- #+END_SRC
-
-******* Show more
- #+BEGIN_SRC elisp
- (defun outline-show-more nil
-   (interactive)
-   (when (outline-on-heading-p)
-     (cond ((and (outline-subheadings-p)
-                 (not (outline-subheadings-visible-p)))
-            (outline-show-children))
-           ((and (not (outline-subheadings-p))
-                 (not (outline-body-visible-p)))
-            (outline-show-subtree))
-           ((and (outline-body-p)
-                 (not (outline-body-visible-p)))
-            (outline-show-entry))
-           (t
-            (outline-show-subtree)))))
-
- #+END_SRC
-****** TODO COMMENT Hydra
- #+BEGIN_SRC elisp
-   (defhydra hydra-outline (:color red :hint nil)
-     "
-   ^        ^previous ^backward           _i_  _o_
-   ^Up hide     ^next  ^forward ^show ^_h_  _j_  _k_  _l_ _ñ_
-    _<tab>_ tab
-   "
-     ;; Hide
-     ("j" outline-hide-more)
-     ("ñ" outline-show-more)
-     ("<tab>" hydra-outline-tab-key)
-    ;;("q" hide-sublevels)    ; Hide everything but the top-level headings
-    ;;("w" hide-body)         ; Hide everything but headings (all body lines)
-    ;;("o" hide-other)        ; Hide other branches
-    ;;("t" hide-entry)        ; Hide this entry's body
-    ;;("r" hide-leaves)       ; Hide body lines in this entry and sub-entries
-    ;;("e" hide-subtree)      ; Hide everything in this entry and sub-entries
-    ;;;; Show
-    ;;("a" show-all)          ; Show (expand) everything
-    ;;("g" show-entry)        ; Show this heading's body
-    ;;("s" show-children)     ; Show this heading's immediate child sub-headings
-    ;;("f" show-branches)     ; Show all sub-headings under this heading
-    ;;("d" show-subtree)      ; Show (expand) everything in this heading & below
-     ;; Move
-     ("h" outline-up-heading)                ; Up
-     ("k" outline-next-visible-heading)      ; Next
-     ("i" outline-previous-visible-heading)  ; Previous
-     ("l" outline-forward-same-level)        ; Forward - same level
-     ("o" outline-backward-same-level)       ; Backward - same level
-     ("q" nil "leave")
-     ("z" nil "leave"))
-
-   ;; (global-set-key (kbd "C-o") 'hydra-outline/body) ; by example
- #+END_SRC
-
- #+RESULTS:
- : hydra-outline/body
-
-***** Org block template
-      https://github.com/abo-abo/hydra/wiki/Org-mode-block-templates
-****** Hydra
- #+BEGIN_SRC elisp
-   (defhydra hydra-org-block-template (:color blue :hint nil)
-     "
-      _c_enter  _q_uote     _e_macs-lisp    _L_aTeX:
-      _l_atex   _E_xample   _j_ulia         _i_ndex:
-      _a_scii   _v_erse     _P_erl tangled  _I_NCLUDE:
-      _s_rc     _n_ote      _p_erl          _H_TML:
-      _h_tml    _b_ash      plant_u_ml      _A_SCII:
-     "
-     ("s" (hot-expand "src"))
-     ("E" (hot-expand "example"))
-     ("q" (hot-expand "quote"))
-     ("v" (hot-expand "<v"))
-     ("n" (hot-expand "note"))
-     ("c" (hot-expand "center"))
-     ("l" (hot-expand "export latex"))
-     ("h" (hot-expand "export html"))
-     ("a" (hot-expand "export ascii"))
-     ("L" (hot-expand "LaTeX"))
-     ("i" (hot-expand "index"))
-     ("e" (hot-expand "src" "elisp"))
-     ("j" (hot-expand "src" "julia :session *julia*"))
-     ("b" (hot-expand "src" "bash"))
-     ("p" (hot-expand "src" "perl"))
-     ("u" (hot-expand "src" "plantuml :file CHANGE.png"))
-     ("P" (hot-expand "src" "perl" ":results output :exports both :shebang \"#!/usr/bin/env perl\""))
-     ("I" (hot-expand "INCLUDE"))
-     ("H" (hot-expand "HTML"))
-     ("A" (hot-expand "ASCII"))
-     ("<" self-insert-command "ins")
-     ("o" nil "quit"))
- #+END_SRC
-
- #+RESULTS:
- : hydra-org-block-template/body
-
-****** Hot expand defun
- #+BEGIN_SRC elisp
-   (defun hot-expand (str &optional mod header)
-     "Expand org block template.
-
-     STR is a structure template string recognised by org like <s. MOD is a
-     string with additional parameters to add the begin line of the
-     structure element. HEADER string includes more parameters that are
-     prepended to the element after the #+HEADERS: tag."
-     (let ((-str (if mod (concat str " " mod) str)))
-       (if (region-active-p)
-           (let ((-str-region (buffer-substring (region-beginning) (region-end))))
-             (when header
-               (delete-region (region-beginning) (region-end))
-               (deactivate-mark)
-               (insert "#+HEADERS: " header "\n")
-               (push-mark)
-               (activate-mark t)
-               (insert -str-region))
-             (org-insert-structure-template -str))
-         (when header (insert "#+HEADERS: " header "\n"))
-         (org-insert-structure-template -str)
-         (insert "\n")
-         (backward-char 1))))
-
-   ;; (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
-   ;; (require 'org-tempo) ; Required from org 9 onwards for old template expansion
-   ;; Reset the org-template expnsion system, this is need after upgrading to org 9 for some reason
-
-   (defun brust-org< nil
-     "Self insert command or expand hydra of org block templates
-   at the beginning of a line
-   or with region active."
-     (interactive)
-     (if (or (region-active-p) (looking-back "^"))
-         (hydra-org-block-template/body)
-       (self-insert-command 1)))
- #+END_SRC
-
- #+RESULTS:
- : brust-org<
-
-***** PdfTools
- #+begin_src elisp
- (defhydra hydra-pdftools (:color blue :hint nil)
-         "
-    ╭────────────┐
-    │ PDF Tools │^ ^    ^ ^  ^ ^  Annotations  Search/Link   Do
-    ╭────────────────────────────────────────────────────────────┐
-     History:  ↑ _B_ ↓ _N_ ^ ^    [_al_] list    [_s_] search    [_u_] revert buffer
-     Go to page: [_e_] ^ ^ ^ ^    [_am_] markup  [_o_] outline   [_i_] info
-     Scale reset: [_0_] ^ ^ ^ ^   [_at_] text    [_F_] link      [_d_] dark mode
-     Fit: [_P_], _H_ight, _W_idth [_ad_] delete  [_f_] search link
-
-    --------------------------------------------------------------------------------
-         "
-         ;; ("\\" hydra-master/body "back")
-         ;; ("<ESC>" nil "quit")
-         ("al" pdf-annot-list-annotations)
-         ("ad" pdf-annot-delete)
-         ;; ("aa" pdf-annot-attachment-dired)
-         ("am" pdf-annot-add-markup-annotation)
-         ("at" pdf-annot-add-text-annotation)
-         ;; ("y"  pdf-view-kill-ring-save)
-         ("0" pdf-view-scale-reset)
-         ("H" pdf-view-fit-height-to-window)
-         ("W" pdf-view-fit-width-to-window)
-         ("P" pdf-view-fit-page-to-window)
-         ("d" pdf-view-dark-minor-mode)
-         ;; ("b" pdf-view-set-slice-from-bounding-box)
-         ;; ("r" pdf-view-reset-slice)
-         ("e" pdf-view-goto-page)
-         ("o" pdf-outline)
-         ("s" pdf-occur)
-         ("i" pdf-misc-display-metadata)
-         ("u" pdf-view-revert-buffer)
-         ("F" pdf-links-action-perfom)
-         ("f" pdf-links-isearch-link)
-         ("B" pdf-history-backward :color red)
-         ("N" pdf-history-forward :color red)
-         ("l" image-forward-hscroll :color red)
-         ("h" image-backward-hscroll :color red))
- #+end_src
-
- #+RESULTS:
- : hydra-pdftools/body
-
-***** Projectile
- #+BEGIN_SRC elisp
- (defhydra hydra-projectile (:color teal
-                             :hint nil)
-   "
-      PROJECTILE: %(projectile-project-root)
-
-      Find File            Search/Tags          Buffers                Cache
- ------------------------------------------------------------------------------------------
- _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
-  _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
-  _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
-   _r_: recent file                                               ^^^^_z_: cache current
-   _d_: dir
-
- "
-   ("a"   projectile-ag)
-   ("b"   projectile-switch-to-buffer)
-   ("c"   projectile-invalidate-cache)
-   ("d"   projectile-find-dir)
-   ("s-f" projectile-find-file)
-   ("ff"  projectile-find-file-dwim)
-   ("fd"  projectile-find-file-in-directory)
-   ("g"   ggtags-update-tags)
-   ("s-g" ggtags-update-tags)
-   ("i"   projectile-ibuffer)
-   ("K"   projectile-kill-buffers)
-   ("s-k" projectile-kill-buffers)
-   ("m"   projectile-multi-occur)
-   ("o"   projectile-multi-occur)
-   ("s-p" projectile-switch-project "switch project")
-   ("p"   projectile-switch-project)
-   ("s"   projectile-switch-project)
-   ("r"   projectile-recentf)
-   ("x"   projectile-remove-known-project)
-   ("X"   projectile-cleanup-known-projects)
-   ("z"   projectile-cache-current-file)
-   ("`"   hydra-projectile-other-window/body "other window")
-   ("q"   nil "cancel" :color blue))
- #+END_SRC
-
-***** Tweeter
- #+begin_src elisp
- (defhydra hydra-twittering (:color blue :hint nil)
-         "
-                                                                     ╭────────────┐
-      Tweets                User                        Timeline     │ Twittering │
-   ╭─────────────────────────────────────────────────────────────────┴────────────╯
-     _k_  [_t_] post tweet      _p_  [_f_] follow                  ^_g_^      [_u_] update
-     ^↑^  [_X_] delete tweet    ^↑^  [_F_] unfollow              ^_S-SPC_^    [_._] new
-     ^ ^  [_r_] retweet         ^ ^  [_d_] direct message          ^^↑^^      [^@^] current user
-     ^↓^  [_R_] retweet & edit  ^↓^  [_i_] profile (browser)   _h_ ←   → _l_  [_a_] toggle
-     _j_  [_b_] favorite        _n_   ^ ^                          ^^↓^^
-     ^ ^  [_B_] unfavorite      ^ ^   ^ ^                         ^_SPC_^
-     ^ ^  [_RET_] reply         ^ ^   ^ ^                          ^_G_^
-     ^ ^  [_T_] show Thread
-     ^ ^  [_y_] yank url          Items                     Do
-     ^ ^  [_Y_] yank tweet     ╭───────────────────────────────────────────────────────
-     ^ ^  [_e_] edit mode        _<backtab>_ ← _o_pen → _<tab>_    [_q_] exit
-     ^ ^   ^ ^                   ^         ^   ^ ^      ^     ^    [_/_] search
-   --------------------------------------------------------------------------------
-        "
-        ("\\" hydra-master/body "back")
-        ("<ESC>" nil "quit")
-        ("q"          twittering-kill-buffer)
-        ("e"          twittering-edit-mode)
-        ("j"          twittering-goto-next-status :color red)
-        ("k"          twittering-goto-previous-status :color red)
-        ("h"          twittering-switch-to-next-timeline :color red)
-        ("l"          twittering-switch-to-previous-timeline :color red)
-        ("g"          beginning-of-buffer)
-        ("G"          end-of-buffer)
-        ("t"          twittering-update-status-interactive)
-        ("X"          twittering-delete-status)
-        ("RET"        twittering-reply-to-user)
-        ("r"          twittering-native-retweet)
-        ("R"          twittering-organic-retweet)
-        ("d"          twittering-direct-message)
-        ("u"          twittering-current-timeline)
-        ("b"          twittering-favorite)
-        ("B"          twittering-unfavorite)
-        ("f"          twittering-follow)
-        ("F"          twittering-unfollow)
-        ("i"          twittering-view-user-page)
-        ("/"          twittering-search)
-        ("."          twittering-visit-timeline)
-        ("@"          twittering-other-user-timeline)
-        ("T"          twittering-toggle-or-retrieve-replied-statuses)
-        ("o"          twittering-click)
-        ("<tab>"        twittering-goto-next-thing :color red)
-        ("<backtab>"  twittering-goto-previous-thing :color red)
-        ("n"          twittering-goto-next-status-of-user :color red)
-        ("p"          twittering-goto-previous-status-of-user :color red)
-        ("SPC"        twittering-scroll-up :color red)
-        ("S-SPC"      twittering-scroll-down :color red)
-        ("y"          twittering-push-uri-onto-kill-ring)
-        ("Y"          twittering-push-tweet-onto-kill-ring)
-        ("a"          twittering-toggle-activate-buffer))
- #+end_src
-
- #+RESULTS:
- : hydra-twittering/body
-
-***** Yank hydra
- #+BEGIN_SRC elisp
-   (defhydra hydra-yank-pop ()
-     "yank"
-     ("C-y" brust-org-yank-or-yank nil)
-     ("M-y" yank-pop nil)
-     ("y" (yank-pop 1) "prev")
-     ("u" (yank-pop -1) "next")
-     ("t" helm-show-kill-ring "list" :color blue))
-
-   (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
- #+END_SRC
-
-****** org-yank or yank
- #+BEGIN_SRC elisp
-   (defun brust-org-yank-or-yank nil
-     (interactive)
-     (if (string= major-mode "org-mode") (org-yank) (yank)))
- #+END_SRC
+#+RESULTS:
+: hydra-mark/body
 
 **** Ibuffer
+#+BEGIN_SRC elisp
+(defhydra hydra-ibuffer-main (:color pink :hint nil)
+  "
+ ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+-^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  _i_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+ _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+  _k_:    v   | _*_: specific | _a_: all actions | _/_: filter
+-^----------^-+-^----^--------+-^-------^--------+-^----^-------
+"
+  ("k" ibuffer-forward-line)
+  ("RET" ibuffer-visit-buffer :color blue)
+  ("i" ibuffer-backward-line)
+
+  ("m" ibuffer-mark-forward)
+  ("u" ibuffer-unmark-forward)
+  ("*" hydra-ibuffer-mark/body :color blue)
+
+  ("D" ibuffer-do-delete)
+  ("S" ibuffer-do-save)
+  ("a" hydra-ibuffer-action/body :color blue)
+
+  ("g" ibuffer-update)
+  ("s" hydra-ibuffer-sort/body :color blue)
+  ("/" hydra-ibuffer-filter/body :color blue)
+
+  ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
+  ("q" ibuffer-quit "quit ibuffer" :color blue)
+  ("." nil "toggle hydra" :color blue))
+
+(defhydra hydra-ibuffer-mark (:color teal :columns 5
+                              :after-exit (hydra-ibuffer-main/body))
+  "Mark"
+  ("*" ibuffer-unmark-all "unmark all")
+  ("M" ibuffer-mark-by-mode "mode")
+  ("m" ibuffer-mark-modified-buffers "modified")
+  ("u" ibuffer-mark-unsaved-buffers "unsaved")
+  ("s" ibuffer-mark-special-buffers "special")
+  ("r" ibuffer-mark-read-only-buffers "read-only")
+  ("/" ibuffer-mark-dired-buffers "dired")
+  ("e" ibuffer-mark-dissociated-buffers "dissociated")
+  ("h" ibuffer-mark-help-buffers "help")
+  ("z" ibuffer-mark-compressed-file-buffers "compressed")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+
+(defhydra hydra-ibuffer-action (:color teal :columns 4
+                                :after-exit
+                                (if (eq major-mode 'ibuffer-mode)
+                                    (hydra-ibuffer-main/body)))
+  "Action"
+  ("A" ibuffer-do-view "view")
+  ("E" ibuffer-do-eval "eval")
+  ("F" ibuffer-do-shell-command-file "shell-command-file")
+  ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+  ("H" ibuffer-do-view-other-frame "view-other-frame")
+  ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+  ("M" ibuffer-do-toggle-modified "toggle-modified")
+  ("O" ibuffer-do-occur "occur")
+  ("P" ibuffer-do-print "print")
+  ("Q" ibuffer-do-query-replace "query-replace")
+  ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+  ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+  ("U" ibuffer-do-replace-regexp "replace-regexp")
+  ("V" ibuffer-do-revert "revert")
+  ("W" ibuffer-do-view-and-eval "view-and-eval")
+  ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+  ("b" nil "back"))
+
+(defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+  "Sort"
+  ("i" ibuffer-invert-sorting "invert")
+  ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+  ("v" ibuffer-do-sort-by-recency "recently used")
+  ("s" ibuffer-do-sort-by-size "size")
+  ("f" ibuffer-do-sort-by-filename/process "filename")
+  ("m" ibuffer-do-sort-by-major-mode "mode")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+
+(defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+  "Filter"
+  ("m" ibuffer-filter-by-used-mode "mode")
+  ("M" ibuffer-filter-by-derived-mode "derived mode")
+  ("n" ibuffer-filter-by-name "name")
+  ("c" ibuffer-filter-by-content "content")
+  ("e" ibuffer-filter-by-predicate "predicate")
+  ("f" ibuffer-filter-by-filename "filename")
+  (">" ibuffer-filter-by-size-gt "size")
+  ("<" ibuffer-filter-by-size-lt "size")
+  ("/" ibuffer-filter-disable "disable")
+  ("b" hydra-ibuffer-main/body "back" :color blue))
+#+END_SRC
+
+**** mu4e
+#+begin_src elisp
+(defhydra hydra-mu4e-headers (:color blue :hint nil)
+  "
+ ^General^   | ^Search^           | _!_: read    | _#_: deferred  | ^Switches^
+-^^----------+-^^-----------------| _?_: unread  | _%_: pattern   |-^^------------------
+_n_: next    | _s_: search        | _r_: refile  | _&_: custom    | _O_: sorting
+_p_: prev    | _S_: edit prev qry | _u_: unmk    | _+_: flag      | _P_: threading
+_]_: n unred | _/_: narrow search | _U_: unmk *  | _-_: unflag    | _Q_: full-search
+_[_: p unred | _b_: search bkmk   | _d_: trash   | _T_: thr       | _V_: skip dups
+_y_: sw view | _B_: edit bkmk     | _D_: delete  | _t_: subthr    | _W_: include-related
+_R_: reply   | _{_: previous qry  | _m_: move    |-^^-------------+-^^------------------
+_C_: compose | _}_: next query    | _a_: action  | _|_: thru shl  | _`_: update, reindex
+_F_: forward | _C-+_: show more   | _A_: mk4actn | _H_: help      | _;_: context-switch
+_o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2maildir "
+
+  ;; general
+  ("n" mu4e-headers-next)
+  ("p" mu4e-headers-previous)
+  ("[" mu4e-select-next-unread)
+  ("]" mu4e-select-previous-unread)
+  ("y" mu4e-select-other-view)
+  ("R" mu4e-compose-reply)
+  ("C" mu4e-compose-new)
+  ("F" mu4e-compose-forward)
+  ("o" my/org-capture-mu4e)                  ; differs from built-in
+
+  ;; search
+  ("s" mu4e-headers-search)
+  ("S" mu4e-headers-search-edit)
+  ("/" mu4e-headers-search-narrow)
+  ("b" mu4e-headers-search-bookmark)
+  ("B" mu4e-headers-search-bookmark-edit)
+  ("{" mu4e-headers-query-prev)              ; differs from built-in
+  ("}" mu4e-headers-query-next)              ; differs from built-in
+  ("C-+" mu4e-headers-split-view-grow)
+  ("C--" mu4e-headers-split-view-shrink)
+
+  ;; mark stuff
+  ("!" mu4e-headers-mark-for-read)
+  ("?" mu4e-headers-mark-for-unread)
+  ("r" mu4e-headers-mark-for-refile)
+  ("u" mu4e-headers-mark-for-unmark)
+  ("U" mu4e-mark-unmark-all)
+  ("d" mu4e-headers-mark-for-trash)
+  ("D" mu4e-headers-mark-for-delete)
+  ("m" mu4e-headers-mark-for-move)
+  ("a" mu4e-headers-action)                  ; not really a mark per-se
+  ("A" mu4e-headers-mark-for-action)         ; differs from built-in
+  ("*" mu4e-headers-mark-for-something)
+
+  ("#" mu4e-mark-resolve-deferred-marks)
+  ("%" mu4e-headers-mark-pattern)
+  ("&" mu4e-headers-mark-custom)
+  ("+" mu4e-headers-mark-for-flag)
+  ("-" mu4e-headers-mark-for-unflag)
+  ("t" mu4e-headers-mark-subthread)
+  ("T" mu4e-headers-mark-thread)
+
+  ;; miscellany
+  ("q" mu4e~headers-quit-buffer)
+  ("H" mu4e-display-manual)
+  ("|" mu4e-view-pipe)                       ; does not seem built-in any longer
+
+  ;; switches
+  ("O" mu4e-headers-change-sorting)
+  ("P" mu4e-headers-toggle-threading)
+  ("Q" mu4e-headers-toggle-full-search)
+  ("V" mu4e-headers-toggle-skip-duplicates)
+  ("W" mu4e-headers-toggle-include-related)
+
+  ;; more miscellany
+  ("`" mu4e-update-mail-and-index)           ; differs from built-in
+  (";" mu4e-context-switch)
+  ("j" mu4e~headers-jump-to-maildir)
+
+  ("." nil))
+#+end_src
+
+#+RESULTS:
+: hydra-mu4e-headers/body
+
+**** Outline
+***** Functions
+****** COMMENT tab for org-mode and latex
+#+BEGIN_SRC elisp
+  (defun hydra-outline-tab-key nil
+    (interactive)
+    (or (and (string= major-mode "org-mode")
+             (org-cycle))
+        (and (save-excursion (describe-mode)
+                             (search-forward "Cdlatex" nil t))
+             (cl-member "cdlatex-mode" minor-mode-list)
+             (cdlatex-tab))))
+#+END_SRC
+
+#+RESULTS:
+: hydra-outline-tab-key
+
+****** Auxiliar
+#+BEGIN_SRC elisp
+(defun outline-body-p nil
+  (save-excursion
+    (outline-back-to-heading)
+    (outline-end-of-heading)
+    (and (not (eobp))
+         (progn (forward-char 1)
+                (not (outline-on-heading-p))))))
+
+(defun outline-body-visible-p nil
+  (save-excursion
+    (outline-back-to-heading)
+    (outline-end-of-heading)
+    (not (outline-invisible-p))))
+
+
+(defun outline-subheadings-p nil
+  (save-excursion
+    (outline-back-to-heading)
+    (let ((level (funcall outline-level)))
+      (outline-next-heading)
+      (and (not (eobp))
+           (< level (funcall outline-level))))))
+
+(defun outline-subheadings-visible-p nil
+  (interactive)
+  (save-excursion
+    (outline-next-heading)
+    (not (outline-invisible-p))))
+
+#+END_SRC
+
+****** Hide more
+#+BEGIN_SRC elisp
+
+(defun outline-hide-more nil
+  (interactive)
+  (when (outline-on-heading-p)
+    (cond ((and (outline-body-p)
+                (outline-body-visible-p))
+           (outline-hide-entry)
+           (outline-hide-leaves))
+          (t
+           (outline-hide-subtree)))))
+
+
+#+END_SRC
+
+****** Show more
+#+BEGIN_SRC elisp
+(defun outline-show-more nil
+  (interactive)
+  (when (outline-on-heading-p)
+    (cond ((and (outline-subheadings-p)
+                (not (outline-subheadings-visible-p)))
+           (outline-show-children))
+          ((and (not (outline-subheadings-p))
+                (not (outline-body-visible-p)))
+           (outline-show-subtree))
+          ((and (outline-body-p)
+                (not (outline-body-visible-p)))
+           (outline-show-entry))
+          (t
+           (outline-show-subtree)))))
+
+#+END_SRC
+***** TODO COMMENT Hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-outline (:color red :hint nil)
+    "
+  ^        ^previous ^backward           _i_  _o_
+  ^Up hide     ^next  ^forward ^show ^_h_  _j_  _k_  _l_ _ñ_
+   _<tab>_ tab
+  "
+    ;; Hide
+    ("j" outline-hide-more)
+    ("ñ" outline-show-more)
+    ("<tab>" hydra-outline-tab-key)
+   ;;("q" hide-sublevels)    ; Hide everything but the top-level headings
+   ;;("w" hide-body)         ; Hide everything but headings (all body lines)
+   ;;("o" hide-other)        ; Hide other branches
+   ;;("t" hide-entry)        ; Hide this entry's body
+   ;;("r" hide-leaves)       ; Hide body lines in this entry and sub-entries
+   ;;("e" hide-subtree)      ; Hide everything in this entry and sub-entries
+   ;;;; Show
+   ;;("a" show-all)          ; Show (expand) everything
+   ;;("g" show-entry)        ; Show this heading's body
+   ;;("s" show-children)     ; Show this heading's immediate child sub-headings
+   ;;("f" show-branches)     ; Show all sub-headings under this heading
+   ;;("d" show-subtree)      ; Show (expand) everything in this heading & below
+    ;; Move
+    ("h" outline-up-heading)                ; Up
+    ("k" outline-next-visible-heading)      ; Next
+    ("i" outline-previous-visible-heading)  ; Previous
+    ("l" outline-forward-same-level)        ; Forward - same level
+    ("o" outline-backward-same-level)       ; Backward - same level
+    ("q" nil "leave")
+    ("z" nil "leave"))
+
+  ;; (global-set-key (kbd "C-o") 'hydra-outline/body) ; by example
+#+END_SRC
+
+#+RESULTS:
+: hydra-outline/body
+
+**** Org block template
+     https://github.com/abo-abo/hydra/wiki/Org-mode-block-templates
+***** Hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-org-block-template (:color blue :hint nil)
+    "
+     _c_enter  _q_uote     _e_macs-lisp    _L_aTeX:
+     _l_atex   _E_xample   _j_ulia         _i_ndex:
+     _a_scii   _v_erse     _P_erl tangled  _I_NCLUDE:
+     _s_rc     _n_ote      _p_erl          _H_TML:
+     _h_tml    _b_ash      plant_u_ml      _A_SCII:
+    "
+    ("s" (hot-expand "src"))
+    ("E" (hot-expand "example"))
+    ("q" (hot-expand "quote"))
+    ("v" (hot-expand "<v"))
+    ("n" (hot-expand "note"))
+    ("c" (hot-expand "center"))
+    ("l" (hot-expand "export latex"))
+    ("h" (hot-expand "export html"))
+    ("a" (hot-expand "export ascii"))
+    ("L" (hot-expand "LaTeX"))
+    ("i" (hot-expand "index"))
+    ("e" (hot-expand "src" "elisp"))
+    ("j" (hot-expand "src" "julia :session *julia*"))
+    ("b" (hot-expand "src" "bash"))
+    ("p" (hot-expand "src" "perl"))
+    ("u" (hot-expand "src" "plantuml :file CHANGE.png"))
+    ("P" (hot-expand "src" "perl" ":results output :exports both :shebang \"#!/usr/bin/env perl\""))
+    ("I" (hot-expand "INCLUDE"))
+    ("H" (hot-expand "HTML"))
+    ("A" (hot-expand "ASCII"))
+    ("<" self-insert-command "ins")
+    ("o" nil "quit"))
+#+END_SRC
+
+#+RESULTS:
+: hydra-org-block-template/body
+
+***** Hot expand defun
+#+BEGIN_SRC elisp
+  (defun hot-expand (str &optional mod header)
+    "Expand org block template.
+
+    STR is a structure template string recognised by org like <s. MOD is a
+    string with additional parameters to add the begin line of the
+    structure element. HEADER string includes more parameters that are
+    prepended to the element after the #+HEADERS: tag."
+    (let ((-str (if mod (concat str " " mod) str)))
+      (if (region-active-p)
+          (let ((-str-region (buffer-substring (region-beginning) (region-end))))
+            (when header
+              (delete-region (region-beginning) (region-end))
+              (deactivate-mark)
+              (insert "#+HEADERS: " header "\n")
+              (push-mark)
+              (activate-mark t)
+              (insert -str-region))
+            (org-insert-structure-template -str))
+        (when header (insert "#+HEADERS: " header "\n"))
+        (org-insert-structure-template -str)
+        (insert "\n")
+        (backward-char 1))))
+
+  ;; (setq org-structure-template-alist (eval (car (get 'org-structure-template-alist 'standard-value))))
+  ;; (require 'org-tempo) ; Required from org 9 onwards for old template expansion
+  ;; Reset the org-template expnsion system, this is need after upgrading to org 9 for some reason
+
+  (defun brust-org< nil
+    "Self insert command or expand hydra of org block templates
+  at the beginning of a line
+  or with region active."
+    (interactive)
+    (if (or (region-active-p) (looking-back "^"))
+        (hydra-org-block-template/body)
+      (self-insert-command 1)))
+#+END_SRC
+
+#+RESULTS:
+: brust-org<
+
+**** PdfTools
+#+begin_src elisp
+(defhydra hydra-pdftools (:color blue :hint nil)
+        "
+   ╭────────────┐
+   │ PDF Tools │^ ^    ^ ^  ^ ^  Annotations  Search/Link   Do
+   ╭────────────────────────────────────────────────────────────┐
+    History:  ↑ _B_ ↓ _N_ ^ ^    [_al_] list    [_s_] search    [_u_] revert buffer
+    Go to page: [_e_] ^ ^ ^ ^    [_am_] markup  [_o_] outline   [_i_] info
+    Scale reset: [_0_] ^ ^ ^ ^   [_at_] text    [_F_] link      [_d_] dark mode
+    Fit: [_P_], _H_ight, _W_idth [_ad_] delete  [_f_] search link
+
+   --------------------------------------------------------------------------------
+        "
+        ;; ("\\" hydra-master/body "back")
+        ;; ("<ESC>" nil "quit")
+        ("al" pdf-annot-list-annotations)
+        ("ad" pdf-annot-delete)
+        ;; ("aa" pdf-annot-attachment-dired)
+        ("am" pdf-annot-add-markup-annotation)
+        ("at" pdf-annot-add-text-annotation)
+        ;; ("y"  pdf-view-kill-ring-save)
+        ("0" pdf-view-scale-reset)
+        ("H" pdf-view-fit-height-to-window)
+        ("W" pdf-view-fit-width-to-window)
+        ("P" pdf-view-fit-page-to-window)
+        ("d" pdf-view-dark-minor-mode)
+        ;; ("b" pdf-view-set-slice-from-bounding-box)
+        ;; ("r" pdf-view-reset-slice)
+        ("e" pdf-view-goto-page)
+        ("o" pdf-outline)
+        ("s" pdf-occur)
+        ("i" pdf-misc-display-metadata)
+        ("u" pdf-view-revert-buffer)
+        ("F" pdf-links-action-perfom)
+        ("f" pdf-links-isearch-link)
+        ("B" pdf-history-backward :color red)
+        ("N" pdf-history-forward :color red)
+        ("l" image-forward-hscroll :color red)
+        ("h" image-backward-hscroll :color red))
+#+end_src
+
+#+RESULTS:
+: hydra-pdftools/body
+
+**** Projectile
+#+BEGIN_SRC elisp
+(defhydra hydra-projectile (:color teal
+                            :hint nil)
+  "
+     PROJECTILE: %(projectile-project-root)
+
+     Find File            Search/Tags          Buffers                Cache
+------------------------------------------------------------------------------------------
+_s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
+ _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
+ _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
+  _r_: recent file                                               ^^^^_z_: cache current
+  _d_: dir
+
+"
+  ("a"   projectile-ag)
+  ("b"   projectile-switch-to-buffer)
+  ("c"   projectile-invalidate-cache)
+  ("d"   projectile-find-dir)
+  ("s-f" projectile-find-file)
+  ("ff"  projectile-find-file-dwim)
+  ("fd"  projectile-find-file-in-directory)
+  ("g"   ggtags-update-tags)
+  ("s-g" ggtags-update-tags)
+  ("i"   projectile-ibuffer)
+  ("K"   projectile-kill-buffers)
+  ("s-k" projectile-kill-buffers)
+  ("m"   projectile-multi-occur)
+  ("o"   projectile-multi-occur)
+  ("s-p" projectile-switch-project "switch project")
+  ("p"   projectile-switch-project)
+  ("s"   projectile-switch-project)
+  ("r"   projectile-recentf)
+  ("x"   projectile-remove-known-project)
+  ("X"   projectile-cleanup-known-projects)
+  ("z"   projectile-cache-current-file)
+  ("`"   hydra-projectile-other-window/body "other window")
+  ("q"   nil "cancel" :color blue))
+#+END_SRC
+
+**** Tweeter
+#+begin_src elisp
+(defhydra hydra-twittering (:color blue :hint nil)
+        "
+                                                                    ╭────────────┐
+     Tweets                User                        Timeline     │ Twittering │
+  ╭─────────────────────────────────────────────────────────────────┴────────────╯
+    _k_  [_t_] post tweet      _p_  [_f_] follow                  ^_g_^      [_u_] update
+    ^↑^  [_X_] delete tweet    ^↑^  [_F_] unfollow              ^_S-SPC_^    [_._] new
+    ^ ^  [_r_] retweet         ^ ^  [_d_] direct message          ^^↑^^      [^@^] current user
+    ^↓^  [_R_] retweet & edit  ^↓^  [_i_] profile (browser)   _h_ ←   → _l_  [_a_] toggle
+    _j_  [_b_] favorite        _n_   ^ ^                          ^^↓^^
+    ^ ^  [_B_] unfavorite      ^ ^   ^ ^                         ^_SPC_^
+    ^ ^  [_RET_] reply         ^ ^   ^ ^                          ^_G_^
+    ^ ^  [_T_] show Thread
+    ^ ^  [_y_] yank url          Items                     Do
+    ^ ^  [_Y_] yank tweet     ╭───────────────────────────────────────────────────────
+    ^ ^  [_e_] edit mode        _<backtab>_ ← _o_pen → _<tab>_    [_q_] exit
+    ^ ^   ^ ^                   ^         ^   ^ ^      ^     ^    [_/_] search
+  --------------------------------------------------------------------------------
+       "
+       ("\\" hydra-master/body "back")
+       ("<ESC>" nil "quit")
+       ("q"          twittering-kill-buffer)
+       ("e"          twittering-edit-mode)
+       ("j"          twittering-goto-next-status :color red)
+       ("k"          twittering-goto-previous-status :color red)
+       ("h"          twittering-switch-to-next-timeline :color red)
+       ("l"          twittering-switch-to-previous-timeline :color red)
+       ("g"          beginning-of-buffer)
+       ("G"          end-of-buffer)
+       ("t"          twittering-update-status-interactive)
+       ("X"          twittering-delete-status)
+       ("RET"        twittering-reply-to-user)
+       ("r"          twittering-native-retweet)
+       ("R"          twittering-organic-retweet)
+       ("d"          twittering-direct-message)
+       ("u"          twittering-current-timeline)
+       ("b"          twittering-favorite)
+       ("B"          twittering-unfavorite)
+       ("f"          twittering-follow)
+       ("F"          twittering-unfollow)
+       ("i"          twittering-view-user-page)
+       ("/"          twittering-search)
+       ("."          twittering-visit-timeline)
+       ("@"          twittering-other-user-timeline)
+       ("T"          twittering-toggle-or-retrieve-replied-statuses)
+       ("o"          twittering-click)
+       ("<tab>"        twittering-goto-next-thing :color red)
+       ("<backtab>"  twittering-goto-previous-thing :color red)
+       ("n"          twittering-goto-next-status-of-user :color red)
+       ("p"          twittering-goto-previous-status-of-user :color red)
+       ("SPC"        twittering-scroll-up :color red)
+       ("S-SPC"      twittering-scroll-down :color red)
+       ("y"          twittering-push-uri-onto-kill-ring)
+       ("Y"          twittering-push-tweet-onto-kill-ring)
+       ("a"          twittering-toggle-activate-buffer))
+#+end_src
+
+#+RESULTS:
+: hydra-twittering/body
+
+**** Yank hydra
+#+BEGIN_SRC elisp
+  (defhydra hydra-yank-pop ()
+    "yank"
+    ("C-y" brust-org-yank-or-yank nil)
+    ("M-y" yank-pop nil)
+    ("y" (yank-pop 1) "prev")
+    ("u" (yank-pop -1) "next")
+    ("t" helm-show-kill-ring "list" :color blue))
+
+  (put 'hydra-yank-pop/brust-org-yank-or-yank 'delete-selection t)
+#+END_SRC
+
+***** org-yank or yank
+#+BEGIN_SRC elisp
+  (defun brust-org-yank-or-yank nil
+    (interactive)
+    (if (string= major-mode "org-mode") (org-yank) (yank)))
+#+END_SRC
+
+*** Ibuffer
+#+BEGIN_SRC elisp
+  (use-package ibuffer
+    :commands (ibuffer)
+    :init
+    (defalias 'list-buffers 'ibuffer) ; make ibuffer default
+    :config
+    (use-package ibuffer-vc)
+    (setq ibuffer-default-sorting-mode 'major-mode
+          ibuffer-expert t
+          ibuffer-display-summary t
+          ibuffer-show-empty-filter-groups nil
+          ibuffer-vc-skip-if-remote t
+          ibuffer-filter-group-name-face 'font-lock-doc-face
+
+          ibuffer-saved-filter-groups
+          '(("dired" (or (mode . dired-mode) (mode . sr-mode)))
+            ("erc" (mode . erc-mode))
+            ("planner" (or (name . "^\\*Calendar\\*$") (name . "^diary$") (mode . muse-mode)))
+            ("emacs" (or (name . "^\\*scratch\\*$") (name . "^\\*Messages\\*$")))
+            ("Help" (or (name . "^\\*Help\\*$") (mode . help-mode)))))
+
+
+    (defun brust-ibuffer-apply-filter-groups nil
+      "Combine my saved ibuffer filter groups with those generated
+       by `ibuffer-vc-generate-filter-groups-by-vc-root' (I don't know its origine)"
+      (interactive)
+      (setq ibuffer-filter-groups
+            (append
+             ibuffer-saved-filter-groups
+             (ibuffer-vc-generate-filter-groups-by-vc-root)
+             ibuffer-filter-groups))
+      (message "ibuffer-vc: groups set")
+      (let ((ibuf (get-buffer "*Ibuffer*")))
+        (when ibuf
+          (with-current-buffer ibuf
+            (pop-to-buffer ibuf)
+            (ibuffer-update nil t)))))
+
+    (add-hook 'ibuffer-hook #'brust-ibuffer-apply-filter-groups)
+    (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body)
+
+    (define-ibuffer-column lines-h
+      (:name "nºLines" :inline t)
+      ;;(set-buffer (buffer))
+      (let ((n (line-number-at-pos (point-max))))
+        (cond
+         ((> n 1000000) (format "%7.1fM" (/ n 1000000.0)))
+         ((> n 1000) (format "%7.1fk" (/ n 1000.0)))
+         ;;((> n 100) (format "%7.1fh" (/ n 100.0)))
+         (t (format "%8d" n)))))
+
+    (setq ibuffer-formats
+          ;; Modify the default ibuffer-formats (toggle with `)
+          '((mark modified read-only vc-status-mini " "
+                  (name 30 30 :left :elide)
+                  " "
+                  (lines-h 9 -1 :right)
+                  " "
+                  (mode 16 16 :left :elide)
+                  " "
+                  (vc-status 16 16 :left)
+                  " "
+                  filename-and-process)
+            (mark " " (name 16 -1) " " filename)))
+
+    ;; Switching to ibuffer puts the cursor on the most recent buffer
+    (defadvice ibuffer (around ibuffer-point-to-most-recent activate) ()
+               "Open ibuffer with cursor pointed to most recent buffer name"
+               (let ((recent-buffer-name (buffer-name)))
+                 ad-do-it
+                 (ibuffer-jump-to-buffer recent-buffer-name))))
+
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** COMMENT Interleave
+#+BEGIN_SRC elisp
+  (use-package interleave
+    :config
+    (setq interleave-org-notes-dir-list (quote ("~/Dropbox/bibliography/notes.org"))
+          ;; interleave-sort-order (quote desc)
+          )
+    :bind
+    (:map interleave-pdf-mode-map
+          ("i" . brust-pdf-view-previous-line-or-previous-page-5)
+          ("a" . interleave-add-note)))
+
+#+END_SRC
+
+#+RESULTS:
+: interleave-add-note
+
+*** Julia mode
+#+BEGIN_SRC elisp
+  (when (file-exists-p "~/.emacs.d/lisp/julia-emacs/julia-mode.el")
+    (require 'julia-mode))
+  ;;    (when (file-exists-p "~/scr/julia/julia")
+  ;;      ;; (setq julia-program "~/scr/julia/julia")
+  ;;      (setq julia-program "~/scr/julia-1.0.3/bin/julia")
+  ;;      )
+  ;; (when (file-exists-p "~/.emacs.d/lisp/julia-repl/julia-repl.el")
+  ;;   (require 'julia-repl)
+  ;;   (add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
+  ;;   (setq julia-repl-executable-records
+  ;;         '((compiled "/home/lazycat/scr/julia-1.0.3/bin/julia")))                 ;; compiled from the repository
+  ;;   (add-hook 'julia-repl-hook #'julia-repl-use-emacsclient))
+#+END_SRC
+
+#+RESULTS:
+: ~/scr/julia-1.0.3/bin/julia
+*** Key-frequency
+#+BEGIN_SRC elisp
+  (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
+    (require 'keyfreq)
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
+#+END_SRC
+
+#+RESULTS:
+
+*** Ledgers
+    Mainly from [[https://www.reddit.com/r/emacs/comments/8x4xtt/tip_how_i_use_ledger_to_track_my_money/][Reddit discution]]
+**** Main config
+#+BEGIN_SRC elisp
+  (use-package ledger-mode
+    :mode ("\\.dat\\'"
+           "\\.ledger\\'")
+    :custom
+    (ledger-clear-whole-transactions t)
+    (add-hook 'ledger-mode-hook #'ledger-flymake-enable)
+    (add-hook 'ledger-mode-hook #'company-mode)
+    (ledger-post-auto-adjust-amounts t)
+    :bind
+    (:map ledger-mode-map
+          ("C-c C-a" . brust-ledger-add-transaction)))
+
+  (with-eval-after-load 'ledger-mode
+    (define-key ledger-mode-map [remap save-buffer] #'std::ledger::save))
+#+END_SRC
+
+#+RESULTS:
+: std::ledger::save
+
+**** MyFuns
+#+BEGIN_SRC elisp
+  (defun brust-ledger-add-transaction (&optional -date)
+    "Add new transaction using `org-read-date'"
+    (interactive)
+    (ledger-add-transaction
+     (or -date (org-read-date))
+     nil)
+    (insert "?\n    Assets:DebitCard")
+    (cdlatex-position-cursor))
+
+  (defun std::ledger::save nil
+    "First `ledger-mode-clean-buffer', then `save-buffer'."
+    (interactive)
+    (save-excursion
+      (when (buffer-modified-p)
+        (with-demoted-errors (ledger-mode-clean-buffer))
+        (save-buffer))))
+
+  (defun brust-ledger-copy-transaction-from-extract nil
+    "`-string' is a line of my bank extract in cvs format"
+    (interactive)
+    (let ((-entry
+           (split-string
+            (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+            "\,")))
+      (switch-to-buffer "ledger-2018.dat")
+      (brust-ledger-add-transaction
+       (brust-from-eur-ame-date (nth 0 -entry)))
+      (insert (capitalize (nth 1 -entry))
+              "\n    ?  €"
+              (nth 3 -entry))
+      (cdlatex-position-cursor)))
+
+
+  (defun brust-from-eur-ame-date (-date)
+    (let ((-new-date (split-string -date "/")))
+      (concat (nth 2 -new-date)
+              "-"
+              (nth 1 -new-date)
+              "-"
+              (nth 0 -new-date))))
+#+END_SRC
+
+#+RESULTS:
+: std::ledger::save
+
+*** TODO Magit
+    For a git and github integration with emacs!
+#+BEGIN_SRC elisp
+  (use-package magit
+    :bind ("<f10>" . magit-status)
+    :init
+    (setq ;; magit-completing-read-function #'helm--completing-read-default
+     magit-turn-on-auto-revert-mode nil
+     magit-set-upstream-on-push 'dontask
+     magit-completing-read-function 'ivy-completing-read
+     magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1
+     magit-save-repository-buffers 'dontask
+     magit-diff-paint-whitespace t
+     magit-diff-refine-ignore-whitespace nil
+     magit-diff-refine-hunk t)
+
+    :config
+    (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
+    (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
+  ;; (use-package magit-gh-pulls
+  ;;   :after magit
+  ;;   :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+  ;;   :config
+  ;;   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
+  ;;   (setq magit-gh-pulls-pull-detail-limit 50))
+#+END_SRC
+
+#+RESULTS:
+: magit-status
+
+*** Mic parent
+    To show matching paren on minibuffer when it is offscreen
+#+BEGIN_SRC elisp
+  (use-package mic-paren
+    :init
+    (setq paren-sexp-mode nil
+          paren-highlight-offscreen t
+          paren-delay 0.5
+          paren-match-face 'show-paren-match
+          paren-mismatch-face 'show-paren-mismatch
+          paren-no-match-face 'show-paren-mismatch)
+    (show-paren-mode 0)
+    (paren-activate) ; activating
+    ;; To could see the matching parent.
+    (remove-hook 'post-command-hook 'eldoc-schedule-timer))
+#+END_SRC
+
+*** TODO Mu4e
+    - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
+    - TODOs [0/6]
+      - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
+      - [ ] Improve keybinding
+      - [ ] Show links
+      - [ ] Show images
+      - [ ] Check autopudate (related to point one).
+      - [ ] Improve contact completion with ivy :) [[http://pragmaticemacs.com/emacs/even-better-email-contact-completion-in-mu4e/]]
+    - Helpful places [5/9]
+      - [X] [[https://webgefrickel.de/blog/a-modern-mutt-setup][A modern mutt setup with neomutt, mbsync, msmtp and mu]] (blog - interesting not just emacs)
+      - [ ] [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][A Complete Guide to Email in Emacs using Mu and Mu4e]] (blog interesting by itself - really fancy emacs stuff)
+      - [ ] [[https://www.djcbsoftware.nl/code/mu/mu4e/Example-configurations.html#Example-configurations][Example config (from mu4e the manual)]]
+      - [ ] [[http://xenodium.com/#trying-out-mu4e-and-offlineimap][Albaro]] & [[http://xenodium.com/#trying-out-mu4e-with-mbsync][Albaro2]] (here there are many nice links) (blog - interesting not just emacs).
+      - [X] [[https://stackoverflow.com/questions/50199837/mu4e-with-msmtp-does-not-store-mail-sent-directory-after-sending-mails][How to config mu4e to send mail using msmtp]]
+      - [X] [[https://blog.programster.org/ubuntu-install-gpg-2][Install gpg2 (much better)]] to encript your mail password (echo password | gpg2 -c) then delete the corresponding line on bash history ;)
+      - [ ] [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
+      - [X] [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
+      - [X] [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
+      -
+**** COMMENT Install
+ Just in case to generate a certificate:
+ # openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
+
+ #+BEGIN_SRC bash
+   # Install things
+   sudo apt install msmtp-gnome msmtp-mta isync gnupg2
+   cd src
+   git clone https://github.com/djcb/mu.git
+   ./autogen.sh
+   make
+
+   # Paswords
+   ## UAB
+   cd
+   echo PASSWORD > .mathuab
+   gpg2 -c .mathuab
+   rm .mathuab
+   ## Gmail
+   echo PASSWORD > .gmailpass
+   gpg2 -c .gmailpass
+   rm .gmailpass
+   # Delete corresponding lines of .bash_history
+
+   mkdir Maildir
+   # Copy from Dropbox/config/Maildir
+ #+END_SRC
+
+ #+RESULTS:
+**** Add Path
  #+BEGIN_SRC elisp
-   (use-package ibuffer
-     :commands (ibuffer)
-     :init
-     (defalias 'list-buffers 'ibuffer) ; make ibuffer default
-     :config
-     (use-package ibuffer-vc)
-     (setq ibuffer-default-sorting-mode 'major-mode
-           ibuffer-expert t
-           ibuffer-display-summary t
-           ibuffer-show-empty-filter-groups nil
-           ibuffer-vc-skip-if-remote t
-           ibuffer-filter-group-name-face 'font-lock-doc-face
+   (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
+   (require 'mu4e)
+ #+END_SRC
 
-           ibuffer-saved-filter-groups
-           '(("dired" (or (mode . dired-mode) (mode . sr-mode)))
-             ("erc" (mode . erc-mode))
-             ("planner" (or (name . "^\\*Calendar\\*$") (name . "^diary$") (mode . muse-mode)))
-             ("emacs" (or (name . "^\\*scratch\\*$") (name . "^\\*Messages\\*$")))
-             ("Help" (or (name . "^\\*Help\\*$") (mode . help-mode)))))
+ #+RESULTS:
+ : mu4e
+**** Handy hooks
+ #+begin_src elisp
+   (defun brust-mu4e-compose-mode-hook nil
+     (flyspell-mode 1)
+     ;; (auto-save-mode -1)
+     (set-fill-column 72)
+     ;; (brust-mu4e-add-headers)
+     (message-add-header (concat "Date: " (message-make-date)))
+     (message-add-header (concat "Message-ID: " (message-make-message-id)))
+     (message-insert-headers)
+     ;; (message-sort-headers)
+     ;; (message-goto-to)
+     )
+
+   ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
+   (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+   (add-hook 'mu4e-compose-mode-hook #'brust-mu4e-compose-mode-hook)
+
+   ;; From Ben Maughan: Get some Org functionality in compose buffer
+   ;; (add-hook 'message-mode-hook 'turn-on-orgtbl)
+   ;; (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+ #+end_src
+
+ #+RESULTS:
+ | brust-mu4e-compose-mode-hook |
+**** Dealing with drafts
+ #+begin_src elisp
+ (defun brust-mu4e-add-draft-headers nil
+   "Add headers on composing an email"
+   (message-add-header "Flags: draft")
+   ;; (message-add-header (concat "X-Mailer: mu4e " mu4e-mu-version "; emacs " emacs-version "\n"))
+   (message-add-header (concat "Maildir: " mu4e-drafts-folder)))
+
+ (defun brust-mu4e-delete-draft-headers nil
+   "Remove headers on composing an email"
+   (message-cleanup-headers)
+   (message-remove-header "Flags")
+   (message-remove-header "Maildir"))
 
 
-     (defun brust-ibuffer-apply-filter-groups nil
-       "Combine my saved ibuffer filter groups with those generated
-        by `ibuffer-vc-generate-filter-groups-by-vc-root' (I don't know its origine)"
-       (interactive)
-       (setq ibuffer-filter-groups
-             (append
-              ibuffer-saved-filter-groups
-              (ibuffer-vc-generate-filter-groups-by-vc-root)
-              ibuffer-filter-groups))
-       (message "ibuffer-vc: groups set")
-       (let ((ibuf (get-buffer "*Ibuffer*")))
-         (when ibuf
-           (with-current-buffer ibuf
-             (pop-to-buffer ibuf)
-             (ibuffer-update nil t)))))
+   (defadvice message-dont-send (before add-draft-headers activate)
+     (brust-mu4e-add-draft-headers))
 
-     (add-hook 'ibuffer-hook #'brust-ibuffer-apply-filter-groups)
-     (add-hook 'ibuffer-hook #'hydra-ibuffer-main/body)
+   (add-hook 'message-send-hook #'brust-mu4e-delete-draft-headers)
+ #+end_src
 
-     (define-ibuffer-column lines-h
-       (:name "nºLines" :inline t)
-       ;;(set-buffer (buffer))
-       (let ((n (line-number-at-pos (point-max))))
-         (cond
-          ((> n 1000000) (format "%7.1fM" (/ n 1000000.0)))
-          ((> n 1000) (format "%7.1fk" (/ n 1000.0)))
-          ;;((> n 100) (format "%7.1fh" (/ n 100.0)))
-          (t (format "%8d" n)))))
+ #+RESULTS:
+ | brust-mu4e-delete-draft-headers |
+**** Actions
+ #+begin_src elisp
+   (defun search-for-sender (msg)
+     "Search for messages sent by the sender of the message at point."
+     (mu4e-headers-search
+      (concat "from:" (cdar (mu4e-message-field msg :from)))))
 
-     (setq ibuffer-formats
-           ;; Modify the default ibuffer-formats (toggle with `)
-           '((mark modified read-only vc-status-mini " "
-                   (name 30 30 :left :elide)
-                   " "
-                   (lines-h 9 -1 :right)
-                   " "
-                   (mode 16 16 :left :elide)
-                   " "
-                   (vc-status 16 16 :left)
-                   " "
-                   filename-and-process)
-             (mark " " (name 16 -1) " " filename)))
+   (setq mu4e-view-actions
+         (append mu4e-view-actions
+                 (list
+                  ;; define 'x' as the shortcut
+                  (cons "xsearch for sender" 'search-for-sender)
+                  ;; Difine 'V' as the shortcut
+                  (cons "ViewInBrowser" 'mu4e-action-view-in-browser)
+                  ;; Store an org link to insert later
+                  (cons "lStore Link" 'org-store-link))))
+ #+end_src
 
-     ;; Switching to ibuffer puts the cursor on the most recent buffer
-     (defadvice ibuffer (around ibuffer-point-to-most-recent activate) ()
-                "Open ibuffer with cursor pointed to most recent buffer name"
-                (let ((recent-buffer-name (buffer-name)))
-                  ad-do-it
-                  (ibuffer-jump-to-buffer recent-buffer-name))))
+**** Basic config
+  #+BEGIN_SRC elisp
+    (use-package mu4e
+      :ensure nil
+      :config
+      ;; use imagemagick, if available
+      (when (fboundp 'imagemagick-register-types)
+        (imagemagick-register-types))
+
+      (setq mu4e-get-mail-command "mbsync -Va"
+            ;; This allows me to use 'helm' to select mailboxes
+            ;; mu4e-completing-read-function 'completing-read
+            mu4e-completing-read-function 'ivy-completing-read
+            mail-user-agent 'mu4e-user-agent
+            ;; Use "P" to toggle threading
+            mu4e-headers-show-threads nil
+            ;; If you want to exclude your own e-mail address when “replying to all”
+            mu4e-compose-dont-reply-to-self t
+            mu4e-view-show-addresses t
+            ;; use 'fancy' non-ascii characters in various places in mu4e
+            mu4e-use-fancy-chars t
+            ;; attempt to show images when viewing messages
+            mu4e-view-show-images t
+            ;; save attachment to my Downloads (this can also be a function)
+            mu4e-attachment-dir (expand-file-name "~/Downloads/")
+            ;; when search include related msg to the one matching the query.
+            mu4e-headers-include-related nil
+            ;; enable inline images
+            mu4e-maildir (expand-file-name "~/Maildir")
+            mu4e-mu-binary (expand-file-name "~/scr/mu/mu/mu")
+            ;; mu4e-mu-home
+            mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
+            ;; mu4e-html2text-command "w3m -T text/html"
+            ;; alternatively "textutil -stdin -format html -convert txt -stdout"
+            mu4e-show-images t
+            ;; Set format=flowed
+            ;; mu4e sets up visual-line-mode and also fill (M-q) to do the right thing
+            ;; each paragraph is a single long line; at sending, emacs will add the
+            ;; special line continuation characters.
+            mu4e-compose-format-flowed t
+            ;; mu4e-maildir-shortcuts
+            ;; '(;; ("/archive"     . ?a)
+            ;;   ("/Inbox"       . ?i)
+            ;;   ;; ("/work"        . ?w)
+            ;;   ("/Sent"        . ?s))
+            mu4e-user-mail-address-list `(,user-mail-address
+                                          "brust@mat.uab.cat"
+                                          )
+            ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
+            mu4e-compose-context-policy 'always-ask
+            ;; Why would I want to leave my message open after I've sent it?
+            message-kill-buffer-on-exit t
+            ;; Don't ask for a 'context' upon opening mu4e
+            mu4e-context-policy 'pick-first
+            ;; Don't ask to quit... why is this the default?
+            mu4e-confirm-quit nil
+            mu4e-change-filenames-when-moving t
+            ;; customize the reply-quote-string
+            message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n"
+            ;; choose to use the formatted string
+            message-citation-line-function 'message-insert-formatted-citation-line
+            message-send-mail-function 'message-send-mail-with-sendmail
+            message-sendmail-extra-arguments '("--read-envelope-from")
+            message-sendmail-f-is-evil 't
+            sendmail-program "msmtp"
+            mu4e-update-interval 300    ;; update every 5 minutes
+            ;; to speed-up indexing
+            mu4e-index-cleanup nil      ;; don't do a full cleanup check
+            mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
+            )
+      :bind
+      ("<f9>" . mu4e)
+      (:map mu4e-headers-mode-map
+            ("k" . mu4e-headers-next)
+            ("i" . mu4e-headers-prev)
+            ("." . hydra-mu4e-headers/body) ; This hydra is for headers mode
+            ))
+  #+END_SRC
+
+  #+RESULTS:
+  : hydra-mu4e-headers/body
+
+**** My Contexts
+ #+BEGIN_SRC elisp
+   (setq mu4e-contexts
+         (list
+          (make-mu4e-context
+           :name "gmail"
+           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-contact-field-matches
+                            msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
+           :vars '((user-mail-address . "laurea987@gmail.com")
+                   (user-full-name . "Laura Brustenga")
+                   (mu4e-sent-folder . "/gmail/Sent")
+                   (mu4e-drafts-folder . "/gmail/Drafts")
+                   (mu4e-trash-folder . "/gmail/Trash")
+                   (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)))
+          (make-mu4e-context
+           :name "mathuab"
+           :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
+           :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-contact-field-matches
+                            msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+           :vars '((user-mail-address . "brust@mat.uab.cat")
+                   (user-full-name . "Laura Brustenga i Moncusí")
+                   (mu4e-sent-folder . "/mathuab/Sent")
+                   (mu4e-drafts-folder . "/mathuab/Drafts")
+                   (mu4e-trash-folder . "/mathuab/Trash")
+                   (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)))))
 
  #+END_SRC
 
  #+RESULTS:
- : t
+ | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
 
-**** COMMENT Interleave
+**** Bookmarkstr
  #+BEGIN_SRC elisp
-   (use-package interleave
-     :config
-     (setq interleave-org-notes-dir-list (quote ("~/Dropbox/bibliography/notes.org"))
-           ;; interleave-sort-order (quote desc)
-           )
-     :bind
-     (:map interleave-pdf-mode-map
-           ("i" . brust-pdf-view-previous-line-or-previous-page-5)
-           ("a" . interleave-add-note)))
-
+   ;; Update mail using 'U' in main view:
+   ;; Include a bookmark to open all of my inboxes
+   (setq mu4e-bookmarks
+         `(
+           ,(make-mu4e-bookmark
+             :name "All Inboxes"
+             :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread"
+             :key ?i)
+           ,(make-mu4e-bookmark
+             :name "New mathuab"
+             :query "flag:unread AND maildir:/mathuab/INBOX"
+             :key ?m)
+           ,(make-mu4e-bookmark
+             :query "flag:unread AND NOT flag:trashed"
+             :name "Unread messages"
+             :key ?u)
+           ,(make-mu4e-bookmark
+             :query "date:today..now AND NOT flag:trashed AND NOT flag:draft"
+             :name "Today's messages"
+             :key ?t)
+           ,(make-mu4e-bookmark
+             :query "date:7d..now AND NOT flag:trashed AND NOT flag:draft"
+             :name "Last 7 days"
+             :key ?w)
+           ;; ("mime:image/*" "Messages with images" 112)
+           ,(make-mu4e-bookmark
+             :name "Drafts"
+             :query "flag:draft"
+             :key ?d)))
  #+END_SRC
 
  #+RESULTS:
- : interleave-add-note
+ | #s(mu4e-bookmark Unread messages flag:unread AND NOT flag:trashed 117) | #s(mu4e-bookmark Today's messages date:today..now AND NOT flag:trashed AND NOT flag:draft 116) | #s(mu4e-bookmark Last 7 days date:7d..now AND NOT flag:trashed AND NOT flag:draft 119) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
 
-**** Julia mode
- #+BEGIN_SRC elisp
-   (when (file-exists-p "~/.emacs.d/lisp/julia-emacs/julia-mode.el")
-     (require 'julia-mode))
-   ;;    (when (file-exists-p "~/scr/julia/julia")
-   ;;      ;; (setq julia-program "~/scr/julia/julia")
-   ;;      (setq julia-program "~/scr/julia-1.0.3/bin/julia")
-   ;;      )
-   ;; (when (file-exists-p "~/.emacs.d/lisp/julia-repl/julia-repl.el")
-   ;;   (require 'julia-repl)
-   ;;   (add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
-   ;;   (setq julia-repl-executable-records
-   ;;         '((compiled "/home/lazycat/scr/julia-1.0.3/bin/julia")))                 ;; compiled from the repository
-   ;;   (add-hook 'julia-repl-hook #'julia-repl-use-emacsclient))
- #+END_SRC
+**** Contacts
+ #+begin_src elisp
+
+ #+end_src
+
+**** COMMENT Mail directory shortcuts
+ #+begin_src elisp
+   (setq mu4e-maildir-shortcuts
+         '(("/Gmail/INBOX"   . ?g)
+           ("/mathuab/INBOX" . ?m)))
+ #+end_src
 
  #+RESULTS:
- : ~/scr/julia-1.0.3/bin/julia
-**** Key-frequency
- #+BEGIN_SRC elisp
-   (when (file-exists-p "~/.emacs.d/lisp/keyfreq/keyfreq.el")
-     (require 'keyfreq)
-     (keyfreq-mode 1)
-     (keyfreq-autosave-mode 1))
- #+END_SRC
+ : ((/Gmail/INBOX . 103) (/mathuab/INBOX . 109))
 
- #+RESULTS:
+**** Org mu4e
+ #+begin_src elisp
+ (require 'org-mu4e)
+ #+end_src
 
-**** Ledgers
-     Mainly from [[https://www.reddit.com/r/emacs/comments/8x4xtt/tip_how_i_use_ledger_to_track_my_money/][Reddit discution]]
-***** Main config
- #+BEGIN_SRC elisp
-   (use-package ledger-mode
-     :mode ("\\.dat\\'"
-            "\\.ledger\\'")
-     :custom
-     (ledger-clear-whole-transactions t)
-     (add-hook 'ledger-mode-hook #'ledger-flymake-enable)
-     (add-hook 'ledger-mode-hook #'company-mode)
-     (ledger-post-auto-adjust-amounts t)
-     :bind
-     (:map ledger-mode-map
-           ("C-c C-a" . brust-ledger-add-transaction)))
+**** yasnippet for composing emails
+  From http://pragmaticemacs.com/category/mu4e/
 
-   (with-eval-after-load 'ledger-mode
-     (define-key ledger-mode-map [remap save-buffer] #'std::ledger::save))
- #+END_SRC
-
- #+RESULTS:
- : std::ledger::save
-
-***** MyFuns
- #+BEGIN_SRC elisp
-   (defun brust-ledger-add-transaction (&optional -date)
-     "Add new transaction using `org-read-date'"
-     (interactive)
-     (ledger-add-transaction
-      (or -date (org-read-date))
-      nil)
-     (insert "?\n    Assets:DebitCard")
-     (cdlatex-position-cursor))
-
-   (defun std::ledger::save nil
-     "First `ledger-mode-clean-buffer', then `save-buffer'."
-     (interactive)
+ #+begin_src elisp
+ ;; function to return first name of email recipients
+ ;; used by yasnippet
+ ;; inspired by
+ ;;http://blog.binchen.org/posts/how-to-use-yasnippets-to-produce-email-templates-in-emacs.html
+ (defun bjm/mu4e-get-names-for-yasnippet ()
+   "Return comma separated string of names for an email"
+   (interactive)
+   (let ((email-name "") str email-string email-list email-name2 tmpname)
      (save-excursion
-       (when (buffer-modified-p)
-         (with-demoted-errors (ledger-mode-clean-buffer))
-         (save-buffer))))
-
-   (defun brust-ledger-copy-transaction-from-extract nil
-     "`-string' is a line of my bank extract in cvs format"
-     (interactive)
-     (let ((-entry
-            (split-string
-             (buffer-substring-no-properties (point-at-bol) (point-at-eol))
-             "\,")))
-       (switch-to-buffer "ledger-2018.dat")
-       (brust-ledger-add-transaction
-        (brust-from-eur-ame-date (nth 0 -entry)))
-       (insert (capitalize (nth 1 -entry))
-               "\n    ?  €"
-               (nth 3 -entry))
-       (cdlatex-position-cursor)))
-
-
-   (defun brust-from-eur-ame-date (-date)
-     (let ((-new-date (split-string -date "/")))
-       (concat (nth 2 -new-date)
-               "-"
-               (nth 1 -new-date)
-               "-"
-               (nth 0 -new-date))))
- #+END_SRC
-
- #+RESULTS:
- : std::ledger::save
-
-**** TODO Magit
-     For a git and github integration with emacs!
- #+BEGIN_SRC elisp
-   (use-package magit
-     :bind ("<f10>" . magit-status)
-     :init
-     (setq ;; magit-completing-read-function #'helm--completing-read-default
-      magit-turn-on-auto-revert-mode nil
-      magit-set-upstream-on-push 'dontask
-      magit-completing-read-function 'ivy-completing-read
-      magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1
-      magit-save-repository-buffers 'dontask
-      magit-diff-paint-whitespace t
-      magit-diff-refine-ignore-whitespace nil
-      magit-diff-refine-hunk t)
-
-     :config
-     (add-hook 'magit-log-edit-mode-hook #'turn-on-flyspell)
-     (add-hook 'git-commit-mode-hook #'turn-on-flyspell))
-   ;; (use-package magit-gh-pulls
-   ;;   :after magit
-   ;;   :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
-   ;;   :config
-   ;;   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
-   ;;   (setq magit-gh-pulls-pull-detail-limit 50))
- #+END_SRC
-
- #+RESULTS:
- : magit-status
-
-**** Mic parent
-     To show matching paren on minibuffer when it is offscreen
- #+BEGIN_SRC elisp
-   (use-package mic-paren
-     :init
-     (setq paren-sexp-mode nil
-           paren-highlight-offscreen t
-           paren-delay 0.5
-           paren-match-face 'show-paren-match
-           paren-mismatch-face 'show-paren-mismatch
-           paren-no-match-face 'show-paren-mismatch)
-     (show-paren-mode 0)
-     (paren-activate) ; activating
-     ;; To could see the matching parent.
-     (remove-hook 'post-command-hook 'eldoc-schedule-timer))
- #+END_SRC
-
-**** TODO Mu4e
-     - Manual [[https://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][Mu4e's online manual]]
-     - TODOs [0/6]
-       - [ ] Install [[https://github.com/iqbalansari/mu4e-alert][mu4e alerts]]
-       - [ ] Improve keybinding
-       - [ ] Show links
-       - [ ] Show images
-       - [ ] Check autopudate (related to point one).
-       - [ ] Improve contact completion with ivy :) [[http://pragmaticemacs.com/emacs/even-better-email-contact-completion-in-mu4e/]]
-     - Helpful places [5/9]
-       - [X] [[https://webgefrickel.de/blog/a-modern-mutt-setup][A modern mutt setup with neomutt, mbsync, msmtp and mu]] (blog - interesting not just emacs)
-       - [ ] [[http://cachestocaches.com/2017/3/complete-guide-email-emacs-using-mu-and-][A Complete Guide to Email in Emacs using Mu and Mu4e]] (blog interesting by itself - really fancy emacs stuff)
-       - [ ] [[https://www.djcbsoftware.nl/code/mu/mu4e/Example-configurations.html#Example-configurations][Example config (from mu4e the manual)]]
-       - [ ] [[http://xenodium.com/#trying-out-mu4e-and-offlineimap][Albaro]] & [[http://xenodium.com/#trying-out-mu4e-with-mbsync][Albaro2]] (here there are many nice links) (blog - interesting not just emacs).
-       - [X] [[https://stackoverflow.com/questions/50199837/mu4e-with-msmtp-does-not-store-mail-sent-directory-after-sending-mails][How to config mu4e to send mail using msmtp]]
-       - [X] [[https://blog.programster.org/ubuntu-install-gpg-2][Install gpg2 (much better)]] to encript your mail password (echo password | gpg2 -c) then delete the corresponding line on bash history ;)
-       - [ ] [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
-       - [X] [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
-       - [X] [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
-       -
-***** COMMENT Install
-  Just in case to generate a certificate:
-  # openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
-
-  #+BEGIN_SRC bash
-    # Install things
-    sudo apt install msmtp-gnome msmtp-mta isync gnupg2
-    cd src
-    git clone https://github.com/djcb/mu.git
-    ./autogen.sh
-    make
-
-    # Paswords
-    ## UAB
-    cd
-    echo PASSWORD > .mathuab
-    gpg2 -c .mathuab
-    rm .mathuab
-    ## Gmail
-    echo PASSWORD > .gmailpass
-    gpg2 -c .gmailpass
-    rm .gmailpass
-    # Delete corresponding lines of .bash_history
-
-    mkdir Maildir
-    # Copy from Dropbox/config/Maildir
-  #+END_SRC
-
-  #+RESULTS:
-***** Add Path
-  #+BEGIN_SRC elisp
-    (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
-    (require 'mu4e)
-  #+END_SRC
-
-  #+RESULTS:
-  : mu4e
-***** Handy hooks
-  #+begin_src elisp
-    (defun brust-mu4e-compose-mode-hook nil
-      (flyspell-mode 1)
-      ;; (auto-save-mode -1)
-      (set-fill-column 72)
-      ;; (brust-mu4e-add-headers)
-      (message-add-header (concat "Date: " (message-make-date)))
-      (message-add-header (concat "Message-ID: " (message-make-message-id)))
-      (message-insert-headers)
-      ;; (message-sort-headers)
-      ;; (message-goto-to)
-      )
-
-    ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
-    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-    (add-hook 'mu4e-compose-mode-hook #'brust-mu4e-compose-mode-hook)
-
-    ;; From Ben Maughan: Get some Org functionality in compose buffer
-    ;; (add-hook 'message-mode-hook 'turn-on-orgtbl)
-    ;; (add-hook 'message-mode-hook 'turn-on-orgstruct++)
-  #+end_src
-
-  #+RESULTS:
-  | brust-mu4e-compose-mode-hook |
-***** Dealing with drafts
-  #+begin_src elisp
-  (defun brust-mu4e-add-draft-headers nil
-    "Add headers on composing an email"
-    (message-add-header "Flags: draft")
-    ;; (message-add-header (concat "X-Mailer: mu4e " mu4e-mu-version "; emacs " emacs-version "\n"))
-    (message-add-header (concat "Maildir: " mu4e-drafts-folder)))
-
-  (defun brust-mu4e-delete-draft-headers nil
-    "Remove headers on composing an email"
-    (message-cleanup-headers)
-    (message-remove-header "Flags")
-    (message-remove-header "Maildir"))
-
-
-    (defadvice message-dont-send (before add-draft-headers activate)
-      (brust-mu4e-add-draft-headers))
-
-    (add-hook 'message-send-hook #'brust-mu4e-delete-draft-headers)
-  #+end_src
-
-  #+RESULTS:
-  | brust-mu4e-delete-draft-headers |
-***** Actions
-  #+begin_src elisp
-    (defun search-for-sender (msg)
-      "Search for messages sent by the sender of the message at point."
-      (mu4e-headers-search
-       (concat "from:" (cdar (mu4e-message-field msg :from)))))
-
-    (setq mu4e-view-actions
-          (append mu4e-view-actions
-                  (list
-                   ;; define 'x' as the shortcut
-                   (cons "xsearch for sender" 'search-for-sender)
-                   ;; Difine 'V' as the shortcut
-                   (cons "ViewInBrowser" 'mu4e-action-view-in-browser)
-                   ;; Store an org link to insert later
-                   (cons "lStore Link" 'org-store-link))))
-  #+end_src
-
-***** Basic config
-   #+BEGIN_SRC elisp
-     (use-package mu4e
-       :ensure nil
-       :config
-       ;; use imagemagick, if available
-       (when (fboundp 'imagemagick-register-types)
-         (imagemagick-register-types))
-
-       (setq mu4e-get-mail-command "mbsync -Va"
-             ;; This allows me to use 'helm' to select mailboxes
-             ;; mu4e-completing-read-function 'completing-read
-             mu4e-completing-read-function 'ivy-completing-read
-             mail-user-agent 'mu4e-user-agent
-             ;; Use "P" to toggle threading
-             mu4e-headers-show-threads nil
-             ;; If you want to exclude your own e-mail address when “replying to all”
-             mu4e-compose-dont-reply-to-self t
-             mu4e-view-show-addresses t
-             ;; use 'fancy' non-ascii characters in various places in mu4e
-             mu4e-use-fancy-chars t
-             ;; attempt to show images when viewing messages
-             mu4e-view-show-images t
-             ;; save attachment to my Downloads (this can also be a function)
-             mu4e-attachment-dir (expand-file-name "~/Downloads/")
-             ;; when search include related msg to the one matching the query.
-             mu4e-headers-include-related nil
-             ;; enable inline images
-             mu4e-maildir (expand-file-name "~/Maildir")
-             mu4e-mu-binary (expand-file-name "~/scr/mu/mu/mu")
-             ;; mu4e-mu-home
-             mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
-             ;; mu4e-html2text-command "w3m -T text/html"
-             ;; alternatively "textutil -stdin -format html -convert txt -stdout"
-             mu4e-show-images t
-             ;; Set format=flowed
-             ;; mu4e sets up visual-line-mode and also fill (M-q) to do the right thing
-             ;; each paragraph is a single long line; at sending, emacs will add the
-             ;; special line continuation characters.
-             mu4e-compose-format-flowed t
-             ;; mu4e-maildir-shortcuts
-             ;; '(;; ("/archive"     . ?a)
-             ;;   ("/Inbox"       . ?i)
-             ;;   ;; ("/work"        . ?w)
-             ;;   ("/Sent"        . ?s))
-             mu4e-user-mail-address-list `(,user-mail-address
-                                           "brust@mat.uab.cat"
-                                           )
-             ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
-             mu4e-compose-context-policy 'always-ask
-             ;; Why would I want to leave my message open after I've sent it?
-             message-kill-buffer-on-exit t
-             ;; Don't ask for a 'context' upon opening mu4e
-             mu4e-context-policy 'pick-first
-             ;; Don't ask to quit... why is this the default?
-             mu4e-confirm-quit nil
-             mu4e-change-filenames-when-moving t
-             ;; customize the reply-quote-string
-             message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n"
-             ;; choose to use the formatted string
-             message-citation-line-function 'message-insert-formatted-citation-line
-             message-send-mail-function 'message-send-mail-with-sendmail
-             message-sendmail-extra-arguments '("--read-envelope-from")
-             message-sendmail-f-is-evil 't
-             sendmail-program "msmtp"
-             mu4e-update-interval 300    ;; update every 5 minutes
-             ;; to speed-up indexing
-             mu4e-index-cleanup nil      ;; don't do a full cleanup check
-             mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
-             )
-       :bind
-       ("<f9>" . mu4e)
-       (:map mu4e-headers-mode-map
-             ("k" . mu4e-headers-next)
-             ("i" . mu4e-headers-prev)
-             ("." . hydra-mu4e-headers/body) ; This hydra is for headers mode
-             ))
-   #+END_SRC
-
-   #+RESULTS:
-   : hydra-mu4e-headers/body
-
-***** My Contexts
-  #+BEGIN_SRC elisp
-    (setq mu4e-contexts
-          (list
-           (make-mu4e-context
-            :name "gmail"
-            :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
-            :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches
-                             msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
-            :vars '((user-mail-address . "laurea987@gmail.com")
-                    (user-full-name . "Laura Brustenga")
-                    (mu4e-sent-folder . "/gmail/Sent")
-                    (mu4e-drafts-folder . "/gmail/Drafts")
-                    (mu4e-trash-folder . "/gmail/Trash")
-                    (mu4e-compose-signature . nil)
-                    (mu4e-compose-format-flowed . nil)))
-           (make-mu4e-context
-            :name "mathuab"
-            :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
-            :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
-            :match-func (lambda (msg)
-                          (when msg
-                            (mu4e-message-contact-field-matches
-                             msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
-            :vars '((user-mail-address . "brust@mat.uab.cat")
-                    (user-full-name . "Laura Brustenga i Moncusí")
-                    (mu4e-sent-folder . "/mathuab/Sent")
-                    (mu4e-drafts-folder . "/mathuab/Drafts")
-                    (mu4e-trash-folder . "/mathuab/Trash")
-                    (mu4e-compose-signature . nil)
-                    (mu4e-compose-format-flowed . nil)))))
-
-  #+END_SRC
-
-  #+RESULTS:
-  | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
-
-***** Bookmarkstr
-  #+BEGIN_SRC elisp
-    ;; Update mail using 'U' in main view:
-    ;; Include a bookmark to open all of my inboxes
-    (setq mu4e-bookmarks
-          `(
-            ,(make-mu4e-bookmark
-              :name "All Inboxes"
-              :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread"
-              :key ?i)
-            ,(make-mu4e-bookmark
-              :name "New mathuab"
-              :query "flag:unread AND maildir:/mathuab/INBOX"
-              :key ?m)
-            ,(make-mu4e-bookmark
-              :query "flag:unread AND NOT flag:trashed"
-              :name "Unread messages"
-              :key ?u)
-            ,(make-mu4e-bookmark
-              :query "date:today..now AND NOT flag:trashed AND NOT flag:draft"
-              :name "Today's messages"
-              :key ?t)
-            ,(make-mu4e-bookmark
-              :query "date:7d..now AND NOT flag:trashed AND NOT flag:draft"
-              :name "Last 7 days"
-              :key ?w)
-            ;; ("mime:image/*" "Messages with images" 112)
-            ,(make-mu4e-bookmark
-              :name "Drafts"
-              :query "flag:draft"
-              :key ?d)))
-  #+END_SRC
-
-  #+RESULTS:
-  | #s(mu4e-bookmark Unread messages flag:unread AND NOT flag:trashed 117) | #s(mu4e-bookmark Today's messages date:today..now AND NOT flag:trashed AND NOT flag:draft 116) | #s(mu4e-bookmark Last 7 days date:7d..now AND NOT flag:trashed AND NOT flag:draft 119) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
-
-***** Contacts
-  #+begin_src elisp
-
-  #+end_src
-
-***** COMMENT Mail directory shortcuts
-  #+begin_src elisp
-    (setq mu4e-maildir-shortcuts
-          '(("/Gmail/INBOX"   . ?g)
-            ("/mathuab/INBOX" . ?m)))
-  #+end_src
-
-  #+RESULTS:
-  : ((/Gmail/INBOX . 103) (/mathuab/INBOX . 109))
-
-***** Org mu4e
-  #+begin_src elisp
-  (require 'org-mu4e)
-  #+end_src
-
-***** yasnippet for composing emails
-   From http://pragmaticemacs.com/category/mu4e/
-
-  #+begin_src elisp
-  ;; function to return first name of email recipients
-  ;; used by yasnippet
-  ;; inspired by
-  ;;http://blog.binchen.org/posts/how-to-use-yasnippets-to-produce-email-templates-in-emacs.html
-  (defun bjm/mu4e-get-names-for-yasnippet ()
-    "Return comma separated string of names for an email"
-    (interactive)
-    (let ((email-name "") str email-string email-list email-name2 tmpname)
-      (save-excursion
-        (goto-char (point-min))
-        ;; first line in email could be some hidden line containing NO to field
-        (setq str (buffer-substring-no-properties (point-min) (point-max))))
-      ;; take name from TO field - match series of names
-      (when (string-match "^To: \"?\\(.+\\)" str)
-        (setq email-string (match-string 1 str)))
-      ;;split to list by comma
-      (setq email-list (split-string email-string " *, *"))
-      ;;loop over emails
-      (dolist (tmpstr email-list)
-        ;;get first word of email string
-        (setq tmpname (car (split-string tmpstr " ")))
-        ;;remove whitespace or ""
-        (setq tmpname (replace-regexp-in-string "[ \"]" "" tmpname))
-        ;;join to string
-        (setq email-name
-              (concat email-name ", " tmpname)))
-      ;;remove initial comma
-      (setq email-name (replace-regexp-in-string "^, " "" email-name))
-
-      ;;see if we want to use the name in the FROM field
-      ;;get name in FROM field if available, but only if there is only
-      ;;one name in TO field
-      (if (< (length email-list) 2)
-          (when (string-match "^On.+, \\([^ ,\n]+\\).+wrote:$" str)
-            (progn
-              (setq email-name2 (match-string 1 str))
-              ;;prefer name in FROM field if TO field has "@"
-              (when (string-match "@" email-name)
-                (setq email-name email-name2))
-              )))
-      email-name))
-  #+end_src
-
-  #+RESULTS:
-  : bjm/mu4e-get-names-for-yasnippet
-
-***** COMMENT Alert
-  #+BEGIN_SRC elisp
-    (use-package mu4e-alert
-      :ensure t
-      :after mu4e
-      :init
-      (setq mu4e-alert-interesting-mail-query
-            (concat
-             "flag:unread maildir:/mathuab/INBOX"
-             "OR"
-             "flag:unread maildir:/Gmail/Inbox"
-             ))
-      (mu4e-alert-enable-mode-line-display)
-      (defun gjstein-refresh-mu4e-alert-mode-line ()
-        (interactive)
-        (mu4e~proc-kill)
-        (mu4e-alert-enable-mode-line-display)
-        )
-      (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
-      )
-  #+END_SRC
-
-  #+RESULTS:
-***** My functions
-****** Org caputre mail
-  #+begin_src elisp
-  (defun my/org-capture-mu4e ()
-    (interactive)
-    "Capture a TODO item via email."
-    (org-capture nil "o"))
-  #+end_src
-
-  #+RESULTS:
-  : my/org-capture-mu4e
-
-**** Nyan
-     Show the rainbow line.
- #+BEGIN_SRC elisp
-   (use-package nyan-mode
-     :init (nyan-mode 1)
-     :config
-     (setq nyan-minimum-window-width 0
-           ;;nyan-cat-face-number 3
-           nyan-wavy-trail nil
-           nyan-animate-nyancat nil)
-     ;; (nyan-start-animation)
-     (use-package zone-nyan
-       :config
-       (setq zone-programs [zone-nyan]
-             zone-nyan-hide-progress t)
-       (use-package zone
-         :config
-         (zone-when-idle (* 5 60)))))
-
- #+END_SRC
-**** Pdf tools
-***** Main
- #+BEGIN_SRC elisp
-   (use-package pdf-tools
-     :init
-     (pdf-tools-install)
-     ;; (pdf-occur-global-minor-mode 0)
-     ;; (add-hook 'dired-load-hook #'pdf-occur-dired-minor-mode)
-     ;; (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode)
-     ;; open pdfs scaled to fit page
-     (setq-default pdf-view-display-size 'fit-page)
-     ;; automatically annotate highlights
-     (setq pdf-annot-activate-created-annotations nil)
-
-     :config
-     (defun brust-pdf-tools-hook ()
-       (bind-keys :map pdf-view-mode-map ("i" . brust-pdf-view-previous-line-or-previous-page-5)))
-
-     :chords
-     (:map pdf-view-mode-map
-           ("jj" . brust-image-backward-hsroll-5))
-
-     :bind
-     (:map pdf-view-mode-map
-           ("<"           . pdf-view-first-page)
-           (">"           . pdf-view-last-page)
-           ("C-k"         . pdf-view-next-page-command)
-           ("C-i"         . pdf-view-previous-page-command)
-           ("s-SPC"       . pdf-view-scroll-down-or-previous-page)
-           ("s-k"         . pdf-view-next-line-or-next-page)
-           ("s-i"         . pdf-view-previous-line-or-previous-page)
-           ("s-j"         . image-backward-hscroll)
-           ("s-l"         . image-forward-hscroll)
-           ("k"           . brust-pdf-view-next-line-or-next-page-5)
-           ("i"           . brust-pdf-view-previous-line-or-previous-page-5)
-           ("j"           . brust-image-backward-hsroll-5)
-           ("l"           . brust-image-forward-hsroll-5)
-           ("C-n"         . brust-ace-window)
-           ("n"           . brust-ace-window)
-           ("<mouse-5>"   . brust-pdf-view-next-line-or-next-page-5)
-           ("<mouse-4>"   . brust-pdf-view-previous-line-or-previous-page-5)
-           ("C-<mouse-5>" . pdf-view-next-page-command)
-           ("C-<mouse-4>" . pdf-view-previous-page-command)
-           ("s-<mouse-5>" . pdf-view-next-line-or-next-page)
-           ("s-<mouse-4>" . pdf-view-previous-line-or-previous-page)
-           ("."           . hydra-pdftools/body)))
-
-   (eval-after-load 'interleave
-     (add-hook 'pdf-view-mode-hook #'brust-pdf-tools-hook t))
-
-   (defun brust-image-backward-hsroll-5 (args)
-     (interactive "p")
-     (brust-by-five #'image-backward-hscroll args))
-   (defun brust-image-forward-hsroll-5 (args)
-     (interactive "p")
-     (brust-by-five #'image-forward-hscroll args))
-   (defun brust-pdf-view-next-line-or-next-page-5 (args)
-     (interactive "p")
-     (brust-by-five #'pdf-view-next-line-or-next-page args))
-   (defun brust-pdf-view-previous-line-or-previous-page-5 (args)
-     (interactive "p")
-     (brust-by-five #'pdf-view-previous-line-or-previous-page args))
- #+END_SRC
-
- #+RESULTS:
- : brust-pdf-view-previous-line-or-previous-page-5
-
-***** save place
-  workaround for pdf-tools not reopening to last-viewed page of the pdf:
-   ;; https://github.com/politza/pdf-tools/issues/18
-
- #+BEGIN_SRC elisp
-   (defun brds/pdf-set-last-viewed-bookmark ()
-     (interactive)
-     (when (eq major-mode 'pdf-view-mode)
-       (bookmark-set (brds/pdf-generate-bookmark-name))))
-
-   (defun brds/pdf-jump-last-viewed-bookmark ()
-     (when
-         (brds/pdf-has-last-viewed-bookmark)
-       (bookmark-jump (brds/pdf-generate-bookmark-name))))
-
-   (defun brds/pdf-has-last-viewed-bookmark ()
-     (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
-
-   (defun brds/pdf-generate-bookmark-name ()
-     (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
-
-   (defun brds/pdf-set-all-last-viewed-bookmarks ()
-     (dolist (buf (buffer-list))
-       (with-current-buffer buf
-         (brds/pdf-set-last-viewed-bookmark))))
-
-   (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
-   (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
-   (unless noninteractive  ; as `save-place-mode' does
-     (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))
- #+END_SRC
-
- #+RESULTS:
- | tex-delete-last-temp-files | company-clang-set-prefix | company-statistics--maybe-save | brds/pdf-set-all-last-viewed-bookmarks | reftex-kill-emacs-hook | bookmark-exit-hook-internal | desktop-kill | keyfreq-mustsave--do | org-babel-remove-temporary-directory | savehist-autosave | save-place-kill-emacs-hook | server-force-stop |
-
-**** COMMENT Projectile
- #+BEGIN_SRC elisp
-   (use-package projectile
-     :init
-     (setq projectile-known-projects-file "~/.emacs.d/backups/projectile-bookmarks.eld")
-     (projectile-mode 1)
-     ;; :diminish (projectile-mode . " Proj")
-     :config
-     (setq projectile-mode-line
-           '(:eval (if
-                       (file-remote-p default-directory)
-                       ""
-                     (format " [Pj %s]"
-                             (projectile-project-name)))))
-
-     (use-package counsel-projectile
-       :init
-       ;; install replacements for some standard projectile commands
-       (counsel-projectile-mode 1))
-     :bind*
-     ("s-q" . project-find-file)
-     ;; ("s-q" . projectile-command-map)
-     )
-
- #+END_SRC
-**** COMMENT Rainbow delimiters
-     I use it just to auto color unmatched parents.
- #+BEGIN_SRC elisp
-   (use-package rainbow-delimiters
-     :init
-     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-     ;; (add-hook 'LaTeX-mode-hook #'rainbow-delimiters-mode)
-     :config
-     (setq rainbow-delimiters-max-face-count 1)
-     (set-face-attribute 'rainbow-delimiters-depth-1-face nil
-                         :foreground 'unspecified
-                         :inherit 'default)
-     (set-face-attribute 'rainbow-delimiters-unmatched-face nil
-                         :foreground 'unspecified
-                         :inherit 'error))
-
- ;;(defun brust-rainbow-delimiters-pick-face-function (DEPTH MATCH LOC)
- ;;  (if (< DEPTH 1)
- ;;      "error"
- ;;    "default"))
- ;;
- ;;(setq rainbow-delimiters-pick-face-function #'rainbow-delimiters-pick-face-function)
- #+END_SRC
-
- #+RESULTS:
- : rainbow-delimiters-pick-face-function
-
-**** Recentf
-     Keep a list of recently opened files.
- #+BEGIN_SRC elisp
-   (use-package recentf
-     :init
-     (setq recentf-max-saved-items 200
-           ;; recentf-max-menu-items 15
-           recentf-save-file "~/.emacs.d/backups/recentf"
-           recentf-exclude '("COMMIT_MSG" "COMMIT_EDITMSG" "github.*txt$"
-                             "^.*png$" "^.*~$" "^.*-autoloads.el$"
-                             "/elpa/" "^.*rel$" "^.*latexmk$" "^.*[0-9]$" "^.*fls$"))
-     ;; :bind ("C-<f2>" . recentf-open-files)
-     (recentf-mode 1))
-     (run-with-timer 0 (* 30 60) 'recentf-save-list)
-
- #+END_SRC
-
-**** COMMENT SAGE
- #+BEGIN_SRC elisp
-   (use-package sage-shell-mode
-     :init
-     (setq sage-shell:sage-root "~/SageMath")
-     :config
-     ;; Run SageMath by M-x run-sage instead of M-x sage-shell:run-sage
-     (sage-shell:define-alias)
-
-     ;; Turn on eldoc-mode in Sage terminal and in Sage source files
-     (add-hook 'sage-shell-mode-hook #'eldoc-mode)
-     (add-hook 'sage-shell:sage-mode-hook #'eldoc-mode))
- #+END_SRC
-
- #+RESULTS:
- : t
-
-**** COMMENT SASS files
-     For some reason turn-off aggressive-indent do not work :(
- #+BEGIN_SRC elisp
-   (use-package sass-mode
-     :config
-     (defun aggressive-indent-mode-off nil
-       (aggressive-indent-mode -1))
-     (setq scss-compile-at-save nil)
-     (add-hook 'sass-mode-hook #'aggressive-indent-mode-off))
- #+END_SRC
-
- #+RESULTS:
- : t
-
-**** Smartparents
- #+BEGIN_SRC elisp
-   (use-package smartparens
-     :diminish smartparens-mode
-     :init
-     (setq sp-base-key-bindings nil
-           sp-hybrid-kill-entire-symbol t
-           sp-navigate-close-if-unbalanced t
-           sp-show-pair-from-inside t
-           sp-autoinsert-pair nil
-           sp-use-subword t)
-     :config
-     ;; Yes
-     (add-hook 'fundamental-mode-hook 'y-sp)
-     (add-hook 'text-mode-hook 'y-sp)
-     (add-hook 'org-mode-hook 'y-sp)
-     (add-hook 'LaTeX-mode-hook 'y-sp)
-     (add-hook 'emacs-lisp-mode-hook 'y-sp)
-     (defun y-sp nil "Activate smartparents" (smartparens-mode 1))
-     ;;(smartparens-global-mode t)
-     :bind
-     ("M-f" . sp-forward-sexp)
-     ("M-d" . sp-backward-sexp)
-     ;; ("C-M-d" . sp-down-sexp)
-     ;; ("C-M-a" . sp-backward-down-sexp)
-     ;; ("C-S-d" . sp-beginning-of-sexp)
-     ;; ("C-S-a" . sp-end-of-sexp)
-     ;;("C-M-e" . sp-up-sexp)
-     ;;("C-M-u" . sp-backward-up-sexp)
-     ("M-C-f" . sp-next-sexp)
-     ("M-C-d" . sp-previous-sexp)
-
-     ;; ("M-S-d" . sp-splice-sexp)
-     ;; ("C-]" . sp-select-next-thing-exchange)
-     ;; ("C-M-]" . sp-select-next-thing)
-     ;;
-     ;; ("C-M-k" . sp-kill-sexp)
-     ;; ("C-M-w" . sp-copy-sexp)
-     ("M-<delete>" . sp-unwrap-sexp)
-     ("M-<backspace>" . sp-backward-unwrap-sexp)
-     ;;("C-<right>" . 'sp-forward-slurp-sexp)
-     ;;("C-<left>" . 'sp-forward-barf-sexp)
-     ;;("C-M-<left>" . sp-backward-slurp-sexp)
-     ;;("C-M-<right>" . sp-backward-barf-sexp)
-     ;;("C-M-<delete>" . 'sp-splice-sexp-killing-forward)
-     ;;("C-M-<backspace>" . sp-splice-sexp-killing-backward)
-     ;;("C-S-<backspace>" . sp-splice-sexp-killing-around)
-     ;;("M-F" . 'sp-forward-symbol)
-     ;;("M-B" . 'sp-backward-symbol)
-     )
- #+END_SRC
-**** Smerge
- See https://github.com/alphapapa/unpackaged.el#smerge-mode
-
- #+begin_src elisp
- (use-package smerge-mode
-   :after hydra
-   :config
-   (defhydra unpackaged/smerge-hydra
-     (:color pink :hint nil :post (smerge-auto-leave))
-     "
- ^Move^       ^Keep^               ^Diff^                 ^Other^
- ^^-----------^^-------------------^^---------------------^^-------
- _n_ext       _b_ase               _<_: upper/base        _C_ombine
- _p_rev       _u_pper              _=_: upper/lower       _r_esolve
- ^^           _l_ower              _>_: base/lower        _k_ill current
- ^^           _a_ll                _R_efine
- ^^           _RET_: current       _E_diff
- "
-     ("n" smerge-next)
-     ("p" smerge-prev)
-     ("b" smerge-keep-base)
-     ("u" smerge-keep-upper)
-     ("l" smerge-keep-lower)
-     ("a" smerge-keep-all)
-     ("RET" smerge-keep-current)
-     ("\C-m" smerge-keep-current)
-     ("<" smerge-diff-base-upper)
-     ("=" smerge-diff-upper-lower)
-     (">" smerge-diff-base-lower)
-     ("R" smerge-refine)
-     ("E" smerge-ediff)
-     ("C" smerge-combine-with-next)
-     ("r" smerge-resolve)
-     ("k" smerge-kill-current)
-     ("ZZ" (lambda ()
-             (interactive)
-             (save-buffer)
-             (bury-buffer))
-      "Save and bury buffer" :color blue)
-     ("q" nil "cancel" :color blue))
-   :hook (magit-diff-visit-file . (lambda ()
-                                    (when smerge-mode
-                                      (unpackaged/smerge-hydra/body)))))
+       (goto-char (point-min))
+       ;; first line in email could be some hidden line containing NO to field
+       (setq str (buffer-substring-no-properties (point-min) (point-max))))
+     ;; take name from TO field - match series of names
+     (when (string-match "^To: \"?\\(.+\\)" str)
+       (setq email-string (match-string 1 str)))
+     ;;split to list by comma
+     (setq email-list (split-string email-string " *, *"))
+     ;;loop over emails
+     (dolist (tmpstr email-list)
+       ;;get first word of email string
+       (setq tmpname (car (split-string tmpstr " ")))
+       ;;remove whitespace or ""
+       (setq tmpname (replace-regexp-in-string "[ \"]" "" tmpname))
+       ;;join to string
+       (setq email-name
+             (concat email-name ", " tmpname)))
+     ;;remove initial comma
+     (setq email-name (replace-regexp-in-string "^, " "" email-name))
+
+     ;;see if we want to use the name in the FROM field
+     ;;get name in FROM field if available, but only if there is only
+     ;;one name in TO field
+     (if (< (length email-list) 2)
+         (when (string-match "^On.+, \\([^ ,\n]+\\).+wrote:$" str)
+           (progn
+             (setq email-name2 (match-string 1 str))
+             ;;prefer name in FROM field if TO field has "@"
+             (when (string-match "@" email-name)
+               (setq email-name email-name2))
+             )))
+     email-name))
  #+end_src
 
  #+RESULTS:
- | lambda | nil | (when smerge-mode (unpackaged/smerge-hydra/body)) |
+ : bjm/mu4e-get-names-for-yasnippet
 
-**** Transpose buffers
+**** COMMENT Alert
  #+BEGIN_SRC elisp
-   (use-package transpose-frame
-     :bind*
-     ;; ("C-x |" . transpose-frame)
-     ;; ("C-x 5" . transpose-frame)
-     ("<f5> t"  . transpose-frame)
-     ("<f5> h"  . flop-frame)
-     ("<f5> v"  . flip-frame)
-     ("<f5> r" . rotate-frame-clockwise))
- #+END_SRC
-**** COMMENT Tweeter
- #+begin_src elisp
- (use-package twittering-mode
+   (use-package mu4e-alert
      :ensure t
-     :commands twit
+     :after mu4e
      :init
-     (add-hook 'twittering-edit-mode-hook #'flyspell-mode)
-     :config
-     (setq twittering-use-master-password t
-           twittering-icon-mode t
-           twittering-use-icon-storage t
-           ;; twittering-icon-storage-file (concat joe-emacs-temporal-directory "twittering-mode-icons.gz")
-           twittering-convert-fix-size 52
-           twittering-initial-timeline-spec-string '(":home")
-           twittering-edit-skeleton 'inherit-any
-           twittering-display-remaining t
-           twittering-timeline-header  ""
-           twittering-timeline-footer  ""
-           twittering-status-format
-           "%i  %S, %RT{%FACE[bold]{%S}} %@  %FACE[shadow]{%p%f%L%r}\n%FOLD[        ]{%T}\n")
+     (setq mu4e-alert-interesting-mail-query
+           (concat
+            "flag:unread maildir:/mathuab/INBOX"
+            "OR"
+            "flag:unread maildir:/Gmail/Inbox"
+            ))
+     (mu4e-alert-enable-mode-line-display)
+     (defun gjstein-refresh-mu4e-alert-mode-line ()
+       (interactive)
+       (mu4e~proc-kill)
+       (mu4e-alert-enable-mode-line-display)
+       )
+     (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
+     )
+ #+END_SRC
 
-       ;; set the new bindings
- ;;    :bind :map twittering-mode-map
- ;;                 ("\\" . hydra-twittering/body)
- ;;                 ("q" . twittering-kill-buffer)
- ;;                 ("Q" . twittering-edit-mode)
- ;;                 ("j" . twittering-goto-next-status)
- ;;                 ("k" . twittering-goto-previous-status)
- ;;                 ("h" . twittering-switch-to-next-timeline)
- ;;                 ("l" . twittering-switch-to-previous-timeline)
- ;;                 ("g" . beginning-of-buffer)
- ;;                 ("G" . end-of-buffer)
- ;;                 ("t" . twittering-update-status-interactive)
- ;;                 ("X" . twittering-delete-status)
- ;;                 ("RET" . twittering-reply-to-user)
- ;;                 ("r" . twittering-native-retweet)
- ;;                 ("R" . twittering-organic-retweet)
- ;;                 ("d" . twittering-direct-message)
- ;;                 ("u" . twittering-current-timeline)
- ;;                 ("b" . twittering-favorite)
- ;;                 ("B" . twittering-unfavorite)
- ;;                 ("f" . twittering-follow)
- ;;                 ("F" . twittering-unfollow)
- ;;                 ("i" . twittering-view-user-page)
- ;;                 ("/" . twittering-search)
- ;;                 ("." . twittering-visit-timeline)
- ;;                 ("@" . twittering-other-user-timeline)
- ;;                 ("T" . twittering-toggle-or-retrieve-replied-statuses)
- ;;                 ("o" . twittering-click)
- ;;                 ("TAB" . twittering-goto-next-thing)
- ;;                 ("<backtab>" . twittering-goto-previous-thing)
- ;;                 ("n" . twittering-goto-next-status-of-user)
- ;;                 ("p" . twittering-goto-previous-status-of-user)
- ;;                 ("SPC" . twittering-scroll-up)
- ;;                 ("S-SPC" . twittering-scroll-down)
- ;;                 ("y" . twittering-push-uri-onto-kill-ring)
- ;;                 ("Y" . twittering-push-tweet-onto-kill-ring)
- ;;                 ("a" . twittering-toggle-activate-buffer)
- )
+ #+RESULTS:
+**** My functions
+***** Org caputre mail
+ #+begin_src elisp
+ (defun my/org-capture-mu4e ()
+   (interactive)
+   "Capture a TODO item via email."
+   (org-capture nil "o"))
  #+end_src
 
  #+RESULTS:
- : t
+ : my/org-capture-mu4e
 
-**** TODO Visual fill column
-     It is like visual line mode but breaks the lines at =fill-column=
-     :TODO: add hook with the correct fill-column number to each mode.
-     or maybe not activate visual-fill-column??
- #+BEGIN_SRC elisp
-   (use-package visual-fill-column
-     :init
-     ;; (setq line-move-visual nil)
-     (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-     (add-hook 'LaTeX-mode-hook #'visual-line-mode)
-     ;; (add-hook 'org-mode-hook #'visual-fill-column-mode)
-     (setq visual-line-fringe-indicators '(nil right-curly-arrow))
-     (setq-default fill-column 80)
-     (use-package adaptive-wrap ; to have the same indentation.
-       :diminish 'warp
-       :init
-       (add-hook 'visual-line-mode-hook #'adaptive-wrap-prefix-mode)
-       (add-hook 'visual-fill-column-mode-hook #'adaptive-wrap-prefix-mode)
-       ;;(global-visual-line-mode 1)
-       ;;(global-visual-fill-column-mode)
-       ))
- #+END_SRC
+*** Nyan
+    Show the rainbow line.
+#+BEGIN_SRC elisp
+  (use-package nyan-mode
+    :init (nyan-mode 1)
+    :config
+    (setq nyan-minimum-window-width 0
+          ;;nyan-cat-face-number 3
+          nyan-wavy-trail nil
+          nyan-animate-nyancat nil)
+    ;; (nyan-start-animation)
+    (use-package zone-nyan
+      :config
+      (setq zone-programs [zone-nyan]
+            zone-nyan-hide-progress t)
+      (use-package zone
+        :config
+        (zone-when-idle (* 5 60)))))
 
- #+RESULTS:
+#+END_SRC
+*** Pdf tools
+**** Main
+#+BEGIN_SRC elisp
+  (use-package pdf-tools
+    :init
+    (pdf-tools-install)
+    ;; (pdf-occur-global-minor-mode 0)
+    ;; (add-hook 'dired-load-hook #'pdf-occur-dired-minor-mode)
+    ;; (add-hook 'ibuffer-load-hook #'pdf-occur-ibuffer-minor-mode)
+    ;; open pdfs scaled to fit page
+    (setq-default pdf-view-display-size 'fit-page)
+    ;; automatically annotate highlights
+    (setq pdf-annot-activate-created-annotations nil)
 
-**** COMMENT View Large files
- #+BEGIN_SRC elisp
-   (use-package vlf
-     ;; :diminish vlf-mode
-     :config
-     ;; (require 'vlf-setup)
-     (setq vlf-batch-size 1024)
-     )
- #+END_SRC
+    :config
+    (defun brust-pdf-tools-hook ()
+      (bind-keys :map pdf-view-mode-map ("i" . brust-pdf-view-previous-line-or-previous-page-5)))
 
- #+RESULTS:
- : t
+    :chords
+    (:map pdf-view-mode-map
+          ("jj" . brust-image-backward-hsroll-5))
 
-**** Visual regexp
- #+BEGIN_SRC elisp
-   (use-package visual-regexp
-     :bind
-     ("M-s-r" . vr/replace)
-     ("s-r"   . vr/query-replace))
-   ;; Use multiple-cursors, this is for you:
-   ;; ("C-c m" . vr/mc-mark)
+    :bind
+    (:map pdf-view-mode-map
+          ("<"           . pdf-view-first-page)
+          (">"           . pdf-view-last-page)
+          ("C-k"         . pdf-view-next-page-command)
+          ("C-i"         . pdf-view-previous-page-command)
+          ("s-SPC"       . pdf-view-scroll-down-or-previous-page)
+          ("s-k"         . pdf-view-next-line-or-next-page)
+          ("s-i"         . pdf-view-previous-line-or-previous-page)
+          ("s-j"         . image-backward-hscroll)
+          ("s-l"         . image-forward-hscroll)
+          ("k"           . brust-pdf-view-next-line-or-next-page-5)
+          ("i"           . brust-pdf-view-previous-line-or-previous-page-5)
+          ("j"           . brust-image-backward-hsroll-5)
+          ("l"           . brust-image-forward-hsroll-5)
+          ("C-n"         . brust-ace-window)
+          ("n"           . brust-ace-window)
+          ("<mouse-5>"   . brust-pdf-view-next-line-or-next-page-5)
+          ("<mouse-4>"   . brust-pdf-view-previous-line-or-previous-page-5)
+          ("C-<mouse-5>" . pdf-view-next-page-command)
+          ("C-<mouse-4>" . pdf-view-previous-page-command)
+          ("s-<mouse-5>" . pdf-view-next-line-or-next-page)
+          ("s-<mouse-4>" . pdf-view-previous-line-or-previous-page)
+          ("."           . hydra-pdftools/body)))
 
- #+END_SRC
+  (eval-after-load 'interleave
+    (add-hook 'pdf-view-mode-hook #'brust-pdf-tools-hook t))
 
-**** Wgrep
- #+BEGIN_SRC elisp
-   (use-package wgrep
-     :config
-     (setq wgrep-auto-save-buffer t
-           wgrep-enable-key "r"))
- #+END_SRC
+  (defun brust-image-backward-hsroll-5 (args)
+    (interactive "p")
+    (brust-by-five #'image-backward-hscroll args))
+  (defun brust-image-forward-hsroll-5 (args)
+    (interactive "p")
+    (brust-by-five #'image-forward-hscroll args))
+  (defun brust-pdf-view-next-line-or-next-page-5 (args)
+    (interactive "p")
+    (brust-by-five #'pdf-view-next-line-or-next-page args))
+  (defun brust-pdf-view-previous-line-or-previous-page-5 (args)
+    (interactive "p")
+    (brust-by-five #'pdf-view-previous-line-or-previous-page args))
+#+END_SRC
 
-**** Which key
+#+RESULTS:
+: brust-pdf-view-previous-line-or-previous-page-5
 
- #+BEGIN_SRC elisp
-   (use-package which-key
-     :defer 10
-     :diminish which-key-mode
-     :config
-     (setq which-key-popup-type 'side-window) ; default
-     ;; (setq which-key-popup-type 'minibuffer)
+**** save place
+ workaround for pdf-tools not reopening to last-viewed page of the pdf:
+  ;; https://github.com/politza/pdf-tools/issues/18
 
-     ;; Replacements for how KEY is replaced when which-key displays
-     ;;   KEY → FUNCTION
-     ;; Eg: After "C-c", display "right → winner-redo" as "▶ → winner-redo"
-     (setq which-key-key-replacement-alist
-           '(("<\\([[:alnum:]-]+\\)>" . "\\1")
-             ("left"                . "◀")
-             ("right"               . "▶")
-             ("up"                  . "▲")
-             ("down"                . "▼")
-             ("delete"              . "DLT") ; delete key
-             ("\\`DEL\\'"           . "BS") ; backspace key
-             ("next"                . "PgDn")
-             ("prior"               . "PgUp")))
+#+BEGIN_SRC elisp
+  (defun brds/pdf-set-last-viewed-bookmark ()
+    (interactive)
+    (when (eq major-mode 'pdf-view-mode)
+      (bookmark-set (brds/pdf-generate-bookmark-name))))
 
-     ;; Replacements for how part or whole of FUNCTION is replaced when
-     ;; which-key displays
-     ;;   KEY → FUNCTION
-     ;; Eg: After "d" in `calc', display "6 → calc-hex-radix" as "6 → 🖩hex-radix"
-     (setq which-key-description-replacement-alist
-           '(("Prefix Command" . "prefix")
-             ("which-key-show-next-page" . "wk next pg")
-             ("\\`calc-" . "") ; Hide "calc-" prefixes when listing M-x calc keys
-             ("/body\\'" . "") ; Remove display the "/body" portion of hydra fn names
-             ("modi/" . "m/") ; The car is intentionally not "\\`modi/" to cover
-                                           ; cases like `hydra-toggle/modi/..'.
-             ("\\`hydra-" . "+h/")
-             ("\\`org-babel-" . "ob/")))
-     ;;    (which-key-add-key-based-replacements
-     ;;      "C-x 8 0" "ZWS")
+  (defun brds/pdf-jump-last-viewed-bookmark ()
+    (when
+        (brds/pdf-has-last-viewed-bookmark)
+      (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
-     ;; List of "special" keys for which a KEY is displayed as just K but with
-     ;; "inverted video" face.
-     ;;  (setq which-key-special-keys
-     ;;       '("SPC"
-     ;;         "TAB"
-     ;;         "RET"
-     ;;         "DLT" ; delete key
-     ;;         "BS" ; backspace key
-     ;;         "ESC"))
-     ;;
-     ;;    (defface modi/wk-highlight-modi-face
-     ;;      '((t . (:inherit which-key-command-description-face :foreground "indian red")))
-     ;;      "Face for highlighting commands starting with \"modi/\".")
-     ;;
-     ;;    (setq which-key-highlighted-command-list
-     ;;          '(("\\`hydra-" . which-key-group-description-face)
-     ;;            ("\\`modi/" . modi/wk-highlight-modi-face)
-     ;;            ;; Highlight using the default `which-key-highlighted-command-face'
-     ;;            "\\(rectangle-\\)\\|\\(-rectangle\\)"
-     ;;            "\\`org-"))
+  (defun brds/pdf-has-last-viewed-bookmark ()
+    (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
 
- )
-     (which-key-mode 1)
- #+END_SRC
-**** Whitespace cleanup
- #+BEGIN_SRC elisp
-   (use-package whitespace-cleanup-mode
-     :diminish 'whitespace-cleanup-mode
-     :init
-     (setq-default indent-tabs-mode nil)
-     (global-whitespace-cleanup-mode t)
-     :config
-     (setq whitespace-style '(empty indentation::space trailing))
-     ;; (cl-pushnew 'space-before-tab::space whitespace-style)
-     ;; (global-set-key [remap just-one-space] 'cycle-spacing)
-     ;; :bind
-     ;; ("C-<menu>" . brust-cycle-whitespace)
-     ;; ("s-SPC" . brust-cycle-whitespace)
-     )
- #+END_SRC
+  (defun brds/pdf-generate-bookmark-name ()
+    (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
 
- #+RESULTS:
- : t
-**** Words
- #+BEGIN_SRC elisp
-   (require 'words)
-   (setq words-languages  '(("German"    . "de")
-                            ("Italian"   . "it")
-                            ;;("Chinese" . "zh")
-                            ("Spanish"   . "es")
-                            ("Catalan"   . "ca")
-                            ("French"    . "fr")
-                            ("English"   . "en")
-                            ("Sweden"    . "sv")))
- #+END_SRC
-**** YaSnippet
+  (defun brds/pdf-set-all-last-viewed-bookmarks ()
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (brds/pdf-set-last-viewed-bookmark))))
 
- #+BEGIN_SRC elisp
-   (use-package yasnippet
-     :defer t ;; I don't now why, but without it, don't load correctly
-     :diminish yas-minor-mode ;; " λ"
-     :commands (yas-global-mode)
-     ;; bind (:map yas-minor-mode-map
-     ;;          ("<tab>" . nil)
-     ;;          ("TAB" . nil)
-     ;;          ("SPC" . yas-expand)
-     ;;          ;; ("<S-iso-lefttab>" . yas-expand)
-     ;;          )
-     :init
-     (yas-global-mode 1)
-     :config
-     (setq yas-snippet-dirs '("~/.emacs.d/snippets" ;; personal snippets
-                              yas-installed-snippets-dir) ;; the default collection
-           ;; yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
-           yas-wrap-around-region t)
-     (yas-reload-all))
+  (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
+  (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
+  (unless noninteractive  ; as `save-place-mode' does
+    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))
+#+END_SRC
 
-   (use-package ivy-yasnippet
-     :config
-     (setq ivy-yasnippet-create-snippet-if-not-matched t)
-     :bind
-     ("C-c y" . ivy-yasnippet))
+#+RESULTS:
+| tex-delete-last-temp-files | company-clang-set-prefix | company-statistics--maybe-save | brds/pdf-set-all-last-viewed-bookmarks | reftex-kill-emacs-hook | bookmark-exit-hook-internal | desktop-kill | keyfreq-mustsave--do | org-babel-remove-temporary-directory | savehist-autosave | save-place-kill-emacs-hook | server-force-stop |
 
-   (use-package yasnippet-snippets
-     :after yasnippet
-     :config (yasnippet-snippets-initialize))
- #+END_SRC
+*** COMMENT Projectile
+#+BEGIN_SRC elisp
+  (use-package projectile
+    :init
+    (setq projectile-known-projects-file "~/.emacs.d/backups/projectile-bookmarks.eld")
+    (projectile-mode 1)
+    ;; :diminish (projectile-mode . " Proj")
+    :config
+    (setq projectile-mode-line
+          '(:eval (if
+                      (file-remote-p default-directory)
+                      ""
+                    (format " [Pj %s]"
+                            (projectile-project-name)))))
 
- #+RESULTS:
- : t
+    (use-package counsel-projectile
+      :init
+      ;; install replacements for some standard projectile commands
+      (counsel-projectile-mode 1))
+    :bind*
+    ("s-q" . project-find-file)
+    ;; ("s-q" . projectile-command-map)
+    )
+
+#+END_SRC
+*** COMMENT Rainbow delimiters
+    I use it just to auto color unmatched parents.
+#+BEGIN_SRC elisp
+  (use-package rainbow-delimiters
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+    ;; (add-hook 'LaTeX-mode-hook #'rainbow-delimiters-mode)
+    :config
+    (setq rainbow-delimiters-max-face-count 1)
+    (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                        :foreground 'unspecified
+                        :inherit 'default)
+    (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                        :foreground 'unspecified
+                        :inherit 'error))
+
+;;(defun brust-rainbow-delimiters-pick-face-function (DEPTH MATCH LOC)
+;;  (if (< DEPTH 1)
+;;      "error"
+;;    "default"))
+;;
+;;(setq rainbow-delimiters-pick-face-function #'rainbow-delimiters-pick-face-function)
+#+END_SRC
+
+#+RESULTS:
+: rainbow-delimiters-pick-face-function
+
+*** Recentf
+    Keep a list of recently opened files.
+#+BEGIN_SRC elisp
+  (use-package recentf
+    :init
+    (setq recentf-max-saved-items 200
+          ;; recentf-max-menu-items 15
+          recentf-save-file "~/.emacs.d/backups/recentf"
+          recentf-exclude '("COMMIT_MSG" "COMMIT_EDITMSG" "github.*txt$"
+                            "^.*png$" "^.*~$" "^.*-autoloads.el$"
+                            "/elpa/" "^.*rel$" "^.*latexmk$" "^.*[0-9]$" "^.*fls$"))
+    ;; :bind ("C-<f2>" . recentf-open-files)
+    (recentf-mode 1))
+    (run-with-timer 0 (* 30 60) 'recentf-save-list)
+
+#+END_SRC
+
+*** COMMENT SAGE
+#+BEGIN_SRC elisp
+  (use-package sage-shell-mode
+    :init
+    (setq sage-shell:sage-root "~/SageMath")
+    :config
+    ;; Run SageMath by M-x run-sage instead of M-x sage-shell:run-sage
+    (sage-shell:define-alias)
+
+    ;; Turn on eldoc-mode in Sage terminal and in Sage source files
+    (add-hook 'sage-shell-mode-hook #'eldoc-mode)
+    (add-hook 'sage-shell:sage-mode-hook #'eldoc-mode))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** COMMENT SASS files
+    For some reason turn-off aggressive-indent do not work :(
+#+BEGIN_SRC elisp
+  (use-package sass-mode
+    :config
+    (defun aggressive-indent-mode-off nil
+      (aggressive-indent-mode -1))
+    (setq scss-compile-at-save nil)
+    (add-hook 'sass-mode-hook #'aggressive-indent-mode-off))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** Smartparents
+#+BEGIN_SRC elisp
+  (use-package smartparens
+    :diminish smartparens-mode
+    :init
+    (setq sp-base-key-bindings nil
+          sp-hybrid-kill-entire-symbol t
+          sp-navigate-close-if-unbalanced t
+          sp-show-pair-from-inside t
+          sp-autoinsert-pair nil
+          sp-use-subword t)
+    :config
+    ;; Yes
+    (add-hook 'fundamental-mode-hook 'y-sp)
+    (add-hook 'text-mode-hook 'y-sp)
+    (add-hook 'org-mode-hook 'y-sp)
+    (add-hook 'LaTeX-mode-hook 'y-sp)
+    (add-hook 'emacs-lisp-mode-hook 'y-sp)
+    (defun y-sp nil "Activate smartparents" (smartparens-mode 1))
+    ;;(smartparens-global-mode t)
+    :bind
+    ("M-f" . sp-forward-sexp)
+    ("M-d" . sp-backward-sexp)
+    ;; ("C-M-d" . sp-down-sexp)
+    ;; ("C-M-a" . sp-backward-down-sexp)
+    ;; ("C-S-d" . sp-beginning-of-sexp)
+    ;; ("C-S-a" . sp-end-of-sexp)
+    ;;("C-M-e" . sp-up-sexp)
+    ;;("C-M-u" . sp-backward-up-sexp)
+    ("M-C-f" . sp-next-sexp)
+    ("M-C-d" . sp-previous-sexp)
+
+    ;; ("M-S-d" . sp-splice-sexp)
+    ;; ("C-]" . sp-select-next-thing-exchange)
+    ;; ("C-M-]" . sp-select-next-thing)
+    ;;
+    ;; ("C-M-k" . sp-kill-sexp)
+    ;; ("C-M-w" . sp-copy-sexp)
+    ("M-<delete>" . sp-unwrap-sexp)
+    ("M-<backspace>" . sp-backward-unwrap-sexp)
+    ;;("C-<right>" . 'sp-forward-slurp-sexp)
+    ;;("C-<left>" . 'sp-forward-barf-sexp)
+    ;;("C-M-<left>" . sp-backward-slurp-sexp)
+    ;;("C-M-<right>" . sp-backward-barf-sexp)
+    ;;("C-M-<delete>" . 'sp-splice-sexp-killing-forward)
+    ;;("C-M-<backspace>" . sp-splice-sexp-killing-backward)
+    ;;("C-S-<backspace>" . sp-splice-sexp-killing-around)
+    ;;("M-F" . 'sp-forward-symbol)
+    ;;("M-B" . 'sp-backward-symbol)
+    )
+#+END_SRC
+*** Smerge
+See https://github.com/alphapapa/unpackaged.el#smerge-mode
+
+#+begin_src elisp
+(use-package smerge-mode
+  :after hydra
+  :config
+  (defhydra unpackaged/smerge-hydra
+    (:color pink :hint nil :post (smerge-auto-leave))
+    "
+^Move^       ^Keep^               ^Diff^                 ^Other^
+^^-----------^^-------------------^^---------------------^^-------
+_n_ext       _b_ase               _<_: upper/base        _C_ombine
+_p_rev       _u_pper              _=_: upper/lower       _r_esolve
+^^           _l_ower              _>_: base/lower        _k_ill current
+^^           _a_ll                _R_efine
+^^           _RET_: current       _E_diff
+"
+    ("n" smerge-next)
+    ("p" smerge-prev)
+    ("b" smerge-keep-base)
+    ("u" smerge-keep-upper)
+    ("l" smerge-keep-lower)
+    ("a" smerge-keep-all)
+    ("RET" smerge-keep-current)
+    ("\C-m" smerge-keep-current)
+    ("<" smerge-diff-base-upper)
+    ("=" smerge-diff-upper-lower)
+    (">" smerge-diff-base-lower)
+    ("R" smerge-refine)
+    ("E" smerge-ediff)
+    ("C" smerge-combine-with-next)
+    ("r" smerge-resolve)
+    ("k" smerge-kill-current)
+    ("ZZ" (lambda ()
+            (interactive)
+            (save-buffer)
+            (bury-buffer))
+     "Save and bury buffer" :color blue)
+    ("q" nil "cancel" :color blue))
+  :hook (magit-diff-visit-file . (lambda ()
+                                   (when smerge-mode
+                                     (unpackaged/smerge-hydra/body)))))
+#+end_src
+
+#+RESULTS:
+| lambda | nil | (when smerge-mode (unpackaged/smerge-hydra/body)) |
+
+*** Transpose buffers
+#+BEGIN_SRC elisp
+  (use-package transpose-frame
+    :bind*
+    ;; ("C-x |" . transpose-frame)
+    ;; ("C-x 5" . transpose-frame)
+    ("<f5> t"  . transpose-frame)
+    ("<f5> h"  . flop-frame)
+    ("<f5> v"  . flip-frame)
+    ("<f5> r" . rotate-frame-clockwise))
+#+END_SRC
+*** COMMENT Tweeter
+#+begin_src elisp
+(use-package twittering-mode
+    :ensure t
+    :commands twit
+    :init
+    (add-hook 'twittering-edit-mode-hook #'flyspell-mode)
+    :config
+    (setq twittering-use-master-password t
+          twittering-icon-mode t
+          twittering-use-icon-storage t
+          ;; twittering-icon-storage-file (concat joe-emacs-temporal-directory "twittering-mode-icons.gz")
+          twittering-convert-fix-size 52
+          twittering-initial-timeline-spec-string '(":home")
+          twittering-edit-skeleton 'inherit-any
+          twittering-display-remaining t
+          twittering-timeline-header  ""
+          twittering-timeline-footer  ""
+          twittering-status-format
+          "%i  %S, %RT{%FACE[bold]{%S}} %@  %FACE[shadow]{%p%f%L%r}\n%FOLD[        ]{%T}\n")
+
+      ;; set the new bindings
+;;    :bind :map twittering-mode-map
+;;                 ("\\" . hydra-twittering/body)
+;;                 ("q" . twittering-kill-buffer)
+;;                 ("Q" . twittering-edit-mode)
+;;                 ("j" . twittering-goto-next-status)
+;;                 ("k" . twittering-goto-previous-status)
+;;                 ("h" . twittering-switch-to-next-timeline)
+;;                 ("l" . twittering-switch-to-previous-timeline)
+;;                 ("g" . beginning-of-buffer)
+;;                 ("G" . end-of-buffer)
+;;                 ("t" . twittering-update-status-interactive)
+;;                 ("X" . twittering-delete-status)
+;;                 ("RET" . twittering-reply-to-user)
+;;                 ("r" . twittering-native-retweet)
+;;                 ("R" . twittering-organic-retweet)
+;;                 ("d" . twittering-direct-message)
+;;                 ("u" . twittering-current-timeline)
+;;                 ("b" . twittering-favorite)
+;;                 ("B" . twittering-unfavorite)
+;;                 ("f" . twittering-follow)
+;;                 ("F" . twittering-unfollow)
+;;                 ("i" . twittering-view-user-page)
+;;                 ("/" . twittering-search)
+;;                 ("." . twittering-visit-timeline)
+;;                 ("@" . twittering-other-user-timeline)
+;;                 ("T" . twittering-toggle-or-retrieve-replied-statuses)
+;;                 ("o" . twittering-click)
+;;                 ("TAB" . twittering-goto-next-thing)
+;;                 ("<backtab>" . twittering-goto-previous-thing)
+;;                 ("n" . twittering-goto-next-status-of-user)
+;;                 ("p" . twittering-goto-previous-status-of-user)
+;;                 ("SPC" . twittering-scroll-up)
+;;                 ("S-SPC" . twittering-scroll-down)
+;;                 ("y" . twittering-push-uri-onto-kill-ring)
+;;                 ("Y" . twittering-push-tweet-onto-kill-ring)
+;;                 ("a" . twittering-toggle-activate-buffer)
+)
+#+end_src
+
+#+RESULTS:
+: t
+
+*** TODO Visual fill column
+    It is like visual line mode but breaks the lines at =fill-column=
+    :TODO: add hook with the correct fill-column number to each mode.
+    or maybe not activate visual-fill-column??
+#+BEGIN_SRC elisp
+  (use-package visual-fill-column
+    :init
+    ;; (setq line-move-visual nil)
+    (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+    (add-hook 'LaTeX-mode-hook #'visual-line-mode)
+    ;; (add-hook 'org-mode-hook #'visual-fill-column-mode)
+    (setq visual-line-fringe-indicators '(nil right-curly-arrow))
+    (setq-default fill-column 80)
+    (use-package adaptive-wrap ; to have the same indentation.
+      :diminish 'warp
+      :init
+      (add-hook 'visual-line-mode-hook #'adaptive-wrap-prefix-mode)
+      (add-hook 'visual-fill-column-mode-hook #'adaptive-wrap-prefix-mode)
+      ;;(global-visual-line-mode 1)
+      ;;(global-visual-fill-column-mode)
+      ))
+#+END_SRC
+
+#+RESULTS:
+
+*** COMMENT View Large files
+#+BEGIN_SRC elisp
+  (use-package vlf
+    ;; :diminish vlf-mode
+    :config
+    ;; (require 'vlf-setup)
+    (setq vlf-batch-size 1024)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** Visual regexp
+#+BEGIN_SRC elisp
+  (use-package visual-regexp
+    :bind
+    ("M-s-r" . vr/replace)
+    ("s-r"   . vr/query-replace))
+  ;; Use multiple-cursors, this is for you:
+  ;; ("C-c m" . vr/mc-mark)
+
+#+END_SRC
+
+*** Wgrep
+#+BEGIN_SRC elisp
+  (use-package wgrep
+    :config
+    (setq wgrep-auto-save-buffer t
+          wgrep-enable-key "r"))
+#+END_SRC
+
+*** Which key
+
+#+BEGIN_SRC elisp
+  (use-package which-key
+    :defer 10
+    :diminish which-key-mode
+    :config
+    (setq which-key-popup-type 'side-window) ; default
+    ;; (setq which-key-popup-type 'minibuffer)
+
+    ;; Replacements for how KEY is replaced when which-key displays
+    ;;   KEY → FUNCTION
+    ;; Eg: After "C-c", display "right → winner-redo" as "▶ → winner-redo"
+    (setq which-key-key-replacement-alist
+          '(("<\\([[:alnum:]-]+\\)>" . "\\1")
+            ("left"                . "◀")
+            ("right"               . "▶")
+            ("up"                  . "▲")
+            ("down"                . "▼")
+            ("delete"              . "DLT") ; delete key
+            ("\\`DEL\\'"           . "BS") ; backspace key
+            ("next"                . "PgDn")
+            ("prior"               . "PgUp")))
+
+    ;; Replacements for how part or whole of FUNCTION is replaced when
+    ;; which-key displays
+    ;;   KEY → FUNCTION
+    ;; Eg: After "d" in `calc', display "6 → calc-hex-radix" as "6 → 🖩hex-radix"
+    (setq which-key-description-replacement-alist
+          '(("Prefix Command" . "prefix")
+            ("which-key-show-next-page" . "wk next pg")
+            ("\\`calc-" . "") ; Hide "calc-" prefixes when listing M-x calc keys
+            ("/body\\'" . "") ; Remove display the "/body" portion of hydra fn names
+            ("modi/" . "m/") ; The car is intentionally not "\\`modi/" to cover
+                                          ; cases like `hydra-toggle/modi/..'.
+            ("\\`hydra-" . "+h/")
+            ("\\`org-babel-" . "ob/")))
+    ;;    (which-key-add-key-based-replacements
+    ;;      "C-x 8 0" "ZWS")
+
+    ;; List of "special" keys for which a KEY is displayed as just K but with
+    ;; "inverted video" face.
+    ;;  (setq which-key-special-keys
+    ;;       '("SPC"
+    ;;         "TAB"
+    ;;         "RET"
+    ;;         "DLT" ; delete key
+    ;;         "BS" ; backspace key
+    ;;         "ESC"))
+    ;;
+    ;;    (defface modi/wk-highlight-modi-face
+    ;;      '((t . (:inherit which-key-command-description-face :foreground "indian red")))
+    ;;      "Face for highlighting commands starting with \"modi/\".")
+    ;;
+    ;;    (setq which-key-highlighted-command-list
+    ;;          '(("\\`hydra-" . which-key-group-description-face)
+    ;;            ("\\`modi/" . modi/wk-highlight-modi-face)
+    ;;            ;; Highlight using the default `which-key-highlighted-command-face'
+    ;;            "\\(rectangle-\\)\\|\\(-rectangle\\)"
+    ;;            "\\`org-"))
+
+)
+    (which-key-mode 1)
+#+END_SRC
+*** Whitespace cleanup
+#+BEGIN_SRC elisp
+  (use-package whitespace-cleanup-mode
+    :diminish 'whitespace-cleanup-mode
+    :init
+    (setq-default indent-tabs-mode nil)
+    (global-whitespace-cleanup-mode t)
+    :config
+    (setq whitespace-style '(empty indentation::space trailing))
+    ;; (cl-pushnew 'space-before-tab::space whitespace-style)
+    ;; (global-set-key [remap just-one-space] 'cycle-spacing)
+    ;; :bind
+    ;; ("C-<menu>" . brust-cycle-whitespace)
+    ;; ("s-SPC" . brust-cycle-whitespace)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+*** Words
+#+BEGIN_SRC elisp
+  (require 'words)
+  (setq words-languages  '(("German"    . "de")
+                           ("Italian"   . "it")
+                           ;;("Chinese" . "zh")
+                           ("Spanish"   . "es")
+                           ("Catalan"   . "ca")
+                           ("French"    . "fr")
+                           ("English"   . "en")
+                           ("Sweden"    . "sv")))
+#+END_SRC
+*** YaSnippet
+
+#+BEGIN_SRC elisp
+  (use-package yasnippet
+    :defer t ;; I don't now why, but without it, don't load correctly
+    :diminish yas-minor-mode ;; " λ"
+    :commands (yas-global-mode)
+    ;; bind (:map yas-minor-mode-map
+    ;;          ("<tab>" . nil)
+    ;;          ("TAB" . nil)
+    ;;          ("SPC" . yas-expand)
+    ;;          ;; ("<S-iso-lefttab>" . yas-expand)
+    ;;          )
+    :init
+    (yas-global-mode 1)
+    :config
+    (setq yas-snippet-dirs '("~/.emacs.d/snippets" ;; personal snippets
+                             yas-installed-snippets-dir) ;; the default collection
+          ;; yas-prompt-functions '(yas-ido-prompt yas-completing-prompt)
+          yas-wrap-around-region t)
+    (yas-reload-all))
+
+  (use-package ivy-yasnippet
+    :config
+    (setq ivy-yasnippet-create-snippet-if-not-matched t)
+    :bind
+    ("C-c y" . ivy-yasnippet))
+
+  (use-package yasnippet-snippets
+    :after yasnippet
+    :config (yasnippet-snippets-initialize))
+#+END_SRC
+
+#+RESULTS:
+: t
 ** Singular
 *** Config
 #+BEGIN_SRC elisp
