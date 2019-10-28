@@ -845,7 +845,7 @@ when one fix a personal personal dictionary there are problems when one changes 
    ("s-d" . backward-kill-word))
 
 #+END_SRC
-** Build-in modes  
+** The build-in modes
 **** Abbrev's
 ***** Setting
  #+BEGIN_SRC elisp
@@ -4310,7 +4310,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
        - [ ] [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
        - [X] [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
        - [X] [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
-       - 
+       -
 ***** COMMENT Install
   Just in case to generate a certificate:
   # openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
@@ -4403,7 +4403,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
       (mu4e-headers-search
        (concat "from:" (cdar (mu4e-message-field msg :from)))))
 
-    (setq mu4e-view-actions 
+    (setq mu4e-view-actions
           (append mu4e-view-actions
                   (list
                    ;; define 'x' as the shortcut
@@ -4428,9 +4428,9 @@ should be. After calling this function, call 'meeting-done' to reset the environ
              ;; mu4e-completing-read-function 'completing-read
              mu4e-completing-read-function 'ivy-completing-read
              mail-user-agent 'mu4e-user-agent
-             ;; Use "P" to toggle threading            
+             ;; Use "P" to toggle threading
              mu4e-headers-show-threads nil
-             ;; If you want to exclude your own e-mail address when “replying to all” 
+             ;; If you want to exclude your own e-mail address when “replying to all”
              mu4e-compose-dont-reply-to-self t
              mu4e-view-show-addresses t
              ;; use 'fancy' non-ascii characters in various places in mu4e
@@ -4594,7 +4594,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 ***** yasnippet for composing emails
    From http://pragmaticemacs.com/category/mu4e/
- 
+
   #+begin_src elisp
   ;; function to return first name of email recipients
   ;; used by yasnippet
@@ -4776,7 +4776,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
    (defun brds/pdf-jump-last-viewed-bookmark ()
      (when
-	 (brds/pdf-has-last-viewed-bookmark)
+         (brds/pdf-has-last-viewed-bookmark)
        (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
    (defun brds/pdf-has-last-viewed-bookmark ()
@@ -4788,7 +4788,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
    (defun brds/pdf-set-all-last-viewed-bookmarks ()
      (dolist (buf (buffer-list))
        (with-current-buffer buf
-	 (brds/pdf-set-last-viewed-bookmark))))
+         (brds/pdf-set-last-viewed-bookmark))))
 
    (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
    (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
@@ -6063,7 +6063,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 *** The function
 #+BEGIN_SRC elisp
   (defun brust-myregexp nil
-  "Do occur in the current buffer with my regexpresion build from the files bla bla bla" 
+  "Do occur in the current buffer with my regexpresion build from the files bla bla bla"
     (interactive)
     ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
     (occur brust--myregexp-itself))
