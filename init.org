@@ -1277,6 +1277,60 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 : Info-history-back
 
+*** Search
+**** Setting
+#+BEGIN_SRC elisp
+  (setq isearch-allow-scroll t)
+
+  (bind-keys :map isearch-mode-map
+             ("<backspace>" . isearch-delete-something)
+             ;; Set arrow keys in isearch. left/right is backward/forward, up/down is history. Press Return to exit. (From Xah-Lee)
+             ("<up>"    . isearch-ring-retreat)
+             ("<down>"  . isearch-ring-advance)
+             ("<left>"  . isearch-repeat-backward) ; single key, useful
+             ("<right>" . isearch-repeat-forward)) ; single key, useful
+  (bind-keys :map minibuffer-local-isearch-map
+             ("<right>" . isearch-forward-exit-minibuffer) ; single key, useful
+             ("<left>"  . isearch-reverse-exit-minibuffer))
+
+#+END_SRC
+
+**** Finish at the start
+    Isearch is a useful navigation mechanism. For me, it works a little
+    better if isearch puts you at the start of the search, not the end:
+#+BEGIN_SRC elisp
+  (add-hook 'isearch-mode-end-hook 'my-goto-match-beginning)
+
+  (defun my-goto-match-beginning nil
+    (when (and isearch-forward isearch-other-end)
+      (goto-char isearch-other-end)))
+
+  ;; (when isearch-forward (goto-char isearch-other-end))
+#+END_SRC
+**** Improve backspace
+     New improved funtion of backspace in isearch mode.
+     It doesn't require binding.
+#+BEGIN_SRC elisp
+(defun isearch-delete-something nil
+  "Delete non-matching text or the last character."
+  ;; Mostly copied from `isearch-del-char' and Drew's answer on the page above
+  (interactive)
+  (if (= 0 (length isearch-string))
+      (ding)
+    (setq isearch-string
+          (substring isearch-string
+                     0
+                     (or (isearch-fail-pos) (1- (length isearch-string)))))
+    (setq isearch-message
+          (mapconcat #'isearch-text-char-description isearch-string "")))
+  (if isearch-other-end (goto-char isearch-other-end))
+  (isearch-search)
+  (isearch-push-state)
+  (isearch-update))
+#+END_SRC
+
+#+RESULTS:
+: isearch-delete-something
 *** Line and column numbers
     Show line and column numbers just in the =mode-line=
 #+BEGIN_SRC elisp
@@ -1287,6 +1341,174 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 : t
+
+*** Org mode
+**** Main congif
+ #+BEGIN_SRC elisp
+   (use-package org
+     :ensure nil
+     :init
+           ;;; To make compatible org-scr-tab-acts-natively with yasnipets
+     ;;    (defun yas/org-very-safe-expand nil
+     ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+     ;;   (add-hook 'org-mode-hook
+     ;;             (lambda nil
+     ;;               (yas-global-mode 1)
+     ;;               (make-variable-buffer-local 'yas-trigger-key)
+     ;;               (setq yas-trigger-key [tab])
+     ;;               (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+     ;;               (define-key yas-keymap [tab] 'yas-next-field)))
+           ;;;;;;;;;;;;;;;;;
+     (setq org-src-window-setup (quote other-window)
+           ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
+           ;; headline text
+           org-special-ctrl-a/e t
+           org-use-speed-commands t
+           org-cycle-global-at-bob t
+           org-startup-folded t
+           org-hide-emphasis-markers t
+           ;;org-ellipsis " ▼"
+           ;;org-completion-use-ido t
+           org-outline-path-complete-in-steps nil
+           org-src-fontify-natively t   ;; Pretty code blocks
+           ;; org-src-tab-acts-natively t
+           org-src-ask-before-returning-to-edit-buffer nil
+           org-edit-src-auto-save-idle-delay 20
+           org-confirm-babel-evaluate nil
+           org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
+                               (sequence "|" "CANCELED(c)"))
+           org-return-follows-link 1
+           org-link-frame-setup (quote ((file . find-file)))
+           org-agenda-todo-list-sublevels nil
+           org-deadline-warning-days 3
+           org-agenda-skip-scheduled-if-done 1
+           org-agenda-skip-deadline-if-done 1
+           org-agenda-skip-deadline-if-done 1)
+
+     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+     (add-hook 'org-mode-hook 'org-display-inline-images)
+
+     ;; org-mode my agenda view
+     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
+     (setq org-agenda-custom-commands
+           '(("h" "My agenda view"
+              ((agenda "")
+               (todo)))))
+     :config
+     ;; Org speed keys
+     (cl-loop for new-key in
+              `(,(cons "P" 'org-set-property)
+                ,(cons "d" 'org-deadline)
+                ,(cons "h" 'outline-up-heading)
+                ,(cons "k" (lambda nil "Next visible"
+                             (org-speed-move-safe 'org-next-visible-heading)))
+                ,(cons "i" (lambda nil "Previous visible"
+                             (org-speed-move-safe 'org-previous-visible-heading)))
+                ,(cons "l" (lambda nil "Forward same level"
+                             (org-speed-move-safe 'org-forward-heading-same-level)))
+                ,(cons "o" (lambda nil "Backward same level"
+                             (org-speed-move-safe 'org-backward-heading-same-level)))
+                ,(cons "n" (lambda nil "Insert -n-ew header below"
+                             (forward-char 1)
+                             (call-interactively
+                              '(org-insert-heading-respect-content))))
+                ,(cons "ñ" 'interleave-mode) ;; Start interleave mode
+                ,(cons "m" 'org-mark-subtree)   ;; Mark a subtree
+                ,(cons "S" 'widen)   ;; Widen
+                ,(cons "K" (lambda ()   ;; kill a subtree
+                             (org-mark-subtree)
+                             (kill-region
+                              (region-beginning)
+                              (region-end))))
+                ,(cons "q" (lambda ()   ;; Jump to headline
+                             (avy-with avy-goto-line
+                               (avy--generic-jump "^\\*+" nil avy-style)))))
+              do (push new-key org-speed-commands-user))
+     ;; Org babel
+     (org-babel-do-load-languages 'org-babel-load-languages
+                                  '(
+                                    ;; (R . t)
+                                    ;; (singular . t)
+                                    ;; (gnuplot . t)
+                                    ;; (latex . t)
+                                    ;; (org . t)
+                                    ;; (sh . t)
+                                    ;; (lisp . t)
+                                    (shell . t)
+                                    (julia . t) ;; see https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0
+                                    ))
+
+     (font-lock-add-keywords            ;; A bit silly but my headers are now
+      'org-mode                         ;; shorter, and that is nice canceled
+      (mapcar (lambda (xx)
+                `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
+                  (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
+                            nil))))
+              '(("TODO"       . "⚑")
+                ("DOING"      . "⚐")
+                ("CANCELED"   . "✘")
+                ("DONE"       . "✔"))))
+     :bind
+     ;; ("C-c l" . org-store-link)
+     ;; ("C-c c" . org-capture)
+     ("C-c a" . org-agenda)
+     ("C-c b" . org-iswitchb)
+     (:map org-mode-map
+           ("s-b" . org-text-bold)
+           ("s-v" . org-text-italics)
+           ("s-c" . org-text-code)
+           ("<" . brust-org<)))
+ #+END_SRC
+
+ #+RESULTS:
+**** Org bullets
+      Use org-bullets-mode for utf8 symbols as org bullets
+ #+BEGIN_SRC elisp
+   (use-package org-bullets
+     :after org
+     ;; make available "org-bullet-face" such that I can control the font size individually
+     :init
+     (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
+     (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
+ #+END_SRC
+
+ #+RESULTS:
+**** Org capture
+ #+BEGIN_SRC elisp
+   (use-package org-capture
+     :ensure nil
+     :after org
+     :preface
+     (defvar my/org-ledger-card-template
+       "%(org-read-date) %^{Payee}
+       Expenses:%^{Account}  €%^{Amount}
+       Liabilities:DebidCard:Mediolanum"
+       "Template for devid card transaction with ledger.")
+
+     (defvar my/org-ledger-cash-template
+       "%(org-read-date) * %^{Payee}
+       Expenses:%^{Account}  €%^{Amount}
+       Assets:Cash:Wallet"
+       "Template for cash transaction with ledger.")
+     :custom
+     (org-capture-templates
+      `(("l" "Ledger")
+        ("lb" "Bank" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+         my/org-ledger-card-template
+         :empty-lines 1
+         :immediate-finish t)
+        ("lc" "Cash" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+         my/org-ledger-cash-template
+         :empty-lines 1
+         :immediate-finish t)
+        ("o"
+         "TODO respond to email"
+         entry
+         (file YOUR_TODO_FILE.org)
+         "* TODO %^{Description}\n%A\n%?\n"))))
+ #+END_SRC
+
+ #+RESULTS:
 
 *** Outline mode
     Set symbol and face for ellipsis, from http://emacs.stackexchange.com/questions/17806/set-face-of-outline-ellipsis
@@ -1362,60 +1584,6 @@ when one fix a personal personal dictionary there are problems when one changes 
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
-*** Search
-**** Setting
-#+BEGIN_SRC elisp
-  (setq isearch-allow-scroll t)
-
-  (bind-keys :map isearch-mode-map
-             ("<backspace>" . isearch-delete-something)
-             ;; Set arrow keys in isearch. left/right is backward/forward, up/down is history. Press Return to exit. (From Xah-Lee)
-             ("<up>"    . isearch-ring-retreat)
-             ("<down>"  . isearch-ring-advance)
-             ("<left>"  . isearch-repeat-backward) ; single key, useful
-             ("<right>" . isearch-repeat-forward)) ; single key, useful
-  (bind-keys :map minibuffer-local-isearch-map
-             ("<right>" . isearch-forward-exit-minibuffer) ; single key, useful
-             ("<left>"  . isearch-reverse-exit-minibuffer))
-
-#+END_SRC
-
-**** Finish at the start
-    Isearch is a useful navigation mechanism. For me, it works a little
-    better if isearch puts you at the start of the search, not the end:
-#+BEGIN_SRC elisp
-  (add-hook 'isearch-mode-end-hook 'my-goto-match-beginning)
-
-  (defun my-goto-match-beginning nil
-    (when (and isearch-forward isearch-other-end)
-      (goto-char isearch-other-end)))
-
-  ;; (when isearch-forward (goto-char isearch-other-end))
-#+END_SRC
-**** Improve backspace
-     New improved funtion of backspace in isearch mode.
-     It doesn't require binding.
-#+BEGIN_SRC elisp
-(defun isearch-delete-something nil
-  "Delete non-matching text or the last character."
-  ;; Mostly copied from `isearch-del-char' and Drew's answer on the page above
-  (interactive)
-  (if (= 0 (length isearch-string))
-      (ding)
-    (setq isearch-string
-          (substring isearch-string
-                     0
-                     (or (isearch-fail-pos) (1- (length isearch-string)))))
-    (setq isearch-message
-          (mapconcat #'isearch-text-char-description isearch-string "")))
-  (if isearch-other-end (goto-char isearch-other-end))
-  (isearch-search)
-  (isearch-push-state)
-  (isearch-update))
-#+END_SRC
-
-#+RESULTS:
-: isearch-delete-something
 *** Server
 #+BEGIN_SRC elisp
   (require 'server)
@@ -5577,174 +5745,6 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 #+RESULTS:
 : brust-singular-dynamic-complete
-
-** Org mode
-*** Main congif
-#+BEGIN_SRC elisp
-  (use-package org
-    :ensure nil
-    :init
-          ;;; To make compatible org-scr-tab-acts-natively with yasnipets
-    ;;    (defun yas/org-very-safe-expand nil
-    ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
-    ;;   (add-hook 'org-mode-hook
-    ;;             (lambda nil
-    ;;               (yas-global-mode 1)
-    ;;               (make-variable-buffer-local 'yas-trigger-key)
-    ;;               (setq yas-trigger-key [tab])
-    ;;               (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-    ;;               (define-key yas-keymap [tab] 'yas-next-field)))
-          ;;;;;;;;;;;;;;;;;
-    (setq org-src-window-setup (quote other-window)
-          ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
-          ;; headline text
-          org-special-ctrl-a/e t
-          org-use-speed-commands t
-          org-cycle-global-at-bob t
-          org-startup-folded t
-          org-hide-emphasis-markers t
-          ;;org-ellipsis " ▼"
-          ;;org-completion-use-ido t
-          org-outline-path-complete-in-steps nil
-          org-src-fontify-natively t   ;; Pretty code blocks
-          ;; org-src-tab-acts-natively t
-          org-src-ask-before-returning-to-edit-buffer nil
-          org-edit-src-auto-save-idle-delay 20
-          org-confirm-babel-evaluate nil
-          org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
-                              (sequence "|" "CANCELED(c)"))
-          org-return-follows-link 1
-          org-link-frame-setup (quote ((file . find-file)))
-          org-agenda-todo-list-sublevels nil
-          org-deadline-warning-days 3
-          org-agenda-skip-scheduled-if-done 1
-          org-agenda-skip-deadline-if-done 1
-          org-agenda-skip-deadline-if-done 1)
-
-    (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
-    (add-hook 'org-mode-hook 'org-display-inline-images)
-
-    ;; org-mode my agenda view
-    (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
-    (setq org-agenda-custom-commands
-          '(("h" "My agenda view"
-             ((agenda "")
-              (todo)))))
-    :config
-    ;; Org speed keys
-    (cl-loop for new-key in
-             `(,(cons "P" 'org-set-property)
-               ,(cons "d" 'org-deadline)
-               ,(cons "h" 'outline-up-heading)
-               ,(cons "k" (lambda nil "Next visible"
-                            (org-speed-move-safe 'org-next-visible-heading)))
-               ,(cons "i" (lambda nil "Previous visible"
-                            (org-speed-move-safe 'org-previous-visible-heading)))
-               ,(cons "l" (lambda nil "Forward same level"
-                            (org-speed-move-safe 'org-forward-heading-same-level)))
-               ,(cons "o" (lambda nil "Backward same level"
-                            (org-speed-move-safe 'org-backward-heading-same-level)))
-               ,(cons "n" (lambda nil "Insert -n-ew header below"
-                            (forward-char 1)
-                            (call-interactively
-                             '(org-insert-heading-respect-content))))
-               ,(cons "ñ" 'interleave-mode) ;; Start interleave mode
-               ,(cons "m" 'org-mark-subtree)   ;; Mark a subtree
-               ,(cons "S" 'widen)   ;; Widen
-               ,(cons "K" (lambda ()   ;; kill a subtree
-                            (org-mark-subtree)
-                            (kill-region
-                             (region-beginning)
-                             (region-end))))
-               ,(cons "q" (lambda ()   ;; Jump to headline
-                            (avy-with avy-goto-line
-                              (avy--generic-jump "^\\*+" nil avy-style)))))
-             do (push new-key org-speed-commands-user))
-    ;; Org babel
-    (org-babel-do-load-languages 'org-babel-load-languages
-                                 '(
-                                   ;; (R . t)
-                                   ;; (singular . t)
-                                   ;; (gnuplot . t)
-                                   ;; (latex . t)
-                                   ;; (org . t)
-                                   ;; (sh . t)
-                                   ;; (lisp . t)
-                                   (shell . t)
-                                   (julia . t) ;; see https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0
-                                   ))
-
-    (font-lock-add-keywords            ;; A bit silly but my headers are now
-     'org-mode                         ;; shorter, and that is nice canceled
-     (mapcar (lambda (xx)
-               `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
-                 (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
-                           nil))))
-             '(("TODO"       . "⚑")
-               ("DOING"      . "⚐")
-               ("CANCELED"   . "✘")
-               ("DONE"       . "✔"))))
-    :bind
-    ;; ("C-c l" . org-store-link)
-    ;; ("C-c c" . org-capture)
-    ("C-c a" . org-agenda)
-    ("C-c b" . org-iswitchb)
-    (:map org-mode-map
-          ("s-b" . org-text-bold)
-          ("s-v" . org-text-italics)
-          ("s-c" . org-text-code)
-          ("<" . brust-org<)))
-#+END_SRC
-
-#+RESULTS:
-*** Org bullets
-     Use org-bullets-mode for utf8 symbols as org bullets
-#+BEGIN_SRC elisp
-  (use-package org-bullets
-    :after org
-    ;; make available "org-bullet-face" such that I can control the font size individually
-    :init
-    (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
-    (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
-#+END_SRC
-
-#+RESULTS:
-*** Org capture
-#+BEGIN_SRC elisp
-  (use-package org-capture
-    :ensure nil
-    :after org
-    :preface
-    (defvar my/org-ledger-card-template
-      "%(org-read-date) %^{Payee}
-      Expenses:%^{Account}  €%^{Amount}
-      Liabilities:DebidCard:Mediolanum"
-      "Template for devid card transaction with ledger.")
-
-    (defvar my/org-ledger-cash-template
-      "%(org-read-date) * %^{Payee}
-      Expenses:%^{Account}  €%^{Amount}
-      Assets:Cash:Wallet"
-      "Template for cash transaction with ledger.")
-    :custom
-    (org-capture-templates
-     `(("l" "Ledger")
-       ("lb" "Bank" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
-        my/org-ledger-card-template
-        :empty-lines 1
-        :immediate-finish t)
-       ("lc" "Cash" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
-        my/org-ledger-cash-template
-        :empty-lines 1
-        :immediate-finish t)
-       ("o"
-        "TODO respond to email"
-        entry
-        (file YOUR_TODO_FILE.org)
-        "* TODO %^{Description}\n%A\n%?\n"))))
-#+END_SRC
-
-#+RESULTS:
 
 ** LaTeX-mode-config
 *** General
