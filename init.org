@@ -4965,7 +4965,7 @@ Just in case to generate a certificate:
 
   (defun brds/pdf-jump-last-viewed-bookmark ()
     (when
-        (brds/pdf-has-last-viewed-bookmark)
+	(brds/pdf-has-last-viewed-bookmark)
       (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
   (defun brds/pdf-has-last-viewed-bookmark ()
@@ -4977,16 +4977,16 @@ Just in case to generate a certificate:
   (defun brds/pdf-set-all-last-viewed-bookmarks ()
     (dolist (buf (buffer-list))
       (with-current-buffer buf
-        (brds/pdf-set-last-viewed-bookmark))))
+	(brds/pdf-set-last-viewed-bookmark))))
 
   (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
   (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
   (unless noninteractive  ; as `save-place-mode' does
-    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks)))
+    (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))
 #+END_SRC
 
 #+RESULTS:
-| tex-delete-last-temp-files | company-clang-set-prefix | company-statistics--maybe-save | reftex-kill-emacs-hook | org-babel-remove-temporary-directory | smex-save-to-file | recentf-save-list | tramp-dump-connection-properties | brds/pdf-set-all-last-viewed-bookmarks | bookmark-exit-hook-internal | desktop-kill | keyfreq-mustsave--do | server-force-stop | savehist-autosave | save-place-kill-emacs-hook |
+| tex-delete-last-temp-files | company-clang-set-prefix | company-statistics--maybe-save | brds/pdf-set-all-last-viewed-bookmarks | reftex-kill-emacs-hook | bookmark-exit-hook-internal | desktop-kill | keyfreq-mustsave--do | org-babel-remove-temporary-directory | savehist-autosave | save-place-kill-emacs-hook | server-force-stop |
 
 *** COMMENT Projectile
 #+BEGIN_SRC elisp
