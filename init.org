@@ -8,6 +8,9 @@
       but (an English (with more.)))
 -- Brian Hayes, http://tinyurl.com/3y9l2kf
 
+
+Emacs converts repetitive, tedious, bouring tasks into creative ones
+
 * init.el
 ** Generic settings
 *** Personal data
@@ -842,8 +845,7 @@ when one fix a personal personal dictionary there are problems when one changes 
    ("s-d" . backward-kill-word))
 
 #+END_SRC
-
-** The built-in modes
+** The build-in modes
 *** Abbrev's
 **** Setting
 #+BEGIN_SRC elisp
@@ -1244,7 +1246,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 : t
 
-*** Hippie Expand
+*** COMMENT Hippie Expand
 #+BEGIN_SRC elisp
   (setq hippie-expand-try-functions-list
         '(try-complete-file-name-partially
@@ -1329,7 +1331,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 : isearch-delete-something
-
 *** Line and column numbers
     Show line and column numbers just in the =mode-line=
 #+BEGIN_SRC elisp
@@ -1343,171 +1344,171 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 *** Org mode
 **** Main congif
-#+BEGIN_SRC elisp
-  (use-package org
-    :ensure nil
-    :init
-          ;;; To make compatible org-scr-tab-acts-natively with yasnipets
-    ;;    (defun yas/org-very-safe-expand nil
-    ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
-    ;;   (add-hook 'org-mode-hook
-    ;;             (lambda nil
-    ;;               (yas-global-mode 1)
-    ;;               (make-variable-buffer-local 'yas-trigger-key)
-    ;;               (setq yas-trigger-key [tab])
-    ;;               (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-    ;;               (define-key yas-keymap [tab] 'yas-next-field)))
-          ;;;;;;;;;;;;;;;;;
-    (setq org-src-window-setup (quote other-window)
-          ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
-          ;; headline text
-          org-special-ctrl-a/e t
-          org-use-speed-commands t
-          org-cycle-global-at-bob t
-          org-startup-folded t
-          org-hide-emphasis-markers t
-          ;;org-ellipsis " ▼"
-          ;;org-completion-use-ido t
-          org-outline-path-complete-in-steps nil
-          org-src-fontify-natively t   ;; Pretty code blocks
-          ;; org-src-tab-acts-natively t
-          org-src-ask-before-returning-to-edit-buffer nil
-          org-edit-src-auto-save-idle-delay 20
-          org-confirm-babel-evaluate nil
-          org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
-                              (sequence "|" "CANCELED(c)"))
-          org-return-follows-link 1
-          org-link-frame-setup (quote ((file . find-file)))
-          org-agenda-todo-list-sublevels nil
-          org-deadline-warning-days 3
-          org-agenda-skip-scheduled-if-done 1
-          org-agenda-skip-deadline-if-done 1
-          org-agenda-skip-deadline-if-done 1)
+ #+BEGIN_SRC elisp
+   (use-package org
+     :ensure nil
+     :init
+           ;;; To make compatible org-scr-tab-acts-natively with yasnipets
+     ;;    (defun yas/org-very-safe-expand nil
+     ;;     (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+     ;;   (add-hook 'org-mode-hook
+     ;;             (lambda nil
+     ;;               (yas-global-mode 1)
+     ;;               (make-variable-buffer-local 'yas-trigger-key)
+     ;;               (setq yas-trigger-key [tab])
+     ;;               (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+     ;;               (define-key yas-keymap [tab] 'yas-next-field)))
+           ;;;;;;;;;;;;;;;;;
+     (setq org-src-window-setup (quote other-window)
+           ;; When t, ‘C-a’ will bring back the cursor to the beginning of the
+           ;; headline text
+           org-special-ctrl-a/e t
+           org-use-speed-commands t
+           org-cycle-global-at-bob t
+           org-startup-folded t
+           org-hide-emphasis-markers t
+           ;;org-ellipsis " ▼"
+           ;;org-completion-use-ido t
+           org-outline-path-complete-in-steps nil
+           org-src-fontify-natively t   ;; Pretty code blocks
+           ;; org-src-tab-acts-natively t
+           org-src-ask-before-returning-to-edit-buffer nil
+           org-edit-src-auto-save-idle-delay 20
+           org-confirm-babel-evaluate nil
+           org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
+                               (sequence "|" "CANCELED(c)"))
+           org-return-follows-link 1
+           org-link-frame-setup (quote ((file . find-file)))
+           org-agenda-todo-list-sublevels nil
+           org-deadline-warning-days 3
+           org-agenda-skip-scheduled-if-done 1
+           org-agenda-skip-deadline-if-done 1
+           org-agenda-skip-deadline-if-done 1)
 
-    (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
-    (add-hook 'org-mode-hook 'org-display-inline-images)
+     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+     (add-hook 'org-mode-hook 'org-display-inline-images)
 
-    ;; org-mode my agenda view
-    (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
-    (setq org-agenda-custom-commands
-          '(("h" "My agenda view"
-             ((agenda "")
-              (todo)))))
-    :config
-    ;; Org speed keys
-    (cl-loop for new-key in
-             `(,(cons "P" 'org-set-property)
-               ,(cons "d" 'org-deadline)
-               ,(cons "h" 'outline-up-heading)
-               ,(cons "k" (lambda nil "Next visible"
-                            (org-speed-move-safe 'org-next-visible-heading)))
-               ,(cons "i" (lambda nil "Previous visible"
-                            (org-speed-move-safe 'org-previous-visible-heading)))
-               ,(cons "l" (lambda nil "Forward same level"
-                            (org-speed-move-safe 'org-forward-heading-same-level)))
-               ,(cons "o" (lambda nil "Backward same level"
-                            (org-speed-move-safe 'org-backward-heading-same-level)))
-               ,(cons "n" (lambda nil "Insert -n-ew header below"
-                            (forward-char 1)
-                            (call-interactively
-                             '(org-insert-heading-respect-content))))
-               ,(cons "ñ" 'interleave-mode) ;; Start interleave mode
-               ,(cons "m" 'org-mark-subtree)   ;; Mark a subtree
-               ,(cons "S" 'widen)   ;; Widen
-               ,(cons "K" (lambda ()   ;; kill a subtree
-                            (org-mark-subtree)
-                            (kill-region
-                             (region-beginning)
-                             (region-end))))
-               ,(cons "q" (lambda ()   ;; Jump to headline
-                            (avy-with avy-goto-line
-                              (avy--generic-jump "^\\*+" nil avy-style)))))
-             do (push new-key org-speed-commands-user))
-    ;; Org babel
-    (org-babel-do-load-languages 'org-babel-load-languages
-                                 '(
-                                   ;; (R . t)
-                                   ;; (singular . t)
-                                   ;; (gnuplot . t)
-                                   ;; (latex . t)
-                                   ;; (org . t)
-                                   ;; (sh . t)
-                                   ;; (lisp . t)
-                                   (shell . t)
-                                   (julia . t) ;; see https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0
-                                   ))
+     ;; org-mode my agenda view
+     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
+     (setq org-agenda-custom-commands
+           '(("h" "My agenda view"
+              ((agenda "")
+               (todo)))))
+     :config
+     ;; Org speed keys
+     (cl-loop for new-key in
+              `(,(cons "P" 'org-set-property)
+                ,(cons "d" 'org-deadline)
+                ,(cons "h" 'outline-up-heading)
+                ,(cons "k" (lambda nil "Next visible"
+                             (org-speed-move-safe 'org-next-visible-heading)))
+                ,(cons "i" (lambda nil "Previous visible"
+                             (org-speed-move-safe 'org-previous-visible-heading)))
+                ,(cons "l" (lambda nil "Forward same level"
+                             (org-speed-move-safe 'org-forward-heading-same-level)))
+                ,(cons "o" (lambda nil "Backward same level"
+                             (org-speed-move-safe 'org-backward-heading-same-level)))
+                ,(cons "n" (lambda nil "Insert -n-ew header below"
+                             (forward-char 1)
+                             (call-interactively
+                              '(org-insert-heading-respect-content))))
+                ,(cons "ñ" 'interleave-mode) ;; Start interleave mode
+                ,(cons "m" 'org-mark-subtree)   ;; Mark a subtree
+                ,(cons "S" 'widen)   ;; Widen
+                ,(cons "K" (lambda ()   ;; kill a subtree
+                             (org-mark-subtree)
+                             (kill-region
+                              (region-beginning)
+                              (region-end))))
+                ,(cons "q" (lambda ()   ;; Jump to headline
+                             (avy-with avy-goto-line
+                               (avy--generic-jump "^\\*+" nil avy-style)))))
+              do (push new-key org-speed-commands-user))
+     ;; Org babel
+     (org-babel-do-load-languages 'org-babel-load-languages
+                                  '(
+                                    ;; (R . t)
+                                    ;; (singular . t)
+                                    ;; (gnuplot . t)
+                                    ;; (latex . t)
+                                    ;; (org . t)
+                                    ;; (sh . t)
+                                    ;; (lisp . t)
+                                    (shell . t)
+                                    (julia . t) ;; see https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0
+                                    ))
 
-    (font-lock-add-keywords            ;; A bit silly but my headers are now
-     'org-mode                         ;; shorter, and that is nice canceled
-     (mapcar (lambda (xx)
-               `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
-                 (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
-                           nil))))
-             '(("TODO"       . "⚑")
-               ("DOING"      . "⚐")
-               ("CANCELED"   . "✘")
-               ("DONE"       . "✔"))))
-    :bind
-    ;; ("C-c l" . org-store-link)
-    ;; ("C-c c" . org-capture)
-    ("C-c a" . org-agenda)
-    ("C-c b" . org-iswitchb)
-    (:map org-mode-map
-          ("s-b" . org-text-bold)
-          ("s-v" . org-text-italics)
-          ("s-c" . org-text-code)
-          ("<" . brust-org<)))
-#+END_SRC
+     (font-lock-add-keywords            ;; A bit silly but my headers are now
+      'org-mode                         ;; shorter, and that is nice canceled
+      (mapcar (lambda (xx)
+                `(,(concat "^\\*+ +\\(\\|COMMENT +\\)\\(" (car xx) "\\)")
+                  (2 (progn (compose-region (match-beginning 2) (match-end 2) ,(cdr xx))
+                            nil))))
+              '(("TODO"       . "⚑")
+                ("DOING"      . "⚐")
+                ("CANCELED"   . "✘")
+                ("DONE"       . "✔"))))
+     :bind
+     ;; ("C-c l" . org-store-link)
+     ;; ("C-c c" . org-capture)
+     ("C-c a" . org-agenda)
+     ("C-c b" . org-iswitchb)
+     (:map org-mode-map
+           ("s-b" . org-text-bold)
+           ("s-v" . org-text-italics)
+           ("s-c" . org-text-code)
+           ("<" . brust-org<)))
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 **** Org bullets
-     Use org-bullets-mode for utf8 symbols as org bullets
-#+BEGIN_SRC elisp
-  (use-package org-bullets
-    :after org
-    ;; make available "org-bullet-face" such that I can control the font size individually
-    :init
-    (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
-    (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
-#+END_SRC
+      Use org-bullets-mode for utf8 symbols as org bullets
+ #+BEGIN_SRC elisp
+   (use-package org-bullets
+     :after org
+     ;; make available "org-bullet-face" such that I can control the font size individually
+     :init
+     (add-hook 'org-mode-hook (lambda nil (org-bullets-mode 1)))
+     (setq org-bullets-bullet-list '("✙" "✟" "†" "☥" "✣" "✛" "♰" "♱" "✞" "✥" "✝" "✠" "✚" "✜"  "✢" "✤" )))
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 **** Org capture
-#+BEGIN_SRC elisp
-  (use-package org-capture
-    :ensure nil
-    :after org
-    :preface
-    (defvar my/org-ledger-card-template
-      "%(org-read-date) %^{Payee}
-      Expenses:%^{Account}  €%^{Amount}
-      Liabilities:DebidCard:Mediolanum"
-      "Template for devid card transaction with ledger.")
+ #+BEGIN_SRC elisp
+   (use-package org-capture
+     :ensure nil
+     :after org
+     :preface
+     (defvar my/org-ledger-card-template
+       "%(org-read-date) %^{Payee}
+       Expenses:%^{Account}  €%^{Amount}
+       Liabilities:DebidCard:Mediolanum"
+       "Template for devid card transaction with ledger.")
 
-    (defvar my/org-ledger-cash-template
-      "%(org-read-date) * %^{Payee}
-      Expenses:%^{Account}  €%^{Amount}
-      Assets:Cash:Wallet"
-      "Template for cash transaction with ledger.")
-    :custom
-    (org-capture-templates
-     `(("l" "Ledger")
-       ("lb" "Bank" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
-        my/org-ledger-card-template
-        :empty-lines 1
-        :immediate-finish t)
-       ("lc" "Cash" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
-        my/org-ledger-cash-template
-        :empty-lines 1
-        :immediate-finish t)
-       ("o"
-        "TODO respond to email"
-        entry
-        (file YOUR_TODO_FILE.org)
-        "* TODO %^{Description}\n%A\n%?\n"))))
-#+END_SRC
+     (defvar my/org-ledger-cash-template
+       "%(org-read-date) * %^{Payee}
+       Expenses:%^{Account}  €%^{Amount}
+       Assets:Cash:Wallet"
+       "Template for cash transaction with ledger.")
+     :custom
+     (org-capture-templates
+      `(("l" "Ledger")
+        ("lb" "Bank" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+         my/org-ledger-card-template
+         :empty-lines 1
+         :immediate-finish t)
+        ("lc" "Cash" plain (file ,(format "~/Dropbox/Org/ledger-%s.dat" (format-time-string "%Y"))),
+         my/org-ledger-cash-template
+         :empty-lines 1
+         :immediate-finish t)
+        ("o"
+         "TODO respond to email"
+         entry
+         (file YOUR_TODO_FILE.org)
+         "* TODO %^{Description}\n%A\n%?\n"))))
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 
 *** Outline mode
     Set symbol and face for ellipsis, from http://emacs.stackexchange.com/questions/17806/set-face-of-outline-ellipsis
@@ -1615,7 +1616,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 (global-set-key (kbd "M-Z") #'zap-to-char)
 
 #+END_SRC
-
 ** New generic functions
 *** Beginning<->end of a buffer
 #+BEGIN_SRC elisp
@@ -1979,6 +1979,23 @@ Version 2015-12-02"
         (message "No face defined at point"))))
 
 #+END_SRC
+*** Change font size
+#+begin_src elisp
+  (defun zoom-in ()
+    (interactive)
+    (set-face-attribute 'default nil :height (+ (face-attribute 'default :height) 10)))
+
+  (defun zoom-out ()
+    (interactive)
+    (set-face-attribute 'default nil :height (- (face-attribute 'default :height) 10)))
+
+  (define-key global-map (kbd "C-2") 'zoom-in)
+  (define-key global-map (kbd "C-1") 'zoom-out)
+#+end_src
+
+#+RESULTS:
+: zoom-out
+
 *** Delete indentation "reversed"
 #+BEGIN_SRC elisp
   (defun brust-delete-indentation (args)
@@ -2796,6 +2813,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
        the original point position, and the original spacing around point.")
 
 #+END_SRC
+
 ** External modes
 *** Ace window
    With one "universal-argument" swap the selected and current window.
@@ -2840,7 +2858,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+RESULTS:
 |
 
-*** Anki Editor
+*** COMMENT Anki Editor
  The web [[https://github.com/louietan/anki-editor][Git Hub repository]]
 #+BEGIN_SRC elisp
   (use-package anki-editor)
@@ -3318,7 +3336,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
          ;; Capitalize -> UPPER
 (put this-command 'next-state "UPPER")))))
 #+END_SRC
-*** GAP modes
+*** COMMENT GAP modes
 #+BEGIN_SRC elisp
   ;; gap mode
   (autoload 'gap-mode "gap-mode" "Gap editing mode" t)
@@ -3976,7 +3994,7 @@ _o_: org-cap | _C--_: show less   | _*_: *thing  | _q_: quit hdrs | _j_: jump2ma
     ("L" (hot-expand "LaTeX"))
     ("i" (hot-expand "index"))
     ("e" (hot-expand "src" "elisp"))
-    ("j" (hot-expand "src" "julia"))
+    ("j" (hot-expand "src" "julia :session *julia*"))
     ("b" (hot-expand "src" "bash"))
     ("p" (hot-expand "src" "perl"))
     ("u" (hot-expand "src" "plantuml :file CHANGE.png"))
@@ -4460,68 +4478,128 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       - [ ] [[http://pragmaticemacs.com/mu4e-tutorials/][mu4e tutorials (form pragmatic emacs)]]
       - [X] [[https://wiki.archlinux.org/index.php/msmtp][Archlnux msmpt config page]]
       - [X] [[https://wiki.archlinux.org/index.php/Isync#Troubleshooting][Archlinux mbsync config page]]
-      - 
+      -
 **** COMMENT Install
-Just in case to generate a certificate:
-# openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
+ Just in case to generate a certificate:
+ # openssl s_client -connect mail.mat.uab.cat:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > ~/mail.uab.cat.ctr
 
-#+BEGIN_SRC bash
-  # Install things
-  sudo apt install msmtp-gnome msmtp-mta isync gnupg2
-  cd src
-  git clone https://github.com/djcb/mu.git
-  ./autogen.sh
-  make
+ #+BEGIN_SRC bash
+   # Install things
+   sudo apt install msmtp-gnome msmtp-mta isync gnupg2
+   cd src
+   git clone https://github.com/djcb/mu.git
+   ./autogen.sh
+   make
 
-  # Paswords
-  ## UAB
-  cd
-  echo PASSWORD > .mathuab
-  gpg2 -c .mathuab
-  rm .mathuab
-  ## Gmail
-  echo PASSWORD > .gmailpass
-  gpg2 -c .gmailpass
-  rm .gmailpass
-  # Delete corresponding lines of .bash_history
+   # Paswords
+   ## UAB
+   cd
+   echo PASSWORD > .mathuab
+   gpg2 -c .mathuab
+   rm .mathuab
+   ## Gmail
+   echo PASSWORD > .gmailpass
+   gpg2 -c .gmailpass
+   rm .gmailpass
+   # Delete corresponding lines of .bash_history
 
-  mkdir Maildir
-  # Copy from Dropbox/config/Maildir
-#+END_SRC
+   mkdir Maildir
+   # Copy from Dropbox/config/Maildir
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 **** Add Path
-#+BEGIN_SRC elisp
-  (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
-  (require 'mu4e)
-#+END_SRC
+ #+BEGIN_SRC elisp
+   (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
+   (require 'mu4e)
+ #+END_SRC
 
-#+RESULTS:
-: mu4e
+ #+RESULTS:
+ : mu4e
+**** Handy hooks
+ #+begin_src elisp
+   (defun brust-mu4e-compose-mode-hook nil
+     (flyspell-mode 1)
+     ;; (auto-save-mode -1)
+     (set-fill-column 72)
+     ;; (brust-mu4e-add-headers)
+     (message-add-header (concat "Date: " (message-make-date)))
+     (message-add-header (concat "Message-ID: " (message-make-message-id)))
+     (message-insert-headers)
+     ;; (message-sort-headers)
+     ;; (message-goto-to)
+     )
+
+   ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
+   (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+   (add-hook 'mu4e-compose-mode-hook #'brust-mu4e-compose-mode-hook)
+
+   ;; From Ben Maughan: Get some Org functionality in compose buffer
+   ;; (add-hook 'message-mode-hook 'turn-on-orgtbl)
+   ;; (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+ #+end_src
+
+ #+RESULTS:
+ | brust-mu4e-compose-mode-hook |
+**** Dealing with drafts
+ #+begin_src elisp
+ (defun brust-mu4e-add-draft-headers nil
+   "Add headers on composing an email"
+   (message-add-header "Flags: draft")
+   ;; (message-add-header (concat "X-Mailer: mu4e " mu4e-mu-version "; emacs " emacs-version "\n"))
+   (message-add-header (concat "Maildir: " mu4e-drafts-folder)))
+
+ (defun brust-mu4e-delete-draft-headers nil
+   "Remove headers on composing an email"
+   (message-cleanup-headers)
+   (message-remove-header "Flags")
+   (message-remove-header "Maildir"))
+
+
+   (defadvice message-dont-send (before add-draft-headers activate)
+     (brust-mu4e-add-draft-headers))
+
+   (add-hook 'message-send-hook #'brust-mu4e-delete-draft-headers)
+ #+end_src
+
+ #+RESULTS:
+ | brust-mu4e-delete-draft-headers |
+**** Actions
+ #+begin_src elisp
+   (defun search-for-sender (msg)
+     "Search for messages sent by the sender of the message at point."
+     (mu4e-headers-search
+      (concat "from:" (cdar (mu4e-message-field msg :from)))))
+
+   (setq mu4e-view-actions
+         (append mu4e-view-actions
+                 (list
+                  ;; define 'x' as the shortcut
+                  (cons "xsearch for sender" 'search-for-sender)
+                  ;; Difine 'V' as the shortcut
+                  (cons "ViewInBrowser" 'mu4e-action-view-in-browser)
+                  ;; Store an org link to insert later
+                  (cons "lStore Link" 'org-store-link))))
+ #+end_src
 
 **** Basic config
   #+BEGIN_SRC elisp
     (use-package mu4e
       :ensure nil
       :config
-      (defun search-for-sender (msg)
-        "Search for messages sent by the sender of the message at point."
-        (mu4e-headers-search
-         (concat "from:" (cdar (mu4e-message-field msg :from)))))
-
-      ;; define 'x' as the shortcut
-      (add-to-list 'mu4e-view-actions
-                   '("xsearch for sender" . search-for-sender) t)
-      (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-      ;; Difine 'V' as the shortcut
-      (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-
       ;; use imagemagick, if available
       (when (fboundp 'imagemagick-register-types)
         (imagemagick-register-types))
 
       (setq mu4e-get-mail-command "mbsync -Va"
+            ;; This allows me to use 'helm' to select mailboxes
+            ;; mu4e-completing-read-function 'completing-read
+            mu4e-completing-read-function 'ivy-completing-read
             mail-user-agent 'mu4e-user-agent
+            ;; Use "P" to toggle threading
+            mu4e-headers-show-threads nil
+            ;; If you want to exclude your own e-mail address when “replying to all”
+            mu4e-compose-dont-reply-to-self t
             mu4e-view-show-addresses t
             ;; use 'fancy' non-ascii characters in various places in mu4e
             mu4e-use-fancy-chars t
@@ -4535,8 +4613,15 @@ Just in case to generate a certificate:
             mu4e-maildir (expand-file-name "~/Maildir")
             mu4e-mu-binary (expand-file-name "~/scr/mu/mu/mu")
             ;; mu4e-mu-home
-            mu4e-html2text-command "w3m -T text/html"
+            mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
+            ;; mu4e-html2text-command "w3m -T text/html"
             ;; alternatively "textutil -stdin -format html -convert txt -stdout"
+            mu4e-show-images t
+            ;; Set format=flowed
+            ;; mu4e sets up visual-line-mode and also fill (M-q) to do the right thing
+            ;; each paragraph is a single long line; at sending, emacs will add the
+            ;; special line continuation characters.
+            mu4e-compose-format-flowed t
             ;; mu4e-maildir-shortcuts
             ;; '(;; ("/archive"     . ?a)
             ;;   ("/Inbox"       . ?i)
@@ -4547,15 +4632,17 @@ Just in case to generate a certificate:
                                           )
             ;; mu4e-compose-signature "Foo X. Bar\nhttp://www.example.com\n"
             mu4e-compose-context-policy 'always-ask
-            ;; This allows me to use 'helm' to select mailboxes
-            mu4e-completing-read-function 'completing-read
-             ;; Why would I want to leave my message open after I've sent it?
+            ;; Why would I want to leave my message open after I've sent it?
             message-kill-buffer-on-exit t
             ;; Don't ask for a 'context' upon opening mu4e
             mu4e-context-policy 'pick-first
             ;; Don't ask to quit... why is this the default?
             mu4e-confirm-quit nil
             mu4e-change-filenames-when-moving t
+            ;; customize the reply-quote-string
+            message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n"
+            ;; choose to use the formatted string
+            message-citation-line-function 'message-insert-formatted-citation-line
             message-send-mail-function 'message-send-mail-with-sendmail
             message-sendmail-extra-arguments '("--read-envelope-from")
             message-sendmail-f-is-evil 't
@@ -4578,88 +4665,174 @@ Just in case to generate a certificate:
   : hydra-mu4e-headers/body
 
 **** My Contexts
-#+BEGIN_SRC elisp
-  (setq mu4e-contexts
-        (list
-         (make-mu4e-context
-          :name "gmail"
-          :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
-          :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
-          :vars '((user-mail-address . "laurea987@gmail.com")
-                  (user-full-name . "Laura Brustenga")
-                  (mu4e-sent-folder . "/gmail/Sent")
-                  (mu4e-drafts-folder . "/gmail/Drafts")
-                  (mu4e-trash-folder . "/gmail/Trash")
-                  (mu4e-compose-signature . nil)
-                  (mu4e-compose-format-flowed . nil)))
-         (make-mu4e-context
-          :name "mathuab"
-          :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
-          :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches
-                           msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
-          :vars '((user-mail-address . "brust@mat.uab.cat")
-                  (user-full-name . "Laura Brustenga i Moncusí")
-                  (mu4e-sent-folder . "/mathuab/Sent")
-                  (mu4e-drafts-folder . "/mathuab/Drafts")
-                  (mu4e-trash-folder . "/mathuab/Trash")
-                  (mu4e-compose-signature . nil)
-                  (mu4e-compose-format-flowed . nil)))))
+ #+BEGIN_SRC elisp
+   (setq mu4e-contexts
+         (list
+          (make-mu4e-context
+           :name "gmail"
+           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-contact-field-matches
+                            msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
+           :vars '((user-mail-address . "laurea987@gmail.com")
+                   (user-full-name . "Laura Brustenga")
+                   (mu4e-sent-folder . "/gmail/Sent")
+                   (mu4e-drafts-folder . "/gmail/Drafts")
+                   (mu4e-trash-folder . "/gmail/Trash")
+                   (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)))
+          (make-mu4e-context
+           :name "mathuab"
+           :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
+           :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-contact-field-matches
+                            msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+           :vars '((user-mail-address . "brust@mat.uab.cat")
+                   (user-full-name . "Laura Brustenga i Moncusí")
+                   (mu4e-sent-folder . "/mathuab/Sent")
+                   (mu4e-drafts-folder . "/mathuab/Drafts")
+                   (mu4e-trash-folder . "/mathuab/Trash")
+                   (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)))))
 
-#+END_SRC
+ #+END_SRC
 
-#+RESULTS:
-| #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
+ #+RESULTS:
+ | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
 
-**** Bookmarkstr rr
-#+BEGIN_SRC elisp
-      ;; Update mail using 'U' in main view:
-      ;; Include a bookmark to open all of my inboxes
-      (add-to-list 'mu4e-bookmarks
-                   (make-mu4e-bookmark
-                    :name "All Inboxes"
-                    :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox"
-                    :key ?i))
+**** Bookmarkstr
+ #+BEGIN_SRC elisp
+   ;; Update mail using 'U' in main view:
+   ;; Include a bookmark to open all of my inboxes
+   (setq mu4e-bookmarks
+         `(
+           ,(make-mu4e-bookmark
+             :name "All Inboxes"
+             :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread"
+             :key ?i)
+           ,(make-mu4e-bookmark
+             :name "New mathuab"
+             :query "flag:unread AND maildir:/mathuab/INBOX"
+             :key ?m)
+           ,(make-mu4e-bookmark
+             :query "flag:unread AND NOT flag:trashed"
+             :name "Unread messages"
+             :key ?u)
+           ,(make-mu4e-bookmark
+             :query "date:today..now AND NOT flag:trashed AND NOT flag:draft"
+             :name "Today's messages"
+             :key ?t)
+           ,(make-mu4e-bookmark
+             :query "date:7d..now AND NOT flag:trashed AND NOT flag:draft"
+             :name "Last 7 days"
+             :key ?w)
+           ;; ("mime:image/*" "Messages with images" 112)
+           ,(make-mu4e-bookmark
+             :name "Drafts"
+             :query "flag:draft"
+             :key ?d)))
+ #+END_SRC
 
-      (add-to-list 'mu4e-bookmarks
-                   (make-mu4e-bookmark
-                    :name "New mathuab"
-                    :query "flag:unread AND maildir:/mathuab/INBOX"
-                    :key ?m))
-#+END_SRC
+ #+RESULTS:
+ | #s(mu4e-bookmark Unread messages flag:unread AND NOT flag:trashed 117) | #s(mu4e-bookmark Today's messages date:today..now AND NOT flag:trashed AND NOT flag:draft 116) | #s(mu4e-bookmark Last 7 days date:7d..now AND NOT flag:trashed AND NOT flag:draft 119) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
 
-#+RESULTS:
-| #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | (flag:unread AND NOT flag:trashed Unread messages 117) | (date:today..now Today's messages 116) | (date:7d..now Last 7 days 119) | (mime:image/* Messages with images 112) |
+**** Contacts
+ #+begin_src elisp
+
+ #+end_src
+
+**** COMMENT Mail directory shortcuts
+ #+begin_src elisp
+   (setq mu4e-maildir-shortcuts
+         '(("/Gmail/INBOX"   . ?g)
+           ("/mathuab/INBOX" . ?m)))
+ #+end_src
+
+ #+RESULTS:
+ : ((/Gmail/INBOX . 103) (/mathuab/INBOX . 109))
+
+**** Org mu4e
+ #+begin_src elisp
+ (require 'org-mu4e)
+ #+end_src
+
+**** yasnippet for composing emails
+  From http://pragmaticemacs.com/category/mu4e/
+
+ #+begin_src elisp
+ ;; function to return first name of email recipients
+ ;; used by yasnippet
+ ;; inspired by
+ ;;http://blog.binchen.org/posts/how-to-use-yasnippets-to-produce-email-templates-in-emacs.html
+ (defun bjm/mu4e-get-names-for-yasnippet ()
+   "Return comma separated string of names for an email"
+   (interactive)
+   (let ((email-name "") str email-string email-list email-name2 tmpname)
+     (save-excursion
+       (goto-char (point-min))
+       ;; first line in email could be some hidden line containing NO to field
+       (setq str (buffer-substring-no-properties (point-min) (point-max))))
+     ;; take name from TO field - match series of names
+     (when (string-match "^To: \"?\\(.+\\)" str)
+       (setq email-string (match-string 1 str)))
+     ;;split to list by comma
+     (setq email-list (split-string email-string " *, *"))
+     ;;loop over emails
+     (dolist (tmpstr email-list)
+       ;;get first word of email string
+       (setq tmpname (car (split-string tmpstr " ")))
+       ;;remove whitespace or ""
+       (setq tmpname (replace-regexp-in-string "[ \"]" "" tmpname))
+       ;;join to string
+       (setq email-name
+             (concat email-name ", " tmpname)))
+     ;;remove initial comma
+     (setq email-name (replace-regexp-in-string "^, " "" email-name))
+
+     ;;see if we want to use the name in the FROM field
+     ;;get name in FROM field if available, but only if there is only
+     ;;one name in TO field
+     (if (< (length email-list) 2)
+         (when (string-match "^On.+, \\([^ ,\n]+\\).+wrote:$" str)
+           (progn
+             (setq email-name2 (match-string 1 str))
+             ;;prefer name in FROM field if TO field has "@"
+             (when (string-match "@" email-name)
+               (setq email-name email-name2))
+             )))
+     email-name))
+ #+end_src
+
+ #+RESULTS:
+ : bjm/mu4e-get-names-for-yasnippet
 
 **** COMMENT Alert
-#+BEGIN_SRC elisp
-  (use-package mu4e-alert
-    :ensure t
-    :after mu4e
-    :init
-    (setq mu4e-alert-interesting-mail-query
-          (concat
-           "flag:unread maildir:/mathuab/INBOX"
-           "OR"
-           "flag:unread maildir:/Gmail/Inbox"
-           ))
-    (mu4e-alert-enable-mode-line-display)
-    (defun gjstein-refresh-mu4e-alert-mode-line ()
-      (interactive)
-      (mu4e~proc-kill)
-      (mu4e-alert-enable-mode-line-display)
-      )
-    (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
-    )
-#+END_SRC
+ #+BEGIN_SRC elisp
+   (use-package mu4e-alert
+     :ensure t
+     :after mu4e
+     :init
+     (setq mu4e-alert-interesting-mail-query
+           (concat
+            "flag:unread maildir:/mathuab/INBOX"
+            "OR"
+            "flag:unread maildir:/Gmail/Inbox"
+            ))
+     (mu4e-alert-enable-mode-line-display)
+     (defun gjstein-refresh-mu4e-alert-mode-line ()
+       (interactive)
+       (mu4e~proc-kill)
+       (mu4e-alert-enable-mode-line-display)
+       )
+     (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
+     )
+ #+END_SRC
 
-#+RESULTS:
+ #+RESULTS:
 **** My functions
 ***** Org caputre mail
  #+begin_src elisp
@@ -4694,197 +4867,197 @@ Just in case to generate a certificate:
 #+END_SRC
 *** Org-ref
 **** General config
-#+BEGIN_SRC elisp
-  (use-package org-ref
-    :after org
-    :init
-    (setq org-ref-default-bibliography '("~/Dropbox/bibliography/my.bib"
-                                         "~/Dropbox/bibliography/pragmatic.bib")
-          org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-          ;; org-ref-completion-library 'org-ref-ivy-cite
-          org-ref-pdf-directory "~/Dropbox/bibliography/pdf/")
+ #+BEGIN_SRC elisp
+   (use-package org-ref
+     :after org
+     :init
+     (setq org-ref-default-bibliography '("~/Dropbox/bibliography/my.bib"
+                                          "~/Dropbox/bibliography/pragmatic.bib")
+           org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+           ;; org-ref-completion-library 'org-ref-ivy-cite
+           org-ref-pdf-directory "~/Dropbox/bibliography/pdf/")
 
-    (setq bibtex-autokey-year-length 4
-          bibtex-autokey-name-year-separator "-"
-          bibtex-autokey-year-title-separator "-"
-          bibtex-autokey-titleword-separator "-"
-          bibtex-autokey-titlewords 2
-          bibtex-autokey-titlewords-stretch 1
-          bibtex-autokey-titleword-length 5)
+     (setq bibtex-autokey-year-length 4
+           bibtex-autokey-name-year-separator "-"
+           bibtex-autokey-year-title-separator "-"
+           bibtex-autokey-titleword-separator "-"
+           bibtex-autokey-titlewords 2
+           bibtex-autokey-titlewords-stretch 1
+           bibtex-autokey-titleword-length 5)
 
-    ;;     (defadvice org-ref-next-latex-cite (around add-font-lock-support-mode activate)
-    ;;       (let ((font-lock-support-mode #'jit-lock-mode))
-    ;;         ad-do-it))
+     ;;     (defadvice org-ref-next-latex-cite (around add-font-lock-support-mode activate)
+     ;;       (let ((font-lock-support-mode #'jit-lock-mode))
+     ;;         ad-do-it))
 
-    ;;   (add-hook 'LaTeX-mode-hook (lambda nil
-    ;;                                (require 'org-ref)
-    ;;                                (require 'org-ref-latex)))
+     ;;   (add-hook 'LaTeX-mode-hook (lambda nil
+     ;;                                (require 'org-ref)
+     ;;                                (require 'org-ref-latex)))
 
-    (setq org-ref-note-title-format
-          "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
+     (setq org-ref-note-title-format
+           "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
 
-    :config
-    ;; (require 'org-ref-ivy)
-    ;; (require 'org-ref-latex) ;; convert cite ref into clicable links
-    (require 'org-ref-bibtex)
-    (setq bibtex-completion-format-citation-functions
-          '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
-            (latex-mode    . brust-bibtex-completion-format-citation-cite)
-            (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-            (default       . bibtex-completion-format-citation-default)))
+     :config
+     ;; (require 'org-ref-ivy)
+     ;; (require 'org-ref-latex) ;; convert cite ref into clicable links
+     (require 'org-ref-bibtex)
+     (setq bibtex-completion-format-citation-functions
+           '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+             (latex-mode    . brust-bibtex-completion-format-citation-cite)
+             (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+             (default       . bibtex-completion-format-citation-default)))
 
-    (require 'org-ref-pdf)
-    (require 'org-ref-arxiv)
-    ;; (key-chord-define-global "kk" 'org-ref-cite-hydra/body)
-    ;; (global-set-key (kbd "s-n") 'org-ref-bibtex-hydra/body)
-    ;; (use-package org-autolist
-    ;;   :after org-ref
-    ;;   :config
-    ;;   (org-autolist-mode +1))
-    ;;
-    ;; ;;      (use-package doi-utils
-    ;; ;;        :after org)
-    ;;
-    ;; (use-package org-ref-bibtex;;
-    ;;   :after org
-    ;;   :init
-    ;;   (setq org-ref-bibtex-hydra-key-binding "\C-cj"))
-    )
-#+END_SRC
+     (require 'org-ref-pdf)
+     (require 'org-ref-arxiv)
+     ;; (key-chord-define-global "kk" 'org-ref-cite-hydra/body)
+     ;; (global-set-key (kbd "s-n") 'org-ref-bibtex-hydra/body)
+     ;; (use-package org-autolist
+     ;;   :after org-ref
+     ;;   :config
+     ;;   (org-autolist-mode +1))
+     ;;
+     ;; ;;      (use-package doi-utils
+     ;; ;;        :after org)
+     ;;
+     ;; (use-package org-ref-bibtex;;
+     ;;   :after org
+     ;;   :init
+     ;;   (setq org-ref-bibtex-hydra-key-binding "\C-cj"))
+     )
+ #+END_SRC
 
-#+RESULTS:
-: t
+ #+RESULTS:
+ : t
 
 **** Functions
-#+BEGIN_SRC elisp
-  (defun brust-arxiv-get-number-from-web (arxiv-web)
-    (with-temp-buffer
-      (insert arxiv-web)
-      (goto-char (point-min))
-      (if (search-forward "https://" nil t)
-          (cond ((search-forward "/abs/" nil t)
-                 (buffer-substring-no-properties (point) (point-max)))
-                ((search-forward "/pdf/" nil t)
-                 (buffer-substring-no-properties (point)
-                                                 (progn (search-forward ".pdf" nil t)
-                                                        (match-beginning 0))))
-                (t (message "Unkown web format")))
-        arxiv-web)))
+ #+BEGIN_SRC elisp
+   (defun brust-arxiv-get-number-from-web (arxiv-web)
+     (with-temp-buffer
+       (insert arxiv-web)
+       (goto-char (point-min))
+       (if (search-forward "https://" nil t)
+           (cond ((search-forward "/abs/" nil t)
+                  (buffer-substring-no-properties (point) (point-max)))
+                 ((search-forward "/pdf/" nil t)
+                  (buffer-substring-no-properties (point)
+                                                  (progn (search-forward ".pdf" nil t)
+                                                         (match-beginning 0))))
+                 (t (message "Unkown web format")))
+         arxiv-web)))
 
-  (defun brust-org-ref-bibtex-open-notes (-header)
-    "It assume that you are at the beginning of a bibtex entry in a .bib file"
-    (interactive
-     (list (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+   (defun brust-org-ref-bibtex-open-notes (-header)
+     "It assume that you are at the beginning of a bibtex entry in a .bib file"
+     (interactive
+      (list (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+             :require-match t
+             :sort t
+             :preselect "Index")))
+     (let ((-abstract
+            (cdr (assoc "abstract" (bibtex-parse-entry t))))
+           (-entry))
+       (save-excursion
+         (org-ref-open-bibtex-notes)
+         (org-narrow-to-subtree)
+         (goto-char (point-min))
+         (when (search-forward "cite:" nil t)
+           (delete-region (point-at-bol) (1+ (point-at-eol)))
+           (goto-char (point-max)))
+         (when -abstract
+           (insert "*** Abstract\n" -abstract))
+         (indent-region (point-min) (point-max))
+         (unless (string-match-p "Index" -header)
+           (setq entry (buffer-substring-no-properties (point-min) (point-max)))
+           (delete-region (point-min) (point-max))
+           (widen)
+           (goto-char (point-min))
+           (search-forward -header nil t)
+           (insert "\n\n" -entry))
+         (widen))))
+
+   (defun brust-arxiv-get-pdf-add-notes-entry (-arxiv-web -header)
+     "Add an entry for ARXIV-WEB to 'notes.org'.
+   Remove troublesome chars from the bibtex key, retrieve a pdf
+   for ARXIV-NUMBER and save it to PDFDIR with the same name of the
+   key."
+     (interactive
+      (list (read-string "arxiv web: ")
+            (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+             :require-match t
+             :sort t
+             :preselect "Index")))
+     (let ((-tempbib "/tmp/temp-biblio.bib"))
+       (find-file -tempbib)
+       (save-buffer)
+       (ignore-errors (arxiv-get-pdf-add-bibtex-entry
+                       (brust-arxiv-get-number-from-web -arxiv-web)
+                       -tempbib
+                       (expand-file-name "~/Dropbox/bibliography/pdf/")))
+       (save-buffer)
+       (bibtex-beginning-of-entry)
+       (brust-org-ref-bibtex-open-notes -header)
+       ;; (erase-buffer)
+       (save-buffer)
+       ;;(kill-buffer)
+       ))
+
+
+   (defun brust-org-mode-get-top-header-list (file)
+     (let ((-list '()))
+       (save-window-excursion
+         (find-file file)
+         (goto-char (point-min))
+         (while (re-search-forward "^\\* .*$" nil t)
+           (push (match-string-no-properties 0) -list)))
+       -list))
+
+   (defun brust-add-notes-entry-from-pdf (-entry-type -title -author -year -pages -header)
+     (interactive
+      (list (ivy-read
+             "Entry Type: "
+             (cl-loop for -entry-type in bibtex-BibTeX-entry-alist
+                      collect (downcase (car -entry-type)))
+             :require-match t
+             :sort t
+             :preselect "article")
+            (read-string "Title: ")
+            (read-string "Author: ")
+            (read-string "Year: ")
+            (read-string "Pages: ")
+            (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes))
             :require-match t
             :sort t
-            :preselect "Index")))
-    (let ((-abstract
-           (cdr (assoc "abstract" (bibtex-parse-entry t))))
-          (-entry))
-      (save-excursion
-        (org-ref-open-bibtex-notes)
-        (org-narrow-to-subtree)
-        (goto-char (point-min))
-        (when (search-forward "cite:" nil t)
-          (delete-region (point-at-bol) (1+ (point-at-eol)))
-          (goto-char (point-max)))
-        (when -abstract
-          (insert "*** Abstract\n" -abstract))
-        (indent-region (point-min) (point-max))
-        (unless (string-match-p "Index" -header)
-          (setq entry (buffer-substring-no-properties (point-min) (point-max)))
-          (delete-region (point-min) (point-max))
-          (widen)
-          (goto-char (point-min))
-          (search-forward -header nil t)
-          (insert "\n\n" -entry))
-        (widen))))
+            :preselect "Index"))
+     (let ((-file (buffer-file-name))
+           (-key (file-name-base (buffer-file-name))))
+       (find-file org-ref-bibliography-notes)
+       (goto-char (point-min))
+       (search-forward -header nil t)
+       (insert (format
+                "\n\n** TODO %s - %s\n :PROPERTIES:\n  :Custom_ID: %s\n  :AUTHOR: %s\n  :INTERLEAVE_PDF: %s \n :YEAR: %s\n :TYPE: %s\n :PAGES: %s\n :END:\n"
+                -year -title -key -author -file -year -entry-type -pages)))
+     ;; (insert "*** Comments\n\n*** Interleave\n")
+     (indent-region (point-min) (point-max)))
 
-  (defun brust-arxiv-get-pdf-add-notes-entry (-arxiv-web -header)
-    "Add an entry for ARXIV-WEB to 'notes.org'.
-  Remove troublesome chars from the bibtex key, retrieve a pdf
-  for ARXIV-NUMBER and save it to PDFDIR with the same name of the
-  key."
-    (interactive
-     (list (read-string "arxiv web: ")
-           (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
-            :require-match t
-            :sort t
-            :preselect "Index")))
-    (let ((-tempbib "/tmp/temp-biblio.bib"))
-      (find-file -tempbib)
-      (save-buffer)
-      (ignore-errors (arxiv-get-pdf-add-bibtex-entry
-                      (brust-arxiv-get-number-from-web -arxiv-web)
-                      -tempbib
-                      (expand-file-name "~/Dropbox/bibliography/pdf/")))
-      (save-buffer)
-      (bibtex-beginning-of-entry)
-      (brust-org-ref-bibtex-open-notes -header)
-      ;; (erase-buffer)
-      (save-buffer)
-      ;;(kill-buffer)
-      ))
+ #+END_SRC
 
-
-  (defun brust-org-mode-get-top-header-list (file)
-    (let ((-list '()))
-      (save-window-excursion
-        (find-file file)
-        (goto-char (point-min))
-        (while (re-search-forward "^\\* .*$" nil t)
-          (push (match-string-no-properties 0) -list)))
-      -list))
-
-  (defun brust-add-notes-entry-from-pdf (-entry-type -title -author -year -pages -header)
-    (interactive
-     (list (ivy-read
-            "Entry Type: "
-            (cl-loop for -entry-type in bibtex-BibTeX-entry-alist
-                     collect (downcase (car -entry-type)))
-            :require-match t
-            :sort t
-            :preselect "article")
-           (read-string "Title: ")
-           (read-string "Author: ")
-           (read-string "Year: ")
-           (read-string "Pages: ")
-           (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes))
-           :require-match t
-           :sort t
-           :preselect "Index"))
-    (let ((-file (buffer-file-name))
-          (-key (file-name-base (buffer-file-name))))
-      (find-file org-ref-bibliography-notes)
-      (goto-char (point-min))
-      (search-forward -header nil t)
-      (insert (format
-               "\n\n** TODO %s - %s\n :PROPERTIES:\n  :Custom_ID: %s\n  :AUTHOR: %s\n  :INTERLEAVE_PDF: %s \n :YEAR: %s\n :TYPE: %s\n :PAGES: %s\n :END:\n"
-               -year -title -key -author -file -year -entry-type -pages)))
-    ;; (insert "*** Comments\n\n*** Interleave\n")
-    (indent-region (point-min) (point-max)))
-
-#+END_SRC
-
-#+RESULTS:
-: brust-add-notes-entry-from-pdf
+ #+RESULTS:
+ : brust-add-notes-entry-from-pdf
 
 **** Helm config
 
-#+BEGIN_SRC elisp
-  (bind-keys :map helm-map
-             ("s-k" . helm-next-line)
-             ("s-i" . helm-previous-line))
-#+END_SRC
+ #+BEGIN_SRC elisp
+   (bind-keys :map helm-map
+              ("s-k" . helm-next-line)
+              ("s-i" . helm-previous-line))
+ #+END_SRC
 
-#+RESULTS:
-: helm-previous-line
+ #+RESULTS:
+ : helm-previous-line
 
 *** Pdf tools
 **** Main
@@ -5057,7 +5230,7 @@ Just in case to generate a certificate:
 
 #+END_SRC
 
-*** SAGE
+*** COMMENT SAGE
 #+BEGIN_SRC elisp
   (use-package sage-shell-mode
     :init
@@ -5074,7 +5247,7 @@ Just in case to generate a certificate:
 #+RESULTS:
 : t
 
-*** SASS files
+*** COMMENT SASS files
     For some reason turn-off aggressive-indent do not work :(
 #+BEGIN_SRC elisp
   (use-package sass-mode
@@ -5139,7 +5312,6 @@ Just in case to generate a certificate:
     ;;("M-B" . 'sp-backward-symbol)
     )
 #+END_SRC
-
 *** Smerge
 See https://github.com/alphapapa/unpackaged.el#smerge-mode
 
@@ -5188,35 +5360,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 #+RESULTS:
 | lambda | nil | (when smerge-mode (unpackaged/smerge-hydra/body)) |
 
-*** Smex
-#+BEGIN_SRC elisp
-  (use-package smex
-    :init
-    (setq smex-save-file "~/.emacs.d/backups/smex-items")
-    (smex-initialize)
-    :config
-    (setq smex-completion-method 'ivy)
-    :bind*
-    ;; ("M-x"        . smex)
-    ("M-S-x"      . smex-major-mode-commands)
-    ;; ("<menu>"     . smex)
-    ("<S-menu>"   . smex-major-mode-commands))
-
-#+END_SRC
-**** Ido
-     Simple config, just to use as smex by =smex-major-mode-commands=
-#+BEGIN_SRC elisp
-  (use-package ido
-    :init
-    (setq ido-separator "\n")
-    :config
-    (add-hook 'ido-setup-hook
-              (lambda nil
-                (define-key ido-completion-map [up] 'ido-prev-match)
-                (define-key ido-completion-map [down] 'ido-next-match)
-                (define-key ido-completion-map [left] 'previous-history-element)
-                (define-key ido-completion-map [right] 'brust-next-complete-history-element))))
-#+END_SRC
 *** Transpose buffers
 #+BEGIN_SRC elisp
   (use-package transpose-frame
@@ -5445,6 +5588,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                            ("Sweden"    . "sv")))
 #+END_SRC
 *** YaSnippet
+
 #+BEGIN_SRC elisp
   (use-package yasnippet
     :defer t ;; I don't now why, but without it, don't load correctly
@@ -6461,7 +6605,7 @@ _q_: quit
 *** The function
 #+BEGIN_SRC elisp
   (defun brust-myregexp nil
-  "Do occur in the current buffer with my regexpresion build from the files bla bla bla" 
+  "Do occur in the current buffer with my regexpresion build from the files bla bla bla"
     (interactive)
     ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
     (occur brust--myregexp-itself))
@@ -7150,6 +7294,35 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 #+END_SRC
 
+** Smex
+#+BEGIN_SRC elisp
+  (use-package smex
+    :init
+    (setq smex-save-file "~/.emacs.d/backups/smex-items")
+    (smex-initialize)
+    :config
+    (setq smex-completion-method 'ivy)
+    :bind*
+    ;; ("M-x"        . smex)
+    ("M-S-x"      . smex-major-mode-commands)
+    ;; ("<menu>"     . smex)
+    ("<S-menu>"   . smex-major-mode-commands))
+
+#+END_SRC
+*** Ido
+     Simple config, just to use as smex by =smex-major-mode-commands=
+#+BEGIN_SRC elisp
+  (use-package ido
+    :init
+    (setq ido-separator "\n")
+    :config
+    (add-hook 'ido-setup-hook
+              (lambda nil
+                (define-key ido-completion-map [up] 'ido-prev-match)
+                (define-key ido-completion-map [down] 'ido-next-match)
+                (define-key ido-completion-map [left] 'previous-history-element)
+                (define-key ido-completion-map [right] 'brust-next-complete-history-element))))
+#+END_SRC
 
 * Not usual packages
   Load each with =brust-endless/org-eval-current-header=
