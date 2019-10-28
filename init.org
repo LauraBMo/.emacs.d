@@ -4865,6 +4865,200 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
         (zone-when-idle (* 5 60)))))
 
 #+END_SRC
+*** Org-ref
+**** General config
+ #+BEGIN_SRC elisp
+   (use-package org-ref
+     :after org
+     :init
+     (setq org-ref-default-bibliography '("~/Dropbox/bibliography/my.bib"
+                                          "~/Dropbox/bibliography/pragmatic.bib")
+           org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+           ;; org-ref-completion-library 'org-ref-ivy-cite
+           org-ref-pdf-directory "~/Dropbox/bibliography/pdf/")
+
+     (setq bibtex-autokey-year-length 4
+           bibtex-autokey-name-year-separator "-"
+           bibtex-autokey-year-title-separator "-"
+           bibtex-autokey-titleword-separator "-"
+           bibtex-autokey-titlewords 2
+           bibtex-autokey-titlewords-stretch 1
+           bibtex-autokey-titleword-length 5)
+
+     ;;     (defadvice org-ref-next-latex-cite (around add-font-lock-support-mode activate)
+     ;;       (let ((font-lock-support-mode #'jit-lock-mode))
+     ;;         ad-do-it))
+
+     ;;   (add-hook 'LaTeX-mode-hook (lambda nil
+     ;;                                (require 'org-ref)
+     ;;                                (require 'org-ref-latex)))
+
+     (setq org-ref-note-title-format
+           "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
+
+     :config
+     ;; (require 'org-ref-ivy)
+     ;; (require 'org-ref-latex) ;; convert cite ref into clicable links
+     (require 'org-ref-bibtex)
+     (setq bibtex-completion-format-citation-functions
+           '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+             (latex-mode    . brust-bibtex-completion-format-citation-cite)
+             (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+             (default       . bibtex-completion-format-citation-default)))
+
+     (require 'org-ref-pdf)
+     (require 'org-ref-arxiv)
+     ;; (key-chord-define-global "kk" 'org-ref-cite-hydra/body)
+     ;; (global-set-key (kbd "s-n") 'org-ref-bibtex-hydra/body)
+     ;; (use-package org-autolist
+     ;;   :after org-ref
+     ;;   :config
+     ;;   (org-autolist-mode +1))
+     ;;
+     ;; ;;      (use-package doi-utils
+     ;; ;;        :after org)
+     ;;
+     ;; (use-package org-ref-bibtex;;
+     ;;   :after org
+     ;;   :init
+     ;;   (setq org-ref-bibtex-hydra-key-binding "\C-cj"))
+     )
+ #+END_SRC
+
+ #+RESULTS:
+ : t
+
+**** Functions
+ #+BEGIN_SRC elisp
+   (defun brust-arxiv-get-number-from-web (arxiv-web)
+     (with-temp-buffer
+       (insert arxiv-web)
+       (goto-char (point-min))
+       (if (search-forward "https://" nil t)
+           (cond ((search-forward "/abs/" nil t)
+                  (buffer-substring-no-properties (point) (point-max)))
+                 ((search-forward "/pdf/" nil t)
+                  (buffer-substring-no-properties (point)
+                                                  (progn (search-forward ".pdf" nil t)
+                                                         (match-beginning 0))))
+                 (t (message "Unkown web format")))
+         arxiv-web)))
+
+   (defun brust-org-ref-bibtex-open-notes (-header)
+     "It assume that you are at the beginning of a bibtex entry in a .bib file"
+     (interactive
+      (list (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+             :require-match t
+             :sort t
+             :preselect "Index")))
+     (let ((-abstract
+            (cdr (assoc "abstract" (bibtex-parse-entry t))))
+           (-entry))
+       (save-excursion
+         (org-ref-open-bibtex-notes)
+         (org-narrow-to-subtree)
+         (goto-char (point-min))
+         (when (search-forward "cite:" nil t)
+           (delete-region (point-at-bol) (1+ (point-at-eol)))
+           (goto-char (point-max)))
+         (when -abstract
+           (insert "*** Abstract\n" -abstract))
+         (indent-region (point-min) (point-max))
+         (unless (string-match-p "Index" -header)
+           (setq entry (buffer-substring-no-properties (point-min) (point-max)))
+           (delete-region (point-min) (point-max))
+           (widen)
+           (goto-char (point-min))
+           (search-forward -header nil t)
+           (insert "\n\n" -entry))
+         (widen))))
+
+   (defun brust-arxiv-get-pdf-add-notes-entry (-arxiv-web -header)
+     "Add an entry for ARXIV-WEB to 'notes.org'.
+   Remove troublesome chars from the bibtex key, retrieve a pdf
+   for ARXIV-NUMBER and save it to PDFDIR with the same name of the
+   key."
+     (interactive
+      (list (read-string "arxiv web: ")
+            (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
+             :require-match t
+             :sort t
+             :preselect "Index")))
+     (let ((-tempbib "/tmp/temp-biblio.bib"))
+       (find-file -tempbib)
+       (save-buffer)
+       (ignore-errors (arxiv-get-pdf-add-bibtex-entry
+                       (brust-arxiv-get-number-from-web -arxiv-web)
+                       -tempbib
+                       (expand-file-name "~/Dropbox/bibliography/pdf/")))
+       (save-buffer)
+       (bibtex-beginning-of-entry)
+       (brust-org-ref-bibtex-open-notes -header)
+       ;; (erase-buffer)
+       (save-buffer)
+       ;;(kill-buffer)
+       ))
+
+
+   (defun brust-org-mode-get-top-header-list (file)
+     (let ((-list '()))
+       (save-window-excursion
+         (find-file file)
+         (goto-char (point-min))
+         (while (re-search-forward "^\\* .*$" nil t)
+           (push (match-string-no-properties 0) -list)))
+       -list))
+
+   (defun brust-add-notes-entry-from-pdf (-entry-type -title -author -year -pages -header)
+     (interactive
+      (list (ivy-read
+             "Entry Type: "
+             (cl-loop for -entry-type in bibtex-BibTeX-entry-alist
+                      collect (downcase (car -entry-type)))
+             :require-match t
+             :sort t
+             :preselect "article")
+            (read-string "Title: ")
+            (read-string "Author: ")
+            (read-string "Year: ")
+            (read-string "Pages: ")
+            (ivy-read
+             "Header: "
+             (brust-org-mode-get-top-header-list org-ref-bibliography-notes))
+            :require-match t
+            :sort t
+            :preselect "Index"))
+     (let ((-file (buffer-file-name))
+           (-key (file-name-base (buffer-file-name))))
+       (find-file org-ref-bibliography-notes)
+       (goto-char (point-min))
+       (search-forward -header nil t)
+       (insert (format
+                "\n\n** TODO %s - %s\n :PROPERTIES:\n  :Custom_ID: %s\n  :AUTHOR: %s\n  :INTERLEAVE_PDF: %s \n :YEAR: %s\n :TYPE: %s\n :PAGES: %s\n :END:\n"
+                -year -title -key -author -file -year -entry-type -pages)))
+     ;; (insert "*** Comments\n\n*** Interleave\n")
+     (indent-region (point-min) (point-max)))
+
+ #+END_SRC
+
+ #+RESULTS:
+ : brust-add-notes-entry-from-pdf
+
+**** Helm config
+
+ #+BEGIN_SRC elisp
+   (bind-keys :map helm-map
+              ("s-k" . helm-next-line)
+              ("s-i" . helm-previous-line))
+ #+END_SRC
+
+ #+RESULTS:
+ : helm-previous-line
+
 *** Pdf tools
 **** Main
 #+BEGIN_SRC elisp
@@ -5428,651 +5622,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 #+RESULTS:
 : t
-** Singular
-*** Config
-#+BEGIN_SRC elisp
-  (use-package singular
-    :ensure nil
-    :mode ("\\.sing\\'" . c++-mode)
-    :mode ("\\.lib\\'" .  c++-mode)
-    :load-path "lisp/Singular/"
-    :init
-    (setq singular-emacs-home-directory "~/.emacs.d/lisp/Singular")
-    (add-hook 'c++-mode-hook #'brust-singular-mode-hook)
-    (defun brust-singular-mode-hook nil
-      ;; turn-on fontification for c++-mode
-      (font-lock-mode 1)
-      (set (make-local-variable 'singular-commands-alist) nil)
-      (load "~/.emacs.d/lisp/Singular/cmd-cmpl")
-      ;; turn on aut-new line
-      (c-toggle-auto-newline 1)
-      ;; tunr off hungry-delete
-      (c-toggle-hungry-state -1)
-      (company-mode -1)
-      (local-set-key (kbd "<tab>") #'brust-singular-dynamic-complete)
-      (local-set-key (kbd "C-a")   #'singular-beginning-of-line)
-      (local-set-key (kbd "C-p")   #'brust-singular-add-print)
-      (local-set-key (kbd "C-s")   #'brust-singular-add-std)
-      (local-set-key (kbd "C-c C-c") #'brust-singular-eval-region-or-line)
-      (local-set-key (kbd "C-c ;") #'comment-region)
-      ;; (local-set-key (kbd "C-c l") #'brust-singular-eval-buffer)
-      (local-set-key (kbd "C-c b") #'brust-singular-eval-buffer)
-      (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
-      (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
-      (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
-      ;; (local-set-key (kbd "C-c c") #'brust-singular-finish-line-singular-edit-mode)
-      (local-set-key (kbd "C-<return>") #'newline)
-      (local-set-key (kbd "<return>") #'brust-singular-finish-line-singular-edit-mode))
-
-    (defun brust-singular-intetractive-mode nil
-      ;; (local-set-key (kbd "C-n") #'brust-ace-window)
-      (local-set-key (kbd "C-p") #'brust-singular-add-print)
-      (local-set-key (kbd "C-s") #'brust-singular-add-std)
-      (hl-line-mode 1))
-
-    (add-hook 'singular-interactive-mode-hook #'brust-singular-intetractive-mode)
-
-    (setq load-path (cons singular-emacs-home-directory load-path))
-    (autoload 'singular "singular"
-      "Start Singular using default values." t)
-    (autoload 'singular-other "singular"
-      "Ask for arguments and start Singular." t)
-    :config
-    (defadvice singular-send-or-copy-input (before finish-line activate)
-      (brust-singular-finish-line-interaction-mode)))
-
-#+END_SRC
-
-#+RESULTS:
-: ((\.lib\' . c++-mode) (\.sing\' . c++-mode) (\.odc\' . archive-mode) (\.odf\' . archive-mode) (\.odi\' . archive-mode) (\.otp\' . archive-mode) (\.odp\' . archive-mode) (\.otg\' . archive-mode) (\.odg\' . archive-mode) (\.ots\' . archive-mode) (\.ods\' . archive-mode) (\.odm\' . archive-mode) (\.ott\' . archive-mode) (\.odt\' . archive-mode) (\.[pP][dD][fF]\' . pdf-view-mode) (\.sty\' . LaTeX-mode) (\.tex\' . LaTeX-mode) (\.hva\' . latex-mode) (\.drv\' . latex-mode) (/git-rebase-todo\' . git-rebase-mode) (\.at\' . autotest-mode) (\.gpg\(~\|\.~[0-9]+~\)?\' nil epa-file) (\.\(?:3fr\|a\(?:r[tw]\|vs\)\|bmp[23]?\|c\(?:als?\|myka?\|r[2w]\|u[rt]\)\|d\(?:c[mrx]\|ds\|jvu\|ng\|px\)\|exr\|f\(?:ax\|its\)\|gif\(?:87\)?\|hrz\|ic\(?:on\|[bo]\)\|j\(?:\(?:pe\|[np]\)g\)\|k\(?:25\|dc\)\|m\(?:iff\|ng\|rw\|s\(?:l\|vg\)\|tv\)\|nef\|o\(?:rf\|tb\)\|p\(?:bm\|c\(?:ds\|[dltx]\)\|db\|ef\|gm\|i\(?:ct\|x\)\|jpeg\|n\(?:g\(?:24\|32\|8\)\|[gm]\)\|pm\|sd\|tif\|wp\)\|r\(?:a[fs]\|gb[ao]?\|l[ae]\)\|s\(?:c[rt]\|fw\|gi\|r[2f]\|un\|vgz?\)\|t\(?:ga\|i\(?:ff\(?:64\)?\|le\|m\)\|tf\)\|uyvy\|v\(?:da\|i\(?:car\|d\|ff\)\|st\)\|w\(?:bmp\|pg\)\|x\(?:3f\|bm\|cf\|pm\|wd\|[cv]\)\|y\(?:cbcra?\|uv\)\)\' . image-mode) (\.elc\' . elisp-byte-code-mode) (\.dz\' nil jka-compr) (\.xz\' nil jka-compr) (\.lzma\' nil jka-compr) (\.lz\' nil jka-compr) (\.g?z\' nil jka-compr) (\.bz2\' nil jka-compr) (\.Z\' nil jka-compr) (\.vr[hi]?\' . vera-mode) (\(?:\.\(?:rbw?\|ru\|rake\|thor\|jbuilder\|rabl\|gemspec\|podspec\)\|/\(?:Gem\|Rake\|Cap\|Thor\|Puppet\|Berks\|Vagrant\|Guard\|Pod\)file\)\' . ruby-mode) (\.re?st\' . rst-mode) (\.pyw?\' . python-mode) (\.scss\' . scss-mode) (\.awk\' . awk-mode) (\.\(u?lpc\|pike\|pmod\(\.in\)?\)\' . pike-mode) (\.idl\' . idl-mode) (\.java\' . java-mode) (\.m\' . objc-mode) (\.ii\' . c++-mode) (\.i\' . c-mode) (\.lex\' . c-mode) (\.y\(acc\)?\' . c-mode) (\.[ch]\' . c-mode) (\.\(CC?\|HH?\)\' . c++-mode) (\.[ch]\(pp\|xx\|\+\+\)\' . c++-mode) (\.\(cc\|hh\)\' . c++-mode) (\.\(bat\|cmd\)\' . bat-mode) (\.[sx]?html?\(\.[a-zA-Z_]+\)?\' . html-mode) (\.svgz?\' . image-mode) (\.svgz?\' . xml-mode) (\.x[bp]m\' . image-mode) (\.x[bp]m\' . c-mode) (\.p[bpgn]m\' . image-mode) (\.tiff?\' . image-mode) (\.gif\' . image-mode) (\.png\' . image-mode) (\.jpe?g\' . image-mode) (\.te?xt\' . text-mode) (\.[tT]e[xX]\' . tex-mode) (\.ins\' . tex-mode) (\.ltx\' . latex-mode) (\.dtx\' . doctex-mode) (\.org\' . org-mode) (\.el\' . emacs-lisp-mode) (Project\.ede\' . emacs-lisp-mode) (\.\(scm\|stk\|ss\|sch\)\' . scheme-mode) (\.l\' . lisp-mode) (\.li?sp\' . lisp-mode) (\.[fF]\' . fortran-mode) (\.for\' . fortran-mode) (\.p\' . pascal-mode) (\.pas\' . pascal-mode) (\.\(dpr\|DPR\)\' . delphi-mode) (\.ad[abs]\' . ada-mode) (\.ad[bs].dg\' . ada-mode) (\.\([pP]\([Llm]\|erl\|od\)\|al\)\' . perl-mode) (Imakefile\' . makefile-imake-mode) (Makeppfile\(?:\.mk\)?\' . makefile-makepp-mode) (\.makepp\' . makefile-makepp-mode) (\.mk\' . makefile-gmake-mode) (\.make\' . makefile-gmake-mode) ([Mm]akefile\' . makefile-gmake-mode) (\.am\' . makefile-automake-mode) (\.texinfo\' . texinfo-mode) (\.te?xi\' . texinfo-mode) (\.[sS]\' . asm-mode) (\.asm\' . asm-mode) (\.css\' . css-mode) (\.mixal\' . mixal-mode) (\.gcov\' . compilation-mode) (/\.[a-z0-9-]*gdbinit . gdb-script-mode) (-gdb\.gdb . gdb-script-mode) ([cC]hange\.?[lL]og?\' . change-log-mode) ([cC]hange[lL]og[-.][0-9]+\' . change-log-mode) (\$CHANGE_LOG\$\.TXT . change-log-mode) (\.scm\.[0-9]*\' . scheme-mode) (\.[ckz]?sh\'\|\.shar\'\|/\.z?profile\' . sh-mode) (\.bash\' . sh-mode) (\(/\|\`\)\.\(bash_\(profile\|history\|log\(in\|out\)\)\|z?log\(in\|out\)\)\' . sh-mode) (\(/\|\`\)\.\(shrc\|[kz]shrc\|bashrc\|t?cshrc\|esrc\)\' . sh-mode) (\(/\|\`\)\.\([kz]shenv\|xinitrc\|startxrc\|xsession\)\' . sh-mode) (\.m?spec\' . sh-mode) (\.m[mes]\' . nroff-mode) (\.man\' . nroff-mode) (\.sty\' . latex-mode) (\.cl[so]\' . latex-mode) (\.bbl\' . latex-mode) (\.bib\' . bibtex-mode) (\.bst\' . bibtex-style-mode) (\.sql\' . sql-mode) (\.m[4c]\' . m4-mode) (\.mf\' . metafont-mode) (\.mp\' . metapost-mode) (\.vhdl?\' . vhdl-mode) (\.article\' . text-mode) (\.letter\' . text-mode) (\.i?tcl\' . tcl-mode) (\.exp\' . tcl-mode) (\.itk\' . tcl-mode) (\.icn\' . icon-mode) (\.sim\' . simula-mode) (\.mss\' . scribe-mode) (\.f9[05]\' . f90-mode) (\.f0[38]\' . f90-mode) (\.indent\.pro\' . fundamental-mode) (\.\(pro\|PRO\)\' . idlwave-mode) (\.srt\' . srecode-template-mode) (\.prolog\' . prolog-mode) (\.tar\' . tar-mode) (\.\(arc\|zip\|lzh\|lha\|zoo\|[jew]ar\|xpi\|rar\|7z\|ARC\|ZIP\|LZH\|LHA\|ZOO\|[JEW]AR\|XPI\|RAR\|7Z\)\' . archive-mode) (\.oxt\' . archive-mode) (\.\(deb\|[oi]pk\)\' . archive-mode) (\`/tmp/Re . text-mode) (/Message[0-9]*\' . text-mode) (\`/tmp/fol/ . text-mode) (\.oak\' . scheme-mode) (\.sgml?\' . sgml-mode) (\.x[ms]l\' . xml-mode) (\.dbk\' . xml-mode) (\.dtd\' . sgml-mode) (\.ds\(ss\)?l\' . dsssl-mode) (\.jsm?\' . javascript-mode) (\.json\' . javascript-mode) (\.[ds]?vh?\' . verilog-mode) (\.by\' . bovine-grammar-mode) (\.wy\' . wisent-grammar-mode) ([:/\]\..*\(emacs\|gnus\|viper\)\' . emacs-lisp-mode) (\`\..*emacs\' . emacs-lisp-mode) ([:/]_emacs\' . emacs-lisp-mode) (/crontab\.X*[0-9]+\' . shell-script-mode) (\.ml\' . lisp-mode) (\.ld[si]?\' . ld-script-mode) (ld\.?script\' . ld-script-mode) (\.xs\' . c-mode) (\.x[abdsru]?[cnw]?\' . ld-script-mode) (\.zone\' . dns-mode) (\.soa\' . dns-mode) (\.asd\' . lisp-mode) (\.\(asn\|mib\|smi\)\' . snmp-mode) (\.\(as\|mi\|sm\)2\' . snmpv2-mode) (\.\(diffs?\|patch\|rej\)\' . diff-mode) (\.\(dif\|pat\)\' . diff-mode) (\.[eE]?[pP][sS]\' . ps-mode) (\.\(?:PDF\|DVI\|OD[FGPST]\|DOCX?\|XLSX?\|PPTX?\|pdf\|djvu\|dvi\|od[fgpst]\|docx?\|xlsx?\|pptx?\)\' . doc-view-mode-maybe) (configure\.\(ac\|in\)\' . autoconf-mode) (\.s\(v\|iv\|ieve\)\' . sieve-mode) (BROWSE\' . ebrowse-tree-mode) (\.ebrowse\' . ebrowse-tree-mode) (#\*mail\* . mail-mode) (\.g\' . antlr-mode) (\.mod\' . m2-mode) (\.ses\' . ses-mode) (\.docbook\' . sgml-mode) (\.com\' . dcl-mode) (/config\.\(?:bat\|log\)\' . fundamental-mode) (\.\(?:[iI][nN][iI]\|[lL][sS][tT]\|[rR][eE][gG]\|[sS][yY][sS]\)\' . conf-mode) (\.\(?:desktop\|la\)\' . conf-unix-mode) (\.ppd\' . conf-ppd-mode) (java.+\.conf\' . conf-javaprop-mode) (\.properties\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-javaprop-mode) (\`/etc/\(?:DIR_COLORS\|ethers\|.?fstab\|.*hosts\|lesskey\|login\.?de\(?:fs\|vperm\)\|magic\|mtab\|pam\.d/.*\|permissions\(?:\.d/.+\)?\|protocols\|rpc\|services\)\' . conf-space-mode) (\`/etc/\(?:acpid?/.+\|aliases\(?:\.d/.+\)?\|default/.+\|group-?\|hosts\..+\|inittab\|ksysguarddrc\|opera6rc\|passwd-?\|shadow-?\|sysconfig/.+\)\' . conf-mode) ([cC]hange[lL]og[-.][-0-9a-z]+\' . change-log-mode) (/\.?\(?:gitconfig\|gnokiirc\|hgrc\|kde.*rc\|mime\.types\|wgetrc\)\' . conf-mode) (/\.\(?:enigma\|gltron\|gtk\|hxplayer\|net\|neverball\|qt/.+\|realplayer\|scummvm\|sversion\|sylpheed/.+\|xmp\)rc\' . conf-mode) (/\.\(?:gdbtkinit\|grip\|orbital/.+txt\|rhosts\|tuxracer/options\)\' . conf-mode) (/\.?X\(?:default\|resource\|re\)s\> . conf-xdefaults-mode) (/X11.+app-defaults/\|\.ad\' . conf-xdefaults-mode) (/X11.+locale/.+/Compose\' . conf-colon-mode) (/X11.+locale/compose\.dir\' . conf-javaprop-mode) (\.~?[0-9]+\.[0-9][-.0-9]*~?\' nil t) (\.\(?:orig\|in\|[bB][aA][kK]\)\' nil t) ([/.]c\(?:on\)?f\(?:i?g\)?\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-mode-maybe) (\.[1-9]\' . nroff-mode) (\.tgz\' . tar-mode) (\.tbz2?\' . tar-mode) (\.txz\' . tar-mode))
-
-*** function to send the working file.
-#+BEGIN_SRC elisp
-
-  (defvar brust-singular-fixed-region-poss nil "Cons of positions delimiting the fixed region")
-
-  (defun brust-singular-fixed-region-set-region (args)
-    (interactive "P")
-    (unless (use-region-p) (user-error "Region has to be activate"))
-    (let ((beg (region-beginning))
-          (end (region-end)))
-      (setq brust-singular-fixed-region-poss (cons beg end))
-      (message "Fixed-region seted from line %d to %d"
-               (line-number-at-pos beg)
-               (line-number-at-pos end)))
-    (deactivate-mark t))
-
-  (defun brust-singular-fixed-region-eval (args)
-    (interactive "P")
-    (message "Evaluated region (%d:%d) in [[%s]]"
-             (line-number-at-pos (car brust-singular-fixed-region-poss))
-             (line-number-at-pos (cdr brust-singular-fixed-region-poss))
-             buffer-file-name)
-    (brust-singular--eval-string
-     (buffer-substring-no-properties
-      (car brust-singular-fixed-region-poss)
-      (cdr brust-singular-fixed-region-poss))
-     args))
-
-  (defun brust-singular-eval-region-or-line (args)
-    (interactive "P")
-    (let (-str)
-      (if (not (use-region-p))
-          (save-excursion
-            (while (not (or (brust-singular--ending-semicolon-p) (bobp)))
-              (forward-line -1))
-            (setq -str (thing-at-point 'line t))
-            (unless (brust-singular--ending-semicolon-p -str)
-              (user-error "There is no line to eval"))
-            (unless (brust-singular--check-parents -str)
-              (user-error "Unbalanced Parents!!!"))
-            (message "Evaluated line (%d) in [[ %s ]]"
-                     (line-number-at-pos (point))
-                     (buffer-name)))
-        (message "Evaluated region between lines (%d:%d) in [[ %s ]]"
-                 (line-number-at-pos (region-beginning))
-                 (line-number-at-pos (region-end))
-                 (buffer-name))
-        (setq -str (buffer-substring-no-properties
-                    (region-beginning) (region-end))))
-      (brust-singular--eval-string -str args)))
-
-  (defun brust-singular--ending-semicolon-p (&optional -string)
-    (unless -string
-      (setq -string (thing-at-point 'line t)))
-    (string= ";"
-             (substring (s-trim
-                         (car
-                          (split-string
-                           -string "//")))
-                        -1)))
-
-  (defun brust-singular--check-parents (&optional -string)
-    (unless -string
-      (setq -string (thing-at-point 'line t)))
-    (with-temp-buffer
-      (insert -string)
-      (ignore-errors (check-parens) t)))
-
-  (defun brust-singular--eval-string (-str &optional args)
-    (save-window-excursion
-      (singular)
-      (goto-char (point-max))
-      (let ((process (singular-process))
-            (--str (concat (s-trim -str)
-                           (unless (string= (substring -str -1) ";")
-                             "\n;"))))
-        (when args (singular-control-c 'restart))
-        (singular-input-filter process --str)
-        (singular-send-string process --str))))
-
-  (defun brust-singular--delete-comments (&optional -string)
-    (unless -string
-      (setq -string (thing-at-point 'line t)))
-    (with-temp-buffer
-      (insert -string)
-      (goto-char (point-min))
-      (while (search-forward "//" nil t)
-        (forward-char -2)
-        (delete-region (point) (line-end-position)))
-      (buffer-string)))
-
-  (defun brust-singular-eval-proc (args)
-    "Eval last proc declaration."
-    (interactive "P")
-    (save-excursion
-      (search-backward "proc" nil t)
-      (let ((-beg (point))
-            (-name
-             (if (re-search-forward "[ \s\t]+" (line-end-position) t)
-                 (let ((-beg2 (point)))
-                   (if (search-forward "(" (line-end-position) t)
-                       (s-trim (buffer-substring-no-properties -beg2 (1- (point))))
-                     nil))
-               nil)))
-        (search-forward "{" nil t)
-        (forward-char -1)
-        (sp-forward-sexp)
-        (brust-singular--eval-string
-         (buffer-substring-no-properties -beg (point))
-         args)
-        (if -name
-            (message "Evaluated proc {{%s}}, between lines (%d:%d), in file [[%s]]"
-                     -name
-                     (line-number-at-pos -beg)
-                     (line-number-at-pos (point))
-                     (file-name-base (buffer-name)))
-          (message "Evaluated proc between lines (%d:%d) and file [[%s]] (Warring:: its name is not on the definition line)"
-                   (line-number-at-pos -beg)
-                   (line-number-at-pos (point))
-                   (file-name-base (buffer-name)))))))
-
-      ;;(defun brust-singular-eval-buffer-line-by-line nil
-      ;;  (interactive)
-      ;;  (let ((-total-str (buffer-string))
-      ;;        (-base-name (file-name-base (buffer-name))))
-      ;;    (with-temp-buffer
-      ;;      (insert -total-str)
-      ;;      (brust-singular--delete-comments)
-      ;;      (goto-char (point-min))
-      ;;      (while (not (eobp))
-      ;;        ;;(or (brust-check-line-parents) (user-error "Unbalanced Parent!!!"))
-      ;;        (let ((-str (s-trim (buffer-substring-no-properties
-      ;;                             (line-beginning-position)
-      ;;                             (line-end-position))))
-      ;;              (-line (line-number-at-pos)))
-      ;;          (unless
-      ;;              (cond ((string= -str "") t)
-      ;;                    ((string= (substring -str -1) ";")
-      ;;                     (brust-singular--eval-string
-      ;;                      -str
-      ;;                      (format "line:%d:of::%s--" -line -base-name)
-      ;;                      nil)
-      ;;                     t)
-      ;;                    (t (brust-singular-eval-environment args) t))
-      ;;            (message "Error on line:%d (%s)" -line -str)
-      ;;            (goto-char (point-max)))
-      ;;          ;;(when err (goto-char err))
-      ;;          (forward-line 1))))))
-
-      ;;(defun brust-singular--temp-file (-str -name)
-      ;;  (let ((-temp-file
-      ;;         (make-temp-file
-      ;;          (replace-regexp-in-string "[.]" "-" -name)
-      ;;          nil ".sing")))
-      ;;    (with-temp-buffer
-      ;;      (insert -str)
-      ;;      (append-to-file (point-min) (point-max) -temp-file))
-      ;;    -temp-file))
-#+END_SRC
-
-#+RESULTS:
-: brust-singular-eval-proc
-
-*** functions for *singular*
-**** Add print std...
-#+BEGIN_SRC elisp
-  (defun brust-singular-add-print nil
-    (interactive)
-    (brust-singular-add-function "print"))
-
-  (defun brust-singular-add-std nil
-    (interactive)
-    (brust-singular-add-function "std"))
-
-  (defun brust-singular-add-function (-fun)
-    (let* ((-bounds (if (region-active-p)
-                        `(,(region-beginning) . ,(region-end))
-                      (save-excursion
-                        (move-beginning-of-line 1)
-                        (search-forward "> " (point-at-eol) t)
-                        `(,(point) . ,(progn
-                                        (move-end-of-line 1)
-                                        (search-backward ";" (point-at-bol) t)
-                                        (point))))))
-           (-str (buffer-substring-no-properties (car -bounds) (cdr -bounds))))
-      (goto-char (car -bounds))
-      (delete-region (car -bounds) (cdr -bounds))
-      (insert -fun "(" -str ")")
-      (move-end-of-line 1)
-      (insert ";")))
-#+END_SRC
-
-#+RESULTS:
-: brust-singular-finish-line
-**** Finish line
-#+BEGIN_SRC elisp
-  (defun brust-singular-finish-line-singular-edit-mode nil
-    (interactive)
-    (if (or (bolp) (eobp)) (insert "\n")
-      (move-end-of-line 1)
-      (when (search-backward "//" (point-at-bol) t)
-        (skip-chars-backward "[:space:]"))
-      (let ((-main-line (s-trim-right
-                         (buffer-substring-no-properties (point-at-bol) (point))))
-            (-comment-line (buffer-substring-no-properties (point) (point-at-eol))))
-        (delete-region (point-at-bol) (point-at-eol))
-        (if (or (< (length -main-line) 1))
-            (insert (concat -comment-line "\n"))
-          (insert
-           (concat ;;compare (insert (concat nil "hello")) vs (insert nil "hello")
-            (with-temp-buffer ;; To close-all-open-paren-r just of this line and do not use narrow
-              (insert (concat -main-line
-                              (unless (string= (substring -main-line -1) ";")
-                                ";")))
-              (forward-char -1)
-              (close-all-open-paren-right)
-              (buffer-string))
-            -comment-line
-            "\n"))))))
-
-  (defun brust-singular-finish-line-interaction-mode nil
-    (interactive)
-    (narrow-to-region (point-at-bol) (point-at-eol))
-    (move-end-of-line 1)
-    (delete-horizontal-space)
-    (unless (string= (string (char-before (point))) ";")
-      (insert ";"))
-    (forward-char -1)
-    (close-all-open-paren-right)
-    (widen))
-
-#+END_SRC
-
-#+RESULTS:
-: brust-singular-finish-line-interaction-mode
-
-**** Dynamic expand in non-running Singular buffer
-#+BEGIN_SRC elisp
-  (defun brust-singular-dynamic-complete ()
-    "Dynamic complete word before point.
-      Performs completion of Singular commands."
-    (interactive)
-    (let* ((end (point))
-           (beg
-            (save-excursion
-              (skip-chars-backward "a-zA-Z0-9")
-              (point)))
-           (str (buffer-substring-no-properties beg end)))
-      (if (string= str "")
-          (indent-region (point-at-bol) (point-at-eol))
-        ;; (call-interactively 'indent-region)
-        (if singular-commands-alist
-            (singular-completion-do str beg end singular-commands-alist)
-          (message "Completion of Singular commands disabled.")
-          (ding)))))
-#+END_SRC
-
-#+RESULTS:
-: brust-singular-dynamic-complete
-
-** LaTeX-mode-config
-*** General
-#+BEGIN_SRC elisp
-  (use-package tex
-    :ensure auctex
-    :defer t
-    :mode ("\\.tex\\'"  . LaTeX-mode)
-    :mode ("\\.sty\\'"  . LaTeX-mode)
-    :mode ("\\.bib\\'"  . bibtex-mode)
-    :diminish 'reftex-mode
-    :diminish 'outline-minor-mode
-    :diminish 'flyspell-mode
-    :init
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
-    :config
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
-    (use-package cdlatex
-      :diminish cdlatex-mode
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
-      :bind
-      (:map cdlatex-mode-map
-            ("'" . nil)
-            ("`" . nil)
-            ("¿" . cdlatex-math-modify)
-            ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)
-            ("M-ñ" . brust-LaTeX-insert-ñ)))
-    (use-package reftex
-      :ensure nil
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
-    :bind
-    (:map LaTeX-mode-map
-          ("ç"            . brust-LaTeX-insert-math1)
-          ("Ç"            . brust-LaTeX-insert-math2)
-          ("M-ç"          . brust-LaTeX-insert-ç)
-          ;; ("           ."              . brust-LaTeX-smart-period)
-          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ;; ("C-x C-s"      . brust-LaTeX-save)
-          ("C-c C-e"      . brust-LaTeX-env)
-          ("C-c n"        . TeX-next-error)
-          ("s-e"          . brust-LaTeX-next-error)
-          ;; ("C-c e"        . TeX-error-overview)
-          ("s-5"          . latex-replace-in-math)
-          ("s-C-5"        . latex-replace-regexp-in-math)
-          ;; ("C-c C-a"      . brust-compile-only)
-          ;; ("s-0"          . reftex-toc)
-          ("M-m"          . brust-LaTeX-insert-up)
-          ("M-n"          . brust-LaTeX-insert-down)
-          ;; ("s-ç"          . brust-LaTeX-smart-selection)
-          ("C-c C-q"      . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"  . brust-wc-save-words)
-          ;; ("C-c C-a"   . latex/compile-commands-until-done)
-          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"  . latex/up-section)
-          ;; ("<tab>"     . latex/hide-show)
-          ;; ("<backtab>" . latex/hide-show-all)
-          ;; (""          . latex/next-section)
-          ;; (""          . latex/next-section-same-level)
-          ;; (""          . latex/beginning-of-line)
-          ;; ("C-M-e"        . latex/end-of-environment)
-          ;; ("C-M-a"        . latex/beginning-of-environment)
-          ;; ("C-M-p"        . latex/backward-environment)
-          ;; ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . brust-cycle-texmath)
-          ))
-#+END_SRC
-
-#+RESULTS:
-
-*** Bibretrive
-#+BEGIN_SRC elisp
-  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
-  (load "bibretrieve")
-  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
-#+END_SRC
-
-#+RESULTS:
-: ((msn . 10) (arxiv . 5))
-
-*** Bralatex
-    Load before auctex ??2
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
-
-#+RESULTS:
-: bratex-config
-
-*** Org-ref
-**** General config
-#+BEGIN_SRC elisp
-  (use-package org-ref
-    :after org
-    :init
-    (setq org-ref-default-bibliography '("~/Dropbox/bibliography/my.bib"
-                                         "~/Dropbox/bibliography/pragmatic.bib")
-          org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-          ;; org-ref-completion-library 'org-ref-ivy-cite
-          org-ref-pdf-directory "~/Dropbox/bibliography/pdf/")
-
-    (setq bibtex-autokey-year-length 4
-          bibtex-autokey-name-year-separator "-"
-          bibtex-autokey-year-title-separator "-"
-          bibtex-autokey-titleword-separator "-"
-          bibtex-autokey-titlewords 2
-          bibtex-autokey-titlewords-stretch 1
-          bibtex-autokey-titleword-length 5)
-
-    ;;     (defadvice org-ref-next-latex-cite (around add-font-lock-support-mode activate)
-    ;;       (let ((font-lock-support-mode #'jit-lock-mode))
-    ;;         ad-do-it))
-
-    ;;   (add-hook 'LaTeX-mode-hook (lambda nil
-    ;;                                (require 'org-ref)
-    ;;                                (require 'org-ref-latex)))
-
-    (setq org-ref-note-title-format
-          "** TODO %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :AUTHOR: %a\n  :INTERLEAVE_PDF: pdf/%k.pdf \n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n")
-
-    :config
-    ;; (require 'org-ref-ivy)
-    ;; (require 'org-ref-latex) ;; convert cite ref into clicable links
-    (require 'org-ref-bibtex)
-    (setq bibtex-completion-format-citation-functions
-          '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
-            (latex-mode    . brust-bibtex-completion-format-citation-cite)
-            (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-            (default       . bibtex-completion-format-citation-default)))
-
-    (require 'org-ref-pdf)
-    (require 'org-ref-arxiv)
-    ;; (key-chord-define-global "kk" 'org-ref-cite-hydra/body)
-    ;; (global-set-key (kbd "s-n") 'org-ref-bibtex-hydra/body)
-    ;; (use-package org-autolist
-    ;;   :after org-ref
-    ;;   :config
-    ;;   (org-autolist-mode +1))
-    ;;
-    ;; ;;      (use-package doi-utils
-    ;; ;;        :after org)
-    ;;
-    ;; (use-package org-ref-bibtex;;
-    ;;   :after org
-    ;;   :init
-    ;;   (setq org-ref-bibtex-hydra-key-binding "\C-cj"))
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-**** Functions
-#+BEGIN_SRC elisp
-  (defun brust-arxiv-get-number-from-web (arxiv-web)
-    (with-temp-buffer
-      (insert arxiv-web)
-      (goto-char (point-min))
-      (if (search-forward "https://" nil t)
-          (cond ((search-forward "/abs/" nil t)
-                 (buffer-substring-no-properties (point) (point-max)))
-                ((search-forward "/pdf/" nil t)
-                 (buffer-substring-no-properties (point)
-                                                 (progn (search-forward ".pdf" nil t)
-                                                        (match-beginning 0))))
-                (t (message "Unkown web format")))
-        arxiv-web)))
-
-  (defun brust-org-ref-bibtex-open-notes (-header)
-    "It assume that you are at the beginning of a bibtex entry in a .bib file"
-    (interactive
-     (list (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
-            :require-match t
-            :sort t
-            :preselect "Index")))
-    (let ((-abstract
-           (cdr (assoc "abstract" (bibtex-parse-entry t))))
-          (-entry))
-      (save-excursion
-        (org-ref-open-bibtex-notes)
-        (org-narrow-to-subtree)
-        (goto-char (point-min))
-        (when (search-forward "cite:" nil t)
-          (delete-region (point-at-bol) (1+ (point-at-eol)))
-          (goto-char (point-max)))
-        (when -abstract
-          (insert "*** Abstract\n" -abstract))
-        (indent-region (point-min) (point-max))
-        (unless (string-match-p "Index" -header)
-          (setq entry (buffer-substring-no-properties (point-min) (point-max)))
-          (delete-region (point-min) (point-max))
-          (widen)
-          (goto-char (point-min))
-          (search-forward -header nil t)
-          (insert "\n\n" -entry))
-        (widen))))
-
-  (defun brust-arxiv-get-pdf-add-notes-entry (-arxiv-web -header)
-    "Add an entry for ARXIV-WEB to 'notes.org'.
-  Remove troublesome chars from the bibtex key, retrieve a pdf
-  for ARXIV-NUMBER and save it to PDFDIR with the same name of the
-  key."
-    (interactive
-     (list (read-string "arxiv web: ")
-           (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes)
-            :require-match t
-            :sort t
-            :preselect "Index")))
-    (let ((-tempbib "/tmp/temp-biblio.bib"))
-      (find-file -tempbib)
-      (save-buffer)
-      (ignore-errors (arxiv-get-pdf-add-bibtex-entry
-                      (brust-arxiv-get-number-from-web -arxiv-web)
-                      -tempbib
-                      (expand-file-name "~/Dropbox/bibliography/pdf/")))
-      (save-buffer)
-      (bibtex-beginning-of-entry)
-      (brust-org-ref-bibtex-open-notes -header)
-      ;; (erase-buffer)
-      (save-buffer)
-      ;;(kill-buffer)
-      ))
-
-
-  (defun brust-org-mode-get-top-header-list (file)
-    (let ((-list '()))
-      (save-window-excursion
-        (find-file file)
-        (goto-char (point-min))
-        (while (re-search-forward "^\\* .*$" nil t)
-          (push (match-string-no-properties 0) -list)))
-      -list))
-
-  (defun brust-add-notes-entry-from-pdf (-entry-type -title -author -year -pages -header)
-    (interactive
-     (list (ivy-read
-            "Entry Type: "
-            (cl-loop for -entry-type in bibtex-BibTeX-entry-alist
-                     collect (downcase (car -entry-type)))
-            :require-match t
-            :sort t
-            :preselect "article")
-           (read-string "Title: ")
-           (read-string "Author: ")
-           (read-string "Year: ")
-           (read-string "Pages: ")
-           (ivy-read
-            "Header: "
-            (brust-org-mode-get-top-header-list org-ref-bibliography-notes))
-           :require-match t
-           :sort t
-           :preselect "Index"))
-    (let ((-file (buffer-file-name))
-          (-key (file-name-base (buffer-file-name))))
-      (find-file org-ref-bibliography-notes)
-      (goto-char (point-min))
-      (search-forward -header nil t)
-      (insert (format
-               "\n\n** TODO %s - %s\n :PROPERTIES:\n  :Custom_ID: %s\n  :AUTHOR: %s\n  :INTERLEAVE_PDF: %s \n :YEAR: %s\n :TYPE: %s\n :PAGES: %s\n :END:\n"
-               -year -title -key -author -file -year -entry-type -pages)))
-    ;; (insert "*** Comments\n\n*** Interleave\n")
-    (indent-region (point-min) (point-max)))
-
-#+END_SRC
-
-#+RESULTS:
-: brust-add-notes-entry-from-pdf
-
-**** Helm config
-
-#+BEGIN_SRC elisp
-  (bind-keys :map helm-map
-             ("s-k" . helm-next-line)
-             ("s-i" . helm-previous-line))
-#+END_SRC
-
-#+RESULTS:
-: helm-previous-line
-
-** MyRegExp
-*** Create it
-#+BEGIN_SRC elisp
-  (defvar brust--myregexp-itself)
-
-  (setq brust--myregexp-itself
-        (regexp-opt
-         (cl-loop for -line in (append
-                                (with-temp-buffer
-                                  (insert-file-contents "~/.emacs.d/arxiv-rx-people.txt")
-                                  (split-string (buffer-string) "\n"))
-                                (with-temp-buffer
-                                  (insert-file-contents "~/.emacs.d/arxiv-rx-topics.txt")
-                                  (split-string (buffer-string) "\n")))
-                  collect -line
-                  collect (downcase -line)
-                  collect (upcase-initials -line))))
-#+END_SRC
-
-#+RESULTS:
-: \(?:Hilber \(?:[Ss]cheme\)\|Oneto\|Quim\|Roé\|hilber scheme\|oneto\|quim\|roé\)?
-*** The function
-#+BEGIN_SRC elisp
-  (defun brust-myregexp nil
-  "Do occur in the current buffer with my regexpresion build from the files bla bla bla"
-    (interactive)
-    ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
-    (occur brust--myregexp-itself))
-#+END_SRC
-
-#+RESULTS:
-: brust-myregexp
-
-
 ** TODO To still clean
 *** Ivy
 **** General ivy
@@ -6614,6 +6163,457 @@ _q_: quit
 
 #+RESULTS:
 : eos/hydra/body
+
+** Singular
+*** Config
+#+BEGIN_SRC elisp
+  (use-package singular
+    :ensure nil
+    :mode ("\\.sing\\'" . c++-mode)
+    :mode ("\\.lib\\'" .  c++-mode)
+    :load-path "lisp/Singular/"
+    :init
+    (setq singular-emacs-home-directory "~/.emacs.d/lisp/Singular")
+    (add-hook 'c++-mode-hook #'brust-singular-mode-hook)
+    (defun brust-singular-mode-hook nil
+      ;; turn-on fontification for c++-mode
+      (font-lock-mode 1)
+      (set (make-local-variable 'singular-commands-alist) nil)
+      (load "~/.emacs.d/lisp/Singular/cmd-cmpl")
+      ;; turn on aut-new line
+      (c-toggle-auto-newline 1)
+      ;; tunr off hungry-delete
+      (c-toggle-hungry-state -1)
+      (company-mode -1)
+      (local-set-key (kbd "<tab>") #'brust-singular-dynamic-complete)
+      (local-set-key (kbd "C-a")   #'singular-beginning-of-line)
+      (local-set-key (kbd "C-p")   #'brust-singular-add-print)
+      (local-set-key (kbd "C-s")   #'brust-singular-add-std)
+      (local-set-key (kbd "C-c C-c") #'brust-singular-eval-region-or-line)
+      (local-set-key (kbd "C-c ;") #'comment-region)
+      ;; (local-set-key (kbd "C-c l") #'brust-singular-eval-buffer)
+      (local-set-key (kbd "C-c b") #'brust-singular-eval-buffer)
+      (local-set-key (kbd "C-c s") #'brust-singular-fixed-region-set-region)
+      (local-set-key (kbd "C-c f") #'brust-singular-fixed-region-eval)
+      (local-set-key (kbd "C-c e") #'brust-singular-eval-proc)
+      ;; (local-set-key (kbd "C-c c") #'brust-singular-finish-line-singular-edit-mode)
+      (local-set-key (kbd "C-<return>") #'newline)
+      (local-set-key (kbd "<return>") #'brust-singular-finish-line-singular-edit-mode))
+
+    (defun brust-singular-intetractive-mode nil
+      ;; (local-set-key (kbd "C-n") #'brust-ace-window)
+      (local-set-key (kbd "C-p") #'brust-singular-add-print)
+      (local-set-key (kbd "C-s") #'brust-singular-add-std)
+      (hl-line-mode 1))
+
+    (add-hook 'singular-interactive-mode-hook #'brust-singular-intetractive-mode)
+
+    (setq load-path (cons singular-emacs-home-directory load-path))
+    (autoload 'singular "singular"
+      "Start Singular using default values." t)
+    (autoload 'singular-other "singular"
+      "Ask for arguments and start Singular." t)
+    :config
+    (defadvice singular-send-or-copy-input (before finish-line activate)
+      (brust-singular-finish-line-interaction-mode)))
+
+#+END_SRC
+
+#+RESULTS:
+: ((\.lib\' . c++-mode) (\.sing\' . c++-mode) (\.odc\' . archive-mode) (\.odf\' . archive-mode) (\.odi\' . archive-mode) (\.otp\' . archive-mode) (\.odp\' . archive-mode) (\.otg\' . archive-mode) (\.odg\' . archive-mode) (\.ots\' . archive-mode) (\.ods\' . archive-mode) (\.odm\' . archive-mode) (\.ott\' . archive-mode) (\.odt\' . archive-mode) (\.[pP][dD][fF]\' . pdf-view-mode) (\.sty\' . LaTeX-mode) (\.tex\' . LaTeX-mode) (\.hva\' . latex-mode) (\.drv\' . latex-mode) (/git-rebase-todo\' . git-rebase-mode) (\.at\' . autotest-mode) (\.gpg\(~\|\.~[0-9]+~\)?\' nil epa-file) (\.\(?:3fr\|a\(?:r[tw]\|vs\)\|bmp[23]?\|c\(?:als?\|myka?\|r[2w]\|u[rt]\)\|d\(?:c[mrx]\|ds\|jvu\|ng\|px\)\|exr\|f\(?:ax\|its\)\|gif\(?:87\)?\|hrz\|ic\(?:on\|[bo]\)\|j\(?:\(?:pe\|[np]\)g\)\|k\(?:25\|dc\)\|m\(?:iff\|ng\|rw\|s\(?:l\|vg\)\|tv\)\|nef\|o\(?:rf\|tb\)\|p\(?:bm\|c\(?:ds\|[dltx]\)\|db\|ef\|gm\|i\(?:ct\|x\)\|jpeg\|n\(?:g\(?:24\|32\|8\)\|[gm]\)\|pm\|sd\|tif\|wp\)\|r\(?:a[fs]\|gb[ao]?\|l[ae]\)\|s\(?:c[rt]\|fw\|gi\|r[2f]\|un\|vgz?\)\|t\(?:ga\|i\(?:ff\(?:64\)?\|le\|m\)\|tf\)\|uyvy\|v\(?:da\|i\(?:car\|d\|ff\)\|st\)\|w\(?:bmp\|pg\)\|x\(?:3f\|bm\|cf\|pm\|wd\|[cv]\)\|y\(?:cbcra?\|uv\)\)\' . image-mode) (\.elc\' . elisp-byte-code-mode) (\.dz\' nil jka-compr) (\.xz\' nil jka-compr) (\.lzma\' nil jka-compr) (\.lz\' nil jka-compr) (\.g?z\' nil jka-compr) (\.bz2\' nil jka-compr) (\.Z\' nil jka-compr) (\.vr[hi]?\' . vera-mode) (\(?:\.\(?:rbw?\|ru\|rake\|thor\|jbuilder\|rabl\|gemspec\|podspec\)\|/\(?:Gem\|Rake\|Cap\|Thor\|Puppet\|Berks\|Vagrant\|Guard\|Pod\)file\)\' . ruby-mode) (\.re?st\' . rst-mode) (\.pyw?\' . python-mode) (\.scss\' . scss-mode) (\.awk\' . awk-mode) (\.\(u?lpc\|pike\|pmod\(\.in\)?\)\' . pike-mode) (\.idl\' . idl-mode) (\.java\' . java-mode) (\.m\' . objc-mode) (\.ii\' . c++-mode) (\.i\' . c-mode) (\.lex\' . c-mode) (\.y\(acc\)?\' . c-mode) (\.[ch]\' . c-mode) (\.\(CC?\|HH?\)\' . c++-mode) (\.[ch]\(pp\|xx\|\+\+\)\' . c++-mode) (\.\(cc\|hh\)\' . c++-mode) (\.\(bat\|cmd\)\' . bat-mode) (\.[sx]?html?\(\.[a-zA-Z_]+\)?\' . html-mode) (\.svgz?\' . image-mode) (\.svgz?\' . xml-mode) (\.x[bp]m\' . image-mode) (\.x[bp]m\' . c-mode) (\.p[bpgn]m\' . image-mode) (\.tiff?\' . image-mode) (\.gif\' . image-mode) (\.png\' . image-mode) (\.jpe?g\' . image-mode) (\.te?xt\' . text-mode) (\.[tT]e[xX]\' . tex-mode) (\.ins\' . tex-mode) (\.ltx\' . latex-mode) (\.dtx\' . doctex-mode) (\.org\' . org-mode) (\.el\' . emacs-lisp-mode) (Project\.ede\' . emacs-lisp-mode) (\.\(scm\|stk\|ss\|sch\)\' . scheme-mode) (\.l\' . lisp-mode) (\.li?sp\' . lisp-mode) (\.[fF]\' . fortran-mode) (\.for\' . fortran-mode) (\.p\' . pascal-mode) (\.pas\' . pascal-mode) (\.\(dpr\|DPR\)\' . delphi-mode) (\.ad[abs]\' . ada-mode) (\.ad[bs].dg\' . ada-mode) (\.\([pP]\([Llm]\|erl\|od\)\|al\)\' . perl-mode) (Imakefile\' . makefile-imake-mode) (Makeppfile\(?:\.mk\)?\' . makefile-makepp-mode) (\.makepp\' . makefile-makepp-mode) (\.mk\' . makefile-gmake-mode) (\.make\' . makefile-gmake-mode) ([Mm]akefile\' . makefile-gmake-mode) (\.am\' . makefile-automake-mode) (\.texinfo\' . texinfo-mode) (\.te?xi\' . texinfo-mode) (\.[sS]\' . asm-mode) (\.asm\' . asm-mode) (\.css\' . css-mode) (\.mixal\' . mixal-mode) (\.gcov\' . compilation-mode) (/\.[a-z0-9-]*gdbinit . gdb-script-mode) (-gdb\.gdb . gdb-script-mode) ([cC]hange\.?[lL]og?\' . change-log-mode) ([cC]hange[lL]og[-.][0-9]+\' . change-log-mode) (\$CHANGE_LOG\$\.TXT . change-log-mode) (\.scm\.[0-9]*\' . scheme-mode) (\.[ckz]?sh\'\|\.shar\'\|/\.z?profile\' . sh-mode) (\.bash\' . sh-mode) (\(/\|\`\)\.\(bash_\(profile\|history\|log\(in\|out\)\)\|z?log\(in\|out\)\)\' . sh-mode) (\(/\|\`\)\.\(shrc\|[kz]shrc\|bashrc\|t?cshrc\|esrc\)\' . sh-mode) (\(/\|\`\)\.\([kz]shenv\|xinitrc\|startxrc\|xsession\)\' . sh-mode) (\.m?spec\' . sh-mode) (\.m[mes]\' . nroff-mode) (\.man\' . nroff-mode) (\.sty\' . latex-mode) (\.cl[so]\' . latex-mode) (\.bbl\' . latex-mode) (\.bib\' . bibtex-mode) (\.bst\' . bibtex-style-mode) (\.sql\' . sql-mode) (\.m[4c]\' . m4-mode) (\.mf\' . metafont-mode) (\.mp\' . metapost-mode) (\.vhdl?\' . vhdl-mode) (\.article\' . text-mode) (\.letter\' . text-mode) (\.i?tcl\' . tcl-mode) (\.exp\' . tcl-mode) (\.itk\' . tcl-mode) (\.icn\' . icon-mode) (\.sim\' . simula-mode) (\.mss\' . scribe-mode) (\.f9[05]\' . f90-mode) (\.f0[38]\' . f90-mode) (\.indent\.pro\' . fundamental-mode) (\.\(pro\|PRO\)\' . idlwave-mode) (\.srt\' . srecode-template-mode) (\.prolog\' . prolog-mode) (\.tar\' . tar-mode) (\.\(arc\|zip\|lzh\|lha\|zoo\|[jew]ar\|xpi\|rar\|7z\|ARC\|ZIP\|LZH\|LHA\|ZOO\|[JEW]AR\|XPI\|RAR\|7Z\)\' . archive-mode) (\.oxt\' . archive-mode) (\.\(deb\|[oi]pk\)\' . archive-mode) (\`/tmp/Re . text-mode) (/Message[0-9]*\' . text-mode) (\`/tmp/fol/ . text-mode) (\.oak\' . scheme-mode) (\.sgml?\' . sgml-mode) (\.x[ms]l\' . xml-mode) (\.dbk\' . xml-mode) (\.dtd\' . sgml-mode) (\.ds\(ss\)?l\' . dsssl-mode) (\.jsm?\' . javascript-mode) (\.json\' . javascript-mode) (\.[ds]?vh?\' . verilog-mode) (\.by\' . bovine-grammar-mode) (\.wy\' . wisent-grammar-mode) ([:/\]\..*\(emacs\|gnus\|viper\)\' . emacs-lisp-mode) (\`\..*emacs\' . emacs-lisp-mode) ([:/]_emacs\' . emacs-lisp-mode) (/crontab\.X*[0-9]+\' . shell-script-mode) (\.ml\' . lisp-mode) (\.ld[si]?\' . ld-script-mode) (ld\.?script\' . ld-script-mode) (\.xs\' . c-mode) (\.x[abdsru]?[cnw]?\' . ld-script-mode) (\.zone\' . dns-mode) (\.soa\' . dns-mode) (\.asd\' . lisp-mode) (\.\(asn\|mib\|smi\)\' . snmp-mode) (\.\(as\|mi\|sm\)2\' . snmpv2-mode) (\.\(diffs?\|patch\|rej\)\' . diff-mode) (\.\(dif\|pat\)\' . diff-mode) (\.[eE]?[pP][sS]\' . ps-mode) (\.\(?:PDF\|DVI\|OD[FGPST]\|DOCX?\|XLSX?\|PPTX?\|pdf\|djvu\|dvi\|od[fgpst]\|docx?\|xlsx?\|pptx?\)\' . doc-view-mode-maybe) (configure\.\(ac\|in\)\' . autoconf-mode) (\.s\(v\|iv\|ieve\)\' . sieve-mode) (BROWSE\' . ebrowse-tree-mode) (\.ebrowse\' . ebrowse-tree-mode) (#\*mail\* . mail-mode) (\.g\' . antlr-mode) (\.mod\' . m2-mode) (\.ses\' . ses-mode) (\.docbook\' . sgml-mode) (\.com\' . dcl-mode) (/config\.\(?:bat\|log\)\' . fundamental-mode) (\.\(?:[iI][nN][iI]\|[lL][sS][tT]\|[rR][eE][gG]\|[sS][yY][sS]\)\' . conf-mode) (\.\(?:desktop\|la\)\' . conf-unix-mode) (\.ppd\' . conf-ppd-mode) (java.+\.conf\' . conf-javaprop-mode) (\.properties\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-javaprop-mode) (\`/etc/\(?:DIR_COLORS\|ethers\|.?fstab\|.*hosts\|lesskey\|login\.?de\(?:fs\|vperm\)\|magic\|mtab\|pam\.d/.*\|permissions\(?:\.d/.+\)?\|protocols\|rpc\|services\)\' . conf-space-mode) (\`/etc/\(?:acpid?/.+\|aliases\(?:\.d/.+\)?\|default/.+\|group-?\|hosts\..+\|inittab\|ksysguarddrc\|opera6rc\|passwd-?\|shadow-?\|sysconfig/.+\)\' . conf-mode) ([cC]hange[lL]og[-.][-0-9a-z]+\' . change-log-mode) (/\.?\(?:gitconfig\|gnokiirc\|hgrc\|kde.*rc\|mime\.types\|wgetrc\)\' . conf-mode) (/\.\(?:enigma\|gltron\|gtk\|hxplayer\|net\|neverball\|qt/.+\|realplayer\|scummvm\|sversion\|sylpheed/.+\|xmp\)rc\' . conf-mode) (/\.\(?:gdbtkinit\|grip\|orbital/.+txt\|rhosts\|tuxracer/options\)\' . conf-mode) (/\.?X\(?:default\|resource\|re\)s\> . conf-xdefaults-mode) (/X11.+app-defaults/\|\.ad\' . conf-xdefaults-mode) (/X11.+locale/.+/Compose\' . conf-colon-mode) (/X11.+locale/compose\.dir\' . conf-javaprop-mode) (\.~?[0-9]+\.[0-9][-.0-9]*~?\' nil t) (\.\(?:orig\|in\|[bB][aA][kK]\)\' nil t) ([/.]c\(?:on\)?f\(?:i?g\)?\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-mode-maybe) (\.[1-9]\' . nroff-mode) (\.tgz\' . tar-mode) (\.tbz2?\' . tar-mode) (\.txz\' . tar-mode))
+
+*** function to send the working file.
+#+BEGIN_SRC elisp
+
+  (defvar brust-singular-fixed-region-poss nil "Cons of positions delimiting the fixed region")
+
+  (defun brust-singular-fixed-region-set-region (args)
+    (interactive "P")
+    (unless (use-region-p) (user-error "Region has to be activate"))
+    (let ((beg (region-beginning))
+          (end (region-end)))
+      (setq brust-singular-fixed-region-poss (cons beg end))
+      (message "Fixed-region seted from line %d to %d"
+               (line-number-at-pos beg)
+               (line-number-at-pos end)))
+    (deactivate-mark t))
+
+  (defun brust-singular-fixed-region-eval (args)
+    (interactive "P")
+    (message "Evaluated region (%d:%d) in [[%s]]"
+             (line-number-at-pos (car brust-singular-fixed-region-poss))
+             (line-number-at-pos (cdr brust-singular-fixed-region-poss))
+             buffer-file-name)
+    (brust-singular--eval-string
+     (buffer-substring-no-properties
+      (car brust-singular-fixed-region-poss)
+      (cdr brust-singular-fixed-region-poss))
+     args))
+
+  (defun brust-singular-eval-region-or-line (args)
+    (interactive "P")
+    (let (-str)
+      (if (not (use-region-p))
+          (save-excursion
+            (while (not (or (brust-singular--ending-semicolon-p) (bobp)))
+              (forward-line -1))
+            (setq -str (thing-at-point 'line t))
+            (unless (brust-singular--ending-semicolon-p -str)
+              (user-error "There is no line to eval"))
+            (unless (brust-singular--check-parents -str)
+              (user-error "Unbalanced Parents!!!"))
+            (message "Evaluated line (%d) in [[ %s ]]"
+                     (line-number-at-pos (point))
+                     (buffer-name)))
+        (message "Evaluated region between lines (%d:%d) in [[ %s ]]"
+                 (line-number-at-pos (region-beginning))
+                 (line-number-at-pos (region-end))
+                 (buffer-name))
+        (setq -str (buffer-substring-no-properties
+                    (region-beginning) (region-end))))
+      (brust-singular--eval-string -str args)))
+
+  (defun brust-singular--ending-semicolon-p (&optional -string)
+    (unless -string
+      (setq -string (thing-at-point 'line t)))
+    (string= ";"
+             (substring (s-trim
+                         (car
+                          (split-string
+                           -string "//")))
+                        -1)))
+
+  (defun brust-singular--check-parents (&optional -string)
+    (unless -string
+      (setq -string (thing-at-point 'line t)))
+    (with-temp-buffer
+      (insert -string)
+      (ignore-errors (check-parens) t)))
+
+  (defun brust-singular--eval-string (-str &optional args)
+    (save-window-excursion
+      (singular)
+      (goto-char (point-max))
+      (let ((process (singular-process))
+            (--str (concat (s-trim -str)
+                           (unless (string= (substring -str -1) ";")
+                             "\n;"))))
+        (when args (singular-control-c 'restart))
+        (singular-input-filter process --str)
+        (singular-send-string process --str))))
+
+  (defun brust-singular--delete-comments (&optional -string)
+    (unless -string
+      (setq -string (thing-at-point 'line t)))
+    (with-temp-buffer
+      (insert -string)
+      (goto-char (point-min))
+      (while (search-forward "//" nil t)
+        (forward-char -2)
+        (delete-region (point) (line-end-position)))
+      (buffer-string)))
+
+  (defun brust-singular-eval-proc (args)
+    "Eval last proc declaration."
+    (interactive "P")
+    (save-excursion
+      (search-backward "proc" nil t)
+      (let ((-beg (point))
+            (-name
+             (if (re-search-forward "[ \s\t]+" (line-end-position) t)
+                 (let ((-beg2 (point)))
+                   (if (search-forward "(" (line-end-position) t)
+                       (s-trim (buffer-substring-no-properties -beg2 (1- (point))))
+                     nil))
+               nil)))
+        (search-forward "{" nil t)
+        (forward-char -1)
+        (sp-forward-sexp)
+        (brust-singular--eval-string
+         (buffer-substring-no-properties -beg (point))
+         args)
+        (if -name
+            (message "Evaluated proc {{%s}}, between lines (%d:%d), in file [[%s]]"
+                     -name
+                     (line-number-at-pos -beg)
+                     (line-number-at-pos (point))
+                     (file-name-base (buffer-name)))
+          (message "Evaluated proc between lines (%d:%d) and file [[%s]] (Warring:: its name is not on the definition line)"
+                   (line-number-at-pos -beg)
+                   (line-number-at-pos (point))
+                   (file-name-base (buffer-name)))))))
+
+      ;;(defun brust-singular-eval-buffer-line-by-line nil
+      ;;  (interactive)
+      ;;  (let ((-total-str (buffer-string))
+      ;;        (-base-name (file-name-base (buffer-name))))
+      ;;    (with-temp-buffer
+      ;;      (insert -total-str)
+      ;;      (brust-singular--delete-comments)
+      ;;      (goto-char (point-min))
+      ;;      (while (not (eobp))
+      ;;        ;;(or (brust-check-line-parents) (user-error "Unbalanced Parent!!!"))
+      ;;        (let ((-str (s-trim (buffer-substring-no-properties
+      ;;                             (line-beginning-position)
+      ;;                             (line-end-position))))
+      ;;              (-line (line-number-at-pos)))
+      ;;          (unless
+      ;;              (cond ((string= -str "") t)
+      ;;                    ((string= (substring -str -1) ";")
+      ;;                     (brust-singular--eval-string
+      ;;                      -str
+      ;;                      (format "line:%d:of::%s--" -line -base-name)
+      ;;                      nil)
+      ;;                     t)
+      ;;                    (t (brust-singular-eval-environment args) t))
+      ;;            (message "Error on line:%d (%s)" -line -str)
+      ;;            (goto-char (point-max)))
+      ;;          ;;(when err (goto-char err))
+      ;;          (forward-line 1))))))
+
+      ;;(defun brust-singular--temp-file (-str -name)
+      ;;  (let ((-temp-file
+      ;;         (make-temp-file
+      ;;          (replace-regexp-in-string "[.]" "-" -name)
+      ;;          nil ".sing")))
+      ;;    (with-temp-buffer
+      ;;      (insert -str)
+      ;;      (append-to-file (point-min) (point-max) -temp-file))
+      ;;    -temp-file))
+#+END_SRC
+
+#+RESULTS:
+: brust-singular-eval-proc
+
+*** functions for *singular*
+**** Add print std...
+#+BEGIN_SRC elisp
+  (defun brust-singular-add-print nil
+    (interactive)
+    (brust-singular-add-function "print"))
+
+  (defun brust-singular-add-std nil
+    (interactive)
+    (brust-singular-add-function "std"))
+
+  (defun brust-singular-add-function (-fun)
+    (let* ((-bounds (if (region-active-p)
+                        `(,(region-beginning) . ,(region-end))
+                      (save-excursion
+                        (move-beginning-of-line 1)
+                        (search-forward "> " (point-at-eol) t)
+                        `(,(point) . ,(progn
+                                        (move-end-of-line 1)
+                                        (search-backward ";" (point-at-bol) t)
+                                        (point))))))
+           (-str (buffer-substring-no-properties (car -bounds) (cdr -bounds))))
+      (goto-char (car -bounds))
+      (delete-region (car -bounds) (cdr -bounds))
+      (insert -fun "(" -str ")")
+      (move-end-of-line 1)
+      (insert ";")))
+#+END_SRC
+
+#+RESULTS:
+: brust-singular-finish-line
+**** Finish line
+#+BEGIN_SRC elisp
+  (defun brust-singular-finish-line-singular-edit-mode nil
+    (interactive)
+    (if (or (bolp) (eobp)) (insert "\n")
+      (move-end-of-line 1)
+      (when (search-backward "//" (point-at-bol) t)
+        (skip-chars-backward "[:space:]"))
+      (let ((-main-line (s-trim-right
+                         (buffer-substring-no-properties (point-at-bol) (point))))
+            (-comment-line (buffer-substring-no-properties (point) (point-at-eol))))
+        (delete-region (point-at-bol) (point-at-eol))
+        (if (or (< (length -main-line) 1))
+            (insert (concat -comment-line "\n"))
+          (insert
+           (concat ;;compare (insert (concat nil "hello")) vs (insert nil "hello")
+            (with-temp-buffer ;; To close-all-open-paren-r just of this line and do not use narrow
+              (insert (concat -main-line
+                              (unless (string= (substring -main-line -1) ";")
+                                ";")))
+              (forward-char -1)
+              (close-all-open-paren-right)
+              (buffer-string))
+            -comment-line
+            "\n"))))))
+
+  (defun brust-singular-finish-line-interaction-mode nil
+    (interactive)
+    (narrow-to-region (point-at-bol) (point-at-eol))
+    (move-end-of-line 1)
+    (delete-horizontal-space)
+    (unless (string= (string (char-before (point))) ";")
+      (insert ";"))
+    (forward-char -1)
+    (close-all-open-paren-right)
+    (widen))
+
+#+END_SRC
+
+#+RESULTS:
+: brust-singular-finish-line-interaction-mode
+
+**** Dynamic expand in non-running Singular buffer
+#+BEGIN_SRC elisp
+  (defun brust-singular-dynamic-complete ()
+    "Dynamic complete word before point.
+      Performs completion of Singular commands."
+    (interactive)
+    (let* ((end (point))
+           (beg
+            (save-excursion
+              (skip-chars-backward "a-zA-Z0-9")
+              (point)))
+           (str (buffer-substring-no-properties beg end)))
+      (if (string= str "")
+          (indent-region (point-at-bol) (point-at-eol))
+        ;; (call-interactively 'indent-region)
+        (if singular-commands-alist
+            (singular-completion-do str beg end singular-commands-alist)
+          (message "Completion of Singular commands disabled.")
+          (ding)))))
+#+END_SRC
+
+#+RESULTS:
+: brust-singular-dynamic-complete
+
+** LaTeX-mode-config
+*** General
+#+BEGIN_SRC elisp
+  (use-package tex
+    :ensure auctex
+    :defer t
+    :mode ("\\.tex\\'"  . LaTeX-mode)
+    :mode ("\\.sty\\'"  . LaTeX-mode)
+    :mode ("\\.bib\\'"  . bibtex-mode)
+    :diminish 'reftex-mode
+    :diminish 'outline-minor-mode
+    :diminish 'flyspell-mode
+    :init
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
+    :config
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    (use-package cdlatex
+      :diminish cdlatex-mode
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
+      :bind
+      (:map cdlatex-mode-map
+            ("'" . nil)
+            ("`" . nil)
+            ("¿" . cdlatex-math-modify)
+            ("¡" . cdlatex-math-modify)
+            ("ñ" . cdlatex-math-symbol)
+            ("M-ñ" . brust-LaTeX-insert-ñ)))
+    (use-package reftex
+      :ensure nil
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
+    :bind
+    (:map LaTeX-mode-map
+          ("ç"            . brust-LaTeX-insert-math1)
+          ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
+          ;; ("           ."              . brust-LaTeX-smart-period)
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("C-x C-s"      . brust-LaTeX-save)
+          ("C-c C-e"      . brust-LaTeX-env)
+          ("C-c n"        . TeX-next-error)
+          ("s-e"          . brust-LaTeX-next-error)
+          ;; ("C-c e"        . TeX-error-overview)
+          ("s-5"          . latex-replace-in-math)
+          ("s-C-5"        . latex-replace-regexp-in-math)
+          ;; ("C-c C-a"      . brust-compile-only)
+          ;; ("s-0"          . reftex-toc)
+          ("M-m"          . brust-LaTeX-insert-up)
+          ("M-n"          . brust-LaTeX-insert-down)
+          ;; ("s-ç"          . brust-LaTeX-smart-selection)
+          ("C-c C-q"      . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"  . brust-wc-save-words)
+          ;; ("C-c C-a"   . latex/compile-commands-until-done)
+          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+          ;; ("<M-S-up>"  . latex/up-section)
+          ;; ("<tab>"     . latex/hide-show)
+          ;; ("<backtab>" . latex/hide-show-all)
+          ;; (""          . latex/next-section)
+          ;; (""          . latex/next-section-same-level)
+          ;; (""          . latex/beginning-of-line)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
+          ("s-9"          . brust-cycle-texmath)
+          ))
+#+END_SRC
+
+#+RESULTS:
+
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
+
+#+RESULTS:
+: ((msn . 10) (arxiv . 5))
+
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
+
+** MyRegExp
+*** Create it
+#+BEGIN_SRC elisp
+  (defvar brust--myregexp-itself)
+
+  (setq brust--myregexp-itself
+        (regexp-opt
+         (cl-loop for -line in (append
+                                (with-temp-buffer
+                                  (insert-file-contents "~/.emacs.d/arxiv-rx-people.txt")
+                                  (split-string (buffer-string) "\n"))
+                                (with-temp-buffer
+                                  (insert-file-contents "~/.emacs.d/arxiv-rx-topics.txt")
+                                  (split-string (buffer-string) "\n")))
+                  collect -line
+                  collect (downcase -line)
+                  collect (upcase-initials -line))))
+#+END_SRC
+
+#+RESULTS:
+: \(?:Hilber \(?:[Ss]cheme\)\|Oneto\|Quim\|Roé\|hilber scheme\|oneto\|quim\|roé\)?
+*** The function
+#+BEGIN_SRC elisp
+  (defun brust-myregexp nil
+  "Do occur in the current buffer with my regexpresion build from the files bla bla bla"
+    (interactive)
+    ;; (grep (concat "\"" brust--myregexp-itself "\"" " " (buffer-name)))
+    (occur brust--myregexp-itself))
+#+END_SRC
+
+#+RESULTS:
+: brust-myregexp
+
 
 * Old stuff
 ** Tab and indentation
