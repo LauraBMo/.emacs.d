@@ -29,10 +29,9 @@
     (electric-pair-local-mode 1)
     (bratex-config)
     ;; (add-hook 'TeX-update-style-hook #'rainbow-delimiters-mode-enable)
-    (setq TeX-clean-confirm nil
-          ;; LaTeX-electric-left-right-brace t
-          ;; LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
-          LaTeX-clean-intermediate-suffixes
+    (LaTeX-mode-hook-company-setup)
+    (my-LaTeX-mode-chords)
+    (setq LaTeX-clean-intermediate-suffixes ;; here the variable will be load and modified by sure
           (append LaTeX-clean-intermediate-suffixes
                   (list
                    "-blx"
@@ -40,32 +39,11 @@
                    "\\.run\\.xml"
                    "\\.aux.bak"
                    "\\.fls"
-                   "\\.toc")))
-
-    (LaTeX-mode-hook-company-setup)
-    (my-LaTeX-mode-chords))
-
-  ;; (imenu-add-menubar-index)
-  ;; (TeX-fold-mode) ;; fold LaTeX macros
+                   "\\.toc"))))
 
   (add-hook 'LaTeX-mode-hook #'brust-LaTeX-mode-hook t)
 
   ;; ::TODO Mirà que conecta el customize-map-.... de outline. 
-
-  ;; (add-hook 'LaTeX-mode-hook '(LaTeX-add-environments 
-                               ;;;;;;;;;;;;;;;; Add it via cdlatex ;;;;;;;;;;;;;;;;
-  ;;                              '("axiom"       LaTeX-env-label)
-  ;;                              '("theorem"     LaTeX-env-label)
-  ;;                              '("definition"  LaTeX-env-label)
-  ;;                              '("remark"      LaTeX-env-label)
-  ;;                              '("proposition" LaTeX-env-label)
-  ;;                              '("lemma"       LaTeX-env-label)
-  ;;                              '("notation"    LaTeX-env-label)
-  ;;                              '("corollary"   LaTeX-env-label)
-  ;;                              '("tikzcd"      LaTeX-env-label)
-  ;;                              '("tikzpicture" LaTeX-env-label)
-  ;;                              '("frame"       LaTeX-env-label)
-  ;;                              '("block"       LaTeX-env-label)) t)
 
 #+END_SRC
 
@@ -178,16 +156,12 @@
 
 ** Clean LaTeX intermediate files
 #+BEGIN_SRC elisp
-  (setq TeX-clean-confirm nil
-        ;; LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
-        ;; LaTeX-clean-intermediate-suffixes
-        ;; (append LaTeX-clean-intermediate-suffixes
-        ;;       (list
-        ;;       "-blx\\.bib"
-        ;;       "\\.fdb_latexmk"
-        ;;       "\\.run\\.xml"))))
-        )
+  (setq TeX-clean-confirm nil)
+  ;; LaTeX-electric-left-right-brace t
+  ;; LaTeX-clean-intermediate-suffixes (delete "\\.synctex\\.gz"  LaTeX-clean-intermediate-suffixes)
 #+END_SRC
+
+#+RESULTS:
 
 ** Automatic Parsing of TeX Files
 #+BEGIN_SRC elisp
@@ -1764,7 +1738,6 @@ There are many defaults that I do not use, this is to clean a bit.
 
 #+RESULTS:
 : cdlatex-environment
-
 
 
 
