@@ -126,11 +126,11 @@
                               (car xx)))))
     (let ((title (read-string (format "%s's title: " (capitalize -header)))))
       (if (string= title "")
-          (message "No title, no header")
+          (message "No title, no %s" (capitalize -header))
         (let ((label (read-string (format "%s's label: " -header) (replace-regexp-in-string "[ ]" "-" (downcase title)))))
           (insert (format "\\%s{%s}" -header title)
                   (if (string= label "") "\n"
-                    (format "\\label{%s:%s}\n"
+                    (format "\n\\label{%s:%s}\n"
                             (cdr (assoc -header brust-LaTeX-headers))
                             label)))))))
 #+end_src
