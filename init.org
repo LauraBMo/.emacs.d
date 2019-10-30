@@ -9,7 +9,7 @@
 -- Brian Hayes, http://tinyurl.com/3y9l2kf
 
 
-Emacs converts repetitive, tedious, bouring tasks into creative ones
+(Emacs, (that tool (that converts (repetitive, tedious and bouring tasks) into (creative ones))))
 
 * init.el
 ** Generic settings
@@ -361,10 +361,10 @@ when one fix a personal personal dictionary there are problems when one changes 
   (require 'package)
 
   (cl-loop for pack in
-           '(("org"       . "http://orgmode.org/elpa/")
-           ("gnu" . "http://mirrors.163.com/elpa/gnu/")
+           '(("org"          . "http://orgmode.org/elpa/")
+             ("gnu"          . "http://mirrors.163.com/elpa/gnu/")
              ;; ("marmalade" . "http://marmalade-repo.org/packages/") ;;unsatable
-             ("melpa"     . "http://melpa.org/packages/"))
+             ("melpa"        . "http://melpa.org/packages/"))
            do (cl-pushnew pack package-archives))
 #+END_SRC
 *** Initialize
