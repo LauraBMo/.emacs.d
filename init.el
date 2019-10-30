@@ -87,6 +87,7 @@
   "What depth of init.org headers to message at startup.")
 
 ;; I rename the obious variable to not interfer with possible updates of org-babel.
+;; I copy it here to avoid loading org-babel ;)
 (defvar brust-endless/org-babel-src-block-regexp
   (concat
    ;; (1) indentation                 (2) lang
@@ -136,8 +137,8 @@ Subtrees under a COMMENTed header are not evaluated."
 	    (setq neblock (1+ neblock)))))
 	(forward-line))
       (message "=========== ================================== ===========")
-      (message "=========== ================================== ===========")
-      (message "=========== !! Be happy, everything is load !! ==========="))))
+      (message "=========== !! Be happy, everything is load !! ===========")
+      (message "=========== ================================== ==========="))))
 
 (defun brust-endless/org-eval-eblocks-delete-commented-subtrees nil
   (interactive)
