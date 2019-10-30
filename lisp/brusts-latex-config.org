@@ -85,7 +85,7 @@
     '(("part"          . "part")
       ("chapter"       . "chap")
       ("section"       . "sec")
-      ("paragraph"     . "prf")
+      ("paragraph"     . "prgf")
       ("subsection"    . "ssec")
       ("subsubsection" . "sssec"))
     "Variable with cons of (header . prefix) for labeling")
