@@ -4846,7 +4846,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  : my/org-capture-mu4e
 
 *** Nyan
-    Show the rainbow line.
+    Show the rainbow progres line.
 #+BEGIN_SRC elisp
   (use-package nyan-mode
     :init (nyan-mode 1)
@@ -4854,8 +4854,11 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     (setq nyan-minimum-window-width 0
           ;;nyan-cat-face-number 3
           nyan-wavy-trail nil
-          nyan-animate-nyancat nil)
+          nyan-animate-nyancat t
+          nyan-animation-frame-interval 0.2
+          nyan-bar-length 36)
     ;; (nyan-start-animation)
+
     (use-package zone-nyan
       :config
       (setq zone-programs [zone-nyan]
@@ -4863,8 +4866,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
       (use-package zone
         :config
         (zone-when-idle (* 5 60)))))
-
 #+END_SRC
+
 *** Org-ref
 **** General config
  #+BEGIN_SRC elisp
