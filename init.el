@@ -42,6 +42,8 @@
  '(org-table ((t (:foreground "#84BB26"))))
  '(shadow ((t (:foreground "gray48"))))
  '(show-paren-match ((t (:background "turquoise" :height 1.15))))
+ '(sml/global ((t :foreground "gray50" :inverse-video nil)))
+ '(sml/modes ((t :inherit sml/global :foreground "White")))
  '(swiper-line-face ((t (:background "gray25"))))
  '(swiper-match-face-1 ((t (:background "#615246"))))
  '(swiper-match-face-2 ((t (:background "#EC6E00"))))
