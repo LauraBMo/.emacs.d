@@ -944,7 +944,13 @@ Defaults
   (defun brust-reftex-toc-level-6 nil
     (interactive)
     (reftex-toc-max-level 6))
+
+(defun brust-reftex-toc-goto-line-and-kill nil
+  (interactive)
+  (reftex-toc-goto-line-and-hide)
+  (kill-buffer "*toc*"))
 #+END_SRC
+
 *** Selection mode key-map
 #+BEGIN_SRC elisp
   (defun brust-reftex-set-select-label-mode-map nil
@@ -965,11 +971,6 @@ Defaults
                ("i" . reftex-toc-previous)
                ("m" . describe-mode)
                ("RET" . brust-reftex-toc-goto-line-and-kill)))
-
-  (defun brust-reftex-toc-goto-line-and-kill nil
-    (interactive)
-    (reftex-toc-goto-line-and-hide)
-    (kill-buffer "*toc*"))
 
   (add-hook 'reftex-toc-mode-hook #'brust-reftex-set-toc-mode-map)
   (add-hook 'reftex-select-label-mode-hook #'brust-reftex-set-select-label-mode-map)
