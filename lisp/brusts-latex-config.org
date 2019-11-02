@@ -347,27 +347,6 @@ Defaults
   (defun brust-LaTeX-save nil
     (interactive)
     (save-buffer))
-
-  (defun brust-LaTeX-next-error (args)
-    (interactive "p")
-    (if (< 15 args)
-        (TeX-error-overview)
-      (if (< 3 args)
-          (let ((buffer (TeX-active-buffer)))
-            (if buffer
-                (with-current-buffer buffer
-                  ;; (bury-buffer buffer)
-                  (goto-char (point-max))
-                  (when (re-search-backward "^Run number 1 of rule '\\(pdf\\|lua\\|xe\\)?latex'" nil t)
-                    (delete-region (point) (point-min)))
-                  (TeX-parse-all-errors)
-                  ;; (TeX-pop-to-buffer old-buffer nil t)))
-                  (if TeX-error-list
-                      (message ":::: WARING :::: There are errors ::::")
-                    (message ":::: Be happy, your LaTeX code has no errors ::::")))
-              (message "No process for this document. %s" buffer)))
-        (call-interactively 'TeX-next-error))))
-
   ;;(let ((TeX-save-query nil)
   ;;      ;; (TeX-process-asynchronous nil)
   ;;      (master-file (TeX-master-file)))
@@ -596,6 +575,29 @@ Defaults
           (case-fold-search nil))
       (call-interactively 'query-replace-regexp)))
 #+END_SRC
+
+*** Next error or create list of errors
+#+begin_src elisp
+  (defun brust-LaTeX-next-error (args)
+    (interactive "p")
+    (if (< 15 args)
+        (TeX-error-overview)
+      (if (< 3 args)
+          (let ((buffer (TeX-active-buffer)))
+            (if buffer
+                (with-current-buffer buffer
+                  ;; (bury-buffer buffer)
+                  (goto-char (point-max))
+                  (when (re-search-backward "^Run number 1 of rule '\\(pdf\\|lua\\|xe\\)?latex'" nil t)
+                    (delete-region (point) (point-min)))
+                  (TeX-parse-all-errors)
+                  ;; (TeX-pop-to-buffer old-buffer nil t)))
+                  (if TeX-error-list
+                      (message ":::: WARING :::: There are errors ::::")
+                    (message ":::: Be happy, your LaTeX code has no errors ::::")))
+              (message "No process for this document. %s" buffer)))
+        (call-interactively 'TeX-next-error))))
+#+end_src
 
 *** COMMENT Iniciar un document LaTeX
 ****** Variabls
