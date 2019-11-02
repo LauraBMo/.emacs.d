@@ -970,7 +970,8 @@ Defaults
                ("k" . reftex-toc-next)
                ("i" . reftex-toc-previous)
                ("m" . describe-mode)
-               ("RET" . brust-reftex-toc-goto-line-and-kill)))
+               ;; ("RET" . brust-reftex-toc-goto-line-and-kill)
+               ))
 
   (add-hook 'reftex-toc-mode-hook #'brust-reftex-set-toc-mode-map)
   (add-hook 'reftex-select-label-mode-hook #'brust-reftex-set-select-label-mode-map)
