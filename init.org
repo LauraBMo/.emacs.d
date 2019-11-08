@@ -2232,7 +2232,7 @@ Single Capitals as you type."
   (defvar brust-file-list-list
     '((xah-filelist . (
                        ;; ("Doc-Org"    . "~/Dropbox/Org/Doc.org")
-                       ("Th-master"  . "~/Dropbox/Math/Doctorat_Laura/Thesis/master.tex")
+                       ("Th-master"  . "~/Dropbox/Thesis/classicthesis/master.tex")
                        ("My-theory"  . "~/Dropbox/Math/Doctorat11/Apunts/basic-algebraic-geometry.tex")
                        ;; ("Com-in-Alg" . "~/Dropbox/Math/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex")
                        ;; ("pdf-notes"  . "~/Dropbox/bibliography/notes.org")
@@ -2257,9 +2257,7 @@ Single Capitals as you type."
 #+END_SRC
 
 #+RESULTS:
-| xah-filelist | (Doc-Org . ~/Dropbox/Org/Doc.org) | (Th-master . ~/Dropbox/Doctorat_Laura/Thesis/master.tex) | (My-theory . ~/Dropbox/Doctorat11/Apunts/basic-algebraic-geometry.tex) | (Com-in-Alg . ~/Dropbox/Doctorat_Laura/Com_in_Alg/PauBrustenga_Urcf4.tex) |                                    |
-| config-files | (Org-init . ~/.emacs.d/init.org)  | (el-init . ~/.emacs.d/init.el)                           | (LaTeX-config . ~/.emacs.d/lisp/brusts-latex-config.org)               |                                                                           |                                    |
-| org-files    | (My-Org . ~/Dropbox/Org/my.org)   | (Recetari . ~/Dropbox/Org/recetari.org)                  | (Travels . ~/Dropbox/Org/travels.org)                                  | (Media . ~/Dropbox/Org/MyMedia.org)                                       | (Doctorat . ~/Dropbox/Org/Doc.org) |
+: brust-file-list-list
 
 **** Function to open it fast.
 #+BEGIN_SRC elisp
@@ -2277,7 +2275,8 @@ Single Capitals as you type."
 #+END_SRC
 
 **** Create and bind direct functions
-     Really useful working join with =which-key=.
+     Really handy joinly with =which-key=.
+
 #+BEGIN_SRC elisp
   (let ((i 0))
     (cl-loop
