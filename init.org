@@ -4528,7 +4528,9 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
      (message-add-header (concat "Message-ID: " (message-make-message-id)))
      (message-insert-headers)
      ;; (message-sort-headers)
-     ;; (message-goto-to)
+     (if (eq mu4e-compose-type 'new)
+         (message-goto-to)
+       (message-goto-body))
      )
 
    ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
