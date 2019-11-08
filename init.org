@@ -2293,11 +2293,11 @@ Single Capitals as you type."
                  `(lambda nil
                     (interactive) (find-file ,(cdr file))))
            (setq file (nth j xx))
-           (or (< j 10) (setq file nil j 0))
+           (unless (< j 10) (setq file nil j 0))
            (global-set-key (kbd (format "%s %d" prfx j)) name)
            (setq j (1+ j)))))))
 
-(global-set-key (kbd "<f2> <f2>") 'xah-open-file-fast)
+  (global-set-key (kbd "<f2> <f2>") 'xah-open-file-fast)
 
 #+END_SRC
 *** Open file in external app
