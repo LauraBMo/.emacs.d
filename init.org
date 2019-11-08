@@ -2008,6 +2008,8 @@ Version 2015-12-02"
 
 *** Double Capitals
     Convert words in DOuble CApitals to Single Capitals.
+    [[https://emacs.stackexchange.com/questions/13970/fixing-double-capitals-as-i-type][From StackExange]]
+
 **** The function
 #+BEGIN_SRC elisp
 (defun dcaps-to-scaps nil
