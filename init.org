@@ -2214,7 +2214,7 @@ Single Capitals as you type."
 
 #+END_SRC
 
-*** Narrow to paragraph
+*** COMMENT Narrow to paragraph
 #+BEGIN_SRC elisp
   (defun brust-narrow-to-paragraph nil
     (interactive)
