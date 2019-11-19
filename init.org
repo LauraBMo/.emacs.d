@@ -3337,6 +3337,14 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
          ;; Capitalize -> UPPER
 (put this-command 'next-state "UPPER")))))
 #+END_SRC
+*** Fuzzi file finder
+#+begin_src elisp
+(use-package fzf)
+
+#+end_src
+
+#+RESULTS:
+
 *** COMMENT GAP modes
 #+BEGIN_SRC elisp
   ;; gap mode
