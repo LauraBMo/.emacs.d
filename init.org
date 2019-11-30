@@ -4674,6 +4674,51 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
   #+RESULTS:
   : hydra-mu4e-headers/body
+**** Marks
+#+begin_src elisp
+  ;; As an example, suppose we would like to add a mark for tagging
+  ;; messages (GMail-style), then we can run the following code (after loading mu4e):
+
+  ;; (defvar brust-mu4e-tags-list '() "List of tags to consistently tag my emails. List created from the file `brust-mu4e-tags-list-file`")
+
+  (add-to-list 'mu4e-marks
+               '(tag
+                 :char       "g"
+                 :prompt     "gtag"
+                 :ask-target (lambda () (ivy-read "What tag do you want to add? " (with-temp-buffer
+                                                                                    (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                                                    (split-string (buffer-string) "\n"))
+                                                  :action (lambda (-str) (unless (member -str (with-temp-buffer
+                                                                                                (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                                                                (split-string (buffer-string) "\n")))
+                                                                           (with-temp-buffer
+                                                                             (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                                             (insert -str "\n")
+                                                                             (write-file "~/.emacs.d/brust-mu4e-tags-list-file.txt"))))))
+
+                 :action      (lambda (docid msg target)
+                                (mu4e-action-retag-message msg (concat "+" target)))))
+
+  ;; As another example, suppose we would like to “archive and mark read”
+  ;; a message (GMail-style), then we can run the following code (after loading mu4e):
+
+  (add-to-list 'mu4e-marks
+               '(archive
+                 :char       "A"
+                 :prompt     "Archive"
+                 :show-target (lambda (target) "archive")
+                 :action      (lambda (docid msg target)
+                                ;; must come before proc-move since retag runs
+                                ;; 'sed' on the file
+                                (mu4e-action-retag-message msg "-\\Inbox")
+                                (mu4e~proc-move docid nil "+S-u-N"))))
+
+  (mu4e~headers-defun-mark-for tag)
+  (mu4e~headers-defun-mark-for archive)
+  (define-key mu4e-headers-mode-map (kbd "g") 'mu4e-headers-mark-for-tag)
+  (define-key mu4e-headers-mode-map (kbd "A") 'mu4e-headers-mark-for-archive)
+
+#+end_src
 
 **** My Contexts
  #+BEGIN_SRC elisp
