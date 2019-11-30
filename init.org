@@ -5461,7 +5461,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : brust-pdf-view-previous-line-or-previous-page-5
 
-**** save place
+**** COMMENT save place
  workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18
 
@@ -5473,7 +5473,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
   (defun brds/pdf-jump-last-viewed-bookmark ()
     (when
-	(brds/pdf-has-last-viewed-bookmark)
+        (brds/pdf-has-last-viewed-bookmark)
       (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
   (defun brds/pdf-has-last-viewed-bookmark ()
@@ -5485,7 +5485,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
   (defun brds/pdf-set-all-last-viewed-bookmarks ()
     (dolist (buf (buffer-list))
       (with-current-buffer buf
-	(brds/pdf-set-last-viewed-bookmark))))
+        (brds/pdf-set-last-viewed-bookmark))))
 
   (add-hook 'kill-buffer-hook 'brds/pdf-set-last-viewed-bookmark)
   (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
