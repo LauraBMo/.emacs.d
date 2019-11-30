@@ -5647,7 +5647,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;;("M-B" . 'sp-backward-symbol)
     )
 #+END_SRC
-*** Smerge
+*** COMMENT Smerge
 See https://github.com/alphapapa/unpackaged.el#smerge-mode
 
 #+begin_src elisp
