@@ -4671,74 +4671,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
  #+RESULTS:
  : mu4e
-**** Handy hooks
- #+begin_src elisp
-   (defun brust-mu4e-compose-mode-hook nil
-     (flyspell-mode 1)
-     ;; (auto-save-mode -1)
-     (set-fill-column 72)
-     ;; (brust-mu4e-add-headers)
-     (message-add-header (concat "Date: " (message-make-date)))
-     (message-add-header (concat "Message-ID: " (message-make-message-id)))
-     (message-insert-headers)
-     ;; (message-sort-headers)
-     (if (eq mu4e-compose-type 'new)
-         (message-goto-to)
-       (message-goto-body))
-     )
-
-   ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
-   (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-   (add-hook 'mu4e-compose-mode-hook #'brust-mu4e-compose-mode-hook)
-
-   ;; From Ben Maughan: Get some Org functionality in compose buffer
-   ;; (add-hook 'message-mode-hook 'turn-on-orgtbl)
-   ;; (add-hook 'message-mode-hook 'turn-on-orgstruct++)
- #+end_src
-
- #+RESULTS:
- | brust-mu4e-compose-mode-hook |
-**** Dealing with drafts
- #+begin_src elisp
- (defun brust-mu4e-add-draft-headers nil
-   "Add headers on composing an email"
-   (message-add-header "Flags: draft")
-   ;; (message-add-header (concat "X-Mailer: mu4e " mu4e-mu-version "; emacs " emacs-version "\n"))
-   (message-add-header (concat "Maildir: " mu4e-drafts-folder)))
-
- (defun brust-mu4e-delete-draft-headers nil
-   "Remove headers on composing an email"
-   (message-cleanup-headers)
-   (message-remove-header "Flags")
-   (message-remove-header "Maildir"))
-
-
-   (defadvice message-dont-send (before add-draft-headers activate)
-     (brust-mu4e-add-draft-headers))
-
-   (add-hook 'message-send-hook #'brust-mu4e-delete-draft-headers)
- #+end_src
-
- #+RESULTS:
- | brust-mu4e-delete-draft-headers |
-**** Actions
- #+begin_src elisp
-   (defun search-for-sender (msg)
-     "Search for messages sent by the sender of the message at point."
-     (mu4e-headers-search
-      (concat "from:" (cdar (mu4e-message-field msg :from)))))
-
-   (setq mu4e-view-actions
-         (append mu4e-view-actions
-                 (list
-                  ;; define 'x' as the shortcut
-                  (cons "xsearch for sender" 'search-for-sender)
-                  ;; Difine 'V' as the shortcut
-                  (cons "ViewInBrowser" 'mu4e-action-view-in-browser)
-                  ;; Store an org link to insert later
-                  (cons "lStore Link" 'org-store-link))))
- #+end_src
-
 **** Basic config
   #+BEGIN_SRC elisp
     (use-package mu4e
@@ -4815,11 +4747,107 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ("k" . mu4e-headers-next)
             ("i" . mu4e-headers-prev)
             ("." . hydra-mu4e-headers/body) ; This hydra is for headers mode
+
+            ("{" . mu4e-headers-query-prev)             ; differs from built-in
+            ("}" . mu4e-headers-query-next)             ; differs from built-in
+            ("o" . my/org-capture-mu4e)                 ; differs from built-in
+
+            ("A" . mu4e-headers-mark-for-action)        ; differs from built-in
+
+            ("`" . mu4e-update-mail-and-index)          ; differs from built-in
+            ("|" . mu4e-view-pipe)               	     ; does not seem to be built in any longer
+            ;; ("." . hydra-mu4e-headers/body)
             ))
   #+END_SRC
 
   #+RESULTS:
-  : hydra-mu4e-headers/body
+
+**** Handy hooks
+ #+begin_src elisp
+   (defun brust-mu4e-compose-mode-hook nil
+     (flyspell-mode 1)
+     ;; (auto-save-mode -1)
+     (set-fill-column 72)
+     ;; (brust-mu4e-add-headers)
+     (message-add-header (concat "Date: " (message-make-date)))
+     (message-add-header (concat "Message-ID: " (message-make-message-id)))
+     (message-insert-headers)
+     ;; (message-sort-headers)
+     (if (eq mu4e-compose-type 'new)
+         (message-goto-to)
+       (message-goto-body))
+     )
+
+   ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
+   (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+   (add-hook 'mu4e-compose-mode-hook #'brust-mu4e-compose-mode-hook)
+
+   ;; From Ben Maughan: Get some Org functionality in compose buffer
+   ;; (add-hook 'message-mode-hook 'turn-on-orgtbl)
+   ;; (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+ #+end_src
+
+ #+RESULTS:
+ | brust-mu4e-compose-mode-hook |
+**** Dealing with drafts
+ #+begin_src elisp
+ (defun brust-mu4e-add-draft-headers nil
+   "Add headers on composing an email"
+   (message-add-header "Flags: draft")
+   ;; (message-add-header (concat "X-Mailer: mu4e " mu4e-mu-version "; emacs " emacs-version "\n"))
+   (message-add-header (concat "Maildir: " mu4e-drafts-folder)))
+
+ (defun brust-mu4e-delete-draft-headers nil
+   "Remove headers on composing an email"
+   (message-cleanup-headers)
+   (message-remove-header "Flags")
+   (message-remove-header "Maildir"))
+
+
+   (defadvice message-dont-send (before add-draft-headers activate)
+     (brust-mu4e-add-draft-headers))
+
+   (add-hook 'message-send-hook #'brust-mu4e-delete-draft-headers)
+ #+end_src
+
+ #+RESULTS:
+ | brust-mu4e-delete-draft-headers |
+**** Actions
+***** View (inside an email)
+ #+begin_src elisp
+   (defun brust-mu4e-search-for-sender (msg)
+     "Search for messages sent by the sender of the message at point."
+     (mu4e-headers-search
+      (concat "from:" (cdar (mu4e-message-field msg :from)))))
+
+   (setq mu4e-view-actions
+         (append mu4e-view-actions
+                 (list
+                  ;; define 'x' as the shortcut
+                  (cons "xsearch for sender" 'brust-mu4e-search-for-sender)
+                  ;; Difine 'V' as the shortcut
+                  (cons "ViewInBrowser" 'mu4e-action-view-in-browser)
+                  ;; Store an org link to insert later
+                  (cons "lStore Link" 'org-store-link))))
+ #+end_src
+
+ #+RESULTS:
+ : ((capture message . mu4e-action-capture-message) (view as pdf . mu4e-action-view-as-pdf) (show this thread . mu4e-action-show-thread) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (Rebuild . brust-mu4e-rebuild-index) (lStore Link . org-store-link) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (lStore Link . org-store-link))
+***** Headers
+#+begin_src elisp
+  (defun brust-mu4e-rebuild-index (msg)
+    (async-shell-command "~/scr/mu/mu/mu index --rebuild"))
+
+  (setq mu4e-headers-actions
+        (append mu4e-headers-actions
+                (list
+                 ;; Rebuild the whole date base
+                 (cons "Rebuild" 'brust-mu4e-rebuild-index))))
+
+#+end_src
+
+#+RESULTS:
+: ((capture message . mu4e-action-capture-message) (show this thread . mu4e-action-show-thread) (Rebuild . brust-mu4e-rebuild-index))
 **** Marks
 #+begin_src elisp
   ;; As an example, suppose we would like to add a mark for tagging
