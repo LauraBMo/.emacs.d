@@ -3608,41 +3608,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 : helpful-key
 
 *** TODO Hydra
-**** General setting
-#+BEGIN_SRC elisp
-  (use-package hydra
-    :config
-    (setq lv-use-separator t)
-    :chords
-    ("jj" . brust-hydra-expand/body)
-    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
-    :bind
-    ("s-w" . words-hydra/body))
-
-
-  ;; (bind-keys*
-  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
-  ;;("M-y" . hydra-yank-pop/yank-pop)
-
-  ;;  (eval-after-load "buff-menu"
-  ;;    '(bind-keys :map ibuffer-mode-map
-  ;;		("." . hydra-ibuffer-main/body)))
-  ;;
-  ;; (eval-after-load "org"
-  ;; '(bind-keys :map org-mode-map
-  ;;   ("<" . brust-org<)))
-
-  ;; (bind-keys :map dired-mode-map
-  ;; ("y" . hydra-dired/body))
-
-  ;; :chords
-  ;; ("oo" . hydra-outline/body)
-  ;; ("jf" . hydra-motion/body)
-#+END_SRC
-
-#+RESULTS:
-: words-hydra/body
-
 **** Dired
 #+BEGIN_SRC elisp
   (defhydra hydra-dired (:color pink :columns 3 :hint nil)
@@ -3749,6 +3714,108 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : hydra-dired-regexp/body
+**** TODO Counsel
+#+begin_src elisp
+  (defhydra isg--hydra-counsel (:exit t)
+    "
+               Counsel                                   (occur: C-c C-o)
+               ----------------------------------------------------
+               Grep  :  grep-or-_s_wiper  _p_roject-grep   _d_irectory-grep
+          Open file  :  _g_it repo        _f_ind file       fu_z_zy find file (fzf)
+               Org   :  _o_rg-goto        org-goto-_a_ll   agenda-_h_eader
+                        org-_t_ag         cha_n_ge-tags    org-tag-ag_e_nda
+               Misc  :  _w_eb search     _b_ookmark        _l_ocate   _c_olors
+               "
+    ;; ("r" (lambda () (interactive) (counsel-rg (format "%s" (or (thing-at-point 'symbol) "")))))
+    ;; ("d" deadgrep)
+
+    ;; ("c" counsel-grep)
+    ("a" counsel-org-goto-all)
+    ("b" counsel-bookmark)
+    ("c" counsel-colors-emacs)
+    ("d" counsel-ack)
+    ("e" counsel-org-tag-agenda)
+    ("f" counsel-find-file)
+    ("g" counsel-projectile)
+    ("h" counsel-org-agenda-headlines)
+    ("l" counsel-locate)
+    ("n" counsel-org-change-tags)
+    ("o" counsel-org-goto)
+    ("p" projectile-grep)
+    ("s" counsel-grep-or-swiper)
+    ("t" counsel-org-tag)
+    ("w" counsel-search)   ;; counsel-google it is obsolete
+    ("z" brust-hydra-fzf/body)
+    ;; ("u" counsel-describe-function)
+    ;; ("v" counsel-describe-variable)
+    ;; ("l" counsel-find-library)
+    ;; ("s" counsel-info-lookup-symbol)
+    ("RET" nil "done" :color blue))
+
+  (bind-keys ("C-c f" . isg--hydra-counsel/body)
+             ("C-c z" . brust-hydra-fzf/body))
+#+end_src
+
+#+RESULTS:
+: isg--hydra-counsel/body
+**** fzf hydra
+#+begin_src elisp
+  (defhydra brust-hydra-fzf (:exit t)
+    "
+               Command-line Fuzzy Finder         (occur: C-c C-o)
+               ----------------------------------------------------
+               _c_urrent directory      _h_ome      _e_mascs.d
+               _s_elect  directory      _d_ropbox
+               _g_it-grep  : grep current git
+               "
+    ;; ("r" (lambda () (interactive) (counsel-rg (format "%s" (or (thing-at-point 'symbol) "")))))
+    ;; ("d" deadgrep)
+
+    ;; ("c" counsel-grep)
+    ("c" counsel-fzf)
+    ("d" brust-counsel-fzf-dropbox)
+    ("e" brust-counsel-fzf-emacsd)
+    ("g" fzf-git-grep)
+    ("h" brust-counsel-fzf-home)
+    ("s" brust-counsel-fzf-dir)
+    ("RET" nil "done" :color blue))
+
+  (defun brust-counsel-fzf-dir ()
+    "fzf find file selecting a directory"
+    (interactive)
+    (counsel-fzf
+     nil
+     (read-directory-name "Directory: ")
+     nil))
+
+  (defun brust-counsel-fzf-home ()
+    "fzf find file in home"
+    (interactive)
+    (counsel-fzf
+     nil
+     "~"
+     nil))
+
+  (defun brust-counsel-fzf-emacsd ()
+    "fzf find file in home"
+    (interactive)
+    (counsel-fzf
+     nil
+     "~/.emacs.d"
+     nil))
+
+  (defun brust-counsel-fzf-dropbox ()
+    "fzf find file in home"
+    (interactive)
+    (counsel-fzf
+     nil
+     "~/Dropbox"
+     nil))
+
+#+end_src
+
+#+RESULTS:
+: brust-counsel-fzf-dropbox
 
 **** er/expand
 #+BEGIN_SRC elisp
@@ -3826,6 +3893,41 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : hydra-mark/body
+
+**** General setting
+#+BEGIN_SRC elisp
+  (use-package hydra
+    :config
+    (setq lv-use-separator t)
+    :chords
+    ("jj" . brust-hydra-expand/body)
+    ("yy" . hydra-yank-pop/brust-org-yank-or-yank)
+    :bind
+    ("s-w" . words-hydra/body))
+
+
+  ;; (bind-keys*
+  ;; ("C-y" . hydra-yank-pop/brust-org-yank-or-yank)
+  ;;("M-y" . hydra-yank-pop/yank-pop)
+
+  ;;  (eval-after-load "buff-menu"
+  ;;    '(bind-keys :map ibuffer-mode-map
+  ;;		("." . hydra-ibuffer-main/body)))
+  ;;
+  ;; (eval-after-load "org"
+  ;; '(bind-keys :map org-mode-map
+  ;;   ("<" . brust-org<)))
+
+  ;; (bind-keys :map dired-mode-map
+  ;; ("y" . hydra-dired/body))
+
+  ;; :chords
+  ;; ("oo" . hydra-outline/body)
+  ;; ("jf" . hydra-motion/body)
+#+END_SRC
+
+#+RESULTS:
+: words-hydra/body
 
 **** Ibuffer
 #+BEGIN_SRC elisp
@@ -5602,7 +5704,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ("<f5> t"  . transpose-frame)
     ("<f5> h"  . flop-frame)
     ("<f5> v"  . flip-frame)
-    ("<f5> r" . rotate-frame-clockwise))
+    ("<f5> r"  . rotate-frame-anticlockwise))
 #+END_SRC
 *** COMMENT Tweeter
 #+begin_src elisp
