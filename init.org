@@ -2412,12 +2412,12 @@ Single Capitals as you type."
       URL `http://ergoemacs.org/emacs/emacs_hotkey_open_file_fast.html'
       Version 2015-04-23"
     (interactive)
-    (let ((ξabbrevCode
-           (ivy-read "Open (%d) :"
-                     (mapcar 'car (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
-                                           append xx)))))
-      (find-file (cdr (assoc ξabbrevCode (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
-                                                  append xx))))))
+    (let* ((-list (cl-loop for xx in (mapcar 'cdr brust-file-list-list)
+                           append xx))
+           (ξabbrevCode (ivy-read "Open (%d) :" (mapcar 'car -list))))
+      (if (file-exists-p ξabbrevCode)
+          (find-file (cdr (assoc ξabbrevCode -list)))
+        (error "File do not exits, update your list of files!"))))
 #+END_SRC
 
 **** Create and bind direct functions
