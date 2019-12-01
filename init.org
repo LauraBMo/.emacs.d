@@ -45,7 +45,7 @@
 #+END_SRC
 *** **message* buffer
 #+BEGIN_SRC elisp
-(setq message-log-max 5000)
+(setq message-log-max 1000)
 #+END_SRC
 *** not useful GUI modes
 #+BEGIN_SRC elisp
@@ -113,7 +113,7 @@
      Save whatever in the current (system) clipboard before replacing it with the Emacs' text.
 #+BEGIN_SRC elisp
   (setq save-interprogram-paste-before-kill t
-        kill-ring-max 100)
+        kill-ring-max 50)
 #+END_SRC
 
 *** Do not ding
@@ -275,25 +275,24 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 *** Kill backward line
 #+BEGIN_SRC elisp
-  (defadvice kill-backward-line (before iterabitify activate)
+  (defadvice kill-backward-line (before iterativefy activate)
     (and (= (point) (point-at-bol)) (kill-backward-chars 1)))
 
 #+END_SRC
 
 *** Big files
-    Warn when opening files bigger than 100MB
+    Warn when opening files bigger than 10MB
 #+BEGIN_SRC elisp
-(setq large-file-warning-threshold 100000000)
+(setq large-file-warning-threshold 10000000)
 #+END_SRC
 
 *** Local Variables
     Set save all local variable and do not query.
 #+BEGIN_SRC elisp
 (setq enable-local-variables :all)
-
 #+END_SRC
 
-*** Delete bad timers
+*** COMMENT Delete bad timers
 #+BEGIN_SRC elisp
   (run-with-idle-timer 5 nil #'brust-delete-bad-idle-timers)
   ;; (run-with-idle-timer 5 nil #'brust-delete-bad-timers)
@@ -327,13 +326,13 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 (put 'erase-buffer                'disabled nil)
 (put 'eval-expression             'disabled nil)   ; Let ESC-ESC work
-(put 'set-goal-column             'disabled nil)
-(put 'company-coq-fold            'disabled nil)
-(put 'TeX-narrow-to-group         'disabled nil)
-(put 'LaTeX-narrow-to-environment 'disabled nil)
-(put 'narrow-to-region            'disabled nil)
-(put 'narrow-to-defun             'disabled nil)
-(put 'narrow-to-page              'disabled nil)
+;; (put 'set-goal-column             'disabled nil)
+;; (put 'company-coq-fold            'disabled nil)
+;; (put 'TeX-narrow-to-group         'disabled nil)
+;; (put 'LaTeX-narrow-to-environment 'disabled nil)
+;; (put 'narrow-to-region            'disabled nil)
+;; (put 'narrow-to-defun             'disabled nil)
+;; (put 'narrow-to-page              'disabled nil)
 (put 'upcase-region               'disabled nil)
 (put 'downcase-region             'disabled nil)
 #+END_SRC
@@ -362,8 +361,8 @@ when one fix a personal personal dictionary there are problems when one changes 
 
   (cl-loop for pack in
            '(("org"          . "http://orgmode.org/elpa/")
-             ("gnu"          . "http://mirrors.163.com/elpa/gnu/")
-             ;; ("marmalade" . "http://marmalade-repo.org/packages/") ;;unsatable
+             ;; ("gnu"          . "http://mirrors.163.com/elpa/gnu/")
+             ("marmalade" . "http://marmalade-repo.org/packages/") ;;unsatable
              ("melpa"        . "http://melpa.org/packages/"))
            do (cl-pushnew pack package-archives))
 #+END_SRC
@@ -412,7 +411,7 @@ when one fix a personal personal dictionary there are problems when one changes 
     (setq load-prefer-newer t)
     (auto-compile-on-load-mode))
 
-  (use-package diminish)
+  ;; (use-package diminish) I created my own mode line, which just shows the major-mode
 
   (use-package key-chord
     :init
@@ -431,6 +430,7 @@ when one fix a personal personal dictionary there are problems when one changes 
       (set (make-local-variable 'input-method-function) nil))
     ;; Disable key-chors in minibuffer
     (add-hook 'minibuffer-setup-hook #'disable-key-chord-mode))
+
   (use-package use-package-chords
     :config
     (defmacro bind-chord (chord command &optional keymap)
@@ -444,6 +444,7 @@ when one fix a personal personal dictionary there are problems when one changes 
   (use-package package-utils)
 #+END_SRC
 *** Load all my paths
+    Handy hack to add to the load path all files and folder in a folder.
 #+BEGIN_SRC elisp
   (let ((default-directory  "~/.emacs.d/lisp/"))
     (normal-top-level-add-subdirs-to-load-path))
@@ -547,8 +548,8 @@ when one fix a personal personal dictionary there are problems when one changes 
    'mode-line-highlight nil
    :inherit 'mode-line-face
    :box '(:line-width 1 :color "orange red" :style released-button))
-
 #+END_SRC
+
 **** TODO Key bind
       :TODO: help-echo not show these functions!!!
        It's nice to get the file path in a fast way and where doesn't bother.
@@ -1574,9 +1575,9 @@ when one fix a personal personal dictionary there are problems when one changes 
      (org-babel-do-load-languages 'org-babel-load-languages
                                   '(
                                     ;; (R . t)
-                                    ;; (singular . t)
+                                    ;; (Singular . t) ;; it doesn't exits https://orgmode.org/manual/Languages.html#Languages
                                     ;; (gnuplot . t)
-                                    ;; (latex . t)
+                                    (latex . t)
                                     ;; (org . t)
                                     ;; (sh . t)
                                     ;; (lisp . t)
@@ -1684,7 +1685,7 @@ when one fix a personal personal dictionary there are problems when one changes 
     Save kill ring, regexp-search-ring
 #+BEGIN_SRC elisp
   (require 'savehist)
-  (setq history-length 500
+  (setq history-length 100
         desktop-load-locked-desktop t
         history-delete-duplicates t
         savehist-autosave-interval 60
@@ -1706,18 +1707,18 @@ when one fix a personal personal dictionary there are problems when one changes 
           org-mark-ring
           org-tags-history
           ;; kmacro-ring
-          counsel-colors-emacs-history
-          counsel-colors-web-history
-          counsel-descbinds-history
-          counsel-describe-symbol-history
-          counsel-faces-history
-          counsel-git-grep-cmd-history
+          ;; counsel-colors-emacs-history
+          ;; counsel-colors-web-history
+          ;; counsel-descbinds-history
+          ;; counsel-describe-symbol-history
+          ;; counsel-faces-history
+          ;; counsel-git-grep-cmd-history
           counsel-git-grep-history
           counsel-locate-history
           counsel-org-agenda-headlines-history
-          counsel-rhythmbox-history
-          counsel-set-variable-history
-          counsel-unicode-char-history
+          ;; counsel-rhythmbox-history
+          ;; counsel-set-variable-history
+          ;; counsel-unicode-char-history
           ivy-history
           occur-collect-regexp-history
           swiper-history
@@ -1730,6 +1731,10 @@ when one fix a personal personal dictionary there are problems when one changes 
         savehist-file "~/.emacs.d/backups/history")
   (savehist-mode 1)
 #+END_SRC
+
+#+RESULTS:
+: t
+
 *** Server
 #+BEGIN_SRC elisp
   (require 'server)
