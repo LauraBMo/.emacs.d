@@ -2642,10 +2642,17 @@ should be. After calling this function, call 'meeting-done' to reset the environ
                        (type (org-element-type element)))
                   (memq type '(headline inlinetask))))
            (org-beginning-of-line))
+          ;; move beginning of latex equation
           ((and (string= major-mode 'latex-mode)
                 (texmathp)
                 (not (= (point) (+ (cdr texmathp-why) (length (car texmathp-why))))))
            (goto-char (+ (cdr texmathp-why) (length (car texmathp-why)))))
+          ;; respect the promp in buffers runing a process
+         (;; (get-text-property (point-at-bol) 'cursor-intangible)
+          ;; (beginning-of-line-text))
+          (if-let ((-prompt (cdr (assoc (buffer-name) brust-math-software-buffers-prompts))))
+              (goto-char (+ (point-at-bol) (length -prompt)))
+            nil))
           (t
            (let ((pt (point))
                  (pnts `(,(point-at-bol)))
