@@ -6019,10 +6019,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         ,(propertize "delete" 'face 'font-lock-warning-face))
        ("x" xah-open-in-external-app "open-externally")))
 
-    ;;(ivy-set-occur 'counsel-git-grep
-    ;;               '(lambda nil
-    ;;                  (counsel-git-grep-occur)
-    ;;                  (ivy-wgrep-change-to-wgrep-mode)))
+    (ivy-set-occur 'counsel-git-grep
+                   '(lambda nil
+                      (counsel-git-grep-occur)
+                      (ivy-wgrep-change-to-wgrep-mode)))
 
     ;; (use-package ivy-hydra)
     ;; (use-package ivy-bibtex)
