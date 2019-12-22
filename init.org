@@ -3732,6 +3732,31 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 #+RESULTS:
 : t
 
+*** Zoom
+#+begin_src elisp
+  (use-package zoom
+    :init
+    (setq zoom-size '(0.618 . 0.618)
+          zoom-ignored-major-modes '("dired-mode"
+                                     "ediff-mode"
+                                     ;; "eshell-mode"
+                                     ;; "neotree-mode"
+                                     "sr-speedbar-mode")
+          zoom-ignored-buffer-name-regexps '("^*calc" "^\\*magit: +.*"))
+    :config
+    (zoom-mode 1)
+    (add-hook 'ediff-before-setup-hook
+              (lambda nil
+                (zoom-mode 1)
+                (balance-windows)))
+    (add-hook 'ediff-cleanup-hook (lambda nil (zoom-mode 1))))
+
+    ;; (remove-hook 'mouse-leave-buffer-hook #'golden-ratio--mouse-leave-buffer-hook))
+#+end_src
+
+#+RESULTS:
+: t
+
 *** Go to last change
 #+BEGIN_SRC elisp
   (use-package goto-chg
