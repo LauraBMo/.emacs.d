@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: dear name
+# expand-env: ((yas-indent-line nil))
+# key: dear
+# --
+
+Dear ${1:`(bjm/mu4e-get-names-for-yasnippet)`},
+
+  $0
+
+
+Best regards,
+Laura.
