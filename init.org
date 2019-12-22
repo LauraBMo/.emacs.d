@@ -1773,11 +1773,15 @@ when one fix a personal personal dictionary there are problems when one changes 
         (setq buffer-display-table display-table))
       (set-display-table-slot display-table 4
                               (vconcat (mapcar (lambda (c)
-                                                 (make-glyph-code c 'font-lock-keyword-face)) " ↴")))))
+                                                 (make-glyph-code c 'mode-line-top-line-number)) " ↴")))))
+
 
   (add-hook 'outline-mode-hook #'brust-outline-mode-set-ellipsis)
   (add-hook 'outline-minor-mode-hook #'brust-outline-mode-set-ellipsis)
 #+END_SRC
+
+#+RESULTS:
+| brust-outline-mode-set-ellipsis |
 
 *** Save cursor position
 #+BEGIN_SRC elisp
