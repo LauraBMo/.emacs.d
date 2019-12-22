@@ -5001,7 +5001,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             mu4e-update-interval 300    ;; update every 5 minutes
             ;; to speed-up indexing
             mu4e-index-cleanup nil      ;; don't do a full cleanup check
-            mu4e-index-lazy-check t     ;; don't consider up-to-date dirs
+            mu4e-index-lazy-check t     ;; don't consider up-to-dated dirs
+            mu4e-split-view 'vertical
             )
       :bind
       ("<f9>" . mu4e)
