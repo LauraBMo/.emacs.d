@@ -473,14 +473,6 @@ when one fix a personal personal dictionary there are problems when one changes 
   (use-package darktooth-theme
     :init
     (load-theme 'darktooth t))
-
-  ;;(set-face-attribute 'org-level-1 nil
-  ;;                    :family "Sans Serif"
-  ;;                    :foreground "DarkOrange2"
-  ;;                    :weight 'bold
-  ;;                    :height 1.3)
-
-
 #+END_SRC
 *** TODO My mode line
     :PROPERTIES:
