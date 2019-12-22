@@ -697,9 +697,9 @@ when one fix a personal personal dictionary there are problems when one changes 
      ((not vc-mode) "")
      ;; If under version-control decode the -:@ character
      ((string-match "\\` ?\\(?:CVS\\|Git\\)\\([-:@]\\)\\([^^:~ \x00-\x1F\\\\/]+\\)?" vc-mode)
-      (concat (propertize (concat " " (match-string-no-properties 2 vc-mode) " ")
-                          'face
-                          (cdr (assoc (match-string-no-properties 1 vc-mode) my-vc-mode-attrs)))))
+      (propertize (concat " " (match-string-no-properties 2 vc-mode) " ")
+                  'face
+                  (cdr (assoc (match-string-no-properties 1 vc-mode) my-vc-mode-attrs))))
      ;; Otherwise, indicate confusion
      (t (propertize "?vc?" 'face brust-vc-unknown))))
 #+end_src
