@@ -1336,13 +1336,13 @@ when one fix a personal personal dictionary there are problems when one changes 
      - ob-julia.el does not work properly see [[https://stackoverflow.com/questions/52043705/emacs-org-babel-with-ob-julia-el-does-not-work-anymore-with-julia-v1-0][StackOverflow disscution]]
  #+begin_src elisp
    (require 'ess-site)
-   (setq inferior-julia-program-name "~/scr/julia-1.2.0/bin/julia")
+   (setq inferior-julia-program "~/scr/julia-1.2.0/bin/julia")
    (bind-keys :map ess-mode-map
               ("C-c C-c" . ess-eval-region-or-line-and-step)
               ("C <RET>" . ess-eval-region-or-function-or-paragraph-and-step))
    (setq comint-prompt-read-only nil
-         ess-history-file t
-         ess-history-directory "~/.emacs.d/backups/")
+         ess-history-directory "~/.emacs.d/backups"
+         ess-history-file ".julia_history")
 
    (add-hook 'comint-mode-hook #'brust-math-software-hookfun-to-intangify-prompt)
  #+end_src
@@ -1378,6 +1378,36 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 : brust-math-software-hookfun-to-intangify-prompt
+
+**** Turn on latexsubs
+
+#+begin_src elisp
+(defadvice ess-indent-or-complete (after julia-latexsubs activate)
+  (unless (use-region-p)
+    (call-interactively 'julia-latexsub-or-indent)))
+#+end_src
+
+#+RESULTS:
+: ess-indent-or-complete
+
+**** COMMENT Hook for comint in julia-mode
+     I do not know how to retive the name of the directory from which julia have been called. 
+#+begin_src elisp
+  (defun brust-julia-hook-setting-REPL nil
+    "Handy hook for *julia*"
+    (make-local-variable ess-history-directory)
+    (setq ess-history-directory "~/Dropbox/Math/Leipzig2019/LocDim")
+#+end_src
+
+**** COMMENT System environment parameter.
+#+begin_src elisp
+  (setenv "JULIA_HISTORY"  ".julia_history")
+  (setenv "JULIA_ANSWER_COLOR" "blue")
+  (setenv "JULIA_NUM_THREADS" "3")
+#+end_src
+
+#+RESULTS:
+: 3
 
 **** COMMENT Non-editable prompt when comint-mode is used
 
@@ -3274,14 +3304,14 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     ;;        company-latex-commands))))
 
     ;; use numbers 0-9 to select company completion candidates (from abo-abo's config file.
-    (let ((map company-active-map))
-      (mapc (lambda (x) (define-key map (format "%d" x)
-                          `(lambda nil (interactive) (company-complete-number ,x))))
-            (number-sequence 0 9))))
+    ;;   (let ((map company-active-map))
+    ;;     (mapc (lambda (x) (define-key map (format "%d" x)
+    ;;                         `(lambda nil (interactive) (company-complete-number ,x))))
+    ;;           (number-sequence 0 9)))
+    )
 #+END_SRC
 
 #+RESULTS:
-: company-show-location
 
 **** COMMENT Company-box
 #+BEGIN_SRC elisp
