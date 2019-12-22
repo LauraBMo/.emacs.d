@@ -5035,11 +5035,33 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
      (message-add-header (concat "Date: " (message-make-date)))
      (message-add-header (concat "Message-ID: " (message-make-message-id)))
      (message-insert-headers)
-     ;; (message-sort-headers)
-     (if (eq mu4e-compose-type 'new)
-         (message-goto-to)
-       (message-goto-body))
+     ;; (message-hide-headers)
+     ;; This does not work, since while creating buffer mu4e-compose-type is set to nil.
+     ;; (if (eq mu4e-compose-type 'new)
+     ;;     (message-goto-to)
+     ;;   (message-goto-body))
      )
+
+   ;; (defun mu4e-compose-new nil
+   ;;   "Start writing a new message."
+   ;;   (interactive)
+   ;;   (mu4e-compose 'new)
+   ;;   (message-goto-to))
+   ;; 
+   ;; (defun mu4e-compose-edit nil
+   ;;   "Edit the draft message at point in the headers buffer.
+   ;; This is only possible if the message at point is, in fact, a
+   ;; draft message."
+   ;;   (interactive)
+   ;;   (mu4e-compose 'edit)
+   ;;   (message-sort-headers)
+   ;;   (message-goto-body))
+
+   (defadvice mu4e-compose (after move-to-right-place activate)
+     (if (eq compose-type 'new)
+         (message-goto-to)
+       ;; (message-sort-headers)
+       (message-goto-body)))
 
    ;; (add-hook 'mu4e-view-mode-hook #'mu4e-view-fill-long-lines)
    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
