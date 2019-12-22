@@ -716,19 +716,19 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;   mode-line-client
      ;; Position, including warning for 80 columns
      ;; (:propertize " --[" face mode-line-bars-face)
-     (:propertize "||  " face mode-line-bars-face)
+     (:propertize "||" face mode-line-bars-face)
      (:propertize display-time-string face sml/line-number)
      ;;mode-line-misc-info
-     (:propertize " || " face mode-line-bars-face)
+     ;;(:propertize "|" face mode-line-bars-face)
+     " "
      (:eval
       (cond (buffer-read-only
              (propertize " RO " 'face 'mode-line-read-only-face))
             ((buffer-modified-p)
-             (propertize " ** " 'face 'mode-line-modified-face))))
-     (:eval (if (or buffer-read-only (buffer-modified-p))
-                (propertize " " 'face 'mode-line-bars-face)
-              "      "))
-     (:propertize "|\[" face mode-line-bars-face)
+             (propertize " ** " 'face 'mode-line-modified-face))
+            (t "   ")))
+     " "
+     (:propertize "\[" face mode-line-bars-face)
      (:propertize "%l" face sml/line-number)
      (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "/%l")) 'face 'mode-line-top-line-number))
      ;; (line-number-at-pos (point-max))
@@ -737,25 +737,25 @@ when one fix a personal personal dictionary there are problems when one changes 
                         (if (< (current-column) 80)
                             'sml/col-number
                           'mode-line-80col-face)))
-     (:eval (propertize (format "/%s" (- (line-end-position) (line-beginning-position))) 'face 'mode-line-top-line-number))
-     (:propertize "\]|" face mode-line-bars-face)
+     ;; (:eval (propertize (format "/%s" (- (line-end-position) (line-beginning-position))) 'face 'mode-line-top-line-number))
+     (:propertize "\]" face mode-line-bars-face)
      ;; (:propertize "|| " face mode-line-bars-face)
      ;; mode-line-front-space
      ;;      (vc-mode vc-mode)
      ;; sml/pre-modes-separator
-     mode-line-frame-identification
+     ;; mode-line-frame-identification
      mode-line-buffer-identification
-     (:propertize "  |[  " face mode-line-bars-face)
-     (:propertize ("" "%[" mode-name "%]") face sml/modes)
+     ;; (:propertize " |[  " face mode-line-bars-face)
+     (:propertize (" " "\[" mode-name "\] ") face sml/modes)
+     (:eval (my-mode-line-vc-info))
      ;; mode-line-modes
      ;;(:propertize "| " face mode-line-bars-face)
      ;; (vc-mode vc-mode)
      ;; (vc-mode vc-status)
-     (:propertize "  ]|  ||" face mode-line-bars-face)
+     (:propertize "|" face mode-line-bars-face)
      ;; nyan-create
      (:eval (nyan-create))
-     (:propertize "|| " face mode-line-bars-face)
-     (:eval (my-mode-line-vc-info))
+     ;;(:propertize "|| " face mode-line-bars-face)
      ;;(:eval (list (nyan-create)))
      ;;(:propertize "||" face mode-line-bars-face)
      ;;mode-line-percent-position
@@ -765,7 +765,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) | (:propertize |   | face mode-line-bars-face) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) | (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize   (quote face) (quote mode-line-bars-face))       )) | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) | (:propertize ] | face mode-line-bars-face) | mode-line-frame-identification | mode-line-buffer-identification | (:propertize | [   face mode-line-bars-face) | (:propertize ( %[ mode-name %]) face sml/modes) | (:propertize   ] |   |   | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | face mode-line-bars-face) | (:eval (my-mode-line-vc-info)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
+| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) |   | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))) (t    ))) |   | (:propertize [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:propertize ] face mode-line-bars-face) | mode-line-buffer-identification | (:propertize (  [ mode-name ] ) face sml/modes) | (:eval (my-mode-line-vc-info)) | (:propertize | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
 
 ** My key binding
 *** Global and genric
