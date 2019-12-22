@@ -1032,8 +1032,8 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+BEGIN_SRC elisp
   (global-auto-revert-mode 1)
   (diminish 'auto-revert-mode)
-  (setq global-auto-revert-ignore-modes (quote (PDFView)))
-
+  (setq global-auto-revert-ignore-modes (quote (PDFView))
+        auto-revert-check-vc-info t)
 #+END_SRC
 
 *** Backup and auto-save
