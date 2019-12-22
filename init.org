@@ -606,148 +606,102 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 
-**** COMMENT Old smart mode line
-#+BEGIN_SRC elisp
-  (use-package smart-mode-line
-    :init
-    (setq sml/theme nil
-          ;; sml/theme 'smart-mode-line-powerline
-          ;; sml/theme 'light
-          ;; sml/theme 'respectful
-          sml/no-confirm-load-theme t
-         ;; sml/replacer-regexp-list ;; now I use mode-line-buffer-identication
-         ;; '(
-         ;;   ;; ("^~/Dropbox/config/emacs/" ":con4e:")
-         ;;   (".*/[Tt]hesis/" ":Ths:")
-         ;;   ("^~/org/" ":Org:")
-         ;;   ("^~/\\.emacs\\.d/" ":E.D:")
-         ;;   ("^/sudo:.*:" ":SU:")
-         ;;   ("^~/Documents/" ":Doc:")
-         ;;   ("^~/Dropbox/" ":DB:")
-         ;;   ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
-         ;;   ("^~/[Gg]it/" ":Git:")
-         ;;   ("^~/[Gg]it[Hh]ub/" ":Git:")
-         ;;   ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:"))
-         )
-    ;; (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
-    (sml/setup))
-#+RESULTS:
-
 **** Mode-Line-Buffer-Identification:
 
-#+BEGIN_SRC elisp
-  (with-eval-after-load 'subr-x
-    (setq-default
-     mode-line-buffer-identification
-     '(:eval
-       (format-mode-line
-        (propertized-buffer-identification
-         (or
-          (when-let
-              ((buffer-file-truename buffer-file-truename)
-               (prj (cdr-safe (project-current)))
-               (prj-parent (file-name-directory
-                            (directory-file-name (expand-file-name prj)))))
-            (concat (file-relative-name
-                     (file-name-directory buffer-file-truename) prj-parent)
-                    (file-name-nondirectory buffer-file-truename)))
-          "%b"))))))
-#+END_SRC
+   #+BEGIN_SRC elisp
+     (with-eval-after-load 'subr-x
+       (setq-default
+        mode-line-buffer-identification
+        '(:eval
+          (format-mode-line
+           (propertized-buffer-identification
+            (or
+             (when-let
+                 ((buffer-file-truename buffer-file-truename)
+                  (prj (cdr-safe (project-current)))
+                  (prj-parent (file-name-directory
+                               (directory-file-name (expand-file-name prj)))))
+               (concat (file-relative-name
+                        (file-name-directory buffer-file-truename) prj-parent)
+                       (file-name-nondirectory buffer-file-truename)))
+             "%b"))))))
+   #+END_SRC
 
-#+RESULTS:
-| :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
+   #+RESULTS:
+   | :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
 
 
 **** Verison-control-mode
+***** Faces
 #+begin_src elisp
   ;; Define faces.
-  (defface my/mode:vc-added
-    `((((class color)) (:background "#FFAA55"  :foreground "black"))
-      (t (:weight bold :underline t)))
-    "VC status tag face for files that have just been added to
-  version-control."
-    :group 'MY/mode)
 
-  (defface my/mode:vc-edited
-    `(
-       (  ((class color))
-          (:background "#F05B80"  :foreground "black")  )   ; "#F04040" maybe?
-       (  t
-          (:weight bold :underline t)  )
-     )
+  (defface brust-vc-base
+    '((t (:inherit mode-line-face :weight bold :height 0.7)))
+    "VC status tag base face for files that are under version control."
+    :group 'brust-vc-mode-line-face)
+
+  (defface brust-vc-added
+    '((t (:inherit brust-vc-base :background "#FFAA55" :foreground "black")))
+    "VC status tag face for files that are under version control
+  but which have been added."
+    :group 'brust-vc-mode-line-face)
+
+  (defface brust-vc-edited
+    '((t (:inherit brust-vc-base :background "#F05B80" :foreground "black"))) ; "#F04040" maybe?
     "VC status tag face for files that are under version control
   but which have been edited."
-    :group 'MY/mode)
+    :group 'brust-vc-mode-line-face)
 
-  (defface my/mode:vc-in-sync
-    `(
-       (  ((class color))
-          (:background "#60CC60"  :foreground "black")  )
-       (  t
-          (:weight bold :underline t)  )
-     )
+  (defface brust-vc-in-sync
+    '((t (:inherit brust-vc-base :background "#60CC60"  :foreground "black")))
     "VC status tag face for files that are under version control
   and which are in sync with the respository."
-    :group 'MY/mode)
+    :group 'brust-vc-mode-line-face)
 
-  (defface my/mode:vc-none
-    `(
-       (  ((class color))
-          (:background "#70A0D0"  :foreground "black")  )
-       (  t
-          (:weight bold :underline t)  )
-     )
-    "VC status tag face for files that are not under version
-  control"
-    :group 'MY/mode)
-
-  (defface my/mode:vc-unknown
-    `(
-       (  ((class color))
-          (:background "#FF0000"  :foreground "white")  )
-       (  t
-          (:weight bold :underline t)  )
-     )
+  (defface brust-vc-unknown
+    '((t (:inherit brust-vc-base :background "#FF0000"  :foreground "white")))
     "VC status tag face for files whose version-control status
   cannot be determined."
-    :group 'MY/mode)
+    :group 'brust-vc-mode-line-face)
+#+end_src
 
+#+RESULTS:
+: brust-vc-unknown
+
+***** Function
+#+begin_src elisp
   (defvar my-vc-mode-attrs
-    '((""  . (" NoVC " . my/mode:vc-none))
-      ("-" . (" VC = " . my/mode:vc-in-sync))
-      (":" . (" VC > " . my/mode:vc-edited))
-      ("@" . (" VC + " . my/mode:vc-added))
-      ("?" . (" ?VC? " . my/mode:vc-unknown))
-      )
+    '(;; (""  . (" Non vc " . my/mode:vc-none))
+      ("-" . brust-vc-in-sync)
+      (":" . brust-vc-edited)
+      ("@" . brust-vc-added))
     "Lookup table to translate vc-mode character into another string/face.")
 
   ;; This function helps me understand the version-control status.
   (defun my-mode-line-vc-info nil
     "Return version-control status information about the file in
-  the current buffer, as a fontified string.
+    the current buffer, as a fontified string.
 
-  The mode-line variable `vc-mode' is nil if the file is not under
-  version control, and displays a hyphen or a colon depending on whether
-  the file has been modified since check-in.  I can never keep those
-  straight.
+    The mode-line variable `vc-mode' is nil if the file is not under
+    version control, and displays a hyphen or a colon depending on whether
+    the file has been modified since check-in.  I can never keep those
+    straight.
 
-  This function returns \"NoVC\" if the file is not under version
-  control.  It displays a string with an = sign if the file is in sync
-  with its version control, and a string with a > sign if the file has
-  been modified since its last check-in."
-    (let* ((state-branch
-            (cond
-             ;; If not under version-control
-             ((not vc-mode) '("" . ""))
-             ;; If under version-control decode the -:@ character
-             ((string-match "\\` ?\\(?:CVS\\|Git\\)\\([-:@]\\)\\([^^:~ \x00-\x1F\\\\/]+\\)?" vc-mode)
-              (cons (match-string-no-properties 1 vc-mode) (concat (match-string-no-properties 2 vc-mode) " ")))
-             ;; Otherwise, indicate confusion
-             (t '("?" . ""))))
-           ;; Fetch properties list for the class character above
-           (props (cdr (assoc (car state-branch) my-vc-mode-attrs))))
-           (concat (propertize (car props) 'face (cdr props))
-                   " " (cdr state-branch))))
+    This function returns \"NoVC\" if the file is not under version
+    control.  It displays a string with an = sign if the file is in sync
+    with its version control, and a string with a > sign if the file has
+    been modified since its last check-in."
+    (cond
+     ;; If not under version-control print nothing
+     ((not vc-mode) "")
+     ;; If under version-control decode the -:@ character
+     ((string-match "\\` ?\\(?:CVS\\|Git\\)\\([-:@]\\)\\([^^:~ \x00-\x1F\\\\/]+\\)?" vc-mode)
+      (concat (propertize (concat " " (match-string-no-properties 2 vc-mode) " ")
+                          'face
+                          (cdr (assoc (match-string-no-properties 1 vc-mode) my-vc-mode-attrs)))))
+     ;; Otherwise, indicate confusion
+     (t (propertize "?vc?" 'face brust-vc-unknown))))
 #+end_src
 
 #+RESULTS:
@@ -7872,6 +7826,34 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
                 (define-key ido-completion-map [left] 'previous-history-element)
                 (define-key ido-completion-map [right] 'brust-next-complete-history-element))))
 #+END_SRC
+
+** COMMENT Old smart mode line
+#+BEGIN_SRC elisp
+  (use-package smart-mode-line
+    :init
+    (setq sml/theme nil
+          ;; sml/theme 'smart-mode-line-powerline
+          ;; sml/theme 'light
+          ;; sml/theme 'respectful
+          sml/no-confirm-load-theme t
+         ;; sml/replacer-regexp-list ;; now I use mode-line-buffer-identication
+         ;; '(
+         ;;   ;; ("^~/Dropbox/config/emacs/" ":con4e:")
+         ;;   (".*/[Tt]hesis/" ":Ths:")
+         ;;   ("^~/org/" ":Org:")
+         ;;   ("^~/\\.emacs\\.d/" ":E.D:")
+         ;;   ("^/sudo:.*:" ":SU:")
+         ;;   ("^~/Documents/" ":Doc:")
+         ;;   ("^~/Dropbox/" ":DB:")
+         ;;   ("^:\\([^:]*\\):Documento?s/" ":\\1/Doc:")
+         ;;   ("^~/[Gg]it/" ":Git:")
+         ;;   ("^~/[Gg]it[Hh]ub/" ":Git:")
+         ;;   ("^~/[Gg]it\\([Hh]ub\\|\\)-?[Pp]rojects/" ":Git:"))
+         )
+    ;; (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
+    (sml/setup))
+#+END_SRC
+#+RESULTS:
 
 * Not usual packages
   Load each with =brust-endless/org-eval-current-header=
