@@ -747,7 +747,7 @@ when one fix a personal personal dictionary there are problems when one changes 
              (t '("?" . ""))))
            ;; Fetch properties list for the class character above
            (props (cdr (assoc (car state-branch) my-vc-mode-attrs))))
-           (concat (propertize (car props) 'face (cdr props)) 
+           (concat (propertize (car props) 'face (cdr props))
                    " " (cdr state-branch))))
 #+end_src
 
@@ -1396,7 +1396,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 : ess-indent-or-complete
 
 **** COMMENT Hook for comint in julia-mode
-     I do not know how to retive the name of the directory from which julia have been called. 
+     I do not know how to retive the name of the directory from which julia have been called.
 #+begin_src elisp
   (defun brust-julia-hook-setting-REPL nil
     "Handy hook for *julia*"
@@ -5078,7 +5078,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
    ;;   (interactive)
    ;;   (mu4e-compose 'new)
    ;;   (message-goto-to))
-   ;; 
+   ;;
    ;; (defun mu4e-compose-edit nil
    ;;   "Edit the draft message at point in the headers buffer.
    ;; This is only possible if the message at point is, in fact, a
@@ -6033,14 +6033,14 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 #+END_SRC
 
-*** Wgrep
+*** Writable grep buffer
+
 #+BEGIN_SRC elisp
   (use-package wgrep
     :config
     (setq wgrep-auto-save-buffer t
           wgrep-enable-key "r"))
 #+END_SRC
-
 *** Which key
 
 #+BEGIN_SRC elisp
