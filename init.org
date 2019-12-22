@@ -173,11 +173,14 @@ Some people use it specifically for one or two applications.
 
 *** Set Monoid font family.
 #+BEGIN_SRC elisp
-  (when (member "Monoid HalfTight" (font-family-list))
-    (set-face-attribute 'default nil :font "Monoid HalfTight")
-    (add-to-list 'initial-frame-alist '(font . "Monoid HalfTight"))
-    (add-to-list 'default-frame-alist '(font . "Monoid HalfTight")))
+  (when (member "IBM Plex Mono" (font-family-list))
+    (set-frame-font "IBM Plex Mono Light 13")
+    (add-to-list 'initial-frame-alist '(font . "IBM Plex Mono Light"))
+    (add-to-list 'default-frame-alist '(font . "IBM Plex Mono Light")))
 #+END_SRC
+
+#+RESULTS:
+: ((font . IBM Plex Mono Light) (background-color . #282828) (font . Monoid HalfTight) (vertical-scroll-bars))
 
 *** Sentences end with a single space
     In my world, sentences end with a single space. This makes
