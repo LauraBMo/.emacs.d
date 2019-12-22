@@ -6130,7 +6130,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
           ivy-extra-directories nil
           ;; Always ignore buffers set in `ivy-ignore-buffers'
           ivy-use-ignore-default 'always)
-
     :config
     ;; Ignore some buffers in `ivy-switch-buffer'
     ;; Ignore some files in `counsel-find-file'
@@ -6161,8 +6160,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     (ivy-set-actions
      t
      '(("i" insert "insert")
-       ("v" vlf "Very large files")
-       ("w" kill-new "copy")))
+       ("w" kill-new "yank")))
 
     (ivy-set-actions
      'counsel-find-file
@@ -6178,7 +6176,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
     ;; (use-package ivy-hydra)
     ;; (use-package ivy-bibtex)
-    (use-package counsel
+    (use-package counsel)
     (use-package ivy-rich)
     ;; (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
     (ivy-rich-mode 1)
