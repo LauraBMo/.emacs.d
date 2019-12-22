@@ -926,7 +926,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 *** Abbrev's
 **** Setting
 #+BEGIN_SRC elisp
-  (diminish 'abbrev-mode)
   (setq pre-abbrev-expand-hook (quote (ignore))
         abbrev-file-name "~/Dropbox/config/abbrev-def.el"
         save-abbrevs 'silently)
@@ -1031,7 +1030,6 @@ when one fix a personal personal dictionary there are problems when one changes 
     Auto refresh all buffers when files have changed on disk.
 #+BEGIN_SRC elisp
   (global-auto-revert-mode 1)
-  (diminish 'auto-revert-mode)
   (setq global-auto-revert-ignore-modes (quote (PDFView))
         auto-revert-check-vc-info t)
 #+END_SRC
@@ -3113,7 +3111,6 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 *** Aggressive indent
 #+BEGIN_SRC elisp
   (use-package aggressive-indent
-    :diminish aggressive-indent-mode
     :init
     (global-aggressive-indent-mode)
     ;; (add-hook 'org-mode-hook #'aggressive-indent-mode)
@@ -3156,7 +3153,6 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     Beacon, iluminació del cursor.
 #+BEGIN_SRC elisp
   (use-package beacon
-    :diminish 'beacon-mode
     :init
     (setq beacon-push-mark 35
           beacon-blink-delay 0.3
@@ -3275,7 +3271,6 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 #+BEGIN_SRC elisp
 (use-package company-box
   :after company
-  :diminish
   :hook (company-mode . company-box-mode))
 #+END_SRC
 
@@ -3624,7 +3619,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 *** Git gutter fringe+
 #+BEGIN_SRC elisp
   (use-package git-gutter-fringe+
-    ;; :diminish (global-git-gutter+-mode . "")
     :init
     ;; Please adjust fringe width if your own sign is too big.
     (setq-default left-fringe-width 10)
@@ -3654,7 +3648,6 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
     There we some estrange movements.
 #+BEGIN_SRC elisp
   (use-package golden-ratio
-    :diminish 'golden-ratio-mode
     :init
     (setq golden-ratio-auto-scale t
           split-width-threshold 1000
@@ -5669,7 +5662,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     :init
     (setq projectile-known-projects-file "~/.emacs.d/backups/projectile-bookmarks.eld")
     (projectile-mode 1)
-    ;; :diminish (projectile-mode . " Proj")
     :config
     (setq projectile-mode-line
           '(:eval (if
@@ -5766,7 +5758,6 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 *** Smartparents
 #+BEGIN_SRC elisp
   (use-package smartparens
-    :diminish smartparens-mode
     :init
     (setq sp-base-key-bindings nil
           sp-hybrid-kill-entire-symbol t
@@ -5951,7 +5942,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     (setq visual-line-fringe-indicators '(nil right-curly-arrow))
     (setq-default fill-column 80)
     (use-package adaptive-wrap ; to have the same indentation.
-      :diminish 'warp
       :init
       (add-hook 'visual-line-mode-hook #'adaptive-wrap-prefix-mode)
       (add-hook 'visual-fill-column-mode-hook #'adaptive-wrap-prefix-mode)
@@ -5965,7 +5955,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 *** COMMENT View Large files
 #+BEGIN_SRC elisp
   (use-package vlf
-    ;; :diminish vlf-mode
     :config
     ;; (require 'vlf-setup)
     (setq vlf-batch-size 1024)
@@ -5999,7 +5988,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 #+BEGIN_SRC elisp
   (use-package which-key
     :defer 10
-    :diminish which-key-mode
     :config
     (setq which-key-popup-type 'side-window) ; default
     ;; (setq which-key-popup-type 'minibuffer)
@@ -6061,7 +6049,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 *** Whitespace cleanup
 #+BEGIN_SRC elisp
   (use-package whitespace-cleanup-mode
-    :diminish 'whitespace-cleanup-mode
     :init
     (setq-default indent-tabs-mode nil)
     (global-whitespace-cleanup-mode t)
@@ -6094,7 +6081,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 #+BEGIN_SRC elisp
   (use-package yasnippet
     :defer t ;; I don't now why, but without it, don't load correctly
-    :diminish yas-minor-mode ;; " λ"
     :commands (yas-global-mode)
     ;; bind (:map yas-minor-mode-map
     ;;          ("<tab>" . nil)
@@ -6130,7 +6116,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     - Learn ivy-bibtex
 #+BEGIN_SRC elisp
   (use-package ivy
-    :diminish 'ivy-mode
     :init
     (ivy-mode)
     (setq ivy-use-virtual-buffers t
@@ -6194,7 +6179,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ;; (use-package ivy-hydra)
     ;; (use-package ivy-bibtex)
     (use-package counsel
-      :diminish 'counsel-mode)
     (use-package ivy-rich)
     ;; (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer)
     (ivy-rich-mode 1)
@@ -6994,16 +6978,12 @@ _q_: quit
     :mode ("\\.tex\\'"  . LaTeX-mode)
     :mode ("\\.sty\\'"  . LaTeX-mode)
     :mode ("\\.bib\\'"  . bibtex-mode)
-    :diminish 'reftex-mode
-    :diminish 'outline-minor-mode
-    :diminish 'flyspell-mode
     :init
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
     :config
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
     (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
     (use-package cdlatex
-      :diminish cdlatex-mode
       :config
       (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
       :bind
@@ -7733,7 +7713,6 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 #+BEGIN_SRC emacs-lisp
     (use-package undo-tree
       :defer 5
-      :diminish ""
       :chords (("uu" . undo)
                ("jr" . undo-tree-redo)
                ("UU" . undo-tree-visualize))
