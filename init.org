@@ -11,6 +11,11 @@
 
 (Emacs, (that tool (that converts (repetitive, tedious and bouring tasks) into (creative ones))))
 
+ Emacs is a flexible platform for developing end-user applications
+   –unfortunately it is generally perceived as merely a text editor.
+Some people use it specifically for one or two applications.
+   https://alhassy.github.io/init/
+
 * init.el
 ** Generic settings
 *** Personal data
