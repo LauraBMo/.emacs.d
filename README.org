@@ -1,14 +1,20 @@
 # .emacs.d
 
-Laura's Emacs config. It is oriented to the use of Emacs as a LaTeX editor.
+ Emacs is a flexible platform for developing end-user applications
+   –unfortunately it is generally perceived as merely a text editor.
+Some people use it specifically for one or two applications.
+  -- https://alhassy.github.io/init/
+
+
+ Laura's Emacs config. It is oriented to edit LaTeX files, mu4e with mbsync and msmtp, Org mode, ledgender.
 
 I use =org-mode= to mantain my init file, I follow the ideas from [[http://endlessparentheses.com/init-org-Without-org-mode.html][Endless init-org-Without-org-mode]].
-The actual init file is [[file:init.el][init.el]]. It definies small functions which call the file [[file:init.org][init.org]] with my big configurations.
+The actual init file is [[file:init.el][init.el]]. It definies small functions which call the file [[file:init.org][init.org]] with my major configurations.
 
 The specific packages used in a LaTeX file are:
  * [[https://www.gnu.org/software/auctex/][AucTeX]] ([[https://www.emacswiki.org/emacs/AUCTeX][EmacsWiki AUCTeX]]) : Basic package to work with LaTeX files.
  * [[https://www.gnu.org/software/auctex/reftex.html][RefTeX]] : to make \label's and \ref's
- * [[https://github.com/jkitchin/org-ref][Org-ref]] (The amazing package of John Kitchin (a reference in Emacs world)) : to make \cite's and edit .bib files (in a while to make \label's and \ref's also!)
+ * [[https://github.com/jkitchin/org-ref][Org-ref]] (The amazing package of John Kitchin) : to make \cite's and edit .bib files (in a while to make \label's and \ref's also!)
  * [[https://github.com/cdominik/cdlatex][CDLaTeX]] : A perfect complement. To improve =TAB=, math symbols insertion, LaTeX modifications (like \mathcal{S}...)...
 
 There are also a lot of other packages, take a look at [[file:init.el][init.el]] and [[file:init.org][init.org]] (the particular configuration for LaTeX-mode is in [[file:lisp/brusts-latex-config.org][brust-latex-config.org]]).
