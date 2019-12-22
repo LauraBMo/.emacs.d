@@ -455,7 +455,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 | ~/.emacs.d/lisp | ~/.emacs.d/lisp/Singular | /home/laury/.emacs.d/lisp/Singular/ | /home/laury/.emacs.d/elpa/org-ref-20190706.2059/citeproc/csl | /home/laury/.emacs.d/elpa/org-ref-20190706.2059/citeproc | ~/.emacs.d/lisp | /home/laury/.emacs.d/elpa/ace-window-20190708.933 | /home/laury/.emacs.d/elpa/adaptive-wrap-0.7 | /home/laury/.emacs.d/elpa/aggressive-indent-20190218.2331 | /home/laury/.emacs.d/elpa/anki-editor-20190608.1621 | /home/laury/.emacs.d/elpa/auto-compile-20181230.2216 | /home/laury/.emacs.d/elpa/avy-20190630.1538 | /home/laury/.emacs.d/elpa/beacon-20190104.1931 | /home/laury/.emacs.d/elpa/cdlatex-20190130.1419 | /home/laury/.emacs.d/elpa/company-auctex-20180725.1912 | /home/laury/.emacs.d/elpa/auctex-12.1.2 | /home/laury/.emacs.d/elpa/company-shell-20170518.541 | /home/laury/.emacs.d/elpa/company-statistics-20170210.1933 | /home/laury/.emacs.d/elpa/company-20190430.1852 | /home/laury/.emacs.d/elpa/counsel-org-clock-20190407.348 | /home/laury/.emacs.d/elpa/counsel-projectile-20190724.1903 | /home/laury/.emacs.d/elpa/counsel-20190726.1745 | /home/laury/.emacs.d/elpa/darktooth-theme-20190412.142 | /home/laury/.emacs.d/elpa/autothemer-20180920.923 | /home/laury/.emacs.d/elpa/diminish-20170419.1736 | /home/laury/.emacs.d/elpa/easy-kill-20181114.2330 | /home/laury/.emacs.d/elpa/expand-region-20190416.538 | /home/laury/.emacs.d/elpa/flyspell-correct-ivy-20181205.1932 | /home/laury/.emacs.d/elpa/flyspell-correct-20190408.1010 | /home/laury/.emacs.d/elpa/git-gutter-fringe+-20140729.1103 | /home/laury/.emacs.d/elpa/fringe-helper-20140620.2109 | /home/laury/.emacs.d/elpa/git-gutter+-20151204.1723 | /home/laury/.emacs.d/elpa/golden-ratio-20150819.1120 | /home/laury/.emacs.d/elpa/goto-chg-20190110.2114 | /home/laury/.emacs.d/elpa/helpful-20190723.2348 | /home/laury/.emacs.d/elpa/elisp-refs-20190323.1331 | /home/laury/.emacs.d/elpa/dash-functional-20180107.1618 | /home/laury/.emacs.d/elpa/ibuffer-vc-20181225.2227 | /home/laury/.emacs.d/elpa/ivy-bibtex-20190708.909 | /home/laury/.emacs.d/elpa/ivy-rich-20190707.107 | /home/laury/.emacs.d/elpa/ivy-yasnippet-20181002.1655 | /home/laury/.emacs.d/elpa/ledger-mode-20190709.548 | /home/laury/.emacs.d/elpa/loop-20160813.1407 | /home/laury/.emacs.d/elpa/mic-paren-20170731.1907 | /home/laury/.emacs.d/elpa/nyan-mode-20170423.740 | /home/laury/.emacs.d/elpa/org-bullets-20180208.2343 | /home/laury/.emacs.d/elpa/org-ref-20190706.2059 | /home/laury/.emacs.d/elpa/hydra-20190617.859 | /home/laury/.emacs.d/elpa/lv-20190716.1741 | /home/laury/.emacs.d/elpa/helm-bibtex-20190708.909 | /home/laury/.emacs.d/elpa/biblio-20190624.1408 | /home/laury/.emacs.d/elpa/biblio-core-20190624.1408 | /home/laury/.emacs.d/elpa/f-20190109.906 | /home/laury/.emacs.d/elpa/helm-20190729.513 | /home/laury/.emacs.d/elpa/helm-core-20190726.1001 | /home/laury/.emacs.d/elpa/htmlize-20180923.1829 | /home/laury/.emacs.d/elpa/package-utils-20180514.1415 | /home/laury/.emacs.d/elpa/packed-20180318.1729 | /home/laury/.emacs.d/elpa/parsebib-20181219.928 | /home/laury/.emacs.d/elpa/pdf-tools-20190701.202 | /home/laury/.emacs.d/elpa/popup-20160709.1429 | /home/laury/.emacs.d/elpa/projectile-20190626.1315 | /home/laury/.emacs.d/elpa/pkg-info-20150517.1143 | /home/laury/.emacs.d/elpa/epl-20180205.2049 | /home/laury/.emacs.d/elpa/request-20190727.1416 | /home/laury/.emacs.d/elpa/restart-emacs-20180601.1031 | /home/laury/.emacs.d/elpa/s-20180406.808 | /home/laury/.emacs.d/elpa/sage-shell-mode-20180215.835 | /home/laury/.emacs.d/elpa/deferred-20170901.1330 | /home/laury/.emacs.d/elpa/sass-mode-20190502.53 | /home/laury/.emacs.d/elpa/haml-mode-20190219.2102 | /home/laury/.emacs.d/elpa/smart-mode-line-20190527.1156 | /home/laury/.emacs.d/elpa/rich-minority-20190419.1136 | /home/laury/.emacs.d/elpa/smartparens-20190728.2037 | /home/laury/.emacs.d/elpa/smex-20151212.2209 | /home/laury/.emacs.d/elpa/swiper-20190726.1746 | /home/laury/.emacs.d/elpa/ivy-20190726.2134 | /home/laury/.emacs.d/elpa/tablist-20190414.643 | /home/laury/.emacs.d/elpa/transpose-frame-20151126.1426 | /home/laury/.emacs.d/elpa/twittering-mode-20181121.1402 | /home/laury/.emacs.d/elpa/undo-tree-0.6.5 | /home/laury/.emacs.d/elpa/use-package-chords-20181024.2322 | /home/laury/.emacs.d/elpa/bind-chord-20171204.2010 | /home/laury/.emacs.d/elpa/key-chord-20160227.1238 | /home/laury/.emacs.d/elpa/use-package-20190716.1829 | /home/laury/.emacs.d/elpa/bind-key-20180513.430 | /home/laury/.emacs.d/elpa/visual-fill-column-20190422.2154 | /home/laury/.emacs.d/elpa/visual-regexp-20190414.814 | /home/laury/.emacs.d/elpa/wgrep-20181229.40 | /home/laury/.emacs.d/elpa/which-key-20190723.1552 | /home/laury/.emacs.d/elpa/whitespace-cleanup-mode-20190106.2022 | /home/laury/.emacs.d/elpa/yasnippet-snippets-20190725.1049 | /home/laury/.emacs.d/elpa/yasnippet-20190724.1204 | /home/laury/.emacs.d/elpa/zone-nyan-20170818.1644 | /home/laury/.emacs.d/elpa/esxml-20171129.807 | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/obsolete/ | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/ | /usr/share/emacs/site-lisp/latex-cjk-thai | /usr/share/emacs/site-lisp/latex-cjk-common | /usr/share/emacs/site-lisp/auctex | /etc/emacs | /usr/local/share/emacs/26.1/site-lisp | /usr/local/share/emacs/site-lisp | /usr/share/emacs/site-lisp/dictionaries-common | /usr/share/emacs/site-lisp/autoconf | /usr/share/emacs/26.1/site-lisp | /usr/share/emacs/site-lisp | /usr/share/emacs/site-lisp/autoconf | /usr/share/emacs/site-lisp/elpa | /usr/share/emacs/site-lisp/elpa-src | /usr/share/emacs/site-lisp/latex-cjk-common | /usr/share/emacs/site-lisp/latex-cjk-thai | /usr/share/emacs/site-lisp/elpa/async-1.9.3 | /usr/share/emacs/site-lisp/elpa/dash-2.14.1 | /usr/share/emacs/site-lisp/elpa/ess-18.10.2 | /usr/share/emacs/site-lisp/elpa/ghub-3.0.0 | /usr/share/emacs/site-lisp/elpa/git-commit-2.90.1 | /usr/share/emacs/site-lisp/elpa/graphql-0.1.1 | /usr/share/emacs/site-lisp/elpa/let-alist-1.0.5 | /usr/share/emacs/site-lisp/elpa/magit-2.90.1 | /usr/share/emacs/site-lisp/elpa/magit-popup-2.12.5 | /usr/share/emacs/site-lisp/elpa/treepy-0.1.1 | /usr/share/emacs/site-lisp/elpa/with-editor-2.6.0 | /usr/share/emacs/site-lisp/elpa-src/async-1.9.3 | /usr/share/emacs/site-lisp/elpa-src/dash-2.14.1 | /usr/share/emacs/site-lisp/elpa-src/ess-18.10.2 | /usr/share/emacs/site-lisp/elpa-src/ghub-3.0.0 | /usr/share/emacs/site-lisp/elpa-src/git-commit-2.90.1 | /usr/share/emacs/site-lisp/elpa-src/graphql-0.1.1 | /usr/share/emacs/site-lisp/elpa-src/let-alist-1.0.5 | /usr/share/emacs/site-lisp/elpa-src/magit-2.90.1 | /usr/share/emacs/site-lisp/elpa-src/magit-popup-2.12.5 | /usr/share/emacs/site-lisp/elpa-src/treepy-0.1.1 | /usr/share/emacs/site-lisp/elpa-src/with-editor-2.6.0 | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc | /usr/share/emacs/site-lisp/elpa-src/ess-18.10.2/etc | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/ESSR | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/icons | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/other | /usr/share/emacs/site-lisp/elpa-src/ess-18.10.2/etc/ESSR | /usr/share/emacs/site-lisp/elpa-src/ess-18.10.2/etc/icons | /usr/share/emacs/site-lisp/elpa-src/ess-18.10.2/etc/other | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/ESSR/R | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/other/pkg1 | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/other/pkg1/R | /usr/share/emacs/site-lisp/elpa/ess-18.10.2/etc/other/pkg1/man | /usr/share/emacs/26.1/lisp | /usr/share/emacs/26.1/lisp/vc | /usr/share/emacs/26.1/lisp/url | /usr/share/emacs/26.1/lisp/textmodes | /usr/share/emacs/26.1/lisp/progmodes | /usr/share/emacs/26.1/lisp/play | /usr/share/emacs/26.1/lisp/org | /usr/share/emacs/26.1/lisp/nxml | /usr/share/emacs/26.1/lisp/net | /usr/share/emacs/26.1/lisp/mh-e | /usr/share/emacs/26.1/lisp/mail | /usr/share/emacs/26.1/lisp/leim | /usr/share/emacs/26.1/lisp/language | /usr/share/emacs/26.1/lisp/international | /usr/share/emacs/26.1/lisp/image | /usr/share/emacs/26.1/lisp/gnus | /usr/share/emacs/26.1/lisp/eshell | /usr/share/emacs/26.1/lisp/erc | /usr/share/emacs/26.1/lisp/emulation | /usr/share/emacs/26.1/lisp/emacs-lisp | /usr/share/emacs/26.1/lisp/cedet | /usr/share/emacs/26.1/lisp/calendar | /usr/share/emacs/26.1/lisp/calc | /usr/share/emacs/26.1/lisp/obsolete | /usr/share/auctex | /home/laury/.emacs.d/lisp/Emacs-123-Menu-master | /home/laury/.emacs.d/lisp/Singular | /home/laury/.emacs.d/lisp/benchmark-init-el-master | /home/laury/.emacs.d/lisp/bibretrieve | /home/laury/.emacs.d/lisp/emms-mode-line-cycle-master | /home/laury/.emacs.d/lisp/jkitchin-words | /home/laury/.emacs.d/lisp/julia-emacs | /home/laury/.emacs.d/lisp/julia-repl | /home/laury/.emacs.d/lisp/keyfreq | /home/laury/.emacs.d/lisp/ob-julia | /home/laury/.emacs.d/lisp/sunshine | /home/laury/.emacs.d/lisp/vCard | /home/laury/.emacs.d/lisp/wc-mode | /home/laury/.emacs.d/lisp/ob-julia/HTML | /home/laury/.emacs.d/lisp/ob-julia/images | /home/laury/.emacs.d/lisp/ob-julia/jl | /home/laury/.emacs.d/lisp/ob-julia/lisp | /home/laury/.emacs.d/lisp/ob-julia/pdf | /home/laury/.emacs.d/lisp/ob-julia/tex | /home/laury/.emacs.d/lisp/sunshine/images |
 
-** TODO Emacs look
+** TODO Emacs looks
 *** Color theme
 #+BEGIN_SRC elisp
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
@@ -611,6 +611,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 
 **** Mode-Line-Buffer-Identification:
+
 #+BEGIN_SRC elisp
   (with-eval-after-load 'subr-x
     (setq-default
@@ -632,6 +633,102 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 | :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
+
+
+**** Verison-control-mode
+#+begin_src elisp
+  ;; Define faces.
+  (defface my/mode:vc-added
+    `((((class color)) (:background "#FFAA55"  :foreground "black"))
+      (t (:weight bold :underline t)))
+    "VC status tag face for files that have just been added to
+  version-control."
+    :group 'MY/mode)
+
+  (defface my/mode:vc-edited
+    `(
+       (  ((class color))
+          (:background "#F05B80"  :foreground "black")  )   ; "#F04040" maybe?
+       (  t
+          (:weight bold :underline t)  )
+     )
+    "VC status tag face for files that are under version control
+  but which have been edited."
+    :group 'MY/mode)
+
+  (defface my/mode:vc-in-sync
+    `(
+       (  ((class color))
+          (:background "#60CC60"  :foreground "black")  )
+       (  t
+          (:weight bold :underline t)  )
+     )
+    "VC status tag face for files that are under version control
+  and which are in sync with the respository."
+    :group 'MY/mode)
+
+  (defface my/mode:vc-none
+    `(
+       (  ((class color))
+          (:background "#70A0D0"  :foreground "black")  )
+       (  t
+          (:weight bold :underline t)  )
+     )
+    "VC status tag face for files that are not under version
+  control"
+    :group 'MY/mode)
+
+  (defface my/mode:vc-unknown
+    `(
+       (  ((class color))
+          (:background "#FF0000"  :foreground "white")  )
+       (  t
+          (:weight bold :underline t)  )
+     )
+    "VC status tag face for files whose version-control status
+  cannot be determined."
+    :group 'MY/mode)
+
+  (defvar my-vc-mode-attrs
+    '((""  . (" NoVC " . my/mode:vc-none))
+      ("-" . (" VC = " . my/mode:vc-in-sync))
+      (":" . (" VC > " . my/mode:vc-edited))
+      ("@" . (" VC + " . my/mode:vc-added))
+      ("?" . (" ?VC? " . my/mode:vc-unknown))
+      )
+    "Lookup table to translate vc-mode character into another string/face.")
+
+  ;; This function helps me understand the version-control status.
+  (defun my-mode-line-vc-info nil
+    "Return version-control status information about the file in
+  the current buffer, as a fontified string.
+
+  The mode-line variable `vc-mode' is nil if the file is not under
+  version control, and displays a hyphen or a colon depending on whether
+  the file has been modified since check-in.  I can never keep those
+  straight.
+
+  This function returns \"NoVC\" if the file is not under version
+  control.  It displays a string with an = sign if the file is in sync
+  with its version control, and a string with a > sign if the file has
+  been modified since its last check-in."
+    (let* ((state-branch
+            (cond
+             ;; If not under version-control
+             ((not vc-mode) '("" . ""))
+             ;; If under version-control decode the -:@ character
+             ((string-match "\\` ?\\(?:CVS\\|Git\\)\\([-:@]\\)\\([^^:~ \x00-\x1F\\\\/]+\\)?" vc-mode)
+              (cons (match-string-no-properties 1 vc-mode) (concat (match-string-no-properties 2 vc-mode) " ")))
+             ;; Otherwise, indicate confusion
+             (t '("?" . ""))))
+           ;; Fetch properties list for the class character above
+           (props (cdr (assoc (car state-branch) my-vc-mode-attrs))))
+           (concat (propertize (car props) 'face (cdr props)) 
+                   " " (cdr state-branch))))
+#+end_src
+
+#+RESULTS:
+: my-mode-line-vc-info
 
 **** My customization
 #+BEGIN_SRC elisp
@@ -680,6 +777,8 @@ when one fix a personal personal dictionary there are problems when one changes 
      (:propertize "  ]|  ||" face mode-line-bars-face)
      ;; nyan-create
      (:eval (nyan-create))
+     (:propertize "|| " face mode-line-bars-face)
+     (:eval (my-mode-line-vc-info))
      ;;(:eval (list (nyan-create)))
      ;;(:propertize "||" face mode-line-bars-face)
      ;;mode-line-percent-position
@@ -689,7 +788,7 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) | (:propertize |   | face mode-line-bars-face) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) | (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize   (quote face) (quote mode-line-bars-face))       )) | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) | (:propertize ] | face mode-line-bars-face) | mode-line-frame-identification | mode-line-buffer-identification | (:propertize | [   face mode-line-bars-face) | (:propertize ( %[ mode-name %]) face sml/modes) | (:propertize   ] |   |   | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
+| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) | (:propertize |   | face mode-line-bars-face) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))))) | (:eval (if (or buffer-read-only (buffer-modified-p)) (propertize   (quote face) (quote mode-line-bars-face))       )) | (:propertize | [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:eval (propertize (format /%s (- (line-end-position) (line-beginning-position))) (quote face) (quote mode-line-top-line-number))) | (:propertize ] | face mode-line-bars-face) | mode-line-frame-identification | mode-line-buffer-identification | (:propertize | [   face mode-line-bars-face) | (:propertize ( %[ mode-name %]) face sml/modes) | (:propertize   ] |   |   | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | face mode-line-bars-face) | (:eval (my-mode-line-vc-info)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
 
 ** My key binding
 *** Global and genric
