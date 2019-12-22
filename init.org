@@ -550,6 +550,25 @@ when one fix a personal personal dictionary there are problems when one changes 
    :box '(:line-width 1 :color "orange red" :style released-button))
 #+END_SRC
 
+#+RESULTS:
+**** COMMENT Mode line bigger
+     https://www.gonsie.com/blorg/modeline.html
+#+begin_src elisp
+(set-face-attribute 'mode-line nil
+                    :background "#353644"
+                    :foreground "white"
+                    :box '(:line-width 8 :color "#353644")
+                    :overline nil
+                    :underline nil)
+
+(set-face-attribute 'mode-line-inactive nil
+                    :background "#565063"
+                    :foreground "white"
+                    :box '(:line-width 8 :color "#565063")
+                    :overline nil
+                    :underline nil)
+#+end_src
+
 **** TODO Key bind
       :TODO: help-echo not show these functions!!!
        It's nice to get the file path in a fast way and where doesn't bother.
