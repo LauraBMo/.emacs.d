@@ -3697,7 +3697,8 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 
-*** Golden ratio
+*** COMMENT Golden ratio
+    There we some estrange movements.
 #+BEGIN_SRC elisp
   (use-package golden-ratio
     :diminish 'golden-ratio-mode
