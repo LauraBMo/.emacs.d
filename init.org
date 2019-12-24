@@ -731,7 +731,7 @@ when one fix a personal personal dictionary there are problems when one changes 
                             'sml/col-number
                           'mode-line-80col-face)))
      ;; (:eval (propertize (format "/%s" (- (line-end-position) (line-beginning-position))) 'face 'mode-line-top-line-number))
-     (:propertize "\]" face mode-line-bars-face)
+     (:propertize "\] " face mode-line-bars-face)
      ;; (:propertize "|| " face mode-line-bars-face)
      ;; mode-line-front-space
      ;;      (vc-mode vc-mode)
