@@ -716,11 +716,13 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;   mode-line-client
      ;; Position, including warning for 80 columns
      ;; (:propertize " --[" face mode-line-bars-face)
+     ;; global-mode-string
+     ;; mu4e-alert-mode-line
      (:propertize "||" face mode-line-bars-face)
-     (:propertize display-time-string face sml/line-number)
+     (:propertize global-mode-string face sml/line-number)
      ;;mode-line-misc-info
      ;;(:propertize "|" face mode-line-bars-face)
-     " "
+     ;; " "
      (:eval
       (cond (buffer-read-only
              (propertize " RO " 'face 'mode-line-read-only-face))
