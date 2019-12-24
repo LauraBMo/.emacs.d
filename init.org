@@ -5311,6 +5311,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             "OR"
             "flag:unread maildir:/Gmail/Inbox"
             ))
+           ;; Do not show Mail in time string
+           display-time-mail-string "")
      (mu4e-alert-enable-mode-line-display)
      (defun gjstein-refresh-mu4e-alert-mode-line ()
        (interactive)
