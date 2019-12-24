@@ -616,21 +616,12 @@ when one fix a personal personal dictionary there are problems when one changes 
           (format-mode-line
            (propertized-buffer-identification
             (or
-             (when-let
-                 ((buffer-file-truename buffer-file-truename)
-                  (prj (cdr-safe (project-current)))
-                  (prj-parent (file-name-directory
-                               (directory-file-name (expand-file-name prj)))))
-               (concat (file-relative-name
-                        (file-name-directory buffer-file-truename) prj-parent)
-                       (file-name-nondirectory buffer-file-truename)))
-             "%b"))))))
+            (file-name-nondirectory buffer-file-truename)
+            "%b"))))))
    #+END_SRC
 
    #+RESULTS:
    | :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
-
-
 **** Verison-control-mode
 ***** Faces
 #+begin_src elisp
