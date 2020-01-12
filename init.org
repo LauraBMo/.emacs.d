@@ -332,8 +332,11 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+BEGIN_SRC elisp
 ;;; Enable disabled commands
 
-(put 'erase-buffer                'disabled nil)
-(put 'eval-expression             'disabled nil)   ; Let ESC-ESC work
+(put 'erase-buffer    'disabled nil)
+(put 'eval-expression 'disabled nil)   ; Let ESC-ESC work
+(put 'upcase-region   'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'list-timers     'disabled nil)
 ;; (put 'set-goal-column             'disabled nil)
 ;; (put 'company-coq-fold            'disabled nil)
 ;; (put 'TeX-narrow-to-group         'disabled nil)
@@ -341,8 +344,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 ;; (put 'narrow-to-region            'disabled nil)
 ;; (put 'narrow-to-defun             'disabled nil)
 ;; (put 'narrow-to-page              'disabled nil)
-(put 'upcase-region               'disabled nil)
-(put 'downcase-region             'disabled nil)
 #+END_SRC
 
 *** Auto create non-existent files
