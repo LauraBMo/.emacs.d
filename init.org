@@ -1695,8 +1695,9 @@ when one fix a personal personal dictionary there are problems when one changes 
      (add-hook 'org-mode-hook 'org-display-inline-images)
 
      ;; org-mode my agenda view
-     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
-     (setq org-agenda-custom-commands
+     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org"))
+           org-directory "~/Dropbox/Org/"
+           org-agenda-custom-commands
            '(("h" "My agenda view"
               ((agenda "")
                (todo)))))
