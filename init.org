@@ -4990,6 +4990,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ;; This allows me to use 'helm' to select mailboxes
             ;; mu4e-completing-read-function 'completing-read
             mu4e-completing-read-function 'ivy-completing-read
+            ;; Enable notifications
+            mu4e-enable-notifications t
             mail-user-agent 'mu4e-user-agent
             ;; Use "P" to toggle threading
             mu4e-headers-show-threads nil
@@ -5042,10 +5044,12 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             message-sendmail-extra-arguments '("--read-envelope-from")
             message-sendmail-f-is-evil 't
             sendmail-program "msmtp"
-            mu4e-update-interval 300    ;; update every 5 minutes
+            mu4e-update-interval (* 5 60)    ;; update every 5 minutes
+            mu4e-index-update-in-background t
             ;; to speed-up indexing
             mu4e-index-cleanup nil      ;; don't do a full cleanup check
             mu4e-index-lazy-check t     ;; don't consider up-to-dated dirs
+            ;; Split windows vertically
             mu4e-split-view 'vertical
             )
       :bind
@@ -5061,13 +5065,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
             ("A" . mu4e-headers-mark-for-action)        ; differs from built-in
 
-            ("`" . mu4e-update-mail-and-index)          ; differs from built-in
+            ;; ("`" . mu4e-update-mail-and-index)          ; differs from built-in
             ("|" . mu4e-view-pipe)               	     ; does not seem to be built in any longer
             ;; ("." . hydra-mu4e-headers/body)
             ))
   #+END_SRC
 
   #+RESULTS:
+  : mu4e-view-pipe
 
 **** Handy hooks
  #+begin_src elisp
@@ -5162,66 +5167,128 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
  #+RESULTS:
  : ((capture message . mu4e-action-capture-message) (view as pdf . mu4e-action-view-as-pdf) (show this thread . mu4e-action-show-thread) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (Rebuild . brust-mu4e-rebuild-index) (lStore Link . org-store-link) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (lStore Link . org-store-link))
-***** Headers
+**** Hack to edit main menu
 #+begin_src elisp
-  (defun brust-mu4e-rebuild-index (msg)
-    (async-shell-command "~/scr/mu/mu/mu index --rebuild"))
+  (defun brust-mu4e-rebuild-index nil
+    (interactive)
+    (mu4e~proc-kill)
+    (sit-for 0) ;; to efectively kill the proces
+    (let ((display-buffer-alist (cons t 'display-buffer-no-window))) ;; to not display the buffer
+      (async-shell-command "~/scr/mu/mu/mu index --rebuild" nil)))
 
-  (setq mu4e-headers-actions
-        (append mu4e-headers-actions
-                (list
-                 ;; Rebuild the whole date base
-                 (cons "Rebuild" 'brust-mu4e-rebuild-index))))
+  (defun brust-mu4e-full-index nil
+    (interactive)
+    (let ((mu4e-index-cleanup t)      ;; don't do a full cleanup check
+          (mu4e-index-lazy-check nil)) ;; don't consider up-to-dated dirs
+      (mu4e-update-mail-and-index nil)))
 
+  ;; (setq mu4e-headers-actions
+  ;;       (append mu4e-headers-actions
+  ;;               (list
+  ;;                ;; Rebuild the whole date base
+  ;;                (cons "Rebuild" 'brust-mu4e-rebuild-index))))
+
+  (define-key mu4e-main-mode-map (kbd "R") #'brust-mu4e-rebuild-index)
+  (define-key mu4e-main-mode-map (kbd "F") #'brust-mu4e-full-index)
+  (define-key mu4e-main-mode-map (kbd "m") #'brust-inbox-update-mode-line-string)
+
+  (defadvice mu4e~main-view (after add-my-keys activate)
+    (read-only-mode -1)
+    (goto-char (point-max))
+    (insert
+     "\n\n"
+     (propertize "  Mines [Hard adviced]\n\n" 'face 'mu4e-title-face)
+     (mu4e~main-action-str "\t* [R]ebuild index\n" 'brust-mu4e-rebuild-index)
+     (mu4e~main-action-str "\t* [F]ull index\n" 'brust-mu4e-full-index)
+     (mu4e~main-action-str "\t* [m]ode line stirng\n" 'brust-inbox-update-mode-line-string))
+    (read-only-mode 1)
+    (goto-char (point-min)))
 #+end_src
 
 #+RESULTS:
-: ((capture message . mu4e-action-capture-message) (show this thread . mu4e-action-show-thread) (Rebuild . brust-mu4e-rebuild-index))
+: mu4e~main-view
 **** Marks
 #+begin_src elisp
-  ;; As an example, suppose we would like to add a mark for tagging
-  ;; messages (GMail-style), then we can run the following code (after loading mu4e):
+    ;; As an example, suppose we would like to add a mark for tagging
+    ;; messages (GMail-style), then we can run the following code (after loading mu4e):
 
-  ;; (defvar brust-mu4e-tags-list '() "List of tags to consistently tag my emails. List created from the file `brust-mu4e-tags-list-file`")
+
+    ;; As another example, suppose we would like to “archive and mark read”
+    ;; a message (GMail-style), then we can run the following code (after loading mu4e):
+
+    ;; (add-to-list 'mu4e-marks
+    ;;              '(archive
+    ;;                :char       "A"
+    ;;                :prompt     "Archive"
+    ;;                :show-target (lambda (target) "archive")
+    ;;                :action      (lambda (docid msg target)
+    ;;                               ;; must come before proc-move since retag runs
+    ;;                               ;; 'sed' on the file
+    ;;                               (mu4e-action-retag-message msg "-\\Inbox")
+    ;;                               (mu4e~proc-move docid nil "+S-u-N"))))
+
+    ;; (defvar brust-mu4e-tags-list '() "List of tags to consistently tag my emails. List created from the file `brust-mu4e-tags-list-file`")
+
+    (defun brust-list-file-by-lines (-file)
+      (with-temp-buffer
+        (insert-file-contents -file)
+        (split-string (buffer-string) "\n")))
+
+    (add-to-list 'mu4e-marks
+                 '(tag
+                   :char       "g"
+                   :prompt     "gtag"
+                   :ask-target (lambda () (ivy-read "What tag do you want to add? " (brust-list-file-by-lines "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                    :action (lambda (-str) (unless (member -str (brust-list-file-by-lines "~/.emacs.d/brust-mu4e-tags-list-file.txt"))
+                                                                             (with-temp-buffer
+                                                                               (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                                               (insert -str "\n")
+                                                                               (write-file "~/.emacs.d/brust-mu4e-tags-list-file.txt"))))))
+                   :show-target (lambda (target) (concat "Tag added " target))
+                   :action (lambda (docid msg target)
+                             (mu4e-action-retag-message msg (concat "+" target)))))
+
+    (defvar brust-mu4e-main-dirs-UAB
+      (list (cons "today" "/mathuab/Today")
+            (cons "week" "/mathuab/This week")
+            (cons "month" "/mathuab/This month")
+            (cons "for your information" "/mathuab/FYI")))
+
+  (defun brust-flip-cons-list (-list)
+    (cl-loop for -el in -list
+             collect (cons (cdr -el) (car -el))))
 
   (add-to-list 'mu4e-marks
-               '(tag
-                 :char       "g"
-                 :prompt     "gtag"
-                 :ask-target (lambda () (ivy-read "What tag do you want to add? " (with-temp-buffer
-                                                                                    (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                                    (split-string (buffer-string) "\n"))
-                                                  :action (lambda (-str) (unless (member -str (with-temp-buffer
-                                                                                                (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                                                (split-string (buffer-string) "\n")))
-                                                                           (with-temp-buffer
-                                                                             (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                             (insert -str "\n")
-                                                                             (write-file "~/.emacs.d/brust-mu4e-tags-list-file.txt"))))))
-
-                 :action      (lambda (docid msg target)
-                                (mu4e-action-retag-message msg (concat "+" target)))))
-
-  ;; As another example, suppose we would like to “archive and mark read”
-  ;; a message (GMail-style), then we can run the following code (after loading mu4e):
-
-  (add-to-list 'mu4e-marks
-               '(archive
+               '(moveUAB
                  :char       "A"
-                 :prompt     "Archive"
-                 :show-target (lambda (target) "archive")
-                 :action      (lambda (docid msg target)
-                                ;; must come before proc-move since retag runs
-                                ;; 'sed' on the file
-                                (mu4e-action-retag-message msg "-\\Inbox")
-                                (mu4e~proc-move docid nil "+S-u-N"))))
+                 :prompt     "MoveUAB"
+                 :ask-target (lambda () (mu4e-read-option "Move message to folder: " brust-mu4e-main-dirs))
+                 :show-target (lambda (target) (concat "move to " (cdr (assoc target (brust-flip-cons-list brust-mu4e-main-dirs-UAB)))))
+                 :action (lambda (docid msg target)
+                           (mu4e-mark-set 'move target)
+                           (when mu4e-headers-advance-after-mark (mu4e-headers-next)))))
+
+  (add-to-list 'mu4e-marks
+               '(mydelete
+                 :char       "d"
+                 :prompt     "mydelete"
+                 :ask-target (lambda () (mu4e-read-option "Move message to folder: " brust-mu4e-main-dirs))
+                 :show-target (lambda (target) (concat "move to " (cdr (assoc target (brust-flip-cons-list brust-mu4e-main-dirs-UAB)))))
+                 :action (lambda (docid msg target)
+                           (mu4e-mark-set 'move target)
+                           (when mu4e-headers-advance-after-mark (mu4e-headers-next)))))
 
   (mu4e~headers-defun-mark-for tag)
-  (mu4e~headers-defun-mark-for archive)
+  (mu4e~headers-defun-mark-for moveUAB)
   (define-key mu4e-headers-mode-map (kbd "g") 'mu4e-headers-mark-for-tag)
-  (define-key mu4e-headers-mode-map (kbd "A") 'mu4e-headers-mark-for-archive)
+  (define-key mu4e-headers-mode-map (kbd "A") 'mu4e-headers-mark-for-moveUAB)
 
+  (define-key mu4e-view-mode-map (kbd "g") 'mu4e-headers-mark-for-tag)
+  (define-key mu4e-view-mode-map (kbd "A") 'mu4e-headers-mark-for-moveUAB)
 #+end_src
+
+#+RESULTS:
+: mu4e-headers-mark-for-moveUAB
 
 **** My Contexts
  #+BEGIN_SRC elisp
@@ -5261,34 +5328,38 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
+ | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
 
-**** Bookmarkstr
+**** Bookmarks
  #+BEGIN_SRC elisp
    ;; Update mail using 'U' in main view:
    ;; Include a bookmark to open all of my inboxes
    (setq mu4e-bookmarks
          `(
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "All Inboxes"
+           ;;   :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread AND NOT flag:trashed"
+           ;;   :key ?i)
            ,(make-mu4e-bookmark
-             :name "All Inboxes"
-             :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread"
+             :name "Mathuab Inbox"
+             :query "maildir:/mathuab/INBOX AND NOT flag:trashed"
              :key ?i)
            ,(make-mu4e-bookmark
-             :name "New mathuab"
-             :query "flag:unread AND maildir:/mathuab/INBOX"
-             :key ?m)
-           ,(make-mu4e-bookmark
-             :query "flag:unread AND NOT flag:trashed"
-             :name "Unread messages"
-             :key ?u)
-           ,(make-mu4e-bookmark
-             :query "date:today..now AND NOT flag:trashed AND NOT flag:draft"
-             :name "Today's messages"
+             :name "Mathuab Today"
+             :query "maildir:/mathuab/Today AND NOT flag:trashed"
              :key ?t)
            ,(make-mu4e-bookmark
-             :query "date:7d..now AND NOT flag:trashed AND NOT flag:draft"
-             :name "Last 7 days"
+             :name "Mathuab Week"
+             :query "maildir:/mathuab/This week AND NOT flag:trashed"
              :key ?w)
+           ,(make-mu4e-bookmark
+             :name "Mathuab Month"
+             :query "maildir:/mathuab/This Month AND NOT flag:trashed"
+             :key ?m)
+           ,(make-mu4e-bookmark
+             :name "Mathuab FYI"
+             :query "maildir:/mathuab/FYI AND NOT maildir:/mathuab/trash"
+             :key ?m)
            ;; ("mime:image/*" "Messages with images" 112)
            ,(make-mu4e-bookmark
              :name "Drafts"
@@ -5297,7 +5368,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-bookmark Unread messages flag:unread AND NOT flag:trashed 117) | #s(mu4e-bookmark Today's messages date:today..now AND NOT flag:trashed AND NOT flag:draft 116) | #s(mu4e-bookmark Last 7 days date:7d..now AND NOT flag:trashed AND NOT flag:draft 119) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
+ | #s(mu4e-bookmark Mathuab Inbox maildir:/mathuab/INBOX AND NOT flag:trashed 105) | #s(mu4e-bookmark Mathuab Today maildir:/mathuab/Today AND NOT flag:trashed 116) | #s(mu4e-bookmark Mathuab Week maildir:/mathuab/This week AND NOT flag:trashed 119) | #s(mu4e-bookmark Mathuab Month maildir:/mathuab/This Month AND NOT flag:trashed 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
 
 **** Contacts
  #+begin_src elisp
@@ -5316,8 +5387,18 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 **** Org mu4e
  #+begin_src elisp
- (require 'org-mu4e)
+   ;;store org-mode links to messages
+   (require 'org-mu4e)
+   ;;store link to message if in header view, not to header query
+   (setq org-mu4e-link-query-in-headers-mode nil)
+
+   (push '("e" "Todo email" entry (file+headline "~/Dropbox/Org/my.org" "Work")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+         org-capture-templates)
  #+end_src
+
+ #+RESULTS:
+ | e | Todo email | entry | (file+headline ~/Dropbox/Org/my.org Work) | * TODO %? |
 
 **** yasnippet for composing emails
   From http://pragmaticemacs.com/category/mu4e/
@@ -5369,31 +5450,219 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  #+RESULTS:
  : bjm/mu4e-get-names-for-yasnippet
 
-**** COMMENT Alert
- #+BEGIN_SRC elisp
-   (use-package mu4e-alert
-     :ensure t
-     :after mu4e
-     :init
-     (setq mu4e-alert-interesting-mail-query
-           (concat
-            "flag:unread maildir:/mathuab/INBOX"
-            "OR"
-            "flag:unread maildir:/Gmail/Inbox"
-            ))
-           ;; Do not show Mail in time string
-           display-time-mail-string "")
-     (mu4e-alert-enable-mode-line-display)
-     (defun gjstein-refresh-mu4e-alert-mode-line ()
-       (interactive)
-       (mu4e~proc-kill)
-       (mu4e-alert-enable-mode-line-display)
-       )
-     (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
-     )
+**** Alert
+***** Config
+      It works for notifications...
+#+BEGIN_SRC elisp
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e)
+
+  ;; (require 'mu4e-alert)
+  (setq mu4e-alert-interesting-mail-query "flag:unread AND NOT flag:trashed AND maildir:/mathuab/INBOX"
+        mu4e-headers-skip-duplicates t)
+
+  ;; Desktop notifications
+  (mu4e-alert-set-default-style 'libnotify)
+  ;; (mu4e-alert-set-default-style 'notifier))
+
+  ;; (setq mu4e-enable-mode-line t)
+  ;; (mu4e-alert-enable-notifications)
+  ;; (mu4e-alert-enable-mode-line-display)
+  ;; (mu4e-alert-update-mail-count-modeline)
+
+  ;; (setq mu4e-alert-notify-repeated-mails t)
+  ;; (mu4e-alert-notify-unread-mail-async)
+
+
+  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;; (add-hook 'mu4e-index-updated-hook #'mu4e~headers-do-auto-update)
+  ;; (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
+
+  ;;   (defun gjstein-refresh-mu4e-alert-mode-line ()
+  ;;     (interactive)
+  ;;     (mu4e~proc-kill)
+  ;;     (mu4e-alert-enable-mode-line-display)
+  ;;     (mu4e-alert-enable-notifications)
+  ;;     )
+  ;;   (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
+
  #+END_SRC
 
  #+RESULTS:
+ | mu4e~headers-maybe-auto-update | mu4e~headers-do-auto-update | mu4e-alert-update-mail-count-modeline | mu4e-alert-notify-unread-mail-async | #[0 \300\301!\207 [run-hooks mu4e-message-changed-hook] 2] |
+***** COMMENT Formatter
+#+begin_src elisp
+  (require 'ezimage)
+
+  (defun brust-mu4e-alert-mode-line-formatter (mail-count)
+    "Default formatter used to get the string to be displayed in the mode-line.
+  MAIL-COUNT is the count of mails for which the string is to displayed"
+    (when (not (zerop mail-count))
+      (concat " "
+              (propertize
+               "+"
+               'display (when (display-graphic-p)
+                          ezimage-mail)
+               'face display-time-mail-face
+               'help-echo (concat (if (= mail-count 1)
+                                      "You have an unread email"
+                                    (format "You have %s unread emails" mail-count))
+                                  "\nClick here to view "
+                                  (if (= mail-count 1) "it" "them"))
+               'mouse-face 'mode-line-highlight
+               'keymap '(mode-line keymap
+                                   (mouse-1 . mu4e-alert-view-unread-mails)
+                                   (mouse-2 . mu4e-alert-view-unread-mails)
+                                   (mouse-3 . mu4e-alert-view-unread-mails)))
+              (if (zerop mail-count)
+                  " "
+                (format " [%d] " mail-count)))))
+
+  (setq mu4e-alert-modeline-formatter 'mu4e-alert-default-mode-line-formatter)
+#+end_src
+
+#+RESULTS:
+: brust-mu4e-alert-default-mode-line-formatter
+
+**** New Inbox
+     That's something that I understand, and I can use. (I've never understood mu4e-alert and I've been not able to use it...)
+***** Code
+      From https://gist.github.com/gl-sergei/1986989ad3c2024f8150
+  #+begin_src elisp
+    ;;; inbox.el --- display inbox status information  -*- coding: utf-8 -*-
+
+    ;; Copyright (C) 2014 Sergei Glushchenko.
+
+    ;; Author: Sergei Glushchenko <gl.sergei@gmail.com>
+
+    ;; This program is free software: you can redistribute it and/or modify
+    ;; it under the terms of the GNU General Public License as published by
+    ;; the Free Software Foundation, either version 3 of the License, or
+    ;; (at your option) any later version.
+
+    ;; This program is distributed in the hope that it will be useful,
+    ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+    ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    ;; GNU General Public License for more details.
+
+    ;; You should have received a copy of the GNU General Public License
+    ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+    (require 'ezimage)
+
+    (defgroup inbox nil
+      "Display inbox status information."
+      :prefix "inbox-"
+      :group 'hardware)
+
+    (defcustom inbox-update-interval 60
+      "Inbox update interval"
+      :type 'integer
+      :group 'inbox)
+
+    (defvar inbox-update-timer nil
+      "Interval timer object.")
+
+    (defcustom inbox-count-command "echo -n $( mu find date:1w..now maildir:/INBOX flag:unread 2>/dev/null | wc -l )"
+      "Command to retrieve count of emails in Inbox"
+      :type 'string
+      :group 'inbox)
+
+    (defvar inbox-mode-line-string nil
+      "String to display in the mode line.")
+    (put 'inbox-mode-line-string 'risky-local-variable t)
+
+    (define-minor-mode display-inbox-mode
+      "Toggle inbox status display in mode line (Display Inbox mode).
+    With a prefix argument ARG, enable Display Inbox mode if ARG is
+    positive, and disable it otherwise.  If called from Lisp, enable
+    the mode if ARG is omitted or nil."
+      :global t :group 'inbox
+      (setq inbox-mode-line-string "")
+      (or global-mode-string (setq global-mode-string '("")))
+      (and inbox-update-timer (cancel-timer inbox-update-timer))
+
+      (if (not display-inbox-mode)
+          (setq global-mode-string
+                (delq 'inbox-mode-line-string global-mode-string))
+        (add-to-list 'global-mode-string 'inbox-mode-line-string t)
+        (setq inbox-update-timer (run-at-time nil inbox-update-interval
+                                              'inbox-update-handler))
+        (inbox-update)))
+
+
+    ;; (defun inbox-update ()
+    ;;   (interactive)
+    ;;   (setq inbox-mode-line-string
+    ;;         (let ((unread (shell-command-to-string inbox-count-command)))
+    ;;           (propertize
+    ;;            (if (string= "0" unread) "" "+")
+    ;;            'display ezimage-mail
+    ;;            'help-echo (format "%s unread messages" unread))))
+    ;;   (force-mode-line-update))
+
+    (defun brust-inbox-update-index-mu4e nil
+      "Fast update and index mu4e 'mathuab'"
+      (let ((mu4e-hide-index-messages t)
+            (mu4e-index-update-error-warning nil)
+            (mu4e-compose-complete-addresses nil) ;; just check for mails
+            (mu4e-index-cleanup nil)
+            (mu4e-index-lazy-check t)
+            (mu4e-get-mail-command "mbsync mathuab")) ;; just update math mails
+        (mu4e-update-mail-and-index t)))
+
+    (defun brust-inbox-update-mode-line-string nil
+      (interactive)
+      (setq inbox-mode-line-string
+            (let ((unread (string-to-number (shell-command-to-string inbox-count-command))))
+              (if (zerop unread) " "
+                (concat " "
+                        (propertize
+                         "+"
+                         'display ezimage-mail
+                         'face 'brust-vc-edited)
+                        (propertize
+                         (format " [%d]" unread)
+                         'face 'brust-vc-edited
+                         'help-echo (concat (if (= unread 1)
+                                                "You have an unread email"
+                                              (format "You have %s unread emails" unread))
+                                            "\nClick here to view "
+                                            (if (= unread 1) "it" "them"))
+                         'mouse-face 'mode-line-highlight
+                         'keymap '(mode-line keymap
+                                             (mouse-1 . mu4e-alert-view-unread-mails)
+                                             (mouse-2 . mu4e-alert-view-unread-mails)
+                                             (mouse-3 . mu4e-alert-view-unread-mails)))
+                        " "))))
+      (force-mode-line-update))
+
+    (defun inbox-update nil
+      (interactive)
+      (brust-inbox-update-index-mu4e)
+      (brust-inbox-update-mode-line-string))
+
+    (defun inbox-update-handler ()
+      (inbox-update)
+      (sit-for 0))
+  #+end_src
+
+  #+RESULTS:
+  : inbox-update-handler
+
+***** Config
+#+begin_src elisp
+  (setq inbox-count-command "echo -n $( ~/scr/mu/mu/mu find flag:unread AND maildir:/mathuab/INBOX 2>/dev/null | wc -l )"
+        inbox-update-interval (* 30 60) ;; Every half an hour it is enough.
+        inbox-update-timer (run-at-time nil inbox-update-interval
+                                        'inbox-update-handler))
+  (inbox-update)
+#+end_src
+
+#+RESULTS:
+
 **** My functions
 ***** Org caputre mail
  #+begin_src elisp
