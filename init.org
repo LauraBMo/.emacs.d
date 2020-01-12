@@ -1854,22 +1854,29 @@ when one fix a personal personal dictionary there are problems when one changes 
         history-delete-duplicates t
         savehist-autosave-interval 60
         savehist-save-minibuffer-history t
+        savehist-ignored-variables
+        '(bookmark-history
+          bibtex-key-history
+          counsel-describe-symbol-history
+          TeX-command-history
+          file-name-history
+          minibuffer-history)
         savehist-additional-variables
         '(kill-ring
           search-ring
-          global-mark-ring
+          ;; global-mark-ring
           regexp-history
           regexp-search-ring
           ;; buffer-name-history
-          minibuffer-history
+          ;; minibuffer-history
           query-replace-history
           read-expression-history
           ;; input-method-history
           extended-command-history
           shell-command-history
-          file-name-history
-          org-mark-ring
-          org-tags-history
+          ;; file-name-history
+          ;; org-mark-ring
+          ;; org-tags-history
           ;; kmacro-ring
           ;; counsel-colors-emacs-history
           ;; counsel-colors-web-history
