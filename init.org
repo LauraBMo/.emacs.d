@@ -194,17 +194,6 @@ Some people use it specifically for one or two applications.
 
 #+RESULTS:
 | y-sp | brust-elisp-sentence-end-double-sapce-t | n-auto-fill |
-
-*** Display time.
-    Show the time in 24hr format, the date and time
-    and not show the average of loads.
-
-#+BEGIN_SRC elisp
-(setq display-time-24hr-format t
-      display-time-day-and-date t
-      display-time-default-load-average nil)
-#+END_SRC
-
 *** Idle update
 #+BEGIN_SRC elisp
 (setq idle-update-delay 2)
@@ -516,7 +505,7 @@ when one fix a personal personal dictionary there are problems when one changes 
    :family "Sans Serif"
    :weight 'bold
    :foreground "#c82829"
-   :background "#ffffff"
+   :background "#FDF4C1"
    :box '(:line-width 1 :color "#c82829"))
   (set-face-attribute
    'mode-line-folder-face nil
@@ -593,6 +582,21 @@ when one fix a personal personal dictionary there are problems when one changes 
     map))
 
 #+END_SRC
+**** Mode-Line-Buffer-Identification:
+
+   #+BEGIN_SRC elisp
+     (with-eval-after-load 'subr-x
+       (setq-default
+        mode-line-buffer-identification
+        '(:eval
+          (format-mode-line
+           (propertized-buffer-identification
+            (or
+             (when-let (buffer-file-truename buffer-file-truename)
+               (file-name-nondirectory buffer-file-truename))
+             "%b"))))))
+   #+END_SRC
+
 **** Smart-mode-line colors
 #+BEGIN_SRC elisp
   (defface sml/global '((t :inverse-video nil)) "" :group 'smart-mode-line-faces)
@@ -607,27 +611,9 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 
-**** Mode-Line-Buffer-Identification:
-
-   #+BEGIN_SRC elisp
-     (with-eval-after-load 'subr-x
-       (setq-default
-        mode-line-buffer-identification
-        '(:eval
-          (format-mode-line
-           (propertized-buffer-identification
-            (or
-            (file-name-nondirectory buffer-file-truename)
-            "%b"))))))
-   #+END_SRC
-
-   #+RESULTS:
-   | :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
 **** Verison-control-mode
-***** Faces
+***** Define faces.
 #+begin_src elisp
-  ;; Define faces.
-
   (defface brust-vc-base
     '((t (:inherit mode-line-face :weight bold :height 0.7)))
     "VC status tag base face for files that are under version control."
@@ -699,6 +685,75 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 : my-mode-line-vc-info
 
+**** Display time.
+    Show the time in 24hr format, the date and time
+    and not show the average of loads.
+
+#+BEGIN_SRC elisp
+  ;; Display time
+  (display-time-mode t)
+
+  (defun brust-kill-date nil
+    (interactive)
+    (kill-new (format-time-string "%a, %b %e %Y" (current-time))))
+
+  ;; Time format
+  (customize-set-variable 'display-time-string-forms
+                          '((propertize (concat dayname
+                                                " " 12-hours ":" minutes am-pm " ")
+                                        'help-echo (format-time-string "%a, %b %e %Y" now)
+                                        'mouse-face 'mode-line-highlight
+                                        'keymap '(mode-line keymap
+                                                            (mouse-1 . brust-kill-date)))))
+
+  ;; Update display-time-string
+  (display-time-update)
+
+  ;; Remove display-time-string from global-mode-string
+  (add-hook 'after-init-hook #'(lambda nil (setq global-mode-string (delq 'display-time-string global-mode-string)) (display-time-update)))
+
+  ;; (setq display-time-24hr-format t
+  ;;       display-time-day-and-date t
+  ;;       display-time-default-load-average nil)
+#+END_SRC
+
+#+RESULTS:
+|   | (:eval mu4e-alert-mode-line) |
+**** Battery percentage
+#+begin_src elisp
+  (require 'battery)
+  (display-battery-mode 1)
+  (setq global-mode-string (delq 'battery-mode-line-string global-mode-string)
+        battery-update-interval (* 30 1)
+        battery-mode-line-format "%b%p%%, %th")
+
+  (defface sml/charging
+    '((t :inherit sml/global :foreground "ForestGreen")) "" :group 'smart-mode-line-faces)
+  (defface sml/discharging
+    '((t :inherit sml/global :foreground "Red")) "" :group 'smart-mode-line-faces)
+
+  (defun brust-battery-mode-line-string nil
+    (if (string-equal "AC" (cdr (assoc 76 (funcall battery-status-function))))
+        (propertize battery-mode-line-string 'face 'sml/charging)
+      (propertize battery-mode-line-string 'face 'sml/discharging)))
+
+
+  ;;   (defadvice battery-update (before my/pl-colorize-battery-advice activate)
+  ;;     "Colorize the battery load string depending on its status (dis/charging)."
+  ;;     (if (string-equal "AC" (cdr (assoc 76 (funcall battery-status-function))))
+  ;;         (copy-face 'sml/charging 'sml/battery)
+  ;;       (copy-face 'sml/discharging 'sml/battery)))
+  ;;
+  ;;   (defadvice battery-update (after sml/after-battery-update-advice () activate)
+  ;;     "Change battery color."
+  ;;     (when battery-mode-line-string
+  ;;       (setq battery-mode-line-string
+  ;;             (concat (propertize battery-mode-line-string 'face 'sml/battery) " "))))
+#+end_src
+
+#+RESULTS:
+: brust-battery-mode-line-string
+
 **** My customization
 #+BEGIN_SRC elisp
   (setq-default
@@ -708,10 +763,10 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;   mode-line-client
      ;; Position, including warning for 80 columns
      ;; (:propertize " --[" face mode-line-bars-face)
-     ;; global-mode-string
-     ;; mu4e-alert-mode-line
+     ;; (:eval mu4e-alert-mode-line)
      (:propertize "||" face mode-line-bars-face)
-     (:propertize global-mode-string face sml/line-number)
+     ;; (:propertize "|" face mode-line-bars-face)
+     (:propertize display-time-string face mode-line-buffer-id)
      ;;mode-line-misc-info
      ;;(:propertize "|" face mode-line-bars-face)
      ;; " "
@@ -723,10 +778,10 @@ when one fix a personal personal dictionary there are problems when one changes 
             (t "   ")))
      " "
      (:propertize "\[" face mode-line-bars-face)
-     (:propertize "%l" face sml/line-number)
+     (:propertize "%l" face mode-line-buffer-id)
      (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "/%l")) 'face 'mode-line-top-line-number))
      ;; (line-number-at-pos (point-max))
-     (:propertize ":" face sml/line-number)
+     (:propertize ":" face mode-line-buffer-id)
      (:eval (propertize "%c" 'face
                         (if (< (current-column) 80)
                             'sml/col-number
@@ -740,8 +795,12 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;; mode-line-frame-identification
      mode-line-buffer-identification
      ;; (:propertize " |[  " face mode-line-bars-face)
-     (:propertize (" " "\[" mode-name "\] ") face sml/modes)
+     (:propertize (" " "\[" mode-name "\] ") face mode-line-buffer-id)
      (:eval (my-mode-line-vc-info))
+     ;; (:propertize global-mode-string face mode-line-buffer-id)
+     ;; mu4e-alert-mode-line
+     inbox-mode-line-string
+     ;; mode-line-misc-info
      ;; mode-line-modes
      ;;(:propertize "| " face mode-line-bars-face)
      ;; (vc-mode vc-mode)
@@ -754,12 +813,14 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;(:propertize "||" face mode-line-bars-face)
      ;;mode-line-percent-position
      ;; mode-line-position
-     (:propertize "||%-" face mode-line-bars-face)
+     (:propertize "| " face mode-line-bars-face)
+     (:eval (brust-battery-mode-line-string))
+     (:propertize "||-%-" face mode-line-bars-face)
      mode-line-end-spaces))
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) |   | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))) (t    ))) |   | (:propertize [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:propertize ] face mode-line-bars-face) | mode-line-buffer-identification | (:propertize (  [ mode-name ] ) face sml/modes) | (:eval (my-mode-line-vc-info)) | (:propertize | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
+| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face mode-line-buffer-id) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))) (t    ))) |   | (:propertize [ face mode-line-bars-face) | (:propertize %l face mode-line-buffer-id) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face mode-line-buffer-id) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:propertize ]  face mode-line-bars-face) | mode-line-buffer-identification | (:propertize (  [ mode-name ] ) face mode-line-buffer-id) | (:eval (my-mode-line-vc-info)) | (:propertize inbox-mode-line-string face brust-vc-edited) | (:propertize | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize | face mode-line-bars-face) | (:eval (brust-battery-mode-line-string)) | (:propertize |   | -%- face mode-line-bars-face) | mode-line-end-spaces |
 
 ** My key binding
 *** Global and genric
