@@ -5398,34 +5398,34 @@ msg '(:from :to :cc :bcc) "uab")))
            ;;   :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread AND NOT flag:trashed"
            ;;   :key ?i)
            ,(make-mu4e-bookmark
-             :name "Mathuab Inbox"
-             :query "maildir:/mathuab/INBOX AND NOT flag:trashed"
+             :name "Math Inbox"
+             :query "maildir:/mathuab/INBOX OR maildir:/mathku/INBOX AND NOT flag:trashed"
              :key ?i)
            ,(make-mu4e-bookmark
-             :name "Mathuab Today"
-             :query "maildir:/mathuab/Today AND NOT flag:trashed"
+             :name "Math Today"
+             :query "maildir:/mathuab/Today OR maildir:/mathku/Today AND NOT flag:trashed"
              :key ?t)
-           ,(make-mu4e-bookmark
-             :name "Mathuab Week"
-             :query "maildir:/mathuab/This week AND NOT flag:trashed"
-             :key ?w)
-           ,(make-mu4e-bookmark
-             :name "Mathuab Month"
-             :query "maildir:/mathuab/This Month AND NOT flag:trashed"
-             :key ?m)
-           ,(make-mu4e-bookmark
-             :name "Mathuab FYI"
-             :query "maildir:/mathuab/FYI AND NOT maildir:/mathuab/trash"
-             :key ?m)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab Week"
+           ;;   :query "maildir:/mathuab/This week AND NOT flag:trashed"
+           ;;   :key ?w)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab Month"
+           ;;   :query "maildir:/mathuab/This Month AND NOT flag:trashed"
+           ;;   :key ?m)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab FYI"
+           ;;   :query "maildir:/mathuab/FYI AND NOT maildir:/mathuab/trash"
+           ;;   :key ?m)
            ;; ("mime:image/*" "Messages with images" 112)
            ,(make-mu4e-bookmark
              :name "Drafts"
-             :query "flag:draft"
+             :query "maildir:/mathuab/Drafts OR maildir:/mathku/Drafts OR flag:draft"
              :key ?d)))
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-bookmark Mathuab Inbox maildir:/mathuab/INBOX AND NOT flag:trashed 105) | #s(mu4e-bookmark Mathuab Today maildir:/mathuab/Today AND NOT flag:trashed 116) | #s(mu4e-bookmark Mathuab Week maildir:/mathuab/This week AND NOT flag:trashed 119) | #s(mu4e-bookmark Mathuab Month maildir:/mathuab/This Month AND NOT flag:trashed 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
+ | #s(mu4e-bookmark Math Inbox maildir:/mathuab/INBOX OR maildir:/mathku/INBOX AND NOT flag:trashed 105) | #s(mu4e-bookmark Math Today maildir:/mathuab/Today OR maildir:/mathku/Today AND NOT flag:trashed 116) | #s(mu4e-bookmark Drafts maildir:/mathuab/Drafts OR maildir:/mathku/Drafts OR flag:draft 100) |
 
 **** Contacts
  #+begin_src elisp
