@@ -3721,24 +3721,25 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 : t
 
 *** Go to last change
-#+BEGIN_SRC elisp
-  (use-package goto-chg
-    :bind*
-    ("s-ñ" . goto-last-change)
-    ;; ("C-<" . goto-last-change)
-    ;; ("C->" . goto-last-change-reverse)
-    )
-#+END_SRC
 
-#+RESULTS:
-: goto-last-change
 **** Undo-tree
  #+BEGIN_SRC elisp
    (require 'undo-tree)
  #+END_SRC
 
  #+RESULTS:
+**** Config
+ #+BEGIN_SRC elisp
+   (use-package goto-chg
+     :bind*
+     ("s-ñ" . goto-last-change)
+     ;; ("C-<" . goto-last-change)
+     ;; ("C->" . goto-last-change-reverse)
+     )
+ #+END_SRC
 
+ #+RESULTS:
+ : goto-last-change
 *** COMMENT Grab and drop
 #+BEGIN_SRC elisp
 (require 'grab-and-drag)
