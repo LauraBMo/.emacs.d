@@ -3147,6 +3147,102 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 #+END_SRC
 
+** LaTeX-mode-config
+*** General
+#+BEGIN_SRC elisp
+  (use-package tex
+    :ensure auctex
+    :defer t
+    :mode ("\\.tex\\'"  . LaTeX-mode)
+    :mode ("\\.sty\\'"  . LaTeX-mode)
+    :mode ("\\.bib\\'"  . bibtex-mode)
+    :init
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
+    :config
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    (use-package cdlatex
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
+      :bind
+      (:map cdlatex-mode-map
+            ("'" . nil)
+            ("`" . nil)
+            ("¿" . cdlatex-math-modify)
+            ("¡" . cdlatex-math-modify)
+            ("ñ" . cdlatex-math-symbol)
+            ("M-ñ" . brust-LaTeX-insert-ñ)))
+    (use-package reftex
+      :ensure nil
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
+    :bind
+    (:map LaTeX-mode-map
+          ("ç"            . brust-LaTeX-insert-math1)
+          ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
+          ;; ("           ."              . brust-LaTeX-smart-period)
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("C-x C-s"      . brust-LaTeX-save)
+          ("C-c C-e"      . brust-LaTeX-env)
+          ("C-c n"        . TeX-next-error)
+          ("s-e"          . brust-LaTeX-next-error)
+          ;; ("C-c e"        . TeX-error-overview)
+          ("s-5"          . latex-replace-in-math)
+          ("s-C-5"        . latex-replace-regexp-in-math)
+          ;; ("C-c C-a"      . brust-compile-only)
+          ;; ("s-0"          . reftex-toc)
+          ("M-m"          . brust-LaTeX-insert-up)
+          ("M-n"          . brust-LaTeX-insert-down)
+          ;; ("s-ç"          . brust-LaTeX-smart-selection)
+          ("C-c C-q"      . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"  . brust-wc-save-words)
+          ;; ("C-c C-a"   . latex/compile-commands-until-done)
+          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+          ;; ("<M-S-up>"  . latex/up-section)
+          ;; ("<tab>"     . latex/hide-show)
+          ;; ("<backtab>" . latex/hide-show-all)
+          ;; (""          . latex/next-section)
+          ;; (""          . latex/next-section-same-level)
+          ;; (""          . latex/beginning-of-line)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
+          ("s-9"          . brust-cycle-texmath)
+          ))
+#+END_SRC
+
+#+RESULTS:
+: brust-cycle-texmath
+
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
+
+#+RESULTS:
+: ((msn . 10) (arxiv . 5))
+
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
+
 ** External modes
 *** Ace window
    With one "universal-argument" swap the selected and current window.
@@ -7370,101 +7466,6 @@ _q_: quit
 
 #+RESULTS:
 : brust-singular-dynamic-complete
-
-** LaTeX-mode-config
-*** General
-#+BEGIN_SRC elisp
-  (use-package tex
-    :ensure auctex
-    :defer t
-    :mode ("\\.tex\\'"  . LaTeX-mode)
-    :mode ("\\.sty\\'"  . LaTeX-mode)
-    :mode ("\\.bib\\'"  . bibtex-mode)
-    :init
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
-    :config
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
-    (use-package cdlatex
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
-      :bind
-      (:map cdlatex-mode-map
-            ("'" . nil)
-            ("`" . nil)
-            ("¿" . cdlatex-math-modify)
-            ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)
-            ("M-ñ" . brust-LaTeX-insert-ñ)))
-    (use-package reftex
-      :ensure nil
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
-    :bind
-    (:map LaTeX-mode-map
-          ("ç"            . brust-LaTeX-insert-math1)
-          ("Ç"            . brust-LaTeX-insert-math2)
-          ("M-ç"          . brust-LaTeX-insert-ç)
-          ;; ("           ."              . brust-LaTeX-smart-period)
-          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ;; ("C-x C-s"      . brust-LaTeX-save)
-          ("C-c C-e"      . brust-LaTeX-env)
-          ("C-c n"        . TeX-next-error)
-          ("s-e"          . brust-LaTeX-next-error)
-          ;; ("C-c e"        . TeX-error-overview)
-          ("s-5"          . latex-replace-in-math)
-          ("s-C-5"        . latex-replace-regexp-in-math)
-          ;; ("C-c C-a"      . brust-compile-only)
-          ;; ("s-0"          . reftex-toc)
-          ("M-m"          . brust-LaTeX-insert-up)
-          ("M-n"          . brust-LaTeX-insert-down)
-          ;; ("s-ç"          . brust-LaTeX-smart-selection)
-          ("C-c C-q"      . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"  . brust-wc-save-words)
-          ;; ("C-c C-a"   . latex/compile-commands-until-done)
-          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"  . latex/up-section)
-          ;; ("<tab>"     . latex/hide-show)
-          ;; ("<backtab>" . latex/hide-show-all)
-          ;; (""          . latex/next-section)
-          ;; (""          . latex/next-section-same-level)
-          ;; (""          . latex/beginning-of-line)
-          ;; ("C-M-e"        . latex/end-of-environment)
-          ;; ("C-M-a"        . latex/beginning-of-environment)
-          ;; ("C-M-p"        . latex/backward-environment)
-          ;; ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . brust-cycle-texmath)
-          ))
-#+END_SRC
-
-#+RESULTS:
-
-*** Bibretrive
-#+BEGIN_SRC elisp
-  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
-  (load "bibretrieve")
-  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
-#+END_SRC
-
-#+RESULTS:
-: ((msn . 10) (arxiv . 5))
-
-*** Bralatex
-    Load before auctex ??2
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
-
-#+RESULTS:
-: bratex-config
 
 ** MyRegExp
 *** Create it
