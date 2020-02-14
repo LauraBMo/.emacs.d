@@ -6015,6 +6015,15 @@ msg '(:from :to :cc :bcc) "uab")))
 
 #+RESULTS:
 : brust-pdf-view-previous-line-or-previous-page-5
+**** org-pdftools
+     Org links for pdfs
+#+begin_src elisp
+  (use-package org-pdfview
+    :config ;;(setq org-pdftools-root-dir "~/Dropbox/bibliography/pdf")
+    )
+#+end_src
+
+#+RESULTS:
 
 **** COMMENT save place
  workaround for pdf-tools not reopening to last-viewed page of the pdf:
