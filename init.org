@@ -194,17 +194,6 @@ Some people use it specifically for one or two applications.
 
 #+RESULTS:
 | y-sp | brust-elisp-sentence-end-double-sapce-t | n-auto-fill |
-
-*** Display time.
-    Show the time in 24hr format, the date and time
-    and not show the average of loads.
-
-#+BEGIN_SRC elisp
-(setq display-time-24hr-format t
-      display-time-day-and-date t
-      display-time-default-load-average nil)
-#+END_SRC
-
 *** Idle update
 #+BEGIN_SRC elisp
 (setq idle-update-delay 2)
@@ -332,8 +321,11 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+BEGIN_SRC elisp
 ;;; Enable disabled commands
 
-(put 'erase-buffer                'disabled nil)
-(put 'eval-expression             'disabled nil)   ; Let ESC-ESC work
+(put 'erase-buffer    'disabled nil)
+(put 'eval-expression 'disabled nil)   ; Let ESC-ESC work
+(put 'upcase-region   'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'list-timers     'disabled nil)
 ;; (put 'set-goal-column             'disabled nil)
 ;; (put 'company-coq-fold            'disabled nil)
 ;; (put 'TeX-narrow-to-group         'disabled nil)
@@ -341,8 +333,6 @@ when one fix a personal personal dictionary there are problems when one changes 
 ;; (put 'narrow-to-region            'disabled nil)
 ;; (put 'narrow-to-defun             'disabled nil)
 ;; (put 'narrow-to-page              'disabled nil)
-(put 'upcase-region               'disabled nil)
-(put 'downcase-region             'disabled nil)
 #+END_SRC
 
 *** Auto create non-existent files
@@ -515,7 +505,7 @@ when one fix a personal personal dictionary there are problems when one changes 
    :family "Sans Serif"
    :weight 'bold
    :foreground "#c82829"
-   :background "#ffffff"
+   :background "#FDF4C1"
    :box '(:line-width 1 :color "#c82829"))
   (set-face-attribute
    'mode-line-folder-face nil
@@ -592,6 +582,21 @@ when one fix a personal personal dictionary there are problems when one changes 
     map))
 
 #+END_SRC
+**** Mode-Line-Buffer-Identification:
+
+   #+BEGIN_SRC elisp
+     (with-eval-after-load 'subr-x
+       (setq-default
+        mode-line-buffer-identification
+        '(:eval
+          (format-mode-line
+           (propertized-buffer-identification
+            (or
+             (when-let (buffer-file-truename buffer-file-truename)
+               (file-name-nondirectory buffer-file-truename))
+             "%b"))))))
+   #+END_SRC
+
 **** Smart-mode-line colors
 #+BEGIN_SRC elisp
   (defface sml/global '((t :inverse-video nil)) "" :group 'smart-mode-line-faces)
@@ -606,36 +611,9 @@ when one fix a personal personal dictionary there are problems when one changes 
 
 #+RESULTS:
 
-**** Mode-Line-Buffer-Identification:
-
-   #+BEGIN_SRC elisp
-     (with-eval-after-load 'subr-x
-       (setq-default
-        mode-line-buffer-identification
-        '(:eval
-          (format-mode-line
-           (propertized-buffer-identification
-            (or
-             (when-let
-                 ((buffer-file-truename buffer-file-truename)
-                  (prj (cdr-safe (project-current)))
-                  (prj-parent (file-name-directory
-                               (directory-file-name (expand-file-name prj)))))
-               (concat (file-relative-name
-                        (file-name-directory buffer-file-truename) prj-parent)
-                       (file-name-nondirectory buffer-file-truename)))
-             "%b"))))))
-   #+END_SRC
-
-   #+RESULTS:
-   | :eval | (format-mode-line (propertized-buffer-identification (or (when-let ((buffer-file-truename buffer-file-truename) (prj (cdr-safe (project-current))) (prj-parent (file-name-directory (directory-file-name (expand-file-name prj))))) (concat (file-relative-name (file-name-directory buffer-file-truename) prj-parent) (file-name-nondirectory buffer-file-truename))) %b))) |
-
-
 **** Verison-control-mode
-***** Faces
+***** Define faces.
 #+begin_src elisp
-  ;; Define faces.
-
   (defface brust-vc-base
     '((t (:inherit mode-line-face :weight bold :height 0.7)))
     "VC status tag base face for files that are under version control."
@@ -707,6 +685,75 @@ when one fix a personal personal dictionary there are problems when one changes 
 #+RESULTS:
 : my-mode-line-vc-info
 
+**** Display time.
+    Show the time in 24hr format, the date and time
+    and not show the average of loads.
+
+#+BEGIN_SRC elisp
+  ;; Display time
+  (display-time-mode t)
+
+  (defun brust-kill-date nil
+    (interactive)
+    (kill-new (format-time-string "%a, %b %e %Y" (current-time))))
+
+  ;; Time format
+  (customize-set-variable 'display-time-string-forms
+                          '((propertize (concat dayname
+                                                " " 12-hours ":" minutes am-pm " ")
+                                        'help-echo (format-time-string "%a, %b %e %Y" now)
+                                        'mouse-face 'mode-line-highlight
+                                        'keymap '(mode-line keymap
+                                                            (mouse-1 . brust-kill-date)))))
+
+  ;; Update display-time-string
+  (display-time-update)
+
+  ;; Remove display-time-string from global-mode-string
+  (add-hook 'after-init-hook #'(lambda nil (setq global-mode-string (delq 'display-time-string global-mode-string)) (display-time-update)))
+
+  ;; (setq display-time-24hr-format t
+  ;;       display-time-day-and-date t
+  ;;       display-time-default-load-average nil)
+#+END_SRC
+
+#+RESULTS:
+|   | (:eval mu4e-alert-mode-line) |
+**** Battery percentage
+#+begin_src elisp
+  (require 'battery)
+  (display-battery-mode 1)
+  (setq global-mode-string (delq 'battery-mode-line-string global-mode-string)
+        battery-update-interval (* 30 1)
+        battery-mode-line-format "%b%p%%, %th")
+
+  (defface sml/charging
+    '((t :inherit sml/global :foreground "ForestGreen")) "" :group 'smart-mode-line-faces)
+  (defface sml/discharging
+    '((t :inherit sml/global :foreground "Red")) "" :group 'smart-mode-line-faces)
+
+  (defun brust-battery-mode-line-string nil
+    (if (string-equal "AC" (cdr (assoc 76 (funcall battery-status-function))))
+        (propertize battery-mode-line-string 'face 'sml/charging)
+      (propertize battery-mode-line-string 'face 'sml/discharging)))
+
+
+  ;;   (defadvice battery-update (before my/pl-colorize-battery-advice activate)
+  ;;     "Colorize the battery load string depending on its status (dis/charging)."
+  ;;     (if (string-equal "AC" (cdr (assoc 76 (funcall battery-status-function))))
+  ;;         (copy-face 'sml/charging 'sml/battery)
+  ;;       (copy-face 'sml/discharging 'sml/battery)))
+  ;;
+  ;;   (defadvice battery-update (after sml/after-battery-update-advice () activate)
+  ;;     "Change battery color."
+  ;;     (when battery-mode-line-string
+  ;;       (setq battery-mode-line-string
+  ;;             (concat (propertize battery-mode-line-string 'face 'sml/battery) " "))))
+#+end_src
+
+#+RESULTS:
+: brust-battery-mode-line-string
+
 **** My customization
 #+BEGIN_SRC elisp
   (setq-default
@@ -716,11 +763,13 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;   mode-line-client
      ;; Position, including warning for 80 columns
      ;; (:propertize " --[" face mode-line-bars-face)
+     ;; (:eval mu4e-alert-mode-line)
      (:propertize "||" face mode-line-bars-face)
-     (:propertize display-time-string face sml/line-number)
+     ;; (:propertize "|" face mode-line-bars-face)
+     (:propertize display-time-string face mode-line-buffer-id)
      ;;mode-line-misc-info
      ;;(:propertize "|" face mode-line-bars-face)
-     " "
+     ;; " "
      (:eval
       (cond (buffer-read-only
              (propertize " RO " 'face 'mode-line-read-only-face))
@@ -729,16 +778,16 @@ when one fix a personal personal dictionary there are problems when one changes 
             (t "   ")))
      " "
      (:propertize "\[" face mode-line-bars-face)
-     (:propertize "%l" face sml/line-number)
+     (:propertize "%l" face mode-line-buffer-id)
      (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line "/%l")) 'face 'mode-line-top-line-number))
      ;; (line-number-at-pos (point-max))
-     (:propertize ":" face sml/line-number)
+     (:propertize ":" face mode-line-buffer-id)
      (:eval (propertize "%c" 'face
                         (if (< (current-column) 80)
                             'sml/col-number
                           'mode-line-80col-face)))
      ;; (:eval (propertize (format "/%s" (- (line-end-position) (line-beginning-position))) 'face 'mode-line-top-line-number))
-     (:propertize "\]" face mode-line-bars-face)
+     (:propertize "\] " face mode-line-bars-face)
      ;; (:propertize "|| " face mode-line-bars-face)
      ;; mode-line-front-space
      ;;      (vc-mode vc-mode)
@@ -746,8 +795,12 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;; mode-line-frame-identification
      mode-line-buffer-identification
      ;; (:propertize " |[  " face mode-line-bars-face)
-     (:propertize (" " "\[" mode-name "\] ") face sml/modes)
+     (:propertize (" " "\[" mode-name "\] ") face mode-line-buffer-id)
      (:eval (my-mode-line-vc-info))
+     ;; (:propertize global-mode-string face mode-line-buffer-id)
+     ;; mu4e-alert-mode-line
+     inbox-mode-line-string
+     ;; mode-line-misc-info
      ;; mode-line-modes
      ;;(:propertize "| " face mode-line-bars-face)
      ;; (vc-mode vc-mode)
@@ -760,12 +813,14 @@ when one fix a personal personal dictionary there are problems when one changes 
      ;;(:propertize "||" face mode-line-bars-face)
      ;;mode-line-percent-position
      ;; mode-line-position
-     (:propertize "||%-" face mode-line-bars-face)
+     (:propertize "| " face mode-line-bars-face)
+     (:eval (brust-battery-mode-line-string))
+     (:propertize "||-%-" face mode-line-bars-face)
      mode-line-end-spaces))
 #+END_SRC
 
 #+RESULTS:
-| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face sml/line-number) |   | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))) (t    ))) |   | (:propertize [ face mode-line-bars-face) | (:propertize %l face sml/line-number) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face sml/line-number) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:propertize ] face mode-line-bars-face) | mode-line-buffer-identification | (:propertize (  [ mode-name ] ) face sml/modes) | (:eval (my-mode-line-vc-info)) | (:propertize | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize |   | %- face mode-line-bars-face) | mode-line-end-spaces |
+| %e | (:propertize |   | face mode-line-bars-face) | (:propertize display-time-string face mode-line-buffer-id) | (:eval (cond (buffer-read-only (propertize  RO  (quote face) (quote mode-line-read-only-face))) ((buffer-modified-p) (propertize  **  (quote face) (quote mode-line-modified-face))) (t    ))) |   | (:propertize [ face mode-line-bars-face) | (:propertize %l face mode-line-buffer-id) | (:eval (propertize (save-excursion (goto-char (point-max)) (format-mode-line /%l)) (quote face) (quote mode-line-top-line-number))) | (:propertize : face mode-line-buffer-id) | (:eval (propertize %c (quote face) (if (< (current-column) 80) (quote sml/col-number) (quote mode-line-80col-face)))) | (:propertize ]  face mode-line-bars-face) | mode-line-buffer-identification | (:propertize (  [ mode-name ] ) face mode-line-buffer-id) | (:eval (my-mode-line-vc-info)) | (:propertize inbox-mode-line-string face brust-vc-edited) | (:propertize | face mode-line-bars-face) | (:eval (nyan-create)) | (:propertize | face mode-line-bars-face) | (:eval (brust-battery-mode-line-string)) | (:propertize |   | -%- face mode-line-bars-face) | mode-line-end-spaces |
 
 ** My key binding
 *** Global and genric
@@ -826,9 +881,12 @@ when one fix a personal personal dictionary there are problems when one changes 
              ("ww" . zap-up-to-char)
              ;; ("sç" . save-buffer)
              (".a" . endless/ispell-word-then-abbrev)
-             (".s" . flyspell-correct-previous-word-generic))
+             (".s" . flyspell-correct-previous))
            do (key-chord-define-global (car -ch) (cdr -ch)))
 #+END_SRC
+
+#+RESULTS:
+
 *** Motion
     The keys were:
     =M-u= fix-word-upcase ; Now bind to M-S-c
@@ -1645,8 +1703,9 @@ when one fix a personal personal dictionary there are problems when one changes 
      (add-hook 'org-mode-hook 'org-display-inline-images)
 
      ;; org-mode my agenda view
-     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org")))
-     (setq org-agenda-custom-commands
+     (setq org-agenda-files (quote ("~/Dropbox/Org/" "~/Dropbox/bibliography/notes.org"))
+           org-directory "~/Dropbox/Org/"
+           org-agenda-custom-commands
            '(("h" "My agenda view"
               ((agenda "")
                (todo)))))
@@ -1803,22 +1862,29 @@ when one fix a personal personal dictionary there are problems when one changes 
         history-delete-duplicates t
         savehist-autosave-interval 60
         savehist-save-minibuffer-history t
+        savehist-ignored-variables
+        '(bookmark-history
+          bibtex-key-history
+          counsel-describe-symbol-history
+          TeX-command-history
+          file-name-history
+          minibuffer-history)
         savehist-additional-variables
         '(kill-ring
           search-ring
-          global-mark-ring
+          ;; global-mark-ring
           regexp-history
           regexp-search-ring
           ;; buffer-name-history
-          minibuffer-history
+          ;; minibuffer-history
           query-replace-history
           read-expression-history
           ;; input-method-history
           extended-command-history
           shell-command-history
-          file-name-history
-          org-mark-ring
-          org-tags-history
+          ;; file-name-history
+          ;; org-mark-ring
+          ;; org-tags-history
           ;; kmacro-ring
           ;; counsel-colors-emacs-history
           ;; counsel-colors-web-history
@@ -3086,6 +3152,102 @@ should be. After calling this function, call 'meeting-done' to reset the environ
 
 #+END_SRC
 
+** LaTeX-mode-config
+*** General
+#+BEGIN_SRC elisp
+  (use-package tex
+    :ensure auctex
+    :defer t
+    :mode ("\\.tex\\'"  . LaTeX-mode)
+    :mode ("\\.sty\\'"  . LaTeX-mode)
+    :mode ("\\.bib\\'"  . bibtex-mode)
+    :init
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
+    :config
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
+    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
+    (use-package cdlatex
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
+      :bind
+      (:map cdlatex-mode-map
+            ("'" . nil)
+            ("`" . nil)
+            ("¿" . cdlatex-math-modify)
+            ("¡" . cdlatex-math-modify)
+            ("ñ" . cdlatex-math-symbol)
+            ("M-ñ" . brust-LaTeX-insert-ñ)))
+    (use-package reftex
+      :ensure nil
+      :config
+      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
+    :bind
+    (:map LaTeX-mode-map
+          ("ç"            . brust-LaTeX-insert-math1)
+          ("Ç"            . brust-LaTeX-insert-math2)
+          ("M-ç"          . brust-LaTeX-insert-ç)
+          ;; ("           ."              . brust-LaTeX-smart-period)
+          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
+          ;; ("C-x C-s"      . brust-LaTeX-save)
+          ("C-c C-e"      . brust-LaTeX-env)
+          ("C-c n"        . TeX-next-error)
+          ("s-e"          . brust-LaTeX-next-error)
+          ;; ("C-c e"        . TeX-error-overview)
+          ("s-5"          . latex-replace-in-math)
+          ("s-C-5"        . latex-replace-regexp-in-math)
+          ;; ("C-c C-a"      . brust-compile-only)
+          ;; ("s-0"          . reftex-toc)
+          ("M-m"          . brust-LaTeX-insert-up)
+          ("M-n"          . brust-LaTeX-insert-down)
+          ;; ("s-ç"          . brust-LaTeX-smart-selection)
+          ("C-c C-q"      . latex/clean-fill-indent-environment)
+          ("C-c C-w C-s"  . brust-wc-save-words)
+          ;; ("C-c C-a"   . latex/compile-commands-until-done)
+          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
+                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
+          ;; ("<M-S-up>"  . latex/up-section)
+          ;; ("<tab>"     . latex/hide-show)
+          ;; ("<backtab>" . latex/hide-show-all)
+          ;; (""          . latex/next-section)
+          ;; (""          . latex/next-section-same-level)
+          ;; (""          . latex/beginning-of-line)
+          ;; ("C-M-e"        . latex/end-of-environment)
+          ;; ("C-M-a"        . latex/beginning-of-environment)
+          ;; ("C-M-p"        . latex/backward-environment)
+          ;; ("C-M-n"        . latex/forward-environment)
+          ("s-9"          . brust-cycle-texmath)
+          ))
+#+END_SRC
+
+#+RESULTS:
+: brust-cycle-texmath
+
+*** Bibretrive
+#+BEGIN_SRC elisp
+  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
+  (load "bibretrieve")
+  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
+#+END_SRC
+
+#+RESULTS:
+: ((msn . 10) (arxiv . 5))
+
+*** Bralatex
+    Load before auctex ??2
+#+BEGIN_SRC elisp
+  (require 'bratex)
+
+  (defun bratex-config nil
+    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
+    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
+    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
+    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
+
+#+END_SRC
+
+#+RESULTS:
+: bratex-config
+
 ** External modes
 *** Ace window
    With one "universal-argument" swap the selected and current window.
@@ -3708,11 +3870,18 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
           zoom-ignored-buffer-name-regexps '("^*calc" "^\\*magit: +.*"))
     :config
     (zoom-mode 1)
-    (add-hook 'ediff-before-setup-hook
-              (lambda nil
-                (zoom-mode 1)
-                (balance-windows)))
-    (add-hook 'ediff-cleanup-hook (lambda nil (zoom-mode 1))))
+    (defun brust-zoom-off nil
+      (zoom-mode -1)
+      ;;(balance-windows)
+      )
+    (defun brust-zoom-on nil
+      (zoom-mode 1)
+      ;;(balance-windows)
+      )
+
+    (add-hook 'ediff-before-setup-hook 'brust-zoom-off)
+    (add-hook 'ediff-cleanup-hook 'brust-zoom-on)
+    )
 
     ;; (remove-hook 'mouse-leave-buffer-hook #'golden-ratio--mouse-leave-buffer-hook))
 #+end_src
@@ -3769,6 +3938,13 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 : helpful-key
 
 *** TODO Hydra
+**** Config
+#+BEGIN_SRC elisp
+(use-package hydra)
+#+END_SRC
+
+#+RESULTS:
+
 **** Dired
 #+BEGIN_SRC elisp
   (defhydra hydra-dired (:color pink :columns 3 :hint nil)
@@ -4947,6 +5123,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             ;; This allows me to use 'helm' to select mailboxes
             ;; mu4e-completing-read-function 'completing-read
             mu4e-completing-read-function 'ivy-completing-read
+            ;; Enable notifications
+            mu4e-enable-notifications t
             mail-user-agent 'mu4e-user-agent
             ;; Use "P" to toggle threading
             mu4e-headers-show-threads nil
@@ -4999,10 +5177,12 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             message-sendmail-extra-arguments '("--read-envelope-from")
             message-sendmail-f-is-evil 't
             sendmail-program "msmtp"
-            mu4e-update-interval 300    ;; update every 5 minutes
+            mu4e-update-interval (* 5 60)    ;; update every 5 minutes
+            mu4e-index-update-in-background t
             ;; to speed-up indexing
             mu4e-index-cleanup nil      ;; don't do a full cleanup check
             mu4e-index-lazy-check t     ;; don't consider up-to-dated dirs
+            ;; Split windows vertically
             mu4e-split-view 'vertical
             )
       :bind
@@ -5018,13 +5198,14 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
             ("A" . mu4e-headers-mark-for-action)        ; differs from built-in
 
-            ("`" . mu4e-update-mail-and-index)          ; differs from built-in
+            ;; ("`" . mu4e-update-mail-and-index)          ; differs from built-in
             ("|" . mu4e-view-pipe)               	     ; does not seem to be built in any longer
             ;; ("." . hydra-mu4e-headers/body)
             ))
   #+END_SRC
 
   #+RESULTS:
+  : mu4e-view-pipe
 
 **** Handy hooks
  #+begin_src elisp
@@ -5119,142 +5300,248 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
  #+RESULTS:
  : ((capture message . mu4e-action-capture-message) (view as pdf . mu4e-action-view-as-pdf) (show this thread . mu4e-action-show-thread) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (Rebuild . brust-mu4e-rebuild-index) (lStore Link . org-store-link) (xsearch for sender . brust-mu4e-search-for-sender) (ViewInBrowser . mu4e-action-view-in-browser) (lStore Link . org-store-link))
-***** Headers
+**** Hack to edit main menu
 #+begin_src elisp
-  (defun brust-mu4e-rebuild-index (msg)
-    (async-shell-command "~/src/mu/mu/mu index --rebuild"))
+  (defun brust-mu4e-rebuild-index nil
+    (interactive)
+    (mu4e~proc-kill)
+    (sit-for 0) ;; to efectively kill the proces
+    (let ((display-buffer-alist (cons t 'display-buffer-no-window))) ;; to not display the buffer
+      (async-shell-command "~/scr/mu/mu/mu index --rebuild" nil)))
 
-  (setq mu4e-headers-actions
-        (append mu4e-headers-actions
-                (list
-                 ;; Rebuild the whole date base
-                 (cons "Rebuild" 'brust-mu4e-rebuild-index))))
+  (defun brust-mu4e-full-index nil
+    (interactive)
+    (let ((mu4e-index-cleanup t)      ;; don't do a full cleanup check
+          (mu4e-index-lazy-check nil)) ;; don't consider up-to-dated dirs
+      (mu4e-update-mail-and-index nil)))
 
+  ;; (setq mu4e-headers-actions
+  ;;       (append mu4e-headers-actions
+  ;;               (list
+  ;;                ;; Rebuild the whole date base
+  ;;                (cons "Rebuild" 'brust-mu4e-rebuild-index))))
+
+  (define-key mu4e-main-mode-map (kbd "R") #'brust-mu4e-rebuild-index)
+  (define-key mu4e-main-mode-map (kbd "F") #'brust-mu4e-full-index)
+  (define-key mu4e-main-mode-map (kbd "m") #'brust-inbox-update-mode-line-string)
+
+  (defadvice mu4e~main-view (after add-my-keys activate)
+    (read-only-mode -1)
+    (goto-char (point-max))
+    (insert
+     "\n\n"
+     (propertize "  Mines [Hard adviced]\n\n" 'face 'mu4e-title-face)
+     (mu4e~main-action-str "\t* [R]ebuild index\n" 'brust-mu4e-rebuild-index)
+     (mu4e~main-action-str "\t* [F]ull index\n" 'brust-mu4e-full-index)
+     (mu4e~main-action-str "\t* [m]ode line stirng\n" 'brust-inbox-update-mode-line-string))
+    (read-only-mode 1)
+    (goto-char (point-min)))
 #+end_src
 
 #+RESULTS:
-: ((capture message . mu4e-action-capture-message) (show this thread . mu4e-action-show-thread) (Rebuild . brust-mu4e-rebuild-index))
+: mu4e~main-view
 **** Marks
 #+begin_src elisp
-  ;; As an example, suppose we would like to add a mark for tagging
-  ;; messages (GMail-style), then we can run the following code (after loading mu4e):
+    ;; As an example, suppose we would like to add a mark for tagging
+    ;; messages (GMail-style), then we can run the following code (after loading mu4e):
 
-  ;; (defvar brust-mu4e-tags-list '() "List of tags to consistently tag my emails. List created from the file `brust-mu4e-tags-list-file`")
+
+    ;; As another example, suppose we would like to “archive and mark read”
+    ;; a message (GMail-style), then we can run the following code (after loading mu4e):
+
+    ;; (add-to-list 'mu4e-marks
+    ;;              '(archive
+    ;;                :char       "A"
+    ;;                :prompt     "Archive"
+    ;;                :show-target (lambda (target) "archive")
+    ;;                :action      (lambda (docid msg target)
+    ;;                               ;; must come before proc-move since retag runs
+    ;;                               ;; 'sed' on the file
+    ;;                               (mu4e-action-retag-message msg "-\\Inbox")
+    ;;                               (mu4e~proc-move docid nil "+S-u-N"))))
+
+    ;; (defvar brust-mu4e-tags-list '() "List of tags to consistently tag my emails. List created from the file `brust-mu4e-tags-list-file`")
+
+    (defun brust-list-file-by-lines (-file)
+      (with-temp-buffer
+        (insert-file-contents -file)
+        (split-string (buffer-string) "\n")))
+
+    (add-to-list 'mu4e-marks
+                 '(tag
+                   :char       "g"
+                   :prompt     "gtag"
+                   :ask-target (lambda () (ivy-read "What tag do you want to add? " (brust-list-file-by-lines "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                    :action (lambda (-str) (unless (member -str (brust-list-file-by-lines "~/.emacs.d/brust-mu4e-tags-list-file.txt"))
+                                                                             (with-temp-buffer
+                                                                               (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
+                                                                               (insert -str "\n")
+                                                                               (write-file "~/.emacs.d/brust-mu4e-tags-list-file.txt"))))))
+                   :show-target (lambda (target) (concat "Tag added " target))
+                   :action (lambda (docid msg target)
+                             (mu4e-action-retag-message msg (concat "+" target)))))
+
+    (defvar brust-mu4e-main-dirs-UAB
+      (list (cons "today" "/mathuab/Today")
+            (cons "week" "/mathuab/This week")
+            (cons "month" "/mathuab/This month")
+            (cons "for your information" "/mathuab/FYI")))
+
+  (defun brust-flip-cons-list (-list)
+    (cl-loop for -el in -list
+             collect (cons (cdr -el) (car -el))))
 
   (add-to-list 'mu4e-marks
-               '(tag
-                 :char       "g"
-                 :prompt     "gtag"
-                 :ask-target (lambda () (ivy-read "What tag do you want to add? " (with-temp-buffer
-                                                                                    (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                                    (split-string (buffer-string) "\n"))
-                                                  :action (lambda (-str) (unless (member -str (with-temp-buffer
-                                                                                                (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                                                (split-string (buffer-string) "\n")))
-                                                                           (with-temp-buffer
-                                                                             (insert-file-contents "~/.emacs.d/brust-mu4e-tags-list-file.txt")
-                                                                             (insert -str "\n")
-                                                                             (write-file "~/.emacs.d/brust-mu4e-tags-list-file.txt"))))))
-
-                 :action      (lambda (docid msg target)
-                                (mu4e-action-retag-message msg (concat "+" target)))))
-
-  ;; As another example, suppose we would like to “archive and mark read”
-  ;; a message (GMail-style), then we can run the following code (after loading mu4e):
-
-  (add-to-list 'mu4e-marks
-               '(archive
+               '(moveUAB
                  :char       "A"
-                 :prompt     "Archive"
-                 :show-target (lambda (target) "archive")
-                 :action      (lambda (docid msg target)
-                                ;; must come before proc-move since retag runs
-                                ;; 'sed' on the file
-                                (mu4e-action-retag-message msg "-\\Inbox")
-                                (mu4e~proc-move docid nil "+S-u-N"))))
+                 :prompt     "MoveUAB"
+                 :ask-target (lambda () (mu4e-read-option "Move message to folder: " brust-mu4e-main-dirs))
+                 :show-target (lambda (target) (concat "move to " (cdr (assoc target (brust-flip-cons-list brust-mu4e-main-dirs-UAB)))))
+                 :action (lambda (docid msg target)
+                           (mu4e-mark-set 'move target)
+                           (when mu4e-headers-advance-after-mark (mu4e-headers-next)))))
+
+  (add-to-list 'mu4e-marks
+               '(mydelete
+                 :char       "d"
+                 :prompt     "mydelete"
+                 :ask-target (lambda () (mu4e-read-option "Move message to folder: " brust-mu4e-main-dirs))
+                 :show-target (lambda (target) (concat "move to " (cdr (assoc target (brust-flip-cons-list brust-mu4e-main-dirs-UAB)))))
+                 :action (lambda (docid msg target)
+                           (mu4e-mark-set 'move target)
+                           (when mu4e-headers-advance-after-mark (mu4e-headers-next)))))
 
   (mu4e~headers-defun-mark-for tag)
-  (mu4e~headers-defun-mark-for archive)
+  (mu4e~headers-defun-mark-for moveUAB)
   (define-key mu4e-headers-mode-map (kbd "g") 'mu4e-headers-mark-for-tag)
-  (define-key mu4e-headers-mode-map (kbd "A") 'mu4e-headers-mark-for-archive)
+  (define-key mu4e-headers-mode-map (kbd "A") 'mu4e-headers-mark-for-moveUAB)
 
+  (define-key mu4e-view-mode-map (kbd "g") 'mu4e-headers-mark-for-tag)
+  (define-key mu4e-view-mode-map (kbd "A") 'mu4e-headers-mark-for-moveUAB)
 #+end_src
 
-**** My Contexts
+#+RESULTS:
+: mu4e-headers-mark-for-moveUAB
+
+**** Contexts
+
+(lambda (msg)
+(when msg
+(mu4e-message-contact-field-matches
+msg '(:from :to :cc :bcc) "uab")))
  #+BEGIN_SRC elisp
    (setq mu4e-contexts
          (list
           (make-mu4e-context
-           :name "gmail"
-           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
-           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :name "ku"
+           :enter-func (lambda () (mu4e-message "Entering context mathKU"))
+           :leave-func (lambda () (mu4e-message "Leaving context mathKU"))
            :match-func (lambda (msg)
                          (when msg
-                           (mu4e-message-contact-field-matches
-                            msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
-           :vars '((user-mail-address . "laurea987@gmail.com")
-                   (user-full-name . "Laura Brustenga")
-                   (mu4e-sent-folder . "/gmail/Sent")
-                   (mu4e-drafts-folder . "/gmail/Drafts")
-                   (mu4e-trash-folder . "/gmail/Trash")
-                   (mu4e-compose-signature . nil)
-                   (mu4e-compose-format-flowed . nil)))
+                           (or (string-match-p "^/mathku" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "ku[.]dk"))))
+           :vars '((user-mail-address . "brust@math.ku.dk")
+                   (user-full-name . "Laura Brustenga i Moncusí")
+                   (mu4e-sent-folder . "/mathku/Sent")
+                   (mu4e-drafts-folder . "/mathku/Drafts")
+                   (mu4e-trash-folder . "/mathku/Trash")
+                   (mu4e-compose-signature . (concat
+                                              "Laura Brustenga i Moncusí,\n"
+                                              "Københavns Universitet,\n"
+                                              "Institut for Matematiske Fag,\n"
+                                              "MBIO."))
+                   (mu4e-compose-format-flowed . nil)
+                   (mu4e-maildir-shortcuts . (("/mathku/Deleted Items" . ?d)
+                                              ("/mathku/FYI"           . ?f)
+                                              ("/mathku/INBOX"         . ?i)
+                                              ("/mathku/Month"         . ?m)
+                                              ("/mathku/Sent Items"    . ?s)
+                                              ("/mathku/Today"         . ?t)
+                                              ("/mathku/Week"          . ?w)))))
           (make-mu4e-context
-           :name "mathuab"
+           :name "uab"
            :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
            :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
            :match-func (lambda (msg)
                          (when msg
-                           (mu4e-message-contact-field-matches
-                            msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+                           (or (string-match-p "^/mathuab" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "uab"))))
            :vars '((user-mail-address . "brust@mat.uab.cat")
                    (user-full-name . "Laura Brustenga i Moncusí")
                    (mu4e-sent-folder . "/mathuab/Sent")
                    (mu4e-drafts-folder . "/mathuab/Drafts")
                    (mu4e-trash-folder . "/mathuab/Trash")
                    (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)
+                   (mu4e-maildir-shortcuts . (("/mathuab/FYI"        . ?f)
+                                              ("/mathuab/INBOX"      . ?i)
+                                              ("/mathuab/Sent"       . ?s)
+                                              ("/mathuab/This Month" . ?m)
+                                              ("/mathuab/This week"  . ?w)
+                                              ("/mathuab/Today"      . ?t)
+                                              ("/mathuab/Trash"      . ?d)))))
+          (make-mu4e-context
+           :name "gmail"
+           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (or (string-match-p "^/gmail" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "gmail"))))
+           :vars '((user-mail-address . "laurea987@gmail.com")
+                   (user-full-name . "Laura Brustenga")
+                   (mu4e-sent-folder . "/gmail/Sent")
+                   (mu4e-drafts-folder . "/gmail/Drafts")
+                   (mu4e-trash-folder . "/gmail/Trash")
+                   (mu4e-compose-signature . nil)
                    (mu4e-compose-format-flowed . nil)))))
-
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
+ | #s(mu4e-context ku (lambda nil (mu4e-message Entering context mathKU)) (lambda nil (mu4e-message Leaving context mathKU)) (lambda (msg) (when msg (or (string-match-p ^/mathku (mu4e-message-field msg :maildir)) (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) ku[.]dk)))) ((user-mail-address . brust@math.ku.dk) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathku/Sent) (mu4e-drafts-folder . /mathku/Drafts) (mu4e-trash-folder . /mathku/Trash) (mu4e-compose-signature concat Laura Brustenga i Moncusí, |
 
-**** Bookmarkstr
+**** Bookmarks
  #+BEGIN_SRC elisp
    ;; Update mail using 'U' in main view:
    ;; Include a bookmark to open all of my inboxes
    (setq mu4e-bookmarks
          `(
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "All Inboxes"
+           ;;   :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread AND NOT flag:trashed"
+           ;;   :key ?i)
            ,(make-mu4e-bookmark
-             :name "All Inboxes"
-             :query "maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox AND flag:unread"
+             :name "Math Inbox"
+             :query "maildir:/mathuab/INBOX OR maildir:/mathku/INBOX AND NOT flag:trashed"
              :key ?i)
            ,(make-mu4e-bookmark
-             :name "New mathuab"
-             :query "flag:unread AND maildir:/mathuab/INBOX"
-             :key ?m)
-           ,(make-mu4e-bookmark
-             :query "flag:unread AND NOT flag:trashed"
-             :name "Unread messages"
-             :key ?u)
-           ,(make-mu4e-bookmark
-             :query "date:today..now AND NOT flag:trashed AND NOT flag:draft"
-             :name "Today's messages"
+             :name "Math Today"
+             :query "maildir:/mathuab/Today OR maildir:/mathku/Today AND NOT flag:trashed"
              :key ?t)
-           ,(make-mu4e-bookmark
-             :query "date:7d..now AND NOT flag:trashed AND NOT flag:draft"
-             :name "Last 7 days"
-             :key ?w)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab Week"
+           ;;   :query "maildir:/mathuab/This week AND NOT flag:trashed"
+           ;;   :key ?w)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab Month"
+           ;;   :query "maildir:/mathuab/This Month AND NOT flag:trashed"
+           ;;   :key ?m)
+           ;; ,(make-mu4e-bookmark
+           ;;   :name "Mathuab FYI"
+           ;;   :query "maildir:/mathuab/FYI AND NOT maildir:/mathuab/trash"
+           ;;   :key ?m)
            ;; ("mime:image/*" "Messages with images" 112)
            ,(make-mu4e-bookmark
              :name "Drafts"
-             :query "flag:draft"
+             :query "maildir:/mathuab/Drafts OR maildir:/mathku/Drafts OR flag:draft"
              :key ?d)))
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-bookmark Unread messages flag:unread AND NOT flag:trashed 117) | #s(mu4e-bookmark Today's messages date:today..now AND NOT flag:trashed AND NOT flag:draft 116) | #s(mu4e-bookmark Last 7 days date:7d..now AND NOT flag:trashed AND NOT flag:draft 119) | #s(mu4e-bookmark All Inboxes maildir:/mathuab/INBOX OR maildir:/Gmail/Inbox 105) | #s(mu4e-bookmark New mathuab flag:unread AND maildir:/mathuab/INBOX 109) | #s(mu4e-bookmark Drafts flag:draft 100) |
+ | #s(mu4e-bookmark Math Inbox maildir:/mathuab/INBOX OR maildir:/mathku/INBOX AND NOT flag:trashed 105) | #s(mu4e-bookmark Math Today maildir:/mathuab/Today OR maildir:/mathku/Today AND NOT flag:trashed 116) | #s(mu4e-bookmark Drafts maildir:/mathuab/Drafts OR maildir:/mathku/Drafts OR flag:draft 100) |
 
 **** Contacts
  #+begin_src elisp
@@ -5273,8 +5560,18 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 **** Org mu4e
  #+begin_src elisp
- (require 'org-mu4e)
+   ;;store org-mode links to messages
+   (require 'org-mu4e)
+   ;;store link to message if in header view, not to header query
+   (setq org-mu4e-link-query-in-headers-mode nil)
+
+   (push '("e" "Todo email" entry (file+headline "~/Dropbox/Org/my.org" "Work")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+         org-capture-templates)
  #+end_src
+
+ #+RESULTS:
+ | e | Todo email | entry | (file+headline ~/Dropbox/Org/my.org Work) | * TODO %? |
 
 **** yasnippet for composing emails
   From http://pragmaticemacs.com/category/mu4e/
@@ -5326,29 +5623,219 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  #+RESULTS:
  : bjm/mu4e-get-names-for-yasnippet
 
-**** COMMENT Alert
- #+BEGIN_SRC elisp
-   (use-package mu4e-alert
-     :ensure t
-     :after mu4e
-     :init
-     (setq mu4e-alert-interesting-mail-query
-           (concat
-            "flag:unread maildir:/mathuab/INBOX"
-            "OR"
-            "flag:unread maildir:/Gmail/Inbox"
-            ))
-     (mu4e-alert-enable-mode-line-display)
-     (defun gjstein-refresh-mu4e-alert-mode-line ()
-       (interactive)
-       (mu4e~proc-kill)
-       (mu4e-alert-enable-mode-line-display)
-       )
-     (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
-     )
+**** Alert
+***** Config
+      It works for notifications...
+#+BEGIN_SRC elisp
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e)
+
+  ;; (require 'mu4e-alert)
+  (setq mu4e-alert-interesting-mail-query "flag:unread AND NOT flag:trashed AND maildir:/mathuab/INBOX"
+        mu4e-headers-skip-duplicates t)
+
+  ;; Desktop notifications
+  (mu4e-alert-set-default-style 'libnotify)
+  ;; (mu4e-alert-set-default-style 'notifier))
+
+  ;; (setq mu4e-enable-mode-line t)
+  ;; (mu4e-alert-enable-notifications)
+  ;; (mu4e-alert-enable-mode-line-display)
+  ;; (mu4e-alert-update-mail-count-modeline)
+
+  ;; (setq mu4e-alert-notify-repeated-mails t)
+  ;; (mu4e-alert-notify-unread-mail-async)
+
+
+  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;; (add-hook 'mu4e-index-updated-hook #'mu4e~headers-do-auto-update)
+  ;; (add-hook 'mu4e-index-updated-hook #'mu4e-alert-update-mail-count-modeline)
+
+  ;;   (defun gjstein-refresh-mu4e-alert-mode-line ()
+  ;;     (interactive)
+  ;;     (mu4e~proc-kill)
+  ;;     (mu4e-alert-enable-mode-line-display)
+  ;;     (mu4e-alert-enable-notifications)
+  ;;     )
+  ;;   (run-with-timer 0 60 #'gjstein-refresh-mu4e-alert-mode-line)
+
  #+END_SRC
 
  #+RESULTS:
+ | mu4e~headers-maybe-auto-update | mu4e~headers-do-auto-update | mu4e-alert-update-mail-count-modeline | mu4e-alert-notify-unread-mail-async | #[0 \300\301!\207 [run-hooks mu4e-message-changed-hook] 2] |
+***** COMMENT Formatter
+#+begin_src elisp
+  (require 'ezimage)
+
+  (defun brust-mu4e-alert-mode-line-formatter (mail-count)
+    "Default formatter used to get the string to be displayed in the mode-line.
+  MAIL-COUNT is the count of mails for which the string is to displayed"
+    (when (not (zerop mail-count))
+      (concat " "
+              (propertize
+               "+"
+               'display (when (display-graphic-p)
+                          ezimage-mail)
+               'face display-time-mail-face
+               'help-echo (concat (if (= mail-count 1)
+                                      "You have an unread email"
+                                    (format "You have %s unread emails" mail-count))
+                                  "\nClick here to view "
+                                  (if (= mail-count 1) "it" "them"))
+               'mouse-face 'mode-line-highlight
+               'keymap '(mode-line keymap
+                                   (mouse-1 . mu4e-alert-view-unread-mails)
+                                   (mouse-2 . mu4e-alert-view-unread-mails)
+                                   (mouse-3 . mu4e-alert-view-unread-mails)))
+              (if (zerop mail-count)
+                  " "
+                (format " [%d] " mail-count)))))
+
+  (setq mu4e-alert-modeline-formatter 'mu4e-alert-default-mode-line-formatter)
+#+end_src
+
+#+RESULTS:
+: brust-mu4e-alert-default-mode-line-formatter
+
+**** New Inbox
+     That's something that I understand, and I can use. (I've never understood mu4e-alert and I've been not able to use it...)
+***** Code
+      From https://gist.github.com/gl-sergei/1986989ad3c2024f8150
+  #+begin_src elisp
+    ;;; inbox.el --- display inbox status information  -*- coding: utf-8 -*-
+
+    ;; Copyright (C) 2014 Sergei Glushchenko.
+
+    ;; Author: Sergei Glushchenko <gl.sergei@gmail.com>
+
+    ;; This program is free software: you can redistribute it and/or modify
+    ;; it under the terms of the GNU General Public License as published by
+    ;; the Free Software Foundation, either version 3 of the License, or
+    ;; (at your option) any later version.
+
+    ;; This program is distributed in the hope that it will be useful,
+    ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+    ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    ;; GNU General Public License for more details.
+
+    ;; You should have received a copy of the GNU General Public License
+    ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+    (require 'ezimage)
+
+    (defgroup inbox nil
+      "Display inbox status information."
+      :prefix "inbox-"
+      :group 'hardware)
+
+    (defcustom inbox-update-interval 60
+      "Inbox update interval"
+      :type 'integer
+      :group 'inbox)
+
+    (defvar inbox-update-timer nil
+      "Interval timer object.")
+
+    (defcustom inbox-count-command "echo -n $( mu find date:1w..now maildir:/INBOX flag:unread 2>/dev/null | wc -l )"
+      "Command to retrieve count of emails in Inbox"
+      :type 'string
+      :group 'inbox)
+
+    (defvar inbox-mode-line-string nil
+      "String to display in the mode line.")
+    (put 'inbox-mode-line-string 'risky-local-variable t)
+
+    (define-minor-mode display-inbox-mode
+      "Toggle inbox status display in mode line (Display Inbox mode).
+    With a prefix argument ARG, enable Display Inbox mode if ARG is
+    positive, and disable it otherwise.  If called from Lisp, enable
+    the mode if ARG is omitted or nil."
+      :global t :group 'inbox
+      (setq inbox-mode-line-string "")
+      (or global-mode-string (setq global-mode-string '("")))
+      (and inbox-update-timer (cancel-timer inbox-update-timer))
+
+      (if (not display-inbox-mode)
+          (setq global-mode-string
+                (delq 'inbox-mode-line-string global-mode-string))
+        (add-to-list 'global-mode-string 'inbox-mode-line-string t)
+        (setq inbox-update-timer (run-at-time nil inbox-update-interval
+                                              'inbox-update-handler))
+        (inbox-update)))
+
+
+    ;; (defun inbox-update ()
+    ;;   (interactive)
+    ;;   (setq inbox-mode-line-string
+    ;;         (let ((unread (shell-command-to-string inbox-count-command)))
+    ;;           (propertize
+    ;;            (if (string= "0" unread) "" "+")
+    ;;            'display ezimage-mail
+    ;;            'help-echo (format "%s unread messages" unread))))
+    ;;   (force-mode-line-update))
+
+    (defun brust-inbox-update-index-mu4e nil
+      "Fast update and index mu4e 'mathuab'"
+      (let ((mu4e-hide-index-messages t)
+            (mu4e-index-update-error-warning nil)
+            (mu4e-compose-complete-addresses nil) ;; just check for mails
+            (mu4e-index-cleanup nil)
+            (mu4e-index-lazy-check t)
+            (mu4e-get-mail-command "mbsync mathuab")) ;; just update math mails
+        (mu4e-update-mail-and-index t)))
+
+    (defun brust-inbox-update-mode-line-string nil
+      (interactive)
+      (setq inbox-mode-line-string
+            (let ((unread (string-to-number (shell-command-to-string inbox-count-command))))
+              (if (zerop unread) " "
+                (concat " "
+                        (propertize
+                         "+"
+                         'display ezimage-mail
+                         'face 'brust-vc-edited)
+                        (propertize
+                         (format " [%d]" unread)
+                         'face 'brust-vc-edited
+                         'help-echo (concat (if (= unread 1)
+                                                "You have an unread email"
+                                              (format "You have %s unread emails" unread))
+                                            "\nClick here to view "
+                                            (if (= unread 1) "it" "them"))
+                         'mouse-face 'mode-line-highlight
+                         'keymap '(mode-line keymap
+                                             (mouse-1 . mu4e-alert-view-unread-mails)
+                                             (mouse-2 . mu4e-alert-view-unread-mails)
+                                             (mouse-3 . mu4e-alert-view-unread-mails)))
+                        " "))))
+      (force-mode-line-update))
+
+    (defun inbox-update nil
+      (interactive)
+      (brust-inbox-update-index-mu4e)
+      (brust-inbox-update-mode-line-string))
+
+    (defun inbox-update-handler ()
+      (inbox-update)
+      (sit-for 0))
+  #+end_src
+
+  #+RESULTS:
+  : inbox-update-handler
+
+***** Config
+#+begin_src elisp
+  (setq inbox-count-command "echo -n $( ~/scr/mu/mu/mu find flag:unread AND maildir:/mathuab/INBOX 2>/dev/null | wc -l )"
+        inbox-update-interval (* 30 60) ;; Every half an hour it is enough.
+        inbox-update-timer (run-at-time nil inbox-update-interval
+                                        'inbox-update-handler))
+  (inbox-update)
+#+end_src
+
+#+RESULTS:
+
 **** My functions
 ***** Org caputre mail
  #+begin_src elisp
@@ -5590,8 +6077,8 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
     ;; open pdfs scaled to fit page
     (setq-default pdf-view-display-size 'fit-page)
     ;; automatically annotate highlights
-    (setq pdf-annot-activate-created-annotations nil)
-
+    (setq pdf-annot-activate-created-annotations t
+          pdf-view-resize-factor 1.1)
     :config
     (defun brust-pdf-tools-hook ()
       (bind-keys :map pdf-view-mode-map ("i" . brust-pdf-view-previous-line-or-previous-page-5)))
@@ -5644,6 +6131,15 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 
 #+RESULTS:
 : brust-pdf-view-previous-line-or-previous-page-5
+**** org-pdftools
+     Org links for pdfs
+#+begin_src elisp
+  (use-package org-pdfview
+    :config ;;(setq org-pdftools-root-dir "~/Dropbox/bibliography/pdf")
+    )
+#+end_src
+
+#+RESULTS:
 
 **** COMMENT save place
  workaround for pdf-tools not reopening to last-viewed page of the pdf:
@@ -6990,101 +7486,6 @@ _q_: quit
 
 #+RESULTS:
 : brust-singular-dynamic-complete
-
-** LaTeX-mode-config
-*** General
-#+BEGIN_SRC elisp
-  (use-package tex
-    :ensure auctex
-    :defer t
-    :mode ("\\.tex\\'"  . LaTeX-mode)
-    :mode ("\\.sty\\'"  . LaTeX-mode)
-    :mode ("\\.bib\\'"  . bibtex-mode)
-    :init
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "init" t)
-    :config
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "config" t)
-    (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "LaTeX-extra" t)
-    (use-package cdlatex
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "cdLaTeX" t)
-      :bind
-      (:map cdlatex-mode-map
-            ("'" . nil)
-            ("`" . nil)
-            ("¿" . cdlatex-math-modify)
-            ("¡" . cdlatex-math-modify)
-            ("ñ" . cdlatex-math-symbol)
-            ("M-ñ" . brust-LaTeX-insert-ñ)))
-    (use-package reftex
-      :ensure nil
-      :config
-      (brust-endless/org-eval-eblocks "~/.emacs.d/lisp/brusts-latex-config.org" "RefTeX" t))
-    :bind
-    (:map LaTeX-mode-map
-          ("ç"            . brust-LaTeX-insert-math1)
-          ("Ç"            . brust-LaTeX-insert-math2)
-          ("M-ç"          . brust-LaTeX-insert-ç)
-          ;; ("           ."              . brust-LaTeX-smart-period)
-          ;; ("<backtab>"    . TeX-complete-symbol) ;; Auto-complete funcion of AUCTeX
-          ;; ("C-x C-s"      . brust-LaTeX-save)
-          ("C-c C-e"      . brust-LaTeX-env)
-          ("C-c n"        . TeX-next-error)
-          ("s-e"          . brust-LaTeX-next-error)
-          ;; ("C-c e"        . TeX-error-overview)
-          ("s-5"          . latex-replace-in-math)
-          ("s-C-5"        . latex-replace-regexp-in-math)
-          ;; ("C-c C-a"      . brust-compile-only)
-          ;; ("s-0"          . reftex-toc)
-          ("M-m"          . brust-LaTeX-insert-up)
-          ("M-n"          . brust-LaTeX-insert-down)
-          ;; ("s-ç"          . brust-LaTeX-smart-selection)
-          ("C-c C-q"      . latex/clean-fill-indent-environment)
-          ("C-c C-w C-s"  . brust-wc-save-words)
-          ;; ("C-c C-a"   . latex/compile-commands-until-done)
-          ;; ("C-c C-a"   . TeX-texify) ;; subtitut by latex-extra
-                            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Out-line and Extra-motion
-          ;; ("<M-S-up>"  . latex/up-section)
-          ;; ("<tab>"     . latex/hide-show)
-          ;; ("<backtab>" . latex/hide-show-all)
-          ;; (""          . latex/next-section)
-          ;; (""          . latex/next-section-same-level)
-          ;; (""          . latex/beginning-of-line)
-          ;; ("C-M-e"        . latex/end-of-environment)
-          ;; ("C-M-a"        . latex/beginning-of-environment)
-          ;; ("C-M-p"        . latex/backward-environment)
-          ;; ("C-M-n"        . latex/forward-environment)
-          ("s-9"          . brust-cycle-texmath)
-          ))
-#+END_SRC
-
-#+RESULTS:
-
-*** Bibretrive
-#+BEGIN_SRC elisp
-  (byte-recompile-directory "~/.emacs.d/lisp/bibretrieve" 0)
-  (load "bibretrieve")
-  (setq bibretrieve-backends '(("msn" . 10) ("arxiv" . 5)))
-#+END_SRC
-
-#+RESULTS:
-: ((msn . 10) (arxiv . 5))
-
-*** Bralatex
-    Load before auctex ??2
-#+BEGIN_SRC elisp
-  (require 'bratex)
-
-  (defun bratex-config nil
-    (local-set-key (kbd "<M-up>") #'bratex-cycle-size)
-    (local-set-key (kbd "<M-down>") #'bratex-cycle-size-reverse)
-    (local-set-key (kbd "<M-right>") #'bratex-cycle-bracket)
-    (local-set-key (kbd "<M-left>") #'bratex-cycle-bracket-reverse))
-
-#+END_SRC
-
-#+RESULTS:
-: bratex-config
 
 ** MyRegExp
 *** Create it

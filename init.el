@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (smartparens zoom fzf twittering-mode sass-mode org-publish helpful company-box ledger-mode mu4e-alert yasnippet-snippets ivy-yasnippet counsel-org-clock interleave dired+ magit-gh-pulls rainbow-delimiters session auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord use-package pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-auctex color-theme chess cdlatex auto-compile ace-window)))
+    (org-pdfview smartparens org-pdftools zoom fzf twittering-mode sass-mode org-publish helpful company-box ledger-mode mu4e-alert yasnippet-snippets ivy-yasnippet counsel-org-clock interleave dired+ magit-gh-pulls rainbow-delimiters session auctex org-bullets visual-regexp org git-gutter-fringe+ package-utils wgrep org-autolist org-ref-bibtex ivy-rich transpose-frame mic-paren org-ref adaptive-wrap visual-fill-column aggressive-indent projectile yasnippet flyspell-correct counsel-projectile flyspell-correct-ivy avy beacon ivy ivy-bibtex ivy-hydra company company-statistics company-shell counsel easy-kill org-mode key-chord use-package pdf-tools singular dired-x smartparents zone-nyan whitespace-cleanup-mode which-key use-package-chords smart-mode-line nyan-mode magit ibuffer-vc ibuffer-projectile hydra goto-chg expand-region darktooth-theme company-auctex color-theme chess cdlatex auto-compile ace-window)))
  '(safe-local-variable-values (quote ((eval brust-wc-save-words)))))
  
 (custom-set-faces
@@ -35,11 +35,6 @@
  '(org-block-end-line ((t (:inherit org-meta-line :overline nil :underline t :slant italic))))
  '(org-checkbox ((t (:foreground "#000000" :background "#93a1a1" :box (:line-width -3 :color "#93a1a1" :style "released-button")))))
  '(org-date ((t (:foreground "DarkSlateGray3" :weight bold))))
- ;; '(org-level-1 ((t (:family "Sans Serif" :foreground "DarkOrange2" :weight bold :height 1.3))))
- ;; '(org-level-2 ((t (:family "Sans Serif" :foreground "DarkOliveGreen3" :weight bold :height 1.2))))
- ;; '(org-level-3 ((t (:family "Sans Serif" :foreground "#83A598" :height 1.15))))
- ;; '(org-level-4 ((t (:family "Sans Serif" :foreground "#FABD2F" :weight bold :height 1.1))))
- ;; Give it a try
  '(org-level-1 ((t (:foreground "DarkOrange2" :weight bold :height 1.3))))
  '(org-level-2 ((t (:foreground "DarkOliveGreen3" :weight bold :height 1.2))))
  '(org-level-3 ((t (:foreground "#83A598" :height 1.15))))
@@ -47,6 +42,7 @@
  '(org-table ((t (:foreground "#84BB26"))))
  '(shadow ((t (:foreground "gray48"))))
  '(show-paren-match ((t (:background "turquoise" :height 1.15))))
+ '(sml/discharging ((t (:foreground "dark orange" :weight bold))))
  '(sml/global ((t :foreground "gray50" :inverse-video nil)))
  '(sml/modes ((t :inherit sml/global :foreground "White")))
  '(swiper-line-face ((t (:background "gray25"))))
