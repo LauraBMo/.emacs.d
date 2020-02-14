@@ -3629,7 +3629,7 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
                                       '("\\.gap\\'" . gap-mode))
                                 auto-mode-alist))
   (autoload 'gap "gap-process" "Run GAP in emacs buffer" t)
-  (setq gap-executable "~/scr/gap-4.10.2/bin/gap.sh")
+  (setq gap-executable "~/src/gap-4.10.2/bin/gap.sh")
   (setq gap-start-options (list "-l" "-m" "2m"))
 
 #+END_SRC
@@ -4921,7 +4921,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
  #+RESULTS:
 **** Add Path
  #+BEGIN_SRC elisp
-   (add-to-list 'load-path (expand-file-name "~/scr/mu/mu4e"))
+   (add-to-list 'load-path (expand-file-name "~/src/mu/mu4e"))
    (require 'mu4e)
  #+END_SRC
 
@@ -4956,7 +4956,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
             mu4e-headers-include-related nil
             ;; enable inline images
             mu4e-maildir (expand-file-name "~/Maildir")
-            mu4e-mu-binary (expand-file-name "~/scr/mu/mu/mu")
+            mu4e-mu-binary (expand-file-name "~/src/mu/mu/mu")
             ;; mu4e-mu-home
             mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
             ;; mu4e-html2text-command "w3m -T text/html"
@@ -5115,7 +5115,7 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 ***** Headers
 #+begin_src elisp
   (defun brust-mu4e-rebuild-index (msg)
-    (async-shell-command "~/scr/mu/mu/mu index --rebuild"))
+    (async-shell-command "~/src/mu/mu/mu index --rebuild"))
 
   (setq mu4e-headers-actions
         (append mu4e-headers-actions
