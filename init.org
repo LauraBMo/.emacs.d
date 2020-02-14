@@ -5307,45 +5307,85 @@ _s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache 
 #+RESULTS:
 : mu4e-headers-mark-for-moveUAB
 
-**** My Contexts
+**** Contexts
+
+(lambda (msg)
+(when msg
+(mu4e-message-contact-field-matches
+msg '(:from :to :cc :bcc) "uab")))
  #+BEGIN_SRC elisp
    (setq mu4e-contexts
          (list
           (make-mu4e-context
-           :name "gmail"
-           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
-           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :name "ku"
+           :enter-func (lambda () (mu4e-message "Entering context mathKU"))
+           :leave-func (lambda () (mu4e-message "Leaving context mathKU"))
            :match-func (lambda (msg)
                          (when msg
-                           (mu4e-message-contact-field-matches
-                            msg '(:from :to :cc :bcc) "laurea987@gmail.com")))
-           :vars '((user-mail-address . "laurea987@gmail.com")
-                   (user-full-name . "Laura Brustenga")
-                   (mu4e-sent-folder . "/gmail/Sent")
-                   (mu4e-drafts-folder . "/gmail/Drafts")
-                   (mu4e-trash-folder . "/gmail/Trash")
-                   (mu4e-compose-signature . nil)
-                   (mu4e-compose-format-flowed . nil)))
+                           (or (string-match-p "^/mathku" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "ku[.]dk"))))
+           :vars '((user-mail-address . "brust@math.ku.dk")
+                   (user-full-name . "Laura Brustenga i Moncusí")
+                   (mu4e-sent-folder . "/mathku/Sent")
+                   (mu4e-drafts-folder . "/mathku/Drafts")
+                   (mu4e-trash-folder . "/mathku/Trash")
+                   (mu4e-compose-signature . (concat
+                                              "Laura Brustenga i Moncusí,\n"
+                                              "Københavns Universitet,\n"
+                                              "Institut for Matematiske Fag,\n"
+                                              "MBIO."))
+                   (mu4e-compose-format-flowed . nil)
+                   (mu4e-maildir-shortcuts . (("/mathku/Deleted Items" . ?d)
+                                              ("/mathku/FYI"           . ?f)
+                                              ("/mathku/INBOX"         . ?i)
+                                              ("/mathku/Month"         . ?m)
+                                              ("/mathku/Sent Items"    . ?s)
+                                              ("/mathku/Today"         . ?t)
+                                              ("/mathku/Week"          . ?w)))))
           (make-mu4e-context
-           :name "mathuab"
+           :name "uab"
            :enter-func (lambda () (mu4e-message "Entering context brust@mat.uab.cat"))
            :leave-func (lambda () (mu4e-message "Leaving context brust@mat.uab.cat"))
            :match-func (lambda (msg)
                          (when msg
-                           (mu4e-message-contact-field-matches
-                            msg '(:from :to :cc :bcc) "brust@mat.uab.cat")))
+                           (or (string-match-p "^/mathuab" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "uab"))))
            :vars '((user-mail-address . "brust@mat.uab.cat")
                    (user-full-name . "Laura Brustenga i Moncusí")
                    (mu4e-sent-folder . "/mathuab/Sent")
                    (mu4e-drafts-folder . "/mathuab/Drafts")
                    (mu4e-trash-folder . "/mathuab/Trash")
                    (mu4e-compose-signature . nil)
+                   (mu4e-compose-format-flowed . nil)
+                   (mu4e-maildir-shortcuts . (("/mathuab/FYI"        . ?f)
+                                              ("/mathuab/INBOX"      . ?i)
+                                              ("/mathuab/Sent"       . ?s)
+                                              ("/mathuab/This Month" . ?m)
+                                              ("/mathuab/This week"  . ?w)
+                                              ("/mathuab/Today"      . ?t)
+                                              ("/mathuab/Trash"      . ?d)))))
+          (make-mu4e-context
+           :name "gmail"
+           :enter-func (lambda () (mu4e-message "Entering context laurea987@gmail.com"))
+           :leave-func (lambda () (mu4e-message "Leaving context laurea987@gmail.com"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (or (string-match-p "^/gmail" (mu4e-message-field msg :maildir))
+                               (mu4e-message-contact-field-matches
+                                msg '(:from :to :cc :bcc) "gmail"))))
+           :vars '((user-mail-address . "laurea987@gmail.com")
+                   (user-full-name . "Laura Brustenga")
+                   (mu4e-sent-folder . "/gmail/Sent")
+                   (mu4e-drafts-folder . "/gmail/Drafts")
+                   (mu4e-trash-folder . "/gmail/Trash")
+                   (mu4e-compose-signature . nil)
                    (mu4e-compose-format-flowed . nil)))))
-
  #+END_SRC
 
  #+RESULTS:
- | #s(mu4e-context gmail (lambda nil (mu4e-message Entering context laurea987@gmail.com)) (lambda nil (mu4e-message Leaving context laurea987@gmail.com)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) laurea987@gmail.com))) ((user-mail-address . laurea987@gmail.com) (user-full-name . Laura Brustenga) (mu4e-sent-folder . /gmail/Sent) (mu4e-drafts-folder . /gmail/Drafts) (mu4e-trash-folder . /gmail/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) | #s(mu4e-context mathuab (lambda nil (mu4e-message Entering context brust@mat.uab.cat)) (lambda nil (mu4e-message Leaving context brust@mat.uab.cat)) (lambda (msg) (when msg (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) brust@mat.uab.cat))) ((user-mail-address . brust@mat.uab.cat) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathuab/Sent) (mu4e-drafts-folder . /mathuab/Drafts) (mu4e-trash-folder . /mathuab/Trash) (mu4e-compose-signature) (mu4e-compose-format-flowed))) |
+ | #s(mu4e-context ku (lambda nil (mu4e-message Entering context mathKU)) (lambda nil (mu4e-message Leaving context mathKU)) (lambda (msg) (when msg (or (string-match-p ^/mathku (mu4e-message-field msg :maildir)) (mu4e-message-contact-field-matches msg (quote (:from :to :cc :bcc)) ku[.]dk)))) ((user-mail-address . brust@math.ku.dk) (user-full-name . Laura Brustenga i Moncusí) (mu4e-sent-folder . /mathku/Sent) (mu4e-drafts-folder . /mathku/Drafts) (mu4e-trash-folder . /mathku/Trash) (mu4e-compose-signature concat Laura Brustenga i Moncusí, |
 
 **** Bookmarks
  #+BEGIN_SRC elisp
