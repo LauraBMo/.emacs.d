@@ -881,9 +881,12 @@ when one fix a personal personal dictionary there are problems when one changes 
              ("ww" . zap-up-to-char)
              ;; ("sç" . save-buffer)
              (".a" . endless/ispell-word-then-abbrev)
-             (".s" . flyspell-correct-previous-word-generic))
+             (".s" . flyspell-correct-previous))
            do (key-chord-define-global (car -ch) (cdr -ch)))
 #+END_SRC
+
+#+RESULTS:
+
 *** Motion
     The keys were:
     =M-u= fix-word-upcase ; Now bind to M-S-c
