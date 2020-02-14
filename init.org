@@ -3815,6 +3815,13 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 : helpful-key
 
 *** TODO Hydra
+**** Config
+#+BEGIN_SRC elisp
+(use-package hydra)
+#+END_SRC
+
+#+RESULTS:
+
 **** Dired
 #+BEGIN_SRC elisp
   (defhydra hydra-dired (:color pink :columns 3 :hint nil)
