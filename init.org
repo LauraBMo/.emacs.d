@@ -3732,6 +3732,12 @@ C-u C-u C-u M-x xah-cycle-letter-case -> Force capitalize."
 
 #+RESULTS:
 : goto-last-change
+**** Undo-tree
+ #+BEGIN_SRC elisp
+   (require 'undo-tree)
+ #+END_SRC
+
+ #+RESULTS:
 
 *** COMMENT Grab and drop
 #+BEGIN_SRC elisp
