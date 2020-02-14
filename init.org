@@ -5961,8 +5961,8 @@ msg '(:from :to :cc :bcc) "uab")))
     ;; open pdfs scaled to fit page
     (setq-default pdf-view-display-size 'fit-page)
     ;; automatically annotate highlights
-    (setq pdf-annot-activate-created-annotations nil)
-
+    (setq pdf-annot-activate-created-annotations t
+          pdf-view-resize-factor 1.1)
     :config
     (defun brust-pdf-tools-hook ()
       (bind-keys :map pdf-view-mode-map ("i" . brust-pdf-view-previous-line-or-previous-page-5)))
