@@ -1876,21 +1876,21 @@ when one fix a personal personal dictionary there are problems when one changes 
           ;; global-mark-ring
           regexp-history
           regexp-search-ring
-          ;; buffer-name-history
-          ;; minibuffer-history
+          buffer-name-history
+          minibuffer-history
           query-replace-history
           read-expression-history
-          ;; input-method-history
+          input-method-history
           extended-command-history
           shell-command-history
-          ;; file-name-history
+          file-name-history
           ;; org-mark-ring
           ;; org-tags-history
           ;; kmacro-ring
           ;; counsel-colors-emacs-history
           ;; counsel-colors-web-history
-          ;; counsel-descbinds-history
-          ;; counsel-describe-symbol-history
+          counsel-descbinds-history
+          counsel-describe-symbol-history
           ;; counsel-faces-history
           ;; counsel-git-grep-cmd-history
           counsel-git-grep-history
@@ -1904,7 +1904,7 @@ when one fix a personal personal dictionary there are problems when one changes 
           swiper-history
           dired-regexp-history
           dired-shell-command-history
-          ;; Info-history
+          Info-history
           Info-search-history
           ;; pdf-occur-history
           )
