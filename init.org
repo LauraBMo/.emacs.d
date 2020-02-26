@@ -6762,7 +6762,25 @@ See https://github.com/alphapapa/unpackaged.el#smerge-mode
   ;;    ;;(setq flyspell-correct-interface 'flyspell-correct-ivy)
   ;;)
 #+END_SRC
+**** Smex
+     It is needed for the M-x I am used to
+#+BEGIN_SRC elisp
+  (use-package smex
+    :init
+    (setq smex-save-file "~/.emacs.d/backups/smex-items")
+    (smex-initialize)
+    :config
+    (setq smex-completion-method 'ivy)
+    :bind*
+    ;; ("M-x"        . smex)
+    ("M-S-x"      . smex-major-mode-commands)
+    ;; ("<menu>"     . smex)
+    ("<S-menu>"   . smex-major-mode-commands))
 
+#+END_SRC
+
+#+RESULTS:
+: smex-major-mode-commands
 **** COMMENT counsel-org-clock
 #+BEGIN_SRC elisp
   (use-package counsel-org-clock
@@ -8204,21 +8222,6 @@ This lets you use =C-x u= (=undo-tree-visualize=) to visually walk through the c
 
 #+END_SRC
 
-** Smex
-#+BEGIN_SRC elisp
-  (use-package smex
-    :init
-    (setq smex-save-file "~/.emacs.d/backups/smex-items")
-    (smex-initialize)
-    :config
-    (setq smex-completion-method 'ivy)
-    :bind*
-    ;; ("M-x"        . smex)
-    ("M-S-x"      . smex-major-mode-commands)
-    ;; ("<menu>"     . smex)
-    ("<S-menu>"   . smex-major-mode-commands))
-
-#+END_SRC
 *** Ido
      Simple config, just to use as smex by =smex-major-mode-commands=
 #+BEGIN_SRC elisp
