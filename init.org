@@ -3447,7 +3447,7 @@ should be. After calling this function, call 'meeting-done' to reset the environ
     (add-hook 'after-init-hook 'company-statistics-mode))
 #+END_SRC
 
-**** COMMENT Company-box
+**** Company-box
 #+BEGIN_SRC elisp
 (use-package company-box
   :after company
