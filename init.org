@@ -255,10 +255,11 @@ when one fix a personal personal dictionary there are problems when one changes 
   (defun modi/multi-pop-to-mark (orig-fun &rest args)
     "Call ORIG-FUN until the cursor moves.
   Try the repeated popping up to 10 times."
-    (let ((p (point)))
-      (dotimes (i 10)
-        (when (= p (point))
-          (apply orig-fun args)))))
+    (let ((p (point))
+          (i 0))
+      (while (and (= p (point)) (< i 10))
+        (apply orig-fun args)
+        (setq i (1+ i)))))
 
   (advice-add 'pop-to-mark-command :around
               #'modi/multi-pop-to-mark)
